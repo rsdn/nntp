@@ -103,6 +103,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "EventLogWithFailTraceListener.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "ProductInfo.cs"
                     Link = "..\ProductInfo.cs"
                     SubType = "Code"

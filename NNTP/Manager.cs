@@ -135,8 +135,6 @@ namespace Rsdn.Nntp
 			bytesTotalCounter = new PerformanceCounter(ServerCategoryName, bytesTotalCounterName,
 				settings.Name, false);
 #endif
-
-			Start();
 		}
 
 		/// <summary>
@@ -159,7 +157,17 @@ namespace Rsdn.Nntp
 			// we can't cancel asynchronious callback
 			catch(System.ObjectDisposedException)	{	}
 
-			Trace.WriteIf(tracing.TraceInfo, "Server started", settings.Name);
+			// trace start message
+			if (tracing.TraceWarning)
+			{
+				StringBuilder startInfo = new StringBuilder("Server started. Listen on ");
+				for (int i = 0; i < listeners.Length; i++)
+				{
+					if (i > 0) startInfo.Append(',');
+					startInfo.Append(listeners[i].LocalEndPoint);
+				}
+				Trace.WriteLine(startInfo.Append('.'), settings.Name);
+			}
 		}
 
 		
@@ -232,13 +240,13 @@ namespace Rsdn.Nntp
 		public void Pause()
 		{
 			paused = true;
-			Trace.WriteIf(tracing.TraceInfo, "Server paused", settings.Name);
+			Trace.WriteLineIf(tracing.TraceWarning, "Server paused", settings.Name);
 		}
 
 		public void Resume()
 		{
 			paused = false;
-			Trace.WriteIf(tracing.TraceInfo, "Server resumed", settings.Name);
+			Trace.WriteLineIf(tracing.TraceWarning, "Server resumed", settings.Name);
 		}
 
 		public void Stop()
@@ -247,7 +255,7 @@ namespace Rsdn.Nntp
 			stopEvent.Set();
 			while (sessions.Count > 0)
 				Thread.Sleep(sessionsCheckInterval);
-			Trace.WriteIf(tracing.TraceInfo, "Server stopped", settings.Name);
+			Trace.WriteLineIf(tracing.TraceWarning, "Server stopped", settings.Name);
 		}
 
 		protected ArrayList sessions;

@@ -40,7 +40,7 @@ namespace Rsdn.RsdnNntp
 			ServicesToRun = new System.ServiceProcess.ServiceBase[] { new RsdnNntpServer() };
 
 			// tracing
-			Trace.Listeners.Add(new EventLogTraceListener(ServicesToRun[0].EventLog));
+			Trace.Listeners.Add(new EventLogWithFailTraceListener(ServicesToRun[0].EventLog));
 				
 			System.ServiceProcess.ServiceBase.Run(ServicesToRun);
 		}
