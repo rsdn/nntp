@@ -180,7 +180,9 @@ namespace Rsdn.Mime
 		/// Regular expression for detect encoded parts
 		/// </summary>
 		protected static readonly Regex extractEncodedParts =
-			new Regex(@"=\?(?<charset>\S+?)\?(?<encoding>[qQbB])\?(?<value>[^\?\s]+?)\?=");
+			new Regex(@"=\?(?<charset>\S+?)\?(?<encoding>(?<q>[qQ])|(?<b>[bB]))\?" +
+				@"(?<value>(?(q)(=[0-9A-Fa-f]{2}|[\x00-\x3C\x3E-\x7F])*(=[0-9A-Fa-f]{2}|[\x00-\x08\x0A-\x1F\x21-\x3C\x3E-\x7F])|[A-Za-z0-9+/=]+?))\?=",
+				RegexOptions.Compiled);
 		/// <summary>
 		/// Regular expressions for removing non-sign spaces between encoded parts
 		/// </summary>
