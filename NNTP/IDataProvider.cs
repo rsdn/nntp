@@ -7,7 +7,7 @@ namespace Rsdn.Nntp
 	/// <summary>
 	/// data provider interface
 	/// </summary>
-	public interface IDataProvider
+	public interface IDataProvider : IDisposable
 	{
 		/// <summary>
 		/// Data Provider's identification string (usually short name plus version)

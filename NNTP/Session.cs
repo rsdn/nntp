@@ -354,12 +354,10 @@ namespace Rsdn.Nntp
 						{
 							if (tracing.TraceError)
 							{
-								Trace.Indent();
 								Trace.WriteLine(
 									string.Format("Exception during processing...\n" +
 										"(selected group '{0}', last request '{1}')\n{2}",
 										dataProvider.CurrentGroup, commandString, e), sessionID);
-								Trace.Unindent();
 							}
 							result = new Response(NntpResponse.ProgramFault);
 						}
@@ -474,7 +472,11 @@ namespace Rsdn.Nntp
 		/// </summary>
 		public void Dispose()
 		{
+			// break circular connection
 			manager = null;
+			// free data provider
+			dataProvider.Dispose();
+
 			netStream.Close();
 			if (client.Connected)
 			{
