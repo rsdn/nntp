@@ -72,49 +72,49 @@ namespace Rsdn.Nntp
 		static Response()
 		{
 			answers = new Hashtable();
-			answers[100] = "100 help text follows";
-			answers[111] = "111 {0}";
-			answers[200] = "200 {0} -- posting allowed";
-			answers[201] = "201 {0} -- no posting allowed";
-			answers[202] = "202 slave status noted";
-			answers[205] = "205 closing connection - goodbye!";
-			answers[211] = "211 {0} {1} {2} {3} group selected";
-			answers[215] = "215 list of newsgroups follows";
-			answers[220] = "220 {0} {1} article retrivied - head and body follow";
-			answers[221] = "221 {0} {1} article retrivied - head follows";
-			answers[222] = "222 {0} {1} article retrivied - body follows";
-			answers[223] = "223 {0} {1} article retrivied - request text separately";
-			answers[224] = "224 overview information follows";
-			answers[230] = "230 list of new articles by message-id follows";
-			answers[231] = "231 list of new newsgroup follows";
-			answers[235] = "235 article transferred ok";
-			answers[240] = "240 article posted ok";
-			answers[281] = "281 authentification accepted";
-			answers[335] = "335 send article to be transfered. End with <CR-LF>.<CR-LF>";
-			answers[340] = "340 send article to be posted. End with <CR-LF>.<CR-LF>";
-			answers[381] = "381 more authentification information required";
-			answers[400] = "400 service discontinued";
-			answers[401] = "401 service temporarily unavailable - try later";
-			answers[402] = "402 connection timeout - bye!";
-			answers[403] = "403 command not allowed now"; //not standard
-			answers[411] = "411 no such news group '{0}'";
-			answers[412] = "412 no newsgroup has been selected";
-			answers[420] = "420 no current article has been selected";
-			answers[421] = "421 no next article in this group";
-			answers[422] = "422 no previous article in this group";
-			answers[423] = "423 no such article number in this group";
-			answers[430] = "430 no such article found";
-			answers[435] = "435 article not wanted - do not send it";
-			answers[436] = "436 transfer failed - try again later";
-			answers[437] = "437 article rejected - do not try again";
-			answers[440] = "440 posting not allowed";
-			answers[441] = "441 posting failed. {0}";
-			answers[480] = "480 authentification required";
-			answers[482] = "482 authentification rejected";
-			answers[500] = "500 command not recognized";
-			answers[501] = "501 command syntax error";
-			answers[502] = "502 no permission";
-			answers[503] = "503 program fault. {0}";
+			answers[100] = "help text follows";
+			answers[111] = "{0}";
+			answers[200] = "{0} -- posting allowed";
+			answers[201] = "{0} -- no posting allowed";
+			answers[202] = "slave status noted";
+			answers[205] = "closing connection - goodbye!";
+			answers[211] = "{0} {1} {2} {3} group selected";
+			answers[215] = "list of newsgroups follows";
+			answers[220] = "{0} {1} article retrivied - head and body follow";
+			answers[221] = "{0} {1} article retrivied - head follows";
+			answers[222] = "{0} {1} article retrivied - body follows";
+			answers[223] = "{0} {1} article retrivied - request text separately";
+			answers[224] = "overview information follows";
+			answers[230] = "list of new articles by message-id follows";
+			answers[231] = "list of new newsgroup follows";
+			answers[235] = "article transferred ok";
+			answers[240] = "article posted ok";
+			answers[281] = "authentification accepted";
+			answers[335] = "send article to be transfered. End with <CR-LF>.<CR-LF>";
+			answers[340] = "send article to be posted. End with <CR-LF>.<CR-LF>";
+			answers[381] = "more authentification information required";
+			answers[400] = "service discontinued";
+			answers[401] = "service temporarily unavailable - try later";
+			answers[402] = "connection timeout - bye!";
+			answers[403] = "command not allowed now"; //not standard
+			answers[411] = "no such news group '{0}'";
+			answers[412] = "no newsgroup has been selected";
+			answers[420] = "no current article has been selected";
+			answers[421] = "no next article in this group";
+			answers[422] = "no previous article in this group";
+			answers[423] = "no such article number in this group";
+			answers[430] = "no such article found";
+			answers[435] = "article not wanted - do not send it";
+			answers[436] = "transfer failed - try again later";
+			answers[437] = "article rejected - do not try again";
+			answers[440] = "posting not allowed";
+			answers[441] = "posting failed. {0}";
+			answers[480] = "authentification required";
+			answers[482] = "authentification rejected";
+			answers[500] = "command not recognized";
+			answers[501] = "command syntax error";
+			answers[502] = "no permission";
+			answers[503] = "program fault. {0}";
 		}
 
 		public Response(string description, int code, object body, params object[] parameters)
@@ -181,7 +181,8 @@ namespace Rsdn.Nntp
 			try
 			{
 				StringBuilder result = new StringBuilder(Util.LineLength);
-				result.AppendFormat(description != null ? description : answers[code] as string, parameters).Append(Util.CRLF);
+				result.Append(code).Append(" ")
+					.AppendFormat(description != null ? description : answers[code] as string, parameters).Append(Util.CRLF);
 				if (reponsesBody != null)
 					result.Append(ModifyTextResponse(reponsesBody.ToString()));
 				return result.ToString();

@@ -1,7 +1,5 @@
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using Rsdn.Nntp.Commands;
-
 //
 // This assembly contains NNTP commands realization
 [assembly:NntpCommandsAssembly()]
@@ -25,7 +23,7 @@ using Rsdn.Nntp.Commands;
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
 
-[assembly: AssemblyVersion("1.16.*")]
+[assembly: AssemblyVersion("1.17.*")]
 
 //
 // In order to sign your assembly you must specify a key to use. Refer to the 
