@@ -490,7 +490,7 @@ namespace Rsdn.RsdnNntp
 						string userType = "";
 						if (message.userType != null && message.userType.Length > 0)
 						{
-							userType = string.Format("<span style=\"color: #{0:x6};\">{1}</span>",
+							userType = string.Format("<span style=\"color: #{0:x6}; font-size: smaller;\">{1}</span>",
 								message.userColor, message.userType);
 						}
     				string htmlText = string.Format(htmlMessageTemplate, message.authorid, message.author,
