@@ -2,3 +2,4 @@
 *.vspscc
 *.scc
 obj
+bin
