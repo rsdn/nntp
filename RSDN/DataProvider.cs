@@ -527,7 +527,7 @@ namespace Rsdn.RsdnNntp
 						UserInfo userInfo = GetUserInfo(Format.ToInt(message.authorid));
 
     				string htmlText = string.Format(htmlMessageTemplate, message.authorid, message.author,
-    					message.gid, message.id, formatMessage.Format(message.message, true), userType,
+    					message.gid, message.id, formatMessage.Format(message.message, message.smile), userType,
 							formatMessage.Format(message.homePage, true), encoding.WebName,
 							Format.ReplaceTags(message.subject), serverName,
 							Format.ToInt(message.authorid) != 0 ?
