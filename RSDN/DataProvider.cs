@@ -48,7 +48,7 @@ namespace Rsdn.RsdnNntp
 			log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
     /// <summary>
-    /// Read caches at the start
+    /// Global initialization
     /// </summary>
     static RsdnDataProvider()
     {
@@ -62,6 +62,13 @@ namespace Rsdn.RsdnNntp
     	{
 				logger.Error("References cache corrupted", e);
     	}
+
+			// load message template
+			using (StreamReader reader = new StreamReader(Assembly.GetExecutingAssembly().
+							 GetManifestResourceStream("Rsdn.RsdnNntp.Header.htm")))
+			{
+				htmlMessageTemplate = reader.ReadToEnd();
+			}
     }
 
     /// <summary>
@@ -112,10 +119,6 @@ namespace Rsdn.RsdnNntp
     {
     	webService = new Forum();
     	encoding = System.Text.Encoding.UTF8;
-    	Stream io = Assembly.GetExecutingAssembly().GetManifestResourceStream("Rsdn.RsdnNntp.Header.htm");
-    	StreamReader reader = new StreamReader(io);
-    	htmlMessageTemplate = reader.ReadToEnd();
-    	reader.Close();
     }
 
     /// <summary>
@@ -530,7 +533,7 @@ namespace Rsdn.RsdnNntp
 		/// <summary>
 		/// Template to transform formatted text to html message
 		/// </summary>
-    protected readonly string htmlMessageTemplate;
+    protected static readonly string htmlMessageTemplate;
 		/// <summary>
 		/// Message encoding
 		/// </summary>
