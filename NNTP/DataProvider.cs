@@ -55,7 +55,8 @@ namespace derIgel
 			public virtual NewsArticle GetArticle(NewsArticle.Content content)
 			{
 				if (currentArticle == -1)
-					throw new DataProvider.Exception((currentGroup == null) ? Errors.NoSelectedGroup : Errors.NoSelectedArticle);
+					throw new DataProvider.Exception((currentGroup == null) ?
+						Errors.NoSelectedGroup : Errors.NoSelectedArticle);
 	
 				return GetArticle(currentArticle, content);
 			}

@@ -152,6 +152,10 @@
                     DependentUpon = "RSDNServer.cs"
                     BuildAction = "EmbeddedResource"
                 />
+                <File
+                    RelPath = "what'snew.txt"
+                    BuildAction = "Content"
+                />
             </Include>
         </Files>
     </CSHARP>

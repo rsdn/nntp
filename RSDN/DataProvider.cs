@@ -7,9 +7,6 @@ using System.Net;
 using derIgel.Mail;
 using System.Text.RegularExpressions;
 using System.Configuration;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Runtime.Serialization.Formatters;
-using System.Runtime.Serialization;
 
 namespace derIgel
 {
@@ -25,15 +22,9 @@ namespace derIgel
 			/// </summary>
 			static RsdnDataProvider()
 			{
-				caheFileName = Assembly.GetExecutingAssembly().GetName().Name + ".cache";
-				if (File.Exists(caheFileName))
-				{
-					BinaryFormatter formatter = new BinaryFormatter();
-					formatter.AssemblyFormat = FormatterAssemblyStyle.Simple;
-					Stream stream = new FileStream(caheFileName, FileMode.Open, FileAccess.Read, FileShare.Read);
-					cache = (Cache) formatter.Deserialize(stream);
-					stream.Close();
-				}
+				cacheFilename = Assembly.GetExecutingAssembly().GetName().Name + ".cache";
+				if (File.Exists(cacheFilename))
+					cache = Cache.Deserialize(cacheFilename);
 				else
 					cache = new Cache();
 			}
@@ -43,11 +34,7 @@ namespace derIgel
 			/// </summary>
 			~RsdnDataProvider()
 			{
-				BinaryFormatter formatter = new BinaryFormatter();
-				formatter.AssemblyFormat = FormatterAssemblyStyle.Simple;
-				Stream stream = new FileStream(caheFileName, FileMode.Create, FileAccess.Write, FileShare.None);
-				formatter.Serialize(stream, cache);
-				stream.Close();
+				cache.Serialize(cacheFilename);
 			}
 
 			public RsdnDataProvider(NNTPSettings settings) : base(settings)
@@ -330,7 +317,7 @@ namespace derIgel
 			/// <summary>
 			/// Cache filename
 			/// </summary>
-			static string caheFileName;
+			static string cacheFilename;
 
 			protected void ProcessSoapException(System.Web.Services.Protocols.SoapException exception)
 			{
