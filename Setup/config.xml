@@ -4,7 +4,7 @@
 		<ProxyServer />
 	</DataProviderSettings>
 	<Name>RSDN.RU</Name>
-	<DataProviderTypeName>derIgel.RsdnNntp.RsdnDataProvider, RsdnDataProvider, Version=1.4.1124.25468, Culture=neutral, PublicKeyToken=null</DataProviderTypeName>
+	<DataProviderTypeName>derIgel.RsdnNntp.RsdnDataProvider, RsdnDataProvider</DataProviderTypeName>
 	<Bindings>
 		<ServerEndPoint>
 			<Address>0.0.0.0</Address>
