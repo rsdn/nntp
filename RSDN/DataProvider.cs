@@ -19,7 +19,7 @@ using Rsdn.Framework.Formatting;
 using Rsdn.Mime;
 using Rsdn.Nntp;
 using Rsdn.Nntp.Cache;
-using Rsdn.RsdnNntp.ru.rsdn;
+using Rsdn.RsdnNntp.RsdnService;
 
 namespace Rsdn.RsdnNntp
 {

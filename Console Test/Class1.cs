@@ -35,6 +35,7 @@ namespace ForumTest
 			catch (Exception e)
 			{
 				logger.Fatal("ConsoleApp", e);
+				System.Console.ReadLine();
 			}
 		}
 	}

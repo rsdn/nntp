@@ -191,13 +191,13 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Web References\ru.rsdn\Reference.map"
+                    RelPath = "Web References\RsdnService\Reference.map"
                     BuildAction = "None"
                     Generator = "MSDiscoCodeGenerator"
                     LastGenOutput = "Reference.cs"
                 />
                 <File
-                    RelPath = "Web References\ru.rsdn\Reference.cs"
+                    RelPath = "Web References\RsdnService\Reference.cs"
                     DependentUpon = "Reference.map"
                     SubType = "code"
                     BuildAction = "Compile"
@@ -205,15 +205,15 @@
                     AutoGen = "True"
                 />
                 <File
-                    RelPath = "Web References\ru.rsdn\service.disco"
+                    RelPath = "Web References\RsdnService\service.disco"
                     BuildAction = "None"
                 />
                 <File
-                    RelPath = "Web References\ru.rsdn\service.wsdl"
+                    RelPath = "Web References\RsdnService\service.wsdl"
                     BuildAction = "None"
                 />
                 <Folder
-                    RelPath = "Web References\ru.rsdn\"
+                    RelPath = "Web References\RsdnService\"
                     WebReferenceUrl = "http://rsdn.ru/ws/service.asmx"
                     UrlBehavior = "Static"
                 />

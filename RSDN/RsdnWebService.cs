@@ -6,7 +6,7 @@ namespace Rsdn.RsdnNntp
 	/// <summary>
 	/// 
 	/// </summary>
-	public class RsdnWebService : Rsdn.RsdnNntp.ru.rsdn.Service
+	public class RsdnWebService : Rsdn.RsdnNntp.RsdnService.Service
 	{
 		/// <summary>
 		/// RSDN Data Provider's settings

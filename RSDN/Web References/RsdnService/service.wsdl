@@ -78,16 +78,21 @@
           <s:enumeration value="Moderator" />
           <s:enumeration value="TeamMember" />
           <s:enumeration value="User" />
+          <s:enumeration value="Expert" />
           <s:enumeration value="Anonym" />
         </s:restriction>
       </s:simpleType>
       <s:simpleType name="MessageFormat">
-        <s:restriction base="s:string">
-          <s:enumeration value="None" />
-          <s:enumeration value="Text" />
-          <s:enumeration value="Html" />
-          <s:enumeration value="TextHtml" />
-        </s:restriction>
+        <s:list>
+          <s:simpleType>
+            <s:restriction base="s:string">
+              <s:enumeration value="None" />
+              <s:enumeration value="Text" />
+              <s:enumeration value="Html" />
+              <s:enumeration value="TextHtml" />
+            </s:restriction>
+          </s:simpleType>
+        </s:list>
       </s:simpleType>
       <s:element name="GetGroupList">
         <s:complexType>
