@@ -14,7 +14,7 @@ namespace Rsdn.Nntp.Commands
 	public class NewNews : Generic
 	{
 		protected static Regex NewNewsSyntaxisChecker =
-			new	Regex(@"(?in)^NEWNEWS[ \t]+(?<newsgroups>\w+(.\w+)*(,\w+(.\w+)*)*)[ \t]+" + 
+			new	Regex(@"(?in)^NEWNEWS[ \t]+(?<newsgroups>!?(\*|\w+)(.(\*|\w+))*(,!?(\*|\w+)(.(\*|\w+))*)*)[ \t]+" + 
 			@"(?<date>\d{6}[ \t]+\d{6})([ \t]+(?<timezone>GMT))?" + 
 			@"([ \t]+<(?<distributions>\w+(.\w+)*(,\w+(.\w+)*)*)>)?[ \t]*$",
 			RegexOptions.Compiled);
@@ -37,21 +37,43 @@ namespace Rsdn.Nntp.Commands
 		{
 			try
 			{
-				StringCollection patterns = new StringCollection();
+				StringBuilder resultPattern = new StringBuilder("^");
 
 				// get newsgroup names
-				string positiveMatch = null;
-				string negativeMatch = null;
+				StringBuilder positiveMatch = new StringBuilder();
+				StringBuilder negativeMatch = new StringBuilder();
 				foreach (string group in lastMatch.Groups["newsgroups"].Value.Split(new char[]{','}))
 					if (group.StartsWith("!"))
-						negativeMatch += string.Format("{0}|", TransformWildmat(group.Substring(1, group.Length - 1)));
+						negativeMatch.AppendFormat("{0}|", TransformWildmat(group.Substring(1, group.Length - 1)));
 					else
-						positiveMatch += string.Format("{0}|", TransformWildmat(group.Substring(1, group.Length - 1)));
+						positiveMatch.AppendFormat("{0}|", TransformWildmat(group));
 
-				if (positiveMatch != null)
-					patterns.Add(positiveMatch.Substring(0, positiveMatch.Length - 1));
-				if (negativeMatch != null)
-					patterns.Add(string.Format("^(?!{0})", negativeMatch.Substring(0, negativeMatch.Length - 1)));
+				// get distributions if exist
+				StringBuilder distributions = new StringBuilder();
+				if (lastMatch.Groups["distributions"].Success)
+				{
+					foreach (string pattern in lastMatch.Groups["distributions"].Value.Split(new char[]{','}))
+						distributions.AppendFormat(@"{0}\..*|", TransformWildmat(pattern));
+					// remove last '|' symbol
+					distributions.Length -= 1;
+					resultPattern.AppendFormat("(?={0})", distributions);
+				}
+
+				if (negativeMatch.Length > 0)
+				{
+					// remove last '|' symbol
+					negativeMatch.Length -= 1;
+					resultPattern.AppendFormat("(?!{0})", negativeMatch);
+				}
+
+				if (positiveMatch.Length > 0)
+				{
+					// remove last '|' symbol
+					positiveMatch.Length -= 1;
+					resultPattern.Append(positiveMatch);
+				}
+
+				resultPattern.Append("$");
 
 				// get time
 				DateTime date = DateTime.ParseExact(
@@ -61,20 +83,7 @@ namespace Rsdn.Nntp.Commands
 					// convert GMT to local time
 					date = date.ToLocalTime();
 
-				// get distributions if exist
-				string distributions = null;
-				if (lastMatch.Groups["distributions"].Success)
-				{
-					foreach (string pattern in lastMatch.Groups["distributions"].Value.Split(new char[]{','}))
-						distributions += string.Format("{0}.*|", TransformWildmat(pattern));
-					// remove last |
-					distributions = distributions.Substring(0, distributions.Length - 1);
-					patterns.Add(distributions);
-				}
-			
-				string[] patternsArray = new string[patterns.Count];
-				patterns.CopyTo(patternsArray, 0);
-				NewsArticle[] articleList = session.DataProvider.GetArticleList(date, patternsArray);
+				NewsArticle[] articleList = session.DataProvider.GetArticleList(date, resultPattern.ToString());
 
 				StringBuilder textResponse = new StringBuilder();
 				foreach (NewsArticle article in articleList)

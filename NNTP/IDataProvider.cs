@@ -66,9 +66,9 @@ namespace Rsdn.Nntp
 		/// Get article list.
 		/// </summary>
 		/// <param name="date">Start date.</param>
-		/// <param name="pattern">Group name patterns.</param>
+		/// <param name="pattern">Group name pattern.</param>
 		/// <returns>List of articles.</returns>
-		NewsArticle[] GetArticleList(DateTime date, string[] patterns);
+		NewsArticle[] GetArticleList(DateTime date, string pattern);
 		
 		/// <summary>
 		/// Get news group's description.

@@ -215,7 +215,7 @@ namespace Rsdn.Nntp.Cache
 
 		public abstract NewsArticle GetPrevArticle(int messageNumber, string groupName);
 
-		public abstract NewsArticle[] GetArticleList(DateTime date, string[] patterns);
+		public abstract NewsArticle[] GetArticleList(DateTime date, string pattern);
 
 		public abstract NewsGroup GetGroup(string groupName);
 

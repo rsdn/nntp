@@ -32,7 +32,7 @@ namespace Rsdn.RsdnNntp
 		/// <summary>
 		/// Authentificate cache
 		/// </summary>
-		protected static Cache authCache = HttpRuntime.Cache;
+		protected static Cache cache = HttpRuntime.Cache;
 
     /// <summary>
     /// Cache of refeneces of messages
@@ -165,13 +165,15 @@ namespace Rsdn.RsdnNntp
     /// <summary>
     /// Update references cache
     /// </summary>
-    /// <param name="message"></param>
-    protected static void UpdateReferences(article message)
+    /// <param name="message">Message, contains reference information</param>
+    /// <returns>The same, original message</returns>
+    protected static article UpdateReferences(article message)
     {
     	lock (referenceCache)
     	{
     		referenceCache.AddReference(int.Parse(message.id), 
     			(message.pid != "") ? int.Parse(message.pid) : 0);
+				return message;
     	}
     }
 
@@ -197,10 +199,8 @@ namespace Rsdn.RsdnNntp
     		ProcessException(exception);
     	}	
 
-    	// update refenece cache
-    	UpdateReferences(message);
-
-    	NewsArticle newsMessage = ToNNTPArticle(message, groupName, content);
+    	// update refenece cache & transform to another message format
+    	NewsArticle newsMessage = ToNNTPArticle(UpdateReferences(message), groupName, content);
 
     	return newsMessage;
     }
@@ -267,17 +267,21 @@ namespace Rsdn.RsdnNntp
     	if (startDate < minDate)
     		startDate = minDate; 
 
-    	group_list groupList = null;
-    	try
-    	{
-    		groupList = webService.GetGroupList(username, password, startDate);
-    		if (groupList.error != null)
-    			ProcessErrorMessage(groupList.error);
-    	}				
-    	catch (System.Exception exception)
-    	{
-    		ProcessException(exception);
-    	}	
+    	group_list groupList = cache["$group_list_cache$"] as group_list;
+			if (groupList == null)
+    		try
+    		{
+    			groupList = webService.GetGroupList(username, password, startDate);
+    			if (groupList.error != null)
+    				ProcessErrorMessage(groupList.error);
+					// add group list to cache with 15 minitues sliding expiration
+					cache.Add("$group_list_cache$", groupList, null, Cache.NoAbsoluteExpiration,
+						new TimeSpan(0, 15, 0), CacheItemPriority.AboveNormal, null);
+    		}				
+    		catch (System.Exception exception)
+    		{
+    			ProcessException(exception);
+    		}	
 
 			Regex checker = null;
 			if (pattern != null)
@@ -296,11 +300,37 @@ namespace Rsdn.RsdnNntp
 		/// Get article list.
 		/// </summary>
 		/// <param name="date">Start date.</param>
-		/// <param name="pattern">Group name patterns.</param>
+		/// <param name="pattern">Group name pattern.</param>
 		/// <returns>List of articles.</returns>
-    public override NewsArticle[] GetArticleList(System.DateTime date, string[] patterns)
+    public override NewsArticle[] GetArticleList(System.DateTime date, string pattern)
     {
-    	throw new DataProviderException(DataProviderErrors.NotSupported);
+			ArrayList groups = new ArrayList();
+
+			// get all appropriated groups
+			foreach (NewsGroup group in GetGroupList(DateTime.MinValue, pattern))
+				groups.Add(group.Name);
+
+			article_list articleList = null;
+			try
+			{
+				articleList = webService.ArticleListFromDate((string[])groups.ToArray(typeof(string)), date, username, password);
+				if (articleList.error != null)
+					ProcessErrorMessage(articleList.error);
+			}
+			catch (System.Exception exception)
+			{
+				ProcessException(exception);
+			}	
+
+			ArrayList articles =  new ArrayList();
+
+			// sometimes web-service return null....
+			if (articleList != null)
+				// process messages
+				foreach (article message in articleList.articles)
+					articles.Add(ToNNTPArticle(UpdateReferences(message), message.group, NewsArticle.Content.Header));
+
+			return (NewsArticle[])articles.ToArray(typeof(NewsArticle));
     }
 
 		/// <summary>
@@ -327,7 +357,7 @@ namespace Rsdn.RsdnNntp
 			try
 			{
 				// if in cache - auth ok
-				UserInfo userInfo = authCache[user+pass] as UserInfo;
+				UserInfo userInfo = cache[user+pass] as UserInfo;
 				if (userInfo != null)
 				{
 					SetUserInfo(userInfo);
@@ -342,7 +372,7 @@ namespace Rsdn.RsdnNntp
 					// set it to plaint text on client side 
 					userInfo.Password = pass;
 					// Put user information to cache for 1 hour.
-					authCache.Add(user+pass, userInfo, null, Cache.NoAbsoluteExpiration,
+					cache.Add(user+pass, userInfo, null, Cache.NoAbsoluteExpiration,
 						new TimeSpan(1, 0, 0), CacheItemPriority.AboveNormal, null);
 					SetUserInfo(userInfo);
     		}
@@ -562,11 +592,8 @@ namespace Rsdn.RsdnNntp
     		articleArray = new NewsArticle[articleList.articles.Length];
 
     		for (int i = 0; i < articleList.articles.Length; i++)
-    		{
-    			UpdateReferences(articleList.articles[i]);
     			articleArray[i] =
-    				ToNNTPArticle(articleList.articles[i], groupName, content);
-    		}
+    				ToNNTPArticle(UpdateReferences(articleList.articles[i]), groupName, content);
     	}
     	else
     		articleArray = new NewsArticle[0];
@@ -646,8 +673,8 @@ namespace Rsdn.RsdnNntp
 					throw new DataProviderException(DataProviderErrors.NoSuchGroup);
 				case "2 Incorrect login name or password" :
 				{
-					if (authCache[username+password] != null)
-						authCache.Remove(username+password);
+					if (cache[username+password] != null)
+						cache.Remove(username+password);
 					throw new DataProviderException(DataProviderErrors.NoPermission);
 				}
 				case "3 Article not found." :

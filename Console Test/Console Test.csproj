@@ -79,6 +79,11 @@
                     AssemblyName = "log4net"
                     HintPath = "..\libs\log4net.dll"
                 />
+                <Reference
+                    Name = "RsdnDataProvider"
+                    Project = "{E2BA234B-F496-474F-BC39-DBF78ABB13A4}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
             </References>
         </Build>
         <Files>

@@ -141,6 +141,10 @@
         <Files>
             <Include>
                 <File
+                    RelPath = "app.config"
+                    BuildAction = "None"
+                />
+                <File
                     RelPath = "AssemblyInfo.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -230,7 +234,7 @@
                 <Folder
                     RelPath = "Web References\RsdnService\"
                     WebReferenceUrl = "http://rsdn.ru/ws/service.asmx"
-                    UrlBehavior = "Static"
+                    UrlBehavior = "Dynamic"
                 />
                 <Folder
                     RelPath = "Web References\"

@@ -28,7 +28,13 @@ namespace Rsdn.RsdnNntp.RsdnService {
         
         /// <remarks/>
         public Service() {
-            this.Url = "http://rsdn.ru/ws/service.asmx";
+            string urlSetting = System.Configuration.ConfigurationSettings.AppSettings["RsdnDataProvider.RsdnService.Service"];
+            if ((urlSetting != null)) {
+                this.Url = string.Concat(urlSetting, "");
+            }
+            else {
+                this.Url = "http://rsdn.ru/ws/service.asmx";
+            }
         }
         
         /// <remarks/>
@@ -255,6 +261,32 @@ namespace Rsdn.RsdnNntp.RsdnService {
         
         /// <remarks/>
         public article_list EndArticleList(System.IAsyncResult asyncResult) {
+            object[] results = this.EndInvoke(asyncResult);
+            return ((article_list)(results[0]));
+        }
+        
+        /// <remarks/>
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://rsdn.ru/ws/ArticleListFromDate", RequestNamespace="http://rsdn.ru/ws/", ResponseNamespace="http://rsdn.ru/ws/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public article_list ArticleListFromDate(string[] groups, System.DateTime startDate, string login, string psw) {
+            object[] results = this.Invoke("ArticleListFromDate", new object[] {
+                        groups,
+                        startDate,
+                        login,
+                        psw});
+            return ((article_list)(results[0]));
+        }
+        
+        /// <remarks/>
+        public System.IAsyncResult BeginArticleListFromDate(string[] groups, System.DateTime startDate, string login, string psw, System.AsyncCallback callback, object asyncState) {
+            return this.BeginInvoke("ArticleListFromDate", new object[] {
+                        groups,
+                        startDate,
+                        login,
+                        psw}, callback, asyncState);
+        }
+        
+        /// <remarks/>
+        public article_list EndArticleListFromDate(System.IAsyncResult asyncResult) {
             object[] results = this.EndInvoke(asyncResult);
             return ((article_list)(results[0]));
         }

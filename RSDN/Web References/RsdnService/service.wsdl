@@ -275,6 +275,28 @@
           <s:element minOccurs="0" maxOccurs="unbounded" name="article" nillable="true" type="s0:article" />
         </s:sequence>
       </s:complexType>
+      <s:element name="ArticleListFromDate">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="groups" type="s0:ArrayOfString" />
+            <s:element minOccurs="1" maxOccurs="1" name="startDate" type="s:dateTime" />
+            <s:element minOccurs="0" maxOccurs="1" name="login" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="psw" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfString">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="string" nillable="true" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="ArticleListFromDateResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ArticleListFromDateResult" type="s0:article_list" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
       <s:element name="Authentication">
         <s:complexType>
           <s:sequence>
@@ -381,6 +403,12 @@
   <message name="ArticleListSoapOut">
     <part name="parameters" element="s0:ArticleListResponse" />
   </message>
+  <message name="ArticleListFromDateSoapIn">
+    <part name="parameters" element="s0:ArticleListFromDate" />
+  </message>
+  <message name="ArticleListFromDateSoapOut">
+    <part name="parameters" element="s0:ArticleListFromDateResponse" />
+  </message>
   <message name="AuthenticationSoapIn">
     <part name="parameters" element="s0:Authentication" />
   </message>
@@ -438,6 +466,11 @@
       <documentation>Returns a list of articles.</documentation>
       <input message="s0:ArticleListSoapIn" />
       <output message="s0:ArticleListSoapOut" />
+    </operation>
+    <operation name="ArticleListFromDate">
+      <documentation>Returns a list of articles from specified date.</documentation>
+      <input message="s0:ArticleListFromDateSoapIn" />
+      <output message="s0:ArticleListFromDateSoapOut" />
     </operation>
     <operation name="Authentication">
       <documentation>Performs user authentication.</documentation>
@@ -526,6 +559,15 @@
     </operation>
     <operation name="ArticleList">
       <soap:operation soapAction="http://rsdn.ru/ws/ArticleList" style="document" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+    <operation name="ArticleListFromDate">
+      <soap:operation soapAction="http://rsdn.ru/ws/ArticleListFromDate" style="document" />
       <input>
         <soap:body use="literal" />
       </input>
