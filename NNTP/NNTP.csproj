@@ -221,6 +221,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Commands\Date.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Commands\Generic.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

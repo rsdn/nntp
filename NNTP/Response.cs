@@ -14,6 +14,7 @@ namespace Rsdn.Nntp
 	public enum NntpResponse
 	{
 		Help = 100,
+		Date = 111,
 		Ok = 200,
 		OkNoPosting = 201,
 		Slave = 202,
@@ -67,6 +68,7 @@ namespace Rsdn.Nntp
 		{
 			answers = new Hashtable();
 			answers[100] = "100 help text follows";
+			answers[111] = "111 {0}";
 			answers[200] = "200 {0} -- posting allowed";
 			answers[201] = "201 {0} -- no posting allowed";
 			answers[202] = "202 slave status noted";
