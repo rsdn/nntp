@@ -7,6 +7,9 @@ using System.IO;
 
 namespace derIgel.MIME
 {
+
+	public enum MailPriority {Highest = 1, High, Normal, Low, Lowest}
+
 	public enum ContentTransferEncoding {Unknown, SevenBit, EightBit, Binary, QoutedPrintable, Base64};
 
 	/// <summary>
@@ -24,6 +27,8 @@ namespace derIgel.MIME
 			header = new Header();
 			header.AddFilter("Content-Transfer-Encoding", new FilterHandler(ContentTransferFilter));
 			header.AddFilter("Content-Type", new FilterHandler(ContentTypeFilter));
+			header.AddFilter("X-Priority", new FilterHandler(PriorityFilter));
+			header.AddFilter("X-MSMail-Priority", new FilterHandler(PriorityFilter));
 
 			ContentTypeEvent += new ContentTypeHandler(MessageContentTypeHandler);
 
@@ -62,6 +67,19 @@ namespace derIgel.MIME
 			get {return header["Content-Type"];}
 			set {header["Content-Type"] = value;}
 		}
+
+		protected MailPriority priority;
+		public MailPriority Priority
+		{
+			get { return priority; }
+			set
+			{
+				priority = value;
+				this["X-Priority"] = string.Format("{0:d} ({0})", priority);
+				this["X-MSMail-Priority"] = priority.ToString();
+			}
+		}
+
 		/// <summary>
 		/// get header identity from message's header by its name
 		/// </summary>
@@ -71,6 +89,20 @@ namespace derIgel.MIME
 			set {header[name] = value;}
 		}
 
+		protected string PriorityFilter(string headerField, string value)
+		{
+			switch (headerField.ToUpper())
+			{
+				case "X-PRIORITY" :
+					priority = (MailPriority)int.Parse(Regex.Match(value, @"\d").Groups[0].Value);
+					break;
+				case "X-MSMAIL-PRIORITY" :
+					priority = (MailPriority)Enum.Parse(typeof(MailPriority), value, true);
+					break;
+			}
+			return value;
+		}
+	
 		protected ContentTransferEncoding transferEncoding;
 		public ContentTransferEncoding TransferEncoding
 		{
@@ -104,7 +136,7 @@ namespace derIgel.MIME
 			}
 		}
 
-		protected string ContentTransferFilter(string value)
+		protected string ContentTransferFilter(string headerField, string value)
 		{
 			switch (value.ToLower())
 			{
@@ -154,7 +186,7 @@ namespace derIgel.MIME
 
 		protected event ContentTypeHandler ContentTypeEvent;
 
-		protected string ContentTypeFilter(string value)
+		protected string ContentTypeFilter(string headerField, string value)
 		{
 			Match contentTypeMatch = contentTypeRegex.Match(value);
 			if (!contentTypeMatch.Success)

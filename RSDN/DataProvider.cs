@@ -255,7 +255,7 @@ namespace derIgel.RsdnNntp
 			if ((content == NewsArticle.Content.Header) ||
 				(content == NewsArticle.Content.HeaderAndBody))
 			{
-				newsMessage.From = string.Format("\"{0}\" <{1}>", message.author, null);
+				newsMessage.From = string.Format("\"{0}\" <{1}>", message.author, "forum@rsdn.ru");
 				newsMessage.Date = message.date;
 				newsMessage.Subject = message.subject;
 

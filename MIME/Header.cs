@@ -9,7 +9,7 @@ namespace derIgel.MIME
 	/// <summary>
 	/// delegate for header filter processing
 	/// </summary>
-	public delegate string FilterHandler(string name);
+	public delegate string FilterHandler(string headerField, string value);
 
 	/// <summary>
 	/// Summary description for Header.
@@ -38,7 +38,7 @@ namespace derIgel.MIME
 			string result = value;
 			if (filters[name] != null)
 				foreach (FilterHandler handler in (ArrayList)filters[name])
-					result = handler(result);
+					result = handler(name, result);
 
 			return result;
 		}
