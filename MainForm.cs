@@ -5,6 +5,8 @@ using System.Windows.Forms;
 using System.Data;
 using System.Threading;
 using System.Net.Sockets;
+using System.Reflection;
+using System.IO;
 
 namespace Desktop.app
 {
@@ -41,9 +43,14 @@ namespace Desktop.app
     private System.Windows.Forms.RadioButton authExplicit;
 
     private NNTPManager socketManager = new NNTPManager();
+    private System.Windows.Forms.RichTextBox aboutBox;
+
+    private AboutForm aboutForm = new AboutForm();
 
 		public MainForm()
 		{
+      aboutForm.Show();
+
 			//
 			// Required for Windows Form Designer support
 			//
@@ -73,7 +80,7 @@ namespace Desktop.app
 		/// </summary>
 		protected override void Dispose( bool disposing )
 		{
-			if( disposing )
+			if ( disposing )
 			{
         if (socketManager != null)
         {
@@ -115,6 +122,7 @@ namespace Desktop.app
       this.off = new System.Windows.Forms.CheckBox();
       this.autoLoad = new System.Windows.Forms.CheckBox();
       this.aboutPage = new System.Windows.Forms.TabPage();
+      this.aboutBox = new System.Windows.Forms.RichTextBox();
       this.ApplyBtn = new System.Windows.Forms.Button();
       this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
       this.iconMenu = new System.Windows.Forms.ContextMenu();
@@ -126,6 +134,7 @@ namespace Desktop.app
       this.setupPage.SuspendLayout();
       this.groupBox2.SuspendLayout();
       this.groupBox1.SuspendLayout();
+      this.aboutPage.SuspendLayout();
       this.SuspendLayout();
       // 
       // tabControl
@@ -311,11 +320,22 @@ namespace Desktop.app
       // 
       // aboutPage
       // 
+      this.aboutPage.Controls.AddRange(new System.Windows.Forms.Control[] {
+                                                                            this.aboutBox});
       this.aboutPage.Location = new System.Drawing.Point(4, 22);
       this.aboutPage.Name = "aboutPage";
       this.aboutPage.Size = new System.Drawing.Size(340, 266);
       this.aboutPage.TabIndex = 1;
       this.aboutPage.Text = "О программе";
+      // 
+      // aboutBox
+      // 
+      this.aboutBox.Location = new System.Drawing.Point(4, 4);
+      this.aboutBox.Name = "aboutBox";
+      this.aboutBox.ReadOnly = true;
+      this.aboutBox.Size = new System.Drawing.Size(332, 260);
+      this.aboutBox.TabIndex = 0;
+      this.aboutBox.Text = "";
       // 
       // ApplyBtn
       // 
@@ -383,10 +403,12 @@ namespace Desktop.app
       this.Text = "RSDN Desktop";
       this.WindowState = System.Windows.Forms.FormWindowState.Minimized;
       this.Resize += new System.EventHandler(this.MainForm_Resize);
+      this.Load += new System.EventHandler(this.MainForm_Load);
       this.tabControl.ResumeLayout(false);
       this.setupPage.ResumeLayout(false);
       this.groupBox2.ResumeLayout(false);
       this.groupBox1.ResumeLayout(false);
+      this.aboutPage.ResumeLayout(false);
       this.ResumeLayout(false);
 
     }
@@ -413,9 +435,12 @@ namespace Desktop.app
         {
           Application.Run(new MainForm());
         }
-        catch(SocketException)
+        catch(SocketException ex)
         {
-          MessageBox.Show(null, "Данный порт уже используется !!!\nПрограмма будет закрыта", "Ошибка");
+          if (ex.ErrorCode == 10047)
+            MessageBox.Show(null, "Данный порт уже используется !!!\nПрограмма будет закрыта", "Ошибка");
+          else
+            MessageBox.Show(ex.Message, "Ошибка");
         }
         catch(Exception e)
         {
@@ -430,8 +455,8 @@ namespace Desktop.app
 
     private void aboutItem_Click(object sender, System.EventArgs e)
     {
-      AboutForm af = new AboutForm();
-      af.Show();
+      aboutForm.timer1.Enabled = false;
+      aboutForm.Show();
     }
 
     private void ShowMainForm()
@@ -459,6 +484,21 @@ namespace Desktop.app
         Visible = false;
         notifyIcon.Visible = true;
         ShowInTaskbar = false;
+      }
+    }
+
+    private void MainForm_Load(object sender, System.EventArgs e)
+    {
+      using (Stream ios = Assembly.GetExecutingAssembly().GetManifestResourceStream("Desktop.app.about.rtf"))
+      {
+        try
+        {
+          aboutBox.LoadFile(ios, RichTextBoxStreamType.RichText);
+        }
+        catch(Exception ex)
+        {
+          MessageBox.Show(ex.Message, "Ошибка");
+        }
       }
     }
 	}

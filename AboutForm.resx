@@ -592,6 +592,12 @@
         Vf7KMbyO9np8NnO0o5MkbyMSpycrtdazOM/x49//AK1O9MYz/tZrd89tUiUoX0buf//Z
 </value>
   </data>
+  <data name="timer1.Location" type="System.Drawing.Point, System.Drawing, Version=1.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>17, 17</value>
+  </data>
+  <data name="timer1.Modifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.3300.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>Assembly</value>
+  </data>
   <data name="$this.Name">
     <value>AboutForm</value>
   </data>

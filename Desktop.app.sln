@@ -1,18 +1,25 @@
 Microsoft Visual Studio Solution File, Format Version 7.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Desktop.app", "Desktop.app.csproj", "{1C016337-B0D4-4365-90D3-42CC6175AEB0}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PostBuild", "PostBuild\PostBuild.vcproj", "{6EA6CF58-0951-44D1-8A76-31EEB946CC73}"
+EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		ConfigName.0 = Debug
 		ConfigName.1 = Release
 	EndGlobalSection
 	GlobalSection(ProjectDependencies) = postSolution
+		{6EA6CF58-0951-44D1-8A76-31EEB946CC73}.0 = {1C016337-B0D4-4365-90D3-42CC6175AEB0}
 	EndGlobalSection
 	GlobalSection(ProjectConfiguration) = postSolution
 		{1C016337-B0D4-4365-90D3-42CC6175AEB0}.Debug.ActiveCfg = Debug|.NET
 		{1C016337-B0D4-4365-90D3-42CC6175AEB0}.Debug.Build.0 = Debug|.NET
 		{1C016337-B0D4-4365-90D3-42CC6175AEB0}.Release.ActiveCfg = Release|.NET
 		{1C016337-B0D4-4365-90D3-42CC6175AEB0}.Release.Build.0 = Release|.NET
+		{6EA6CF58-0951-44D1-8A76-31EEB946CC73}.Debug.ActiveCfg = Debug|Win32
+		{6EA6CF58-0951-44D1-8A76-31EEB946CC73}.Debug.Build.0 = Debug|Win32
+		{6EA6CF58-0951-44D1-8A76-31EEB946CC73}.Release.ActiveCfg = Release|Win32
+		{6EA6CF58-0951-44D1-8A76-31EEB946CC73}.Release.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

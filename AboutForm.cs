@@ -12,6 +12,7 @@ namespace Desktop.app
 	public class AboutForm : System.Windows.Forms.Form
 	{
     private System.Windows.Forms.PictureBox pictureBox1;
+    internal System.Timers.Timer timer1;
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
@@ -53,6 +54,8 @@ namespace Desktop.app
 		{
       System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(AboutForm));
       this.pictureBox1 = new System.Windows.Forms.PictureBox();
+      this.timer1 = new System.Timers.Timer();
+      ((System.ComponentModel.ISupportInitialize)(this.timer1)).BeginInit();
       this.SuspendLayout();
       // 
       // pictureBox1
@@ -63,6 +66,14 @@ namespace Desktop.app
       this.pictureBox1.TabIndex = 0;
       this.pictureBox1.TabStop = false;
       this.pictureBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseDown);
+      // 
+      // timer1
+      // 
+      this.timer1.AutoReset = false;
+      this.timer1.Enabled = true;
+      this.timer1.Interval = 3000;
+      this.timer1.SynchronizingObject = this;
+      this.timer1.Elapsed += new System.Timers.ElapsedEventHandler(this.timer1_Elapsed);
       // 
       // AboutForm
       // 
@@ -76,13 +87,13 @@ namespace Desktop.app
       this.MaximizeBox = false;
       this.MinimizeBox = false;
       this.Name = "AboutForm";
-      this.Opacity = 0.9;
       this.ShowInTaskbar = false;
       this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "AboutForm";
       this.TopMost = true;
       this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.OnKeyDown);
+      ((System.ComponentModel.ISupportInitialize)(this.timer1)).EndInit();
       this.ResumeLayout(false);
 
     }
@@ -91,17 +102,22 @@ namespace Desktop.app
     private void OnKeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
     {
       if (e.KeyCode == Keys.Enter || e.KeyCode == Keys.Escape)
-        Close();
+        Visible = false;
     }
 
     private void AboutForm_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
     {
-      Close();
+      Visible = false;
     }
 
     private void pictureBox1_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
     {
-      Close();
+      Visible = false;
+    }
+
+    private void timer1_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+    {
+      Visible = false;
     }
 	}
 }

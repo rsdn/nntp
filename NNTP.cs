@@ -11,7 +11,7 @@ namespace Desktop.app
 
   /// <summary>
   /// Реализация протокола NNTP
-  /// Подробности см. RFC 977, RFC 850
+  /// Подробности см. RFCs 977, 1036, 822, 821, 793, 2980
   /// </summary>
 
   /// <summary>
@@ -49,7 +49,7 @@ namespace Desktop.app
     /// <param name="bytesRead"></param>
     public void AppendData(int bytesRead)
     {
-      sb.Append(Encoding.ASCII.GetString(buffer, 0, bytesRead));
+      sb.Append(Encoding.GetEncoding(1251).GetString(buffer, 0, bytesRead));
     }
   }
   #endregion
@@ -229,7 +229,7 @@ namespace Desktop.app
     /// <param name="socket"></param>
     public NNTPHandler(Socket socket)
     {
-      forum.Url = "http://localhost/RSDN/WS/Forum.asmx";
+//      forum.Url = "http://localhost/RSDN/WS/Forum.asmx";
       workSocket = socket;
 
       // Заполняем ассоциативный массив обработчиков
@@ -252,7 +252,7 @@ namespace Desktop.app
     /// <param name="state"></param>
     public void StartReading(StateObject state)
     {
-      workSocket.Send(Encoding.ASCII.GetBytes(resp200));
+      workSocket.Send(Encoding.GetEncoding(1251).GetBytes(resp200));
       workSocket.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
         new AsyncCallback(ReadCallback), state);
     }
@@ -303,7 +303,7 @@ namespace Desktop.app
           {
             // Посылаем клиенту ответ
             //
-            workSocket.Send(Encoding.ASCII.GetBytes(strResponce));
+            workSocket.Send(Encoding.GetEncoding(1251).GetBytes(strResponce));
           }
 
           state.ClearBuffer();
@@ -345,20 +345,20 @@ namespace Desktop.app
       subj.Replace(">", "&gt;");
       subj.Replace("\"","&quot;");
 
-      subj = "<a target='_blank' title='Перейти в форум' href='http://rsdn.ru/forum/?mid="+mid+"'>"+subj+"</b></a>";
+      subj = "<a target='_blank' title='Перейти в форум' href='http://www.rsdn.ru/forum/?mid="+mid+"'>"+subj+"</b></a>";
 
       string bar =
         "<table width='100%' border='0' cellspacing='0'>" +
         "<tr><td class='s' width='99%'><font size=2>" + subj + "</font></td>" +
           "<td class='s' nowrap><font size=2>&nbsp;" +
-            "<a target='_blank' href='http://rsdn.ru/forum/newmsg.asp?gid="+gid+"' title='Написать новое сообщение'><img align='absmiddle' src='images/new.gif' border=0 width='18px' height='14px'></img></a>&nbsp;" +
-              "<a target='_blank' href='http://rsdn.ru/forum/newmsg.asp?mid="+mid+"' title='Ответить на сообщение'><img align='absmiddle' src='images/replay.gif' border=0 width='18px' height='14px'></img></a>&nbsp;" +
+            "<a target='_blank' href='http://www.rsdn.ru/forum/newmsg.aspx?gid=" + gid + "' title='Написать новое сообщение'><img align='absmiddle' src='images/new.gif' border=0 width='18px' height='14px'></img></a>&nbsp;" +
+              "<a target='_blank' href='http://www.rsdn.ru/forum/newmsg.aspx?mid=" + mid + "' title='Ответить на сообщение'><img align='absmiddle' src='images/replay.gif' border=0 width='18px' height='14px'></img></a>&nbsp;" +
                 "&nbsp;&nbsp;<font size=1>Оценить </font>" +
-                  "<a href='http://rsdn.ru/forum/rate.asp?mid="+mid+"&rate=0' title='Я так не думаю'><img align='absmiddle' src='images/n0.gif' border=0 width='18px' height='14px'></img></a>" +
-                    "<a href='http://rsdn.ru/forum/rate.asp?mid="+mid+"&rate=-1' title='Удалить оценку'><img align='absmiddle' src='images/nx.gif' border=0 width='18px' height='14px'></img></a>" +
-                      "<a href='http://rsdn.ru/forum/rate.asp?mid="+mid+"&rate=1' title='Пасибочки'><img align='absmiddle' src='images/n1.gif' border=0 width='18px' height='14px'></img></a>" +
-                        "<a href='http://rsdn.ru/forum/rate.asp?mid="+mid+"&rate=2' title='Интересно'><img align='absmiddle' src='images/n2.gif' border=0 width='18px' height='14px'></img></a>" +
-                          "<a href='http://rsdn.ru/forum/rate.asp?mid="+mid+"&rate=3' title='Супер'><img align='absmiddle' src='images/n3.gif' border=0 width='18px' height='14px'></img></a>" +
+                  "<a href='http://www.rsdn.ru/forum/rate.aspx?mid=" + mid + "&rate=0' title='Я так не думаю'><img align='absmiddle' src='images/n0.gif' border=0 width='18px' height='14px'></img></a>" +
+                    "<a href='http://www.rsdn.ru/forum/rate.aspx?mid=" + mid + "&rate=-1' title='Удалить оценку'><img align='absmiddle' src='images/nx.gif' border=0 width='18px' height='14px'></img></a>" +
+                      "<a href='http://www.rsdn.ru/forum/rate.aspx?mid=" + mid + "&rate=1' title='Пасибочки'><img align='absmiddle' src='images/n1.gif' border=0 width='18px' height='14px'></img></a>" +
+                        "<a href='http://www.rsdn.ru/forum/rate.aspx?mid=" + mid + "&rate=2' title='Интересно'><img align='absmiddle' src='images/n2.gif' border=0 width='18px' height='14px'></img></a>" +
+                          "<a href='http://www.rsdn.ru/forum/rate.aspx?mid=" + mid + "&rate=3' title='Супер'><img align='absmiddle' src='images/n3.gif' border=0 width='18px' height='14px'></img></a>" +
                             "</font></td>" +
                               "</tr>" +
                                 "</table>\r\n";
@@ -376,13 +376,13 @@ namespace Desktop.app
       if (usernick == "")
         usernick = "<font color='#C00000'>Аноним</font>";
       else 
-        usernick = "<a target='_blank' href='http://rsdn.ru/users/profile.asp?uid="+uid+"'><b>"+usernick+"</b></a>";
+        usernick = "<a target='_blank' href='http://www.rsdn.ru/users/profile.aspx?uid="+uid+"'><b>"+usernick+"</b></a>";
 
       string info =
         "<table width='100%' border='0' cellspacing='0'>" +
         "<tr>" +
           "<td class='i' nowrap><font size=2><b>От:&nbsp;</b></font></td>" +
-            "<td class='i' nowrap width='100%'><font size=2>"+usernick+"</font></td>" +
+            "<td class='i' nowrap width='100%'><font size=2>" + usernick + "</font></td>" +
               "<td class='i' rowspan=2><font size=2>" + "</font></td>" +
                 "</tr>" +
                   "<tr>" +
@@ -486,24 +486,7 @@ namespace Desktop.app
       if (str.Length == 0)
         return str;
 
-      System.Text.Encoder encoder = null;
-
-      // Пытаемся получить кодер для кодовой страницы "windows-1251"
-      //
-      try
-      {
-        encoder = System.Text.Encoding.GetEncoding(1251).GetEncoder();
-      }
-      catch(NotSupportedException)
-      {
-        // Не поддерживается - будем использовать кодер по умолчанию
-        //
-        encoder = System.Text.Encoding.Default.GetEncoder();
-      }
-      catch(Exception)
-      {
-        return str;
-      }
+      System.Text.Encoder encoder = System.Text.Encoding.GetEncoding(1251).GetEncoder();
 
       // Переводим строку из Unicode в Windows-1251
       //
@@ -682,7 +665,7 @@ namespace Desktop.app
 	         "Content-Transfer-Encoding: quoted-printable\r\n" +
 	         "\r\n";
 
-		       html.Replace("src='images/", "src='http://rsdn.ru/forum/images/");
+		       html = html.Replace("src='images/", "src='http://www.rsdn.ru/forum/images/");
         	 html = Encode(html, false);
 
 		       ret += 
@@ -735,7 +718,33 @@ namespace Desktop.app
     /// <returns></returns>
     private string PostHandler(string [] strings)
     {
-      return error503;
+      // Не прошли авторизацию
+      //
+      if (!m_auth_ok)
+        return  error502;
+
+      workSocket.Send(Encoding.GetEncoding(1251).GetBytes("340 send article to be posted. End with <CR-LF>.<CR-LF>\r\n"));
+
+      string message = string.Empty;
+      const int bufLen = 1024;
+      byte [] buf = new byte[bufLen];
+      int iRecv;
+      do
+      {
+        iRecv = workSocket.Receive(buf, 0, bufLen, SocketFlags.None);
+        if (iRecv == -1)
+          return "441 article send failed\r\n";
+
+        message += System.Text.Encoding.GetEncoding(1251).GetString(buf);
+      } while (iRecv == bufLen && !message.EndsWith("\r\n.\r\n"));
+
+      // Отправляем в форумы
+      //
+      post_result post = forum.PostMIMEMessage(strUser, strPsw, message);
+      if (post.error != null && post.error.Length > 0)
+        return Error(post.error);
+
+      return "240 article sent ok\r\n";
     }
 
     /// <summary>
@@ -745,7 +754,8 @@ namespace Desktop.app
     /// <returns></returns>
     private string QuitHandler(string [] strings)
     {
-      workSocket.Send(Encoding.ASCII.GetBytes(resp205));
+      workSocket.Send(Encoding.GetEncoding(1251).GetBytes(resp205));
+      workSocket.Shutdown(SocketShutdown.Both);
       workSocket.Close();
       workSocket = null;
 

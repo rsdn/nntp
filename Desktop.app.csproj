@@ -97,6 +97,10 @@
         <Files>
             <Include>
                 <File
+                    RelPath = "about.rtf"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "AboutForm.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
@@ -105,6 +109,10 @@
                     RelPath = "AboutForm.resx"
                     DependentUpon = "AboutForm.cs"
                     BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "app.manifest"
+                    BuildAction = "None"
                 />
                 <File
                     RelPath = "AssemblyInfo.cs"
