@@ -1,5 +1,7 @@
 using System;
 using System.Text.RegularExpressions;
+using System.Net;
+using System.Net.Sockets;
 
 namespace Rsdn.Nntp.Commands
 {
