@@ -467,7 +467,7 @@ namespace Rsdn.RsdnNntp
     	{
     		newsMessage["Path"] = Session.FullHostname + "!not-for-mail";
     		if (message.author != "")
-    			newsMessage.From = string.Format("\"{0}\" <{1}@news.rsdn.ru>", message.author, message.authorid);
+    			newsMessage.From = string.Format("\"{0}\" <{1}@users.rsdn.ru>", message.author, message.authorid);
     		newsMessage.Date = message.date;
     		newsMessage.Subject = message.subject;
     		if ((message.authorid != null) && (int.Parse(message.authorid) != 0))
