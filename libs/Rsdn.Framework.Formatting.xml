@@ -155,6 +155,19 @@
             <param name="dateTime">Форматируемая дата.</param>
             <returns>Результирующая строка.</returns>
         </member>
+        <member name="M:Rsdn.Framework.Formatting.Format.Date.ToLongString">
+            <summary>
+            Форматирует дату используя формат "dd.MM.yy"
+            </summary>
+            <returns>Результирующая строка.</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Format.Date.ToLongString(System.DateTime)">
+            <summary>
+            Форматирует дату используя формат "dd.MM.yy"
+            </summary>
+            <param name="dateTime">Форматируемая дата.</param>
+            <returns>Результирующая строка.</returns>
+        </member>
         <member name="M:Rsdn.Framework.Formatting.Format.Date.ToShortString">
             <summary>
             Форматирует дату используя формат "dd.MM HH:mm"
@@ -164,6 +177,21 @@
         <member name="M:Rsdn.Framework.Formatting.Format.Date.ToShortString(System.DateTime)">
             <summary>
             Форматирует дату используя формат "dd.MM HH:mm"
+            </summary>
+            <param name="dateTime">Форматируемая дата.</param>
+            <returns>Результирующая строка.</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Format.Date.ToDependString">
+            <summary>
+            Форматирует дату в зависимости от ее давности.
+            Больше полугода - "dd.MM.yy.", меньше - "dd/MM HH:mm"
+            </summary>
+            <returns>Результирующая строка.</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Format.Date.ToDependString(System.DateTime)">
+            <summary>
+            Форматирует дату в зависимости от ее давности.
+            Больше полугода - "dd.MM.yy.", меньше - "dd/MM HH:mm"
             </summary>
             <param name="dateTime">Форматируемая дата.</param>
             <returns>Результирующая строка.</returns>
