@@ -304,29 +304,29 @@ namespace derIgel.MIME
 						case ContentTransferEncoding.QoutedPrintable :
 							body = Util.FromQuotedPrintableString(headerAndBodyMatch.Groups["body"].Value);
 							break;
+						case ContentTransferEncoding.SevenBit :
+							// TODO: cut 8th bit or not?
 						case ContentTransferEncoding.Binary :
 						case ContentTransferEncoding.EightBit :
+						default :
 							body = Util.StringToBytes(headerAndBodyMatch.Groups["body"].Value);
-							break;
-						case ContentTransferEncoding.SevenBit :
-						default:
-							body = Encoding.ASCII.GetBytes(headerAndBodyMatch.Groups["body"].Value);
 							break;
 					}
 					
-					message.entities.Add(message.encoding.GetString(body));
+					if (message.type == "text")
+						// if content type is 'text' - interpet body as text
+						message.entities.Add(message.encoding.GetString(body));
+					else
+						// otherwise (content type is not 'text') - interpet body as byte array
+						message.entities.Add(body);
 					break;
 			}
 			return message;
 		}
 
-		public byte[] GetBody()
+		public string GetBody()
 		{
 			StringBuilder builder = new StringBuilder();
-
-			MemoryStream memStream = new MemoryStream();
-			// support only ASCII symbols, if text sended
-			BinaryWriter writer = new BinaryWriter(memStream, Encoding.ASCII);
 
 			// headers
 			builder.Append(header.Encoded(headerEncoding));
@@ -338,38 +338,31 @@ namespace derIgel.MIME
 			if (multipart)
 				builder.Append("This is a multi-part message in MIME format.").Append(Util.CRLF);
 
-			writer.Write(builder.ToString().ToCharArray());
-
 			// bodies
 			foreach (object body in entities)
 			{
 				if (multipart)
-					writer.Write(string.Format("{1}--{0}{1}", multipartBoundary, Util.CRLF).ToCharArray());
+					builder.AppendFormat("{0}--{1}{0}", Util.CRLF, multipartBoundary);
 
 				if (body is IBody)
-					writer.Write(((IBody)body).GetBody());
+					builder.Append(((IBody)body).GetBody());
 				else
 				{
 					if (body is byte[])
-						writer.Write(Util.Encode((byte[])body, transferEncoding, true));
+						builder.Append(Util.Encode((byte[])body, transferEncoding, true));
 					else
-						writer.Write(Util.Encode(body.ToString(), encoding, transferEncoding, false, true).ToCharArray());
+						builder.Append(Util.Encode(body.ToString(), encoding, transferEncoding, false, true));
 				}
 			}
 			if (multipart)
-				writer.Write(string.Format("{0}--{1}--", Util.CRLF, multipartBoundary).ToCharArray());
+				builder.AppendFormat("{0}--{1}--", Util.CRLF, multipartBoundary);
 
-			writer.Flush();
-			byte[] result = new byte[memStream.Length];
-			writer.Close();
-			
-			Array.Copy(memStream.GetBuffer(), 0, result, 0, result.Length);
-			return result;
+			return builder.ToString();
 		}
 	
 		public override string ToString()
 		{
-			return Util.BytesToString(GetBody());
+			return GetBody();
 		}
 
 		public string EncodedHeader(string name)

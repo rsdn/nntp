@@ -164,7 +164,7 @@ namespace derIgel.NNTP.Commands
 						article.EncodedHeader(headerItem).Replace('\t', ' ').Replace('\r', ' ').Replace('\n', ' '));
 				output.Append(Util.CRLF);
 			}
-			return new Response(NntpResponse.Overview, Encoding.ASCII.GetBytes(output.ToString()));
+			return new Response(NntpResponse.Overview, output.ToString());
 		}
 	}
 
@@ -360,7 +360,7 @@ namespace derIgel.NNTP.Commands
 							group.Name, group.LastArticleNumber, group.FirstArticleNumber,
 							group.PostingAllowed ? 'y' : 'n', Util.CRLF);
 			}
-			return new Response(NntpResponse.ListOfGroups, Encoding.ASCII.GetBytes(textResponse.ToString()));
+			return new Response(NntpResponse.ListOfGroups, textResponse.ToString());
 		}
 	}
 
@@ -408,7 +408,7 @@ namespace derIgel.NNTP.Commands
 					textResponse.AppendFormat("{0} {1} {2} {3}{4}",
 						group.Name, group.LastArticleNumber, group.FirstArticleNumber,
 						group.PostingAllowed ? 'y' : 'n', Util.CRLF);
-				return new Response(NntpResponse.ListOfArticles, Encoding.ASCII.GetBytes(textResponse.ToString()));
+				return new Response(NntpResponse.ListOfArticles, textResponse.ToString());
 			}
 			catch (ArgumentOutOfRangeException)
 			{
@@ -467,8 +467,7 @@ namespace derIgel.NNTP.Commands
 				foreach (NewsArticle article in articleList)
 					textResponse.AppendFormat("{0}{1}", article["Message-ID"],
 						Util.CRLF);
-				return new Response(NntpResponse.ListOfArticlesByMessageID,
-					Encoding.ASCII.GetBytes(textResponse.ToString()));
+				return new Response(NntpResponse.ListOfArticlesByMessageID, textResponse.ToString());
 			}
 			catch (ArgumentOutOfRangeException)
 			{
@@ -658,7 +657,7 @@ namespace derIgel.NNTP.Commands
 				Append("supports follow commands:").Append(Util.CRLF);
 			foreach (string command in session.commands.Keys)
 				supportCommands.AppendFormat("\t{0}{1}", command,Util.CRLF);
-			return new Response(NntpResponse.Help, Encoding.ASCII.GetBytes(supportCommands.ToString()));
+			return new Response(NntpResponse.Help, supportCommands.ToString());
 		}
 	}
 }

@@ -25,7 +25,7 @@ namespace derIgel.MIME
 		/// <param name="bytes">Bytes to encode</param>
 		/// <param name="contentEncoding">MIME Encoding</param>
 		/// <returns>MIME encoded byte stream</returns>
-		public static byte[] Encode(byte[] bytes, ContentTransferEncoding contentEncoding, bool breakLines)
+		public static string Encode(byte[] bytes, ContentTransferEncoding contentEncoding, bool breakLines)
 		{
 			StringBuilder result = new StringBuilder();
 			switch (contentEncoding)
@@ -41,14 +41,16 @@ namespace derIgel.MIME
 					result.Append(ToQuotedPrintableString(bytes, breakLines));
 					break;
 				case ContentTransferEncoding.SevenBit :
-					// TODO: cut 8th bit
+					// TODO: cut 8th bit or not?
+				case ContentTransferEncoding.EightBit :
+				case ContentTransferEncoding.Binary   :
 				default :
 					// split per 1000 symbols (including trailing CRLF)
 					//writer.Write(encoding.GetBytes(split998.Replace(body.ToString(), "$&" + Util.CRLF)));
 					result.Append(BytesToString(bytes));
 					break;
 			}
-			return StringToBytes(result.ToString());
+			return result.ToString();
 		}
 
 		/// <summary>
@@ -80,7 +82,7 @@ namespace derIgel.MIME
 			{
 				case ContentTransferEncoding.Base64 :
 				case ContentTransferEncoding.QoutedPrintable :
-					builder.Append(BytesToString(Encode(textEncoding.GetBytes(text), contentEncoding, breakLines)));
+					builder.Append(Encode(textEncoding.GetBytes(text), contentEncoding, breakLines));
 					break;
 				case ContentTransferEncoding.SevenBit :
 					// cut 8th bit
@@ -187,16 +189,20 @@ namespace derIgel.MIME
 			return result.ToString();
 		}
 
+		/// <summary>
+		/// Convert string to raw bytes
+		/// </summary>
 		public static byte[] StringToBytes(string text)
 		{
-			ArrayList result = new ArrayList();
-			for (int i = 0; i < text.Length; i++)
-			{
-				result.Add((byte)text[i]);
-				if (((short)text[i])  > 0xFF)
-					result.Add((byte)(((short)text[i]) >> 8));
-			}
-			return (byte[])result.ToArray(typeof(byte));
+			return Encoding.GetEncoding("iso8859-1").GetBytes(text);
+		}
+
+		/// <summary>
+		/// Direct convert raw bytes to string
+		/// </summary>
+		public static string BytesToString(byte[] input, int length)
+		{
+			return Encoding.GetEncoding("iso8859-1").GetString(input, 0, length);
 		}
 
 		public static string BytesToString(byte[] input)
@@ -204,11 +210,5 @@ namespace derIgel.MIME
 			return BytesToString(input, input.Length);
 		}
 	
-		public static string BytesToString(byte[] input, int length)
-		{
-			char[] chars = new char[length];
-			Array.Copy(input, 0, chars, 0, length);
-			return new string(chars);
-		}
 	}
 }

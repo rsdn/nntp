@@ -3,10 +3,10 @@ using System;
 namespace derIgel.MIME
 {
 	/// <summary>
-	/// Summary description for IBody.
+	/// MIME body message interface
 	/// </summary>
 	public interface IBody
 	{
-		byte[] GetBody();
+		string GetBody();
 	}
 }

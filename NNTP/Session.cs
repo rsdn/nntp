@@ -162,7 +162,7 @@ namespace derIgel.NNTP
 
 		protected void Answer(Response response)
 		{
-			byte[] bytes = response.GetResponse();
+			byte[] bytes = Util.StringToBytes(response.GetResponse());
 			netStream.Write(bytes, 0, bytes.Length);
 #if PERFORMANCE_COUNTERS
 			manager.bytesSentCounter.IncrementBy(bytes.Length);
@@ -203,7 +203,7 @@ namespace derIgel.NNTP
 								Answer(NntpResponse.TimeOut);
 								return;
 							case 1	:
-								// sorry, bye!
+								// terminate session
 								Answer(NntpResponse.ServiceDiscontinued);
 								return;
 						}
@@ -219,6 +219,7 @@ namespace derIgel.NNTP
 #endif
 						}
 						else
+							// stream is closed
 							return;
 					}
 					while (netStream.DataAvailable);

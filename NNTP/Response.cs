@@ -9,7 +9,9 @@ namespace derIgel.NNTP
 {
 	using Util = derIgel.MIME.Util;
 
-	// NNTP Response's codes
+	/// <summary>
+	/// NNTP Response's codes
+	/// </summary>
 	public enum NntpResponse
 	{
 		Help = 100,
@@ -103,13 +105,13 @@ namespace derIgel.NNTP
 			answers[503] = "503 program fault - command not performed";
 		}
 
-		public Response(int code, byte[] body, params object[] parameters)
+		public Response(int code, string body, params object[] parameters)
 		{
 			this.code = code;
 			this.parameters = parameters;
-			bodyResponse = body;
+			reponsesBody = body;
 		}
-		public Response(NntpResponse code, byte[] body, params object[] parameters) :
+		public Response(NntpResponse code, string body, params object[] parameters) :
 			this((int)code, body, parameters)	{	}
 		public Response(int code) : this(code, null) {}
 		public Response(NntpResponse code) : this(code, null) {}
@@ -128,17 +130,21 @@ namespace derIgel.NNTP
 		/// </summary>
 		protected object[] parameters;
 
-		public static byte[] GetResponse(int code, byte[] bodyResponse, params object[] parameters)
+		/// <summary>
+		/// Get NNTP response as text
+		/// </summary>
+		/// <param name="code"></param>
+		/// <param name="reponsesBody"></param>
+		/// <param name="parameters"></param>
+		/// <returns></returns>
+		public static string GetResponse(int code, string reponsesBody, params object[] parameters)
 		{
 			try
 			{
-				byte[] modifiedBody = ModifyTextResponse(bodyResponse);
-				string answer = string.Format(answers[code] as string + Util.CRLF, parameters);
-				int answerBytes = Encoding.ASCII.GetByteCount(answer);
-				byte[] result = new byte[answerBytes + modifiedBody.Length];
-				Encoding.ASCII.GetBytes(answer).CopyTo(result, 0);
-				modifiedBody.CopyTo(result, answerBytes);
-				return (result);
+				StringBuilder result = new StringBuilder(Util.LineLength);
+				result.AppendFormat(answers[code] as string + Util.CRLF, parameters)
+					.Append(ModifyTextResponse(reponsesBody));
+				return result.ToString();
 			}
 			catch(FormatException e)
 			{
@@ -152,7 +158,7 @@ namespace derIgel.NNTP
 
 		public static void Answer(int code, Socket socket)
 		{
-			socket.Send(GetResponse(code, null));
+			socket.Send(Util.StringToBytes(GetResponse(code, null)));
 		}
 
 		public static void Answer(NntpResponse code, Socket socket)
@@ -160,15 +166,15 @@ namespace derIgel.NNTP
 			Answer((int)code, socket);
 		}
 
-		public byte[] GetResponse()
+		public string GetResponse()
 		{
-			return GetResponse(code, bodyResponse, parameters);
+			return GetResponse(code, reponsesBody, parameters);
 		}
 
 		/// <summary>
-		/// body of response (only after status response may be)
+		/// options body of response (null if none)
 		/// </summary>
-		protected byte[] bodyResponse;
+		protected string reponsesBody;
 
 		protected static readonly Regex EncodeNNTPMessage =
 			new Regex(@"(?m)^\.", RegexOptions.Compiled);
@@ -176,19 +182,19 @@ namespace derIgel.NNTP
 		/// <summary>
 		/// Modiffy textual response as double first dot
 		/// </summary>
-		public static byte[] ModifyTextResponse(byte[] response)
+		public static string ModifyTextResponse(string response)
 		{
 			if (response == null)
-				return new byte[0];
+				return null;
 	
 			StringBuilder textRepresentation = new StringBuilder(
 				// double start points
-				EncodeNNTPMessage.Replace(Util.BytesToString(response), ".."));
+				EncodeNNTPMessage.Replace(response, ".."));
 			if (textRepresentation.Length > 0)
 				if (!textRepresentation.ToString().EndsWith(Util.CRLF))
 					textRepresentation.Append(Util.CRLF);
 			textRepresentation.Append(".").Append(Util.CRLF);
-			return Util.StringToBytes(textRepresentation.ToString());
+			return textRepresentation.ToString();
 		}
 
 		protected static readonly Regex DecodeNNTPMessage =
@@ -197,16 +203,12 @@ namespace derIgel.NNTP
 		/// <summary>
 		/// Modiffy textual response with removing double first dot
 		/// </summary>
-		public static byte[] DemodifyTextResponse(byte[] response)
+		public static string DemodifyTextResponse(string response)
 		{
 			if (response != null)
-			{
-				StringBuilder textRepresentation = new StringBuilder(
-					DecodeNNTPMessage.Replace(Util.BytesToString(response), "."));
-				return Util.StringToBytes(textRepresentation.ToString());
-			}
+				return DecodeNNTPMessage.Replace(response, ".");
 			else
-				return new byte[0];
+				return null;
 		}
 
 		public int Code
@@ -219,7 +221,7 @@ namespace derIgel.NNTP
 
 		public override string ToString()
 		{
-			return Encoding.ASCII.GetString(GetResponse());
+			return GetResponse();
 		}
 	}
 }
