@@ -20,12 +20,14 @@ namespace derIgel.RsdnNntp
 		/// </summary>
 		private System.ComponentModel.Container components = null;
 
-		public ControlPanel()
+		public ControlPanel(Settings settings)
 		{
 			//
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
+
+			Settings = settings;
 		}
 
 		/// <summary>
@@ -56,8 +58,15 @@ namespace derIgel.RsdnNntp
 			this.applyButton = new System.Windows.Forms.Button();
 			this.alertImage = new System.Windows.Forms.PictureBox();
 			this.alertText = new System.Windows.Forms.Label();
-			this.propertyGrid = new System.Windows.Forms.PropertyGrid();
+			this.serverPropertyGrid = new System.Windows.Forms.PropertyGrid();
 			this.tabPage1 = new System.Windows.Forms.TabPage();
+			this.tabControl = new System.Windows.Forms.TabControl();
+			this.serverSettingsTabPage = new System.Windows.Forms.TabPage();
+			this.dataProviderSettingsTabPage = new System.Windows.Forms.TabPage();
+			this.dataProviderPropertyGrid = new System.Windows.Forms.PropertyGrid();
+			this.tabControl.SuspendLayout();
+			this.serverSettingsTabPage.SuspendLayout();
+			this.dataProviderSettingsTabPage.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// okButton
@@ -65,7 +74,7 @@ namespace derIgel.RsdnNntp
 			this.okButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
 			this.okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
 			this.okButton.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.okButton.Location = new System.Drawing.Point(33, 319);
+			this.okButton.Location = new System.Drawing.Point(133, 451);
 			this.okButton.Name = "okButton";
 			this.okButton.TabIndex = 1;
 			this.okButton.Text = "OK";
@@ -76,7 +85,7 @@ namespace derIgel.RsdnNntp
 			this.cancelButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
 			this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.cancelButton.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.cancelButton.Location = new System.Drawing.Point(137, 319);
+			this.cancelButton.Location = new System.Drawing.Point(237, 451);
 			this.cancelButton.Name = "cancelButton";
 			this.cancelButton.TabIndex = 2;
 			this.cancelButton.Text = "Cancel";
@@ -86,7 +95,7 @@ namespace derIgel.RsdnNntp
 			this.applyButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
 			this.applyButton.Enabled = false;
 			this.applyButton.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.applyButton.Location = new System.Drawing.Point(233, 319);
+			this.applyButton.Location = new System.Drawing.Point(333, 451);
 			this.applyButton.Name = "applyButton";
 			this.applyButton.TabIndex = 3;
 			this.applyButton.Text = "Apply";
@@ -96,7 +105,7 @@ namespace derIgel.RsdnNntp
 			// 
 			this.alertImage.Anchor = (System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left);
 			this.alertImage.Image = ((System.Drawing.Bitmap)(resources.GetObject("alertImage.Image")));
-			this.alertImage.Location = new System.Drawing.Point(7, 297);
+			this.alertImage.Location = new System.Drawing.Point(7, 429);
 			this.alertImage.Name = "alertImage";
 			this.alertImage.Size = new System.Drawing.Size(16, 16);
 			this.alertImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
@@ -109,29 +118,29 @@ namespace derIgel.RsdnNntp
 			this.alertText.Anchor = (System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left);
 			this.alertText.AutoSize = true;
 			this.alertText.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.alertText.Location = new System.Drawing.Point(32, 299);
+			this.alertText.Location = new System.Drawing.Point(32, 431);
 			this.alertText.Name = "alertText";
 			this.alertText.Size = new System.Drawing.Size(248, 13);
 			this.alertText.TabIndex = 6;
 			this.alertText.Text = "Changes will take effect after you restart service.";
 			this.alertText.Visible = false;
 			// 
-			// propertyGrid
+			// serverPropertyGrid
 			// 
-			this.propertyGrid.Anchor = (((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-				| System.Windows.Forms.AnchorStyles.Left) 
-				| System.Windows.Forms.AnchorStyles.Right);
-			this.propertyGrid.CommandsBackColor = System.Drawing.SystemColors.Highlight;
-			this.propertyGrid.CommandsVisibleIfAvailable = true;
-			this.propertyGrid.LargeButtons = false;
-			this.propertyGrid.LineColor = System.Drawing.SystemColors.ScrollBar;
-			this.propertyGrid.Name = "propertyGrid";
-			this.propertyGrid.Size = new System.Drawing.Size(343, 291);
-			this.propertyGrid.TabIndex = 4;
-			this.propertyGrid.Text = "propertyGrid";
-			this.propertyGrid.ViewBackColor = System.Drawing.SystemColors.Window;
-			this.propertyGrid.ViewForeColor = System.Drawing.SystemColors.WindowText;
-			this.propertyGrid.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.propertyGrid_PropertyValueChanged);
+			this.serverPropertyGrid.CommandsBackColor = System.Drawing.SystemColors.Highlight;
+			this.serverPropertyGrid.CommandsVisibleIfAvailable = true;
+			this.serverPropertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.serverPropertyGrid.LargeButtons = false;
+			this.serverPropertyGrid.LineColor = System.Drawing.SystemColors.ScrollBar;
+			this.serverPropertyGrid.Name = "serverPropertyGrid";
+			this.serverPropertyGrid.PropertySort = System.Windows.Forms.PropertySort.Categorized;
+			this.serverPropertyGrid.Size = new System.Drawing.Size(535, 395);
+			this.serverPropertyGrid.TabIndex = 4;
+			this.serverPropertyGrid.Text = "serverPropertyGrid";
+			this.serverPropertyGrid.ToolbarVisible = false;
+			this.serverPropertyGrid.ViewBackColor = System.Drawing.SystemColors.Window;
+			this.serverPropertyGrid.ViewForeColor = System.Drawing.SystemColors.WindowText;
+			this.serverPropertyGrid.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.propertyGrid_PropertyValueChanged);
 			// 
 			// tabPage1
 			// 
@@ -141,14 +150,65 @@ namespace derIgel.RsdnNntp
 			this.tabPage1.TabIndex = 2;
 			this.tabPage1.Text = "About";
 			// 
+			// tabControl
+			// 
+			this.tabControl.Anchor = (((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+				| System.Windows.Forms.AnchorStyles.Left) 
+				| System.Windows.Forms.AnchorStyles.Right);
+			this.tabControl.Appearance = System.Windows.Forms.TabAppearance.FlatButtons;
+			this.tabControl.Controls.AddRange(new System.Windows.Forms.Control[] {
+																																						 this.serverSettingsTabPage,
+																																						 this.dataProviderSettingsTabPage});
+			this.tabControl.Multiline = true;
+			this.tabControl.Name = "tabControl";
+			this.tabControl.SelectedIndex = 0;
+			this.tabControl.Size = new System.Drawing.Size(543, 424);
+			this.tabControl.TabIndex = 7;
+			// 
+			// serverSettingsTabPage
+			// 
+			this.serverSettingsTabPage.Controls.AddRange(new System.Windows.Forms.Control[] {
+																																												this.serverPropertyGrid});
+			this.serverSettingsTabPage.Location = new System.Drawing.Point(4, 25);
+			this.serverSettingsTabPage.Name = "serverSettingsTabPage";
+			this.serverSettingsTabPage.Size = new System.Drawing.Size(535, 395);
+			this.serverSettingsTabPage.TabIndex = 0;
+			this.serverSettingsTabPage.Text = "Server Settings";
+			// 
+			// dataProviderSettingsTabPage
+			// 
+			this.dataProviderSettingsTabPage.Controls.AddRange(new System.Windows.Forms.Control[] {
+																																															this.dataProviderPropertyGrid});
+			this.dataProviderSettingsTabPage.Location = new System.Drawing.Point(4, 25);
+			this.dataProviderSettingsTabPage.Name = "dataProviderSettingsTabPage";
+			this.dataProviderSettingsTabPage.Size = new System.Drawing.Size(535, 395);
+			this.dataProviderSettingsTabPage.TabIndex = 1;
+			this.dataProviderSettingsTabPage.Text = "Data Provider Settings";
+			// 
+			// dataProviderPropertyGrid
+			// 
+			this.dataProviderPropertyGrid.CommandsVisibleIfAvailable = true;
+			this.dataProviderPropertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.dataProviderPropertyGrid.HelpVisible = false;
+			this.dataProviderPropertyGrid.LargeButtons = false;
+			this.dataProviderPropertyGrid.LineColor = System.Drawing.SystemColors.ScrollBar;
+			this.dataProviderPropertyGrid.Name = "dataProviderPropertyGrid";
+			this.dataProviderPropertyGrid.PropertySort = System.Windows.Forms.PropertySort.Categorized;
+			this.dataProviderPropertyGrid.Size = new System.Drawing.Size(535, 395);
+			this.dataProviderPropertyGrid.TabIndex = 0;
+			this.dataProviderPropertyGrid.Text = "dataProviderPropertyGrid";
+			this.dataProviderPropertyGrid.ToolbarVisible = false;
+			this.dataProviderPropertyGrid.ViewBackColor = System.Drawing.SystemColors.Window;
+			this.dataProviderPropertyGrid.ViewForeColor = System.Drawing.SystemColors.WindowText;
+			// 
 			// ControlPanel
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(343, 344);
+			this.ClientSize = new System.Drawing.Size(543, 476);
 			this.Controls.AddRange(new System.Windows.Forms.Control[] {
+																																	this.tabControl,
 																																	this.alertText,
 																																	this.alertImage,
-																																	this.propertyGrid,
 																																	this.applyButton,
 																																	this.cancelButton,
 																																	this.okButton});
@@ -158,6 +218,9 @@ namespace derIgel.RsdnNntp
 			this.Name = "ControlPanel";
 			this.Text = "RSDN NNTP Manager";
 			this.TopMost = true;
+			this.tabControl.ResumeLayout(false);
+			this.serverSettingsTabPage.ResumeLayout(false);
+			this.dataProviderSettingsTabPage.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
@@ -168,23 +231,24 @@ namespace derIgel.RsdnNntp
 		private System.Windows.Forms.Button cancelButton;
 		private System.Windows.Forms.PictureBox alertImage;
 		private System.Windows.Forms.Label alertText;
-		internal System.Windows.Forms.PropertyGrid propertyGrid;
 		private System.Windows.Forms.TabPage tabPage1;
+		private System.Windows.Forms.TabPage serverSettingsTabPage;
+		private System.Windows.Forms.TabPage dataProviderSettingsTabPage;
+		private System.Windows.Forms.TabControl tabControl;
+		private System.Windows.Forms.PropertyGrid dataProviderPropertyGrid;
+		private System.Windows.Forms.PropertyGrid serverPropertyGrid;
 		private System.Windows.Forms.Button applyButton;
 
 		private void ApplySettings(object sender, System.EventArgs e)
 		{
-			object settings = propertyGrid.SelectedObject;
 			try 
 			{
 				applyButton.Enabled = false;
 				// write config file
-				((NNTPSettings)settings).Serialize(ConfigurationSettings.AppSettings["settings.ConfigFile"]);
+				settings.Serialize(ConfigurationSettings.AppSettings["settings.ConfigFile"]);
 				// change startup mode
-				StartupType selectedStartupMode = (StartupType)((Notify)Owner).serviceSettingsType.
-					GetProperty("StartupMode").GetValue(settings, null);
-				((Notify)Owner).service.ChangeStartMode((selectedStartupMode == StartupType.Auto) ?
-					"Automatic" : selectedStartupMode.ToString());
+				((Notify)Owner).service.ChangeStartMode((settings.StartupMode == StartupType.Auto) ?
+					"Automatic" : settings.StartupMode.ToString());
 				// refresh status
 				((Notify)Owner).RefreshStatus();
 			}
@@ -192,9 +256,12 @@ namespace derIgel.RsdnNntp
 			{
 				MessageBox.Show(this, "You don't have access rights for config.", "RSDN NNTP Manager",
 					MessageBoxButtons.OK,	MessageBoxIcon.Error);
-				propertyGrid.SelectedObject = settings = NNTPSettings.Deseriazlize(
-					ConfigurationSettings.AppSettings["service.Config"], ((Notify)Owner).serviceSettingsType);
+				Settings = new Settings(NNTPSettings.Deseriazlize(ConfigurationSettings.AppSettings["service.Config"]));
 				ShowAlert(false);
+			}
+			catch (Exception ex)
+			{
+				System.Console.WriteLine(ex.ToString());
 			}
 		}
 
@@ -209,6 +276,18 @@ namespace derIgel.RsdnNntp
 		{
 			alertImage.Visible = show;
 			alertText.Visible = show;
+		}
+
+		protected Settings settings;
+		public Settings Settings
+		{
+			get { return settings; }
+			set 
+			{
+				settings = value; 
+				serverPropertyGrid.SelectedObject = settings;
+				dataProviderPropertyGrid.SelectedObject = settings.DataProviderSettings;
+			}
 		}
 	}
 }

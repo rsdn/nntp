@@ -333,7 +333,7 @@ namespace derIgel.RsdnNntp
 		/// </summary>
 		protected int currentGroupArticleEndNumber = -1;
 
-		protected static Regex leadingSpaces = new Regex(@"(?m)^\s+", RegexOptions.Compiled);
+		protected static Regex leadingSpaces = new Regex(@"(?m)^[\t ]+", RegexOptions.Compiled);
 
 		public void PostMessage(Message message)
 		{

@@ -95,7 +95,7 @@ namespace derIgel.NNTP.Commands
 		/// <returns>modified news article</returns>
 		protected NewsArticle ModifyArticle(NewsArticle article)
 		{
-			StringBuilder xref = new StringBuilder(Dns.GetHostName());
+			StringBuilder xref = new StringBuilder(Session.hostName);
 			foreach (DictionaryEntry newsGroupNumber in article.MessageNumbers)
 				xref.Append(" ").Append(newsGroupNumber.Key).Append(":").Append(newsGroupNumber.Value);
 			article["Xref"] = xref.ToString();
@@ -601,7 +601,13 @@ namespace derIgel.NNTP.Commands
 						{
 							session.sessionState = Session.States.Normal;
 							result = new Response(281);
-							session.sender = session.Username + "@" + Dns.GetHostByAddress(((IPEndPoint)session.client.RemoteEndPoint).Address).HostName;
+							string remoteHost = ((IPEndPoint)session.client.RemoteEndPoint).Address.ToString();
+							try
+							{
+								remoteHost = Dns.GetHostByAddress(remoteHost).HostName;
+							}
+							catch (SocketException) {}
+							session.sender = session.Username + "@" + remoteHost;
 						}
 						else
 						{

@@ -1,11 +1,5 @@
 using System;
-using System.Diagnostics;
 using derIgel.NNTP;
-using System.Net.Sockets;
-using System.Threading;
-using System.Text;
-using System.IO;
-using System.Reflection;
 using System.Configuration;
 
 namespace ForumTest
@@ -23,14 +17,10 @@ namespace ForumTest
 		{
 			try
 			{
-				Type dataProviderType = Assembly.LoadFrom(ConfigurationSettings.AppSettings["dataProvider.Assembly"]).
-					GetType(ConfigurationSettings.AppSettings["dataProvider.Type"], true);
+        NNTPSettings serverSettings =
+					NNTPSettings.Deseriazlize(ConfigurationSettings.AppSettings["settings.ConfigFile"]);
 
-        object serverSettings = NNTPSettings.Deseriazlize(
-					ConfigurationSettings.AppSettings["settings.ConfigFile"],
-					((IDataProvider)Activator.CreateInstance(dataProviderType)).GetConfigType());
-
-				Manager nntpManager = new Manager(dataProviderType,	(NNTPSettings)serverSettings);
+				Manager nntpManager = new Manager(serverSettings);
 				nntpManager.Start();
 
 				System.Console.ReadLine();
@@ -39,7 +29,7 @@ namespace ForumTest
 			}
 			catch (Exception e)
 			{
-				Console.Out.WriteLine(e.Message);
+				Console.Out.WriteLine(e.ToString());
 			}
 		}
 	}

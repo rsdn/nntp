@@ -1,16 +1,12 @@
 using System;
-using System.Collections;
 using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
 using System.ServiceProcess;
 using derIgel.NNTP;
-using System.Threading;
-using System.Net.Sockets;
-using System.Reflection;
 using System.IO;
 using System.Configuration;
-using derIgel.MIME;
+using System.Reflection;
+using System.Diagnostics;
+using System.Threading;
 
 namespace derIgel.RsdnNntp
 {
@@ -86,22 +82,13 @@ namespace derIgel.RsdnNntp
 				Directory.SetCurrentDirectory(
 					Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
 
-				Type dataProviderType = Assembly.LoadFrom(ConfigurationSettings.AppSettings["dataProvider.Assembly"]).
-					GetType(ConfigurationSettings.AppSettings["dataProvider.Type"], true);
-
-				object serverSettings = NNTPSettings.Deseriazlize(
-					ConfigurationSettings.AppSettings["settings.ConfigFile"],
-					((IDataProvider)Activator.CreateInstance(dataProviderType)).GetConfigType());
-
-				nntpManager = new Manager(dataProviderType,	(NNTPSettings)serverSettings);
+				nntpManager = new Manager(
+					NNTPSettings.Deseriazlize(ConfigurationSettings.AppSettings["settings.ConfigFile"]));
 				nntpManager.Start();
 			}
 			catch (Exception e)
 			{
-				#if DEBUG || SHOW
-					System.Console.Error.WriteLine(Util.ExpandException(e));
-				#endif
-				EventLog.WriteEntry(Util.ExpandException(e), EventLogEntryType.Error);
+				EventLog.WriteEntry(e.ToString(), EventLogEntryType.Error);
 				nntpManager = null;
 				// start timer, which will stop service in 1 sec
 				Timer timer = new Timer(new TimerCallback(Stop), null, 1000, Timeout.Infinite);
@@ -120,10 +107,7 @@ namespace derIgel.RsdnNntp
 			}
 			catch (Exception e)
 			{
-				#if DEBUG || SHOW
-					System.Console.Error.WriteLine(Util.ExpandException(e));
-				#endif
-				EventLog.WriteEntry(e.Message, EventLogEntryType.Error);
+				EventLog.WriteEntry(e.ToString(), EventLogEntryType.Error);
 			}
 		}
 

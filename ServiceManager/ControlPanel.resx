@@ -105,8 +105,11 @@
         A6916wOO9BjVx1ivhEzYbTzdzFPyB4+Jl6JFgpVGAAAAAElFTkSuQmCC
 </value>
   </data>
-  <data name="propertyGrid.Modifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.3300.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>Assembly</value>
+  <data name="serverSettingsTabPage.SnapToGrid" type="System.Boolean, mscorlib, Version=1.0.3300.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </data>
+  <data name="dataProviderSettingsTabPage.SnapToGrid" type="System.Boolean, mscorlib, Version=1.0.3300.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
   </data>
   <data name="$this.Name">
     <value>ControlPanel</value>

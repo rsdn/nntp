@@ -63,11 +63,6 @@
                     HintPath = "C:\WINNT\Microsoft.NET\Framework\v1.0.3705\System.dll"
                 />
                 <Reference
-                    Name = "System.Drawing"
-                    AssemblyName = "System.Drawing"
-                    HintPath = "C:\WINNT\Microsoft.NET\Framework\v1.0.3705\System.Drawing.dll"
-                />
-                <Reference
                     Name = "System.Windows.Forms"
                     AssemblyName = "System.Windows.Forms"
                     HintPath = "C:\WINNT\Microsoft.NET\Framework\v1.0.3705\System.Windows.Forms.dll"
@@ -86,6 +81,12 @@
                     Name = "NNTP"
                     Project = "{7C6A20CA-E859-41F5-8B2E-7411A63E8343}"
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                    Private = "False"
+                />
+                <Reference
+                    Name = "System.Drawing"
+                    AssemblyName = "System.Drawing"
+                    HintPath = "C:\WINNT\Microsoft.NET\Framework\v1.0.3705\System.Drawing.dll"
                 />
             </References>
         </Build>
@@ -111,7 +112,6 @@
                 />
                 <File
                     RelPath = "app.config"
-                    Link = "..\app.config"
                     BuildAction = "None"
                 />
                 <File
@@ -150,6 +150,11 @@
                 <File
                     RelPath = "ProductInfo.cs"
                     Link = "..\ProductInfo.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Settings.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

@@ -22,4 +22,8 @@ using System.Runtime.CompilerServices;
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
 
-[assembly: AssemblyInformationalVersion("1.4.3 beta")]
+#if PERFORMANCE_COUNTERS
+	[assembly: AssemblyInformationalVersion("1.4.3 beta")]
+#else
+	[assembly: AssemblyInformationalVersion("1.4.3m beta")]
+#endif

@@ -23,8 +23,19 @@ namespace derIgel.NNTP
 
 		protected TextWriter errorOutput = System.Console.Error;
 
+		public static readonly string hostName;
+
 		static Session()
 		{
+			try
+			{
+				hostName = Dns.GetHostName();
+			}
+			catch (SocketException)
+			{
+				hostName = "";
+			}
+
 			commandsTypes = new Hashtable();
 			// initialize types for NNTP commands classes
 			foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
@@ -216,9 +227,8 @@ namespace derIgel.NNTP
 									
 									// add addtitional server headers
 									postingMessage["Sender"] = sender;
-									if (postingMessage["Path"] != null)
-										postingMessage["Path"] += "!";
-									postingMessage["Path"] = Dns.GetHostByAddress(IPAddress.Loopback).HostName + postingMessage["Path"];
+										postingMessage["Path"] = hostName +
+											((postingMessage["Path"] != null) ? "!" + postingMessage["Path"] : null);
 									
 									dataProvider.PostMessage(postingMessage);
 									result = new Response(NntpResponse.PostedOk);
@@ -303,7 +313,7 @@ namespace derIgel.NNTP
 						catch(Exception e)
 						{
 							#if DEBUG || SHOW
-								errorOutput.WriteLine("\texception: " + Util.ExpandException(e));
+								errorOutput.WriteLine("\texception: " + e.ToString());
 							#endif
 							result = new Response(NntpResponse.ProgramFault);
 						}

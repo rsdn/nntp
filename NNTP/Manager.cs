@@ -20,6 +20,7 @@ namespace derIgel.NNTP
 	{
 		protected TextWriter errorOutput = System.Console.Error;
 
+#if PERFORMANCE_COUNTERS
 		/// <summary>
 		/// sessions' perfomance counter
 		/// </summary>
@@ -28,18 +29,17 @@ namespace derIgel.NNTP
 		/// global sessions' perfomance counter
 		/// </summary>
 		PerformanceCounter globalSessionsCounter;
+#endif
     	
 		/// <summary>
 		/// NNTP Connection Manager constructor
-		/// dataProvider is provider of data
 		/// </summary>
-		public Manager(Type dataProviderType, NNTPSettings settings)
+		public Manager(NNTPSettings settings)
 		{
-			if (Array.BinarySearch(dataProviderType.GetInterfaces(), typeof(IDataProvider)) < 0)
+			if (Array.BinarySearch(settings.DataProviderType.GetInterfaces(), typeof(IDataProvider)) < 0)
 				throw new ArgumentException("dataProviderType is not implemented DataProvider interface.",
 					"dataProviderType");
 
-			this.dataProviderType = dataProviderType;
 			this.settings = settings;
 				
 			if (settings.ErrorOutputFilename != null)
@@ -48,6 +48,7 @@ namespace derIgel.NNTP
 			stopEvent = new ManualResetEvent(false);
 			sessions = new ArrayList();
 
+#if PERFORMANCE_COUNTERS
 			// create perfomance counters' category if necessary
 			string PerfomanceCategoryName = "RSDN NNTP Server Manager";
 			CounterCreationDataCollection perfomanceCountersCollection = new CounterCreationDataCollection();
@@ -56,17 +57,23 @@ namespace derIgel.NNTP
 			perfomanceCountersCollection.Add(sessionsCounterData);
 			if (!PerformanceCounterCategory.Exists(PerfomanceCategoryName))
 				PerformanceCounterCategory.Create(PerfomanceCategoryName, "", perfomanceCountersCollection);
+#endif
 
-			listener = new Socket(settings.EndPoint.AddressFamily, SocketType.Stream,
-				ProtocolType.Tcp);
-			listener.Bind(settings.EndPoint);
-			listener.Listen(listenConnections);
+			listeners = new Socket[settings.Bindings.Length];
+			for (int i = 0; i < settings.Bindings.Length; i++)
+			{
+				listeners[i] = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+				listeners[i].Bind(settings.Bindings[i].EndPoint);
+				listeners[i].Listen(listenConnections);
+			}
 
+#if PERFORMANCE_COUNTERS
 			// create perfomance counters
 			sessionsCounter = new PerformanceCounter(PerfomanceCategoryName,
-				sessionsCounterData.CounterName, "Port " + settings.Port, false);
+				sessionsCounterData.CounterName, settings.Name, false);
 			globalSessionsCounter = new PerformanceCounter(PerfomanceCategoryName,
 				sessionsCounterData.CounterName, "All", false);
+#endif
 
 			Start();
 		}
@@ -74,7 +81,7 @@ namespace derIgel.NNTP
 		/// <summary>
 		/// TCP Port Listener
 		/// </summary>
-		protected Socket listener = null;
+		protected Socket[] listeners;
 
 		/// <summary>
 		/// Start work
@@ -84,7 +91,8 @@ namespace derIgel.NNTP
 			stopEvent.Reset();
 			try
 			{
-				listener.BeginAccept(new AsyncCallback(AcceptClient), null);
+				foreach (Socket listener in listeners)
+					listener.BeginAccept(new AsyncCallback(AcceptClient), listener);
 			}
 			// it's okay when we stopped manager (closed socket)
 			// we can't cancel asynchronious callback
@@ -101,10 +109,12 @@ namespace derIgel.NNTP
 			{
 				try
 				{
+					// get listener socket
+					Socket listener = (Socket)ar.AsyncState;
 					// get client's socket
 					Socket socket = listener.EndAccept(ar);
 					// start listen for next client
-					listener.BeginAccept(new AsyncCallback(AcceptClient), null);
+					listener.BeginAccept(new AsyncCallback(AcceptClient), listener);
 					if (paused)
 					{
 						Response.Answer(NntpResponse.ServiceUnaviable, socket);
@@ -113,14 +123,16 @@ namespace derIgel.NNTP
 					}
 					else
 					{
-						IDataProvider dataProvider = Activator.CreateInstance(dataProviderType) as IDataProvider;
-						dataProvider.Config(settings);
+						IDataProvider dataProvider = Activator.CreateInstance(settings.DataProviderType) as IDataProvider;
+						dataProvider.Config(settings.DataProviderSettings);
 						Session session = new Session(socket, dataProvider,	stopEvent, errorOutput);
 						session.Disposed += new EventHandler(SessionDisposedHandler);
 						sessions.Add(session);
 						ThreadPool.QueueUserWorkItem(new WaitCallback(session.Process), this);
+#if PERFORMANCE_COUNTERS
 						sessionsCounter.Increment();
 						globalSessionsCounter.Increment();
+#endif
 					}
 				}
 				// it's okay when we stopped manager (closed socket)
@@ -129,7 +141,7 @@ namespace derIgel.NNTP
 				catch(Exception e)
 				{
 					#if DEBUG || SHOW
-					errorOutput.WriteLine(Util.ExpandException(e));
+					errorOutput.WriteLine(e.ToString());
 					#endif
 					throw;
 				}
@@ -142,10 +154,6 @@ namespace derIgel.NNTP
 		protected const int sessionsCheckInterval = 500;
 
 		/// <summary>
-		/// type of class for providing of data
-		/// </summary>
-		protected Type dataProviderType;
-		/// <summary>
 		/// signalled when need to pause
 		/// </summary>
 		protected bool paused = false;
@@ -157,12 +165,12 @@ namespace derIgel.NNTP
 		public void Pause()
 		{
 			errorOutput.Flush();
-			paused = false;
+			paused = true;
 		}
 
 		public void Resume()
 		{
-			paused = true;
+			paused = false;
 		}
 
 		public void Stop()
@@ -179,8 +187,10 @@ namespace derIgel.NNTP
 		public void SessionDisposedHandler(object obj, EventArgs args)
 		{
 			sessions.Remove(obj);
+#if PERFORMANCE_COUNTERS
 			sessionsCounter.Decrement();
 			globalSessionsCounter.Decrement();
+#endif
 		}
 
 		protected const int listenConnections = 100;
@@ -198,7 +208,8 @@ namespace derIgel.NNTP
 		public void Dispose()
 		{
 			// listener socket do not need shutdown
-			listener.Close();			
+			foreach (Socket listener in listeners)
+				listener.Close();			
 		}
 
 		/// <summary>
