@@ -210,6 +210,8 @@ namespace Rsdn.Mime
 			{
 				//quoted-printable
 				case "Q" :
+					// Underscore in Q-encoded header means space. See RFC #...
+					result = result.Replace("_", " ");
 					return Encoding.GetEncoding(encodedMatch.Groups["charset"].Value).GetString(
 						Util.FromQuotedPrintableString(result));
 					// base64

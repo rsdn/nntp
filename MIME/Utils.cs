@@ -161,8 +161,7 @@ namespace Rsdn.Mime
 		/// <returns>Decoded text.</returns>
 		public static byte[] FromQuotedPrintableString(string encodedText)
 		{
-			string decodedSymbols = encodedText.Replace("_", " ");
-			decodedSymbols = quotedPrintableEncodedSymbol.Replace(decodedSymbols,
+			string decodedSymbols = quotedPrintableEncodedSymbol.Replace(encodedText,
 				new MatchEvaluator(quotedPrintableEncodedSymbolMatchEvaluator));
 			decodedSymbols = quotedPrintableSoftBreaks.Replace(decodedSymbols, "");
 		
