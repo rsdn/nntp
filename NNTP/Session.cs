@@ -95,6 +95,10 @@ namespace Rsdn.Nntp
 		/// Manager (parent) object
 		/// </summary>
 		protected Manager manager;
+		public Manager Manager
+		{
+			get { return manager; }
+		}
 
 		/// <summary>
 		/// Session ID (Server name + client remote IP endpoint)
@@ -193,7 +197,7 @@ namespace Rsdn.Nntp
 			{
 				// response OK
 				Answer(new Response(dataProvider.PostingAllowed ? NntpResponse.Ok : NntpResponse.OkNoPosting,
-					null, string.Format("{0} ({1})", manager.Name, Manager.ServerID)));
+					null, manager.NamedServerID));
 
 				StringBuilder bufferString = new StringBuilder();
 				while (true)
@@ -346,13 +350,18 @@ namespace Rsdn.Nntp
 						{
 							result = new Response(NntpResponse.PostingFailed);
 						}
+						// not good....
 						catch(Exception e)
 						{
-							// not good....
-							Trace.WriteLineIf(tracing.TraceError,
-								string.Format("selected group '{0}', last request '{1}'\nError: {2}",
-								dataProvider.CurrentGroup, commandString, e.ToString()),
-								sessionID);
+							if (tracing.TraceError)
+							{
+								Trace.Indent();
+								Trace.WriteLine(
+									string.Format("Exception during processing...\n" +
+										"(selected group '{0}', last request '{1}')\n{2}",
+										dataProvider.CurrentGroup, commandString, e), sessionID);
+								Trace.Unindent();
+							}
 							result = new Response(NntpResponse.ProgramFault);
 						}
 

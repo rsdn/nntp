@@ -152,6 +152,9 @@ namespace Rsdn.Nntp.Commands
 	[NntpCommand("STAT")]
 	public class ArticleHeadBodyStat : Generic
 	{
+		/// <summary>
+		/// coomand syntaxis checker's regular expression
+		/// </summary>
 		protected static Regex ArticleHeadBodyStatSyntaxisChecker =
 			new Regex(@"(?in)^(?<command>ARTICLE|HEAD|BODY|STAT)" + 
 								@"([ \t]+((?<messageID>\<\S+\>)|(?<messageNumber>\d+)))?[ \t]*$",
@@ -533,7 +536,7 @@ namespace Rsdn.Nntp.Commands
 			if (lastMatch.Groups["mode"].Value.ToUpper() == "READER")
 				// MODE READER
 				result = new Response(session.DataProvider.PostingAllowed ? NntpResponse.Ok : NntpResponse.OkNoPosting,
-					null, Manager.ServerID);
+					null, session.Manager.NamedServerID);
 			else
 				// MODE STREAM
 				result = new Response(NntpResponse.NotRecognized);
