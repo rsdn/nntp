@@ -60,11 +60,22 @@ namespace Rsdn.Mime
 		/// </summary>
 		/// <param name="name">Name of identity.</param>
 		/// <param name="handler">Filter handler.</param>
-		public void AddFilter(string name, FilterHandler handler)
+		/// <param name="priority">Filter priority.</param>
+		public void AddFilter(string name, FilterHandler handler, int priority)
 		{
 			if (filters[name] == null)
-				filters[name] = new ArrayList();
-			((ArrayList)filters[name]).Add(handler);
+				filters[name] = new SortedList();
+			((SortedList)filters[name]).Add(priority, handler);
+		}
+
+		/// <summary>
+		/// Add header identity's filter to the chain with default priority.
+		/// </summary>
+		/// <param name="name">Name of identity.</param>
+		/// <param name="handler">Filter handler.</param>
+		public void AddFilter(string name, FilterHandler handler)
+		{
+			AddFilter(name, handler, 0);
 		}
 
 		/// <summary>
@@ -74,8 +85,13 @@ namespace Rsdn.Mime
 		/// <param name="handler">Filter handler.</param>
 		public void RemoveFilter(string name, FilterHandler handler)
 		{
-			if (filters[name] != null)
-				((ArrayList)filters[name]).Remove(handler);
+			SortedList filterList = filters[name] as SortedList;
+			if (filterList != null)
+			{
+				int position = filterList.IndexOfValue(handler);
+				if (position != -1)
+					filterList.RemoveAt(position);
+			}
 		}
 
 		/// <summary>
