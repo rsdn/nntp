@@ -381,10 +381,24 @@
             [img] тэг. С защитой от javascript.
             </summary>
         </member>
-        <member name="F:Rsdn.Framework.Formatting.TextFormatter.rxTextUrl02">
+        <member name="M:Rsdn.Framework.Formatting.TextFormatter.ProcessImages(System.Text.RegularExpressions.Match)">
+            <summary>
+            Process RSDN IMG tag
+            </summary>
+            <param name="image">Regexp match with RSDN img tag</param>
+            <returns>Formatted image value</returns>
+        </member>
+        <member name="F:Rsdn.Framework.Formatting.TextFormatter.urlTagRegex">
             <summary>
             [url] тэг.
             </summary>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.TextFormatter.ProcessURLs(System.Text.RegularExpressions.Match)">
+            <summary>
+            Process RSDN URL tag
+            </summary>
+            <param name="urlMatch">Regexp match with RSDN url tag</param>
+            <returns>Formatted url value</returns>
         </member>
         <member name="F:Rsdn.Framework.Formatting.TextFormatter.TaglineDetector">
             <summary>
@@ -453,6 +467,11 @@
         <member name="F:Rsdn.Framework.Formatting.TextFormatter.rsdnLinkDetector">
             <summary>
             Detect RSDN links - [#] tag.
+            </summary>
+        </member>
+        <member name="F:Rsdn.Framework.Formatting.TextFormatter.dashDetector">
+            <summary>
+            Detect dashes.
             </summary>
         </member>
         <member name="M:Rsdn.Framework.Formatting.TextFormatter.ProcessRsdnLink(System.Text.RegularExpressions.Match)">
