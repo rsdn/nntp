@@ -35,9 +35,8 @@ namespace Rsdn.RsdnNntp
 
 			titleLabel.Text = Rsdn.Nntp.Manager.ServerID;
 
-			Assembly.Load("RsdnNntpServer");
-			foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
-				AddAssembly(assembly);
+			AddAssembly(Assembly.Load("RsdnNntpServer"));
+			AddAssembly(Assembly.GetExecutingAssembly());
 		}
 
 		/// <summary>
@@ -145,9 +144,22 @@ namespace Rsdn.RsdnNntp
 
 		protected void AddAssembly(Assembly assembly)
 		{
-			TreeNode node = treeView.Nodes.Add(assembly.FullName);
-			foreach (AssemblyName referencedAssembly in assembly.GetReferencedAssemblies())
-				node.Nodes.Add(referencedAssembly.FullName);
+			AddAssembly(assembly, treeView.Nodes);
+		}
+
+		protected void AddAssembly(Assembly assembly, TreeNodeCollection nodes)
+		{
+			TreeNode node = nodes.Add(assembly.FullName);
+			ArrayList insertedAssemblies = null;
+			if ((node.Parent == null) || ((node.Parent.Tag as ArrayList) == null))
+				node.Tag = insertedAssemblies = new ArrayList();
+			else
+				node.Tag = insertedAssemblies = (ArrayList)node.Parent.Tag;
+
+			insertedAssemblies.Add(assembly.FullName);
+			foreach (AssemblyName referencedAssemblyName in assembly.GetReferencedAssemblies())
+				if (!insertedAssemblies.Contains(referencedAssemblyName.FullName))
+					AddAssembly(Assembly.Load(referencedAssemblyName), node.Nodes);
 		}
 	}
 }
