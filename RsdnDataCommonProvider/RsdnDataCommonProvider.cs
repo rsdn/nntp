@@ -517,7 +517,8 @@ namespace Rsdn.RsdnNntp.Common
 							(message.AuthorID != 0) ?
 								string.Format("href='/Users/Profile.aspx?uid={0}'", message.AuthorID) :
 								null,
-							formatter.Format(userInfo == null ? null : userInfo.Origin , true));
+							formatter.Format(userInfo == null ? null : userInfo.Origin , true),
+							htmlReplyMarker);
     				htmlTextBody.Entities.Add(htmlText);
     				htmlTextBody.TransferEncoding = ContentTransferEncoding.Base64;
     				htmlTextBody.ContentType = string.Format("text/html; charset=\"{0}\"", encoding.WebName);
@@ -602,6 +603,11 @@ namespace Rsdn.RsdnNntp.Common
 		/// <param name="message">Message's content.</param>
 		protected abstract void PostMessage(int mid, string group, string subject, string message);
 
+		/// <summary>
+		/// Marker to determine reply in html format.
+		/// </summary>
+		protected readonly string htmlReplyMarker = "DFA0BD11-EE3D-4DB4-98D5-FC2BDA095E3C";
+
     /// <summary>
     /// Post MIME message through data provider
     /// </summary>
@@ -678,7 +684,13 @@ namespace Rsdn.RsdnNntp.Common
 				// add tagline
 				postingText.Append(Util.CRLF).Append("[tagline]Posted via " + Manager.ServerID + "[/tagline]");
 
-				PostMessage(mid, group, Format.Forum.GetEditSubject(message.Subject), postingText.ToString());
+				string postingTextString = postingText.ToString();
+
+				if (postingTextString.IndexOf(htmlReplyMarker) >= 0)
+					throw new DataProviderException(DataProviderErrors.PostingFailed,
+						"Reply only in plain text not html. For details see http://www.rsdn.ru/projects/rsdnnntp/rsdnnntp.xml.");
+
+				PostMessage(mid, group, Format.Forum.GetEditSubject(message.Subject), postingTextString);
 			}
 			catch (DataProviderException)
 			{

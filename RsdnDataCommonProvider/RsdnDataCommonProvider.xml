@@ -513,6 +513,11 @@
             <param name="subject">Message's subject.</param>
             <param name="message">Message's content.</param>
         </member>
+        <member name="F:Rsdn.RsdnNntp.Common.RsdnDataCommonProvider.htmlReplyMarker">
+            <summary>
+            Marker to determine reply in html format.
+            </summary>
+        </member>
         <member name="M:Rsdn.RsdnNntp.Common.RsdnDataCommonProvider.PostMessage(Rsdn.Mime.Message)">
             <summary>
             Post MIME message through data provider
