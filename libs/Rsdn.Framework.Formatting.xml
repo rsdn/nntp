@@ -404,11 +404,7 @@
             <param name="image">Regexp match with RSDN img tag</param>
             <returns>Formatted image value</returns>
         </member>
-        <member name="F:Rsdn.Framework.Formatting.TextFormatter.urlTagRegex">
-            <summary>
-            [url] тэг.
-            </summary>
-        </member>
+        <!-- Badly formed XML comment ignored for member "F:Rsdn.Framework.Formatting.TextFormatter.urlTagRegex" -->
         <member name="M:Rsdn.Framework.Formatting.TextFormatter.ProcessURLs(System.Text.RegularExpressions.Match)">
             <summary>
             Process RSDN URL tag
@@ -451,16 +447,6 @@
         <member name="F:Rsdn.Framework.Formatting.TextFormatter.TaglineDetector">
             <summary>
             Detect [tagline] tag.
-            </summary>
-        </member>
-        <member name="F:Rsdn.Framework.Formatting.TextFormatter.PurlDetector">
-            <summary>
-            Detect [purl] tag.
-            </summary>
-        </member>
-        <member name="F:Rsdn.Framework.Formatting.TextFormatter.PurlRegex">
-            <summary>
-            Regex for [purl] tag.
             </summary>
         </member>
         <member name="M:Rsdn.Framework.Formatting.TextFormatter.GetMSDNRef(System.String)">
@@ -550,13 +536,6 @@
         <member name="M:Rsdn.Framework.Formatting.TextFormatter.RemoveTaglineTag(System.String)">
             <summary>
             Remove [tagline] tag from text.
-            </summary>
-            <param name="text">Original text.</param>
-            <returns>Modified text.</returns>
-        </member>
-        <member name="M:Rsdn.Framework.Formatting.TextFormatter.RemovePurlTag(System.String)">
-            <summary>
-            Remove [purl] tag from text.
             </summary>
             <param name="text">Original text.</param>
             <returns>Modified text.</returns>
