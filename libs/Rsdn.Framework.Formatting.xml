@@ -206,7 +206,21 @@
             <summary>
             Возвращает дату на начало заданного дня.
             </summary>
+            <param name="dateTime">Заданная дата.</param>
             <returns>Начало дня.</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Format.Date.GetMonthBeginning">
+            <summary>
+            Возвращает дату на начало текущего месяца.
+            </summary>
+            <returns>Начало месяца.</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Format.Date.GetMonthBeginning(System.DateTime)">
+            <summary>
+            Возвращает дату на начало заданного месяца.
+            </summary>
+            <param name="dateTime">Заданная дата.</param>
+            <returns>Начало месяца.</returns>
         </member>
         <member name="T:Rsdn.Framework.Formatting.Format.Forum">
             <summary>

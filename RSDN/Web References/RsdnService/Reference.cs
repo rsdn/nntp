@@ -405,6 +405,10 @@ namespace Rsdn.RsdnNntp.RsdnService {
         public string userType;
         
         /// <remarks/>
+        [System.ComponentModel.DefaultValueAttribute(0)]
+        public int userColor = 0;
+        
+        /// <remarks/>
         public string homePage;
         
         /// <remarks/>
@@ -469,6 +473,9 @@ namespace Rsdn.RsdnNntp.RsdnService {
         public string Email;
         
         /// <remarks/>
+        public bool Activated;
+        
+        /// <remarks/>
         public string Nick;
         
         /// <remarks/>
@@ -485,6 +492,18 @@ namespace Rsdn.RsdnNntp.RsdnService {
         
         /// <remarks/>
         public bool SendMail;
+        
+        /// <remarks/>
+        public MessageFormat MessageFormat;
+        
+        /// <remarks/>
+        public ForwardType ForwardType;
+        
+        /// <remarks/>
+        public bool StopMail;
+        
+        /// <remarks/>
+        public string AdminMessage;
         
         /// <remarks/>
         public bool Flat;
@@ -505,9 +524,6 @@ namespace Rsdn.RsdnNntp.RsdnService {
         public string Origin;
         
         /// <remarks/>
-        public bool IncorrectPassword;
-        
-        /// <remarks/>
         public string IP;
         
         /// <remarks/>
@@ -517,19 +533,16 @@ namespace Rsdn.RsdnNntp.RsdnService {
         public int TotalRate;
         
         /// <remarks/>
-        public bool StopMail;
-        
-        /// <remarks/>
         public bool IsCrawler;
         
         /// <remarks/>
-        public string AdminMessage;
-        
-        /// <remarks/>
-        public MessageFormat MessageFormat;
-        
-        /// <remarks/>
         public System.DateTime BanDate;
+        
+        /// <remarks/>
+        public string Title;
+        
+        /// <remarks/>
+        public int TitleColor;
     }
     
     /// <remarks/>
@@ -571,6 +584,20 @@ namespace Rsdn.RsdnNntp.RsdnService {
         
         /// <remarks/>
         TextHtml = 8,
+    }
+    
+    /// <remarks/>
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://rsdn.ru/ws/")]
+    public enum ForwardType {
+        
+        /// <remarks/>
+        None,
+        
+        /// <remarks/>
+        Private,
+        
+        /// <remarks/>
+        Public,
     }
     
     /// <remarks/>

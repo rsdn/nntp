@@ -467,18 +467,11 @@ namespace Rsdn.RsdnNntp
     				plainTextBody.ContentType = string.Format("text/plain; charset=\"{0}\"", encoding.WebName);
 
     				Message htmlTextBody = new Message(false);
-						string userType;
-						switch (message.userType)
+						string userType = "";
+						if (message.userType != null && message.userType.Length > 0)
 						{
-							case "rsdn": 
-								userType = string.Format("<span style=\"color: red;\">{0}</span>", message.userType);
-								break;
-							case "эксперт": 
-								userType = string.Format("<span style=\"color: green;\">{0}</span>", message.userType);
-								break;
-							default :
-								userType = message.userType;
-								break;
+							userType = string.Format("<span style=\"color: #{0:x6};\">{1}</span>",
+								message.userColor, message.userType);
 						}
     				string htmlText = string.Format(htmlMessageTemplate, message.authorid, message.author,
     					message.gid, message.id, formatMessage.Format(message.message, true), userType,

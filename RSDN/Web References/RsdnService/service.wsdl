@@ -49,27 +49,30 @@
           <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="Password" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="Email" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="Activated" type="s:boolean" />
           <s:element minOccurs="0" maxOccurs="1" name="Nick" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="PublicEmail" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="RealName" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="HomePage" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="Specialization" type="s:string" />
           <s:element minOccurs="1" maxOccurs="1" name="SendMail" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="MessageFormat" type="s0:MessageFormat" />
+          <s:element minOccurs="1" maxOccurs="1" name="ForwardType" type="s0:ForwardType" />
+          <s:element minOccurs="1" maxOccurs="1" name="StopMail" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="AdminMessage" type="s:string" />
           <s:element minOccurs="1" maxOccurs="1" name="Flat" type="s:boolean" />
           <s:element minOccurs="1" maxOccurs="1" name="DefaultFlat" type="s:boolean" />
           <s:element minOccurs="1" maxOccurs="1" name="PageCount" type="s:int" />
           <s:element minOccurs="0" maxOccurs="1" name="Picture" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="WhereFrom" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="Origin" type="s:string" />
-          <s:element minOccurs="1" maxOccurs="1" name="IncorrectPassword" type="s:boolean" />
           <s:element minOccurs="0" maxOccurs="1" name="IP" type="s:string" />
           <s:element minOccurs="1" maxOccurs="1" name="PersonRate" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="TotalRate" type="s:int" />
-          <s:element minOccurs="1" maxOccurs="1" name="StopMail" type="s:boolean" />
           <s:element minOccurs="1" maxOccurs="1" name="IsCrawler" type="s:boolean" />
-          <s:element minOccurs="0" maxOccurs="1" name="AdminMessage" type="s:string" />
-          <s:element minOccurs="1" maxOccurs="1" name="MessageFormat" type="s0:MessageFormat" />
           <s:element minOccurs="1" maxOccurs="1" name="BanDate" type="s:dateTime" />
+          <s:element minOccurs="0" maxOccurs="1" name="Title" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="TitleColor" type="s:int" />
         </s:sequence>
       </s:complexType>
       <s:simpleType name="UserRole">
@@ -93,6 +96,13 @@
             </s:restriction>
           </s:simpleType>
         </s:list>
+      </s:simpleType>
+      <s:simpleType name="ForwardType">
+        <s:restriction base="s:string">
+          <s:enumeration value="None" />
+          <s:enumeration value="Private" />
+          <s:enumeration value="Public" />
+        </s:restriction>
       </s:simpleType>
       <s:element name="GetGroupList">
         <s:complexType>
@@ -180,6 +190,7 @@
           <s:element minOccurs="0" maxOccurs="1" name="message" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="fmtmessage" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="userType" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" default="0" name="userColor" type="s:int" />
           <s:element minOccurs="0" maxOccurs="1" name="homePage" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="group" type="s:string" />
         </s:sequence>
