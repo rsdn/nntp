@@ -44,7 +44,7 @@ namespace derIgel.NNTP
 		/// sessions' perfomance counter
 		/// </summary>
 		PerformanceCounter sessionsCounter;
-	
+    	
 		/// <summary>
 		/// NNTP Connection Manager constructor
 		/// dataProvider is provider of data
@@ -70,13 +70,13 @@ namespace derIgel.NNTP
 			sessions = new ArrayList();
 
 			// create perfomance counters' category if necessary
+			string PerfomanceCategoryName = "RSDN NNTP Server Manager";
 			CounterCreationDataCollection perfomanceCountersCollection = new CounterCreationDataCollection();
 			CounterCreationData sessionsCounterData = new CounterCreationData("Sessions",
 				"Count of client's sessions",	PerformanceCounterType.NumberOfItems32);
 			perfomanceCountersCollection.Add(sessionsCounterData);
-			string categoryName = "RSDN NNTP Server";
-			if (!PerformanceCounterCategory.Exists(categoryName))
-				PerformanceCounterCategory.Create(categoryName, "", perfomanceCountersCollection);
+			if (!PerformanceCounterCategory.Exists(PerfomanceCategoryName))
+				PerformanceCounterCategory.Create(PerfomanceCategoryName, "", perfomanceCountersCollection);
 
 			listener = new Socket(settings.EndPoint.AddressFamily, SocketType.Stream,
 				ProtocolType.Tcp);
@@ -84,7 +84,7 @@ namespace derIgel.NNTP
 			listener.Listen(listenConnections);
 
 			// create perfomance counters
-			sessionsCounter = new PerformanceCounter(categoryName,
+			sessionsCounter = new PerformanceCounter(PerfomanceCategoryName,
 				sessionsCounterData.CounterName, "Port " + settings.Port, false);
 
 			Start();

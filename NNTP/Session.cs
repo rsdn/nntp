@@ -8,6 +8,7 @@ using System.Reflection;
 using derIgel.NNTP.Commands;
 using System.Text.RegularExpressions;
 using derIgel.MIME;
+using System.Diagnostics;
 
 namespace derIgel.NNTP
 {
@@ -45,6 +46,19 @@ namespace derIgel.NNTP
 
 		}
 
+		/// <summary>
+		/// perfomance counter for requests
+		/// </summary>
+		PerformanceCounter requestsCounter;
+		/// <summary>
+		/// perfomance counter for not performed requests
+		/// </summary>
+		PerformanceCounter badRequestsCounter;
+		/// <summary>
+		/// perfomance counter transfered articles
+		/// </summary>
+		PerformanceCounter articlesCounter;
+
 		public Session(Socket client, IDataProvider dataProvider, WaitHandle exitEvent, Statistics stat,
 			TextWriter errorOutput)
 		{
@@ -65,6 +79,28 @@ namespace derIgel.NNTP
 				commands[entry.Key] = 
 					Activator.CreateInstance((Type)entry.Value, new Object[]{this});
 
+			// create perfomance counters' category if necessary
+			string PerfomanceCategoryName = "RSDN NNTP Server Sessions";
+			CounterCreationDataCollection perfomanceCountersCollection = new CounterCreationDataCollection();
+			CounterCreationData requestsCounterData = new CounterCreationData("Requests",
+				"Count of client's requests",	PerformanceCounterType.NumberOfItems32);
+			perfomanceCountersCollection.Add(requestsCounterData );
+			CounterCreationData badRequestsCounterData = new CounterCreationData("Not performed requests",
+				"Count of not performed client's requests",	PerformanceCounterType.NumberOfItems32);
+			perfomanceCountersCollection.Add(badRequestsCounterData );
+			CounterCreationData articlesCounterData = new CounterCreationData("Articles",
+				"Count of transfered articles",	PerformanceCounterType.NumberOfItems32);
+			perfomanceCountersCollection.Add(articlesCounterData );
+			if (!PerformanceCounterCategory.Exists(PerfomanceCategoryName))
+				PerformanceCounterCategory.Create(PerfomanceCategoryName, "", perfomanceCountersCollection);
+
+			// create perfomance counters
+			requestsCounter = new PerformanceCounter(PerfomanceCategoryName,
+				requestsCounterData .CounterName, "Client " + client.RemoteEndPoint.ToString(), false);
+			badRequestsCounter = new PerformanceCounter(PerfomanceCategoryName,
+				badRequestsCounterData .CounterName, "Client " + client.RemoteEndPoint.ToString(), false);
+			articlesCounter = new PerformanceCounter(PerfomanceCategoryName,
+				articlesCounterData .CounterName, "Client " + client.RemoteEndPoint.ToString(), false);
 		}
 
 		protected static Hashtable commandsTypes;
@@ -152,6 +188,7 @@ namespace derIgel.NNTP
 									command = commandString.Split(new char[]{' ', '\t', '\r'}, 2)[0].ToUpper();
 
 									stat.AddStatistic(command);
+									requestsCounter.Increment();
 
 									Commands.Generic nntpCommand = commands[command] as Commands.Generic;
 									// check suppoting command
@@ -241,12 +278,22 @@ namespace derIgel.NNTP
 #endif
 
 						if (result.Code >= 400)
+						// result code indicates error
+						{
+							badRequestsCounter.Increment();
 							stat.AddError(result.Code, commandString);
+						}
 
 						stat.CheckSend();
 
 						switch(result.Code)
 						{
+							case 220:
+							case 221:
+							case 222:
+							case 223:
+								articlesCounter.Increment();
+								break;
 							case 205: // quit
 							case 400: // service disctontined
 							case 401: // service unaviable
