@@ -122,6 +122,7 @@ namespace Rsdn.RsdnNntp.Common
     public RsdnDataCommonProvider() : base()
     {
     	encoding = System.Text.Encoding.UTF8;
+			formatter = new TextFormatter();
     }
 
 		/// <summary>
@@ -433,7 +434,7 @@ namespace Rsdn.RsdnNntp.Common
 		/// <summary>
 		/// RSDN text formatter.
 		/// </summary>
-		protected TextFormatter formatter = new TextFormatter();
+		protected TextFormatter formatter;
 
 		/// <summary>
 		/// Image processor
@@ -451,9 +452,6 @@ namespace Rsdn.RsdnNntp.Common
     protected NewsArticle ToNNTPArticle(IArticle message, string newsgroup,
 			NewsArticle.Content content)
     {
-
-				//new NntpTextFormatter(serverName, Proxy, style);
-
 			NewsArticle newsMessage = new NewsArticle("<" + message.ID + message.Postfix + ">",
     		new string[]{newsgroup}, new int[]{message.Number}, content);
     	newsMessage.HeaderEncoding = encoding;
