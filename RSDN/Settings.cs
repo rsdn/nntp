@@ -1,11 +1,12 @@
 using System;
-using System.ComponentModel;
 using System.Collections;
+using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Xml.Serialization;
 using System.Net;
 
 using Rsdn.Nntp;
+using Rsdn.Nntp.Cache;
 
 namespace Rsdn.RsdnNntp
 {
@@ -51,7 +52,7 @@ namespace Rsdn.RsdnNntp
 	/// Settings for RSDN Data Provider
 	/// </summary>
 	[Serializable]
-	public class DataProviderSettings : MarshalByRefObject
+	public class DataProviderSettings : CacheDataProviderSettings
 	{
 		/// <summary>
 		/// Initialize settings.
@@ -124,16 +125,6 @@ namespace Rsdn.RsdnNntp
 		{
 			get { return new ProxySettings(proxy); }
 			set	{ proxy = value.Proxy; }
-		}
-
-		protected int cacheSize;
-		[Category("Others")]
-		[DefaultValue(0)]
-		[Description("Cache size (0 - disabled)")]
-		public int CacheSize
-		{
-			get {return cacheSize;}
-			set {cacheSize = value;}
 		}
 
 		protected System.Text.Encoding encoding;

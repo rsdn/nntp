@@ -1,28 +1,58 @@
 using System;
 using System.ComponentModel;
+using System.Xml.Serialization;
 
 namespace Rsdn.Nntp.Cache
 {
 	/// <summary>
+	/// Type of cache to use.
+	/// </summary>
+	public enum CacheType
+	{
+		/// <summary>
+		/// No cache
+		/// </summary>
+		None,
+		/// <summary>
+		/// Only in memory cache
+		/// </summary>
+		Memory,
+		/// <summary>
+		/// Permanent cache
+		/// </summary>
+		Persistent
+	}
+
+	/// <summary>
 	/// Summary description for CacheDataProviderSettings.
 	/// </summary>
+	[Serializable]
 	public class CacheDataProviderSettings
 	{
 		public CacheDataProviderSettings()
 		{
 		}
 
-		protected bool enabled = false;
+		protected CacheType cacheType = CacheType.None;
 
-		[DefaultValue(false)]
-		public bool Enabled
+		[DefaultValue(CacheType.None)]
+		public CacheType Cache
 		{
-			get { return enabled; }
-			set { enabled = value; }
+			get { return cacheType; }
+			set { cacheType = value; }
 		}
 
 		protected TimeSpan absoluteExpiration;
 
+		[XmlElement(DataType = "duration")]
+		[Browsable(false)]
+		public string Absolute
+		{
+			get { return absoluteExpiration.ToString(); }
+			set { absoluteExpiration = TimeSpan.Parse(value); }
+		}
+
+		[XmlIgnore]
 		public TimeSpan AbsoluteExpiration
 		{
 			get { return absoluteExpiration; }

@@ -16,6 +16,7 @@ using Rsdn.Framework.Formatting;
 
 using Rsdn.Mime;
 using Rsdn.Nntp;
+using Rsdn.Nntp.Cache;
 using Rsdn.RsdnNntp.ru.rsdn;
 
 namespace Rsdn.RsdnNntp
@@ -23,7 +24,7 @@ namespace Rsdn.RsdnNntp
   /// <summary>
   /// RSDN Data Provider
   /// </summary>
-  public class RsdnDataProvider : IDataProvider
+  public class RsdnDataProvider : CacheDataProvider
   {
 		/// <summary>
 		/// Authentificate cache
@@ -40,10 +41,6 @@ namespace Rsdn.RsdnNntp
     protected static string referencesCacheFilename = 
     	Assembly.GetExecutingAssembly().GetName().Name + ".references.cache";
 
-    /// <summary>
-    /// Cache of messages
-    /// </summary>
-    static protected Cache cache = new Cache();
     /// <summary>
     /// Filename of messages cache
     /// </summary>
@@ -62,15 +59,15 @@ namespace Rsdn.RsdnNntp
     static RsdnDataProvider()
     {
     	// load messages cache
-    	try
-    	{
-    		if (File.Exists(cacheFilename))
-    			cache = (Cache)Deserialize(cacheFilename);
-    	}
-    	catch (Exception e)
-    	{
-    		logger.Error("Messages cache corrupted", e);
-    	}
+//    	try
+//    	{
+//    		if (File.Exists(cacheFilename))
+//    			cache = (Cache)Deserialize(cacheFilename);
+//    	}
+//    	catch (Exception e)
+//    	{
+//    		logger.Error("Messages cache corrupted", e);
+//    	}
 
     	// load references cache
     	try
@@ -87,15 +84,16 @@ namespace Rsdn.RsdnNntp
     /// <summary>
     /// Save caches at the end of work
     /// </summary>
-    public void Dispose()
+    public override void Dispose()
     {
-    	// save message cache
-    	lock (cache)
-    		Serialize(cache, cacheFilename);
-
+//    	// save message cache
+//    	lock (cache)
+//    		Serialize(cache, cacheFilename);
     	// save references cache
     	lock (referenceCache)
     		Serialize(referenceCache, referencesCacheFilename);
+
+			base.Dispose();
     }
 
     /// <summary>
@@ -146,7 +144,7 @@ namespace Rsdn.RsdnNntp
     protected string username = "";
     protected string password = "";
 
-    public NewsGroup GetGroup(string groupName)
+    public override NewsGroup GetGroup(string groupName)
     {
     	group requestedGroup = null;
     	try
@@ -184,78 +182,51 @@ namespace Rsdn.RsdnNntp
 		/// <param name="groupName"></param>
 		/// <param name="content"></param>
 		/// <returns></returns>
-    public NewsArticle GetArticle(int articleNumber, string groupName, NewsArticle.Content content)
+    public override NewsArticle GetNonCachedArticle(int articleNumber, string groupName, NewsArticle.Content content)
     {
-    	NewsArticle newsMessage = null;
-    	// access to cache
-    	lock(cache)
-    		if (cache.Capacity > 0)
-    			newsMessage = cache[groupName, articleNumber];
-
-    	if (newsMessage == null)
+    	article message = null;
+    	try
     	{
-    		article message = null;
-    		try
-    		{
-    			message = webService.GetArticle(groupName, articleNumber, username,	password);
-    			if (message.error != null)
-    				ProcessErrorMessage(message.error);
-    		}
-    		catch (System.Exception exception)
-    		{
-    			ProcessException(exception);
-    		}	
-
-    		// update refenece cache
-    		UpdateReferences(message);
-
-    		newsMessage = ToNNTPArticle(message, groupName, content);
-    		// access to cache
-    		lock(cache)
-    			if (cache.Capacity > 0)
-    				cache[newsMessage.MessageID, groupName, articleNumber] =	newsMessage;
+    		message = webService.GetArticle(groupName, articleNumber, username,	password);
+    		if (message.error != null)
+    			ProcessErrorMessage(message.error);
     	}
+    	catch (System.Exception exception)
+    	{
+    		ProcessException(exception);
+    	}	
+
+    	// update refenece cache
+    	UpdateReferences(message);
+
+    	NewsArticle newsMessage = ToNNTPArticle(message, groupName, content);
 
     	return newsMessage;
     }
 
     static protected readonly Regex messageIdNumber =
     	new Regex(@"<(?<messageIdNumber>\d+)@\S+>", RegexOptions.Compiled);
-    public NewsArticle GetArticle(string messageID, NewsArticle.Content content)
+    public override NewsArticle GetNonCachedArticle(string messageID, NewsArticle.Content content)
     {
-    	NewsArticle newsMessage = null;
-    	// access to cache
-    	lock(cache)
-    		if (cache.Capacity > 0)
-    			newsMessage = cache[messageID];
-
-    	if (newsMessage == null)
+    	article message = null;
+    	try
     	{
-    		article message = null;
-    		try
-    		{
-    			int mID = int.Parse(messageIdNumber.Match(messageID).Groups["messageIdNumber"].Value);
-    			message = webService.GetArticleByID(mID , username,	password);
-    			if (message.error != null)
-    				ProcessErrorMessage(message.error);
-    		}
-    		catch (System.Exception exception)
-    		{
-    			ProcessException(exception);
-    		}	
-
-    		newsMessage = ToNNTPArticle(message, message.group, content);
-    		// access to cache
-    		lock(cache)
-    			if (cache.Capacity > 0)
-						// since article may belong to several groups, put it to cache without connection to specific group
-    				cache[newsMessage.MessageID, "", 0] =	newsMessage;
+    		int mID = int.Parse(messageIdNumber.Match(messageID).Groups["messageIdNumber"].Value);
+    		message = webService.GetArticleByID(mID , username,	password);
+    		if (message.error != null)
+    			ProcessErrorMessage(message.error);
     	}
+    	catch (System.Exception exception)
+    	{
+    		ProcessException(exception);
+    	}	
+
+    	NewsArticle newsMessage = ToNNTPArticle(message, message.group, content);
 
     	return newsMessage;
     }
 
-    public NewsArticle GetNextArticle(int messageNumber, string groupName)
+    public override NewsArticle GetNextArticle(int messageNumber, string groupName)
     {
     	NewsArticle[] articleList = GetArticleList(messageNumber + 1, int.MaxValue,
     		groupName, NewsArticle.Content.Header);
@@ -266,7 +237,7 @@ namespace Rsdn.RsdnNntp
     	return articleList[0];
     }
 
-    public NewsArticle GetPrevArticle(int messageNumber, string groupName)
+    public override NewsArticle GetPrevArticle(int messageNumber, string groupName)
     {
     	NewsArticle[] articleList = GetArticleList(currentGroupArticleStartNumber,
     		messageNumber - 1,	groupName, NewsArticle.Content.Header);
@@ -283,7 +254,7 @@ namespace Rsdn.RsdnNntp
 		/// <param name="startDate">Start date.</param>
 		/// <param name="pattern">Match patter for groups' names. Null if none.</param>
 		/// <returns></returns>
-    public NewsGroup[] GetGroupList(DateTime startDate, string pattern)
+    public override NewsGroup[] GetGroupList(DateTime startDate, string pattern)
     {
     	// minimum date, supported by web service, is unknown...
     	// So take midnight of 30 december 1899
@@ -322,12 +293,12 @@ namespace Rsdn.RsdnNntp
 		/// <param name="date">Start date.</param>
 		/// <param name="pattern">Group name patterns.</param>
 		/// <returns>List of articles.</returns>
-    public NewsArticle[] GetArticleList(System.DateTime date, string[] patterns)
+    public override NewsArticle[] GetArticleList(System.DateTime date, string[] patterns)
     {
     	throw new DataProviderException(DataProviderErrors.NotSupported);
     }
 
-    public bool Authentificate(string user, string pass)
+    public override bool Authentificate(string user, string pass)
     {
 			// if in cache - auth ok
 			if (authCache.Contains(user.GetHashCode()))
@@ -493,7 +464,7 @@ namespace Rsdn.RsdnNntp
     	return newsMessage;
     }
 
-    public NewsArticle[] GetArticleList(int startNumber, int endNumber, string groupName, NewsArticle.Content content)
+    public override NewsArticle[] GetArticleList(int startNumber, int endNumber, string groupName, NewsArticle.Content content)
     {
     	article_list articleList = null;
     	try
@@ -533,7 +504,7 @@ namespace Rsdn.RsdnNntp
     /// Post MIME message through data provider
     /// </summary>
     /// <param name="message"></param>
-    public void PostMessage(Message message)
+    public override void PostMessage(Message message)
     {
     	try
     	{
@@ -615,7 +586,7 @@ namespace Rsdn.RsdnNntp
     /// <summary>
     /// Initial session's state for this data provider
     /// </summary>
-    public Session.States InitialSessionState
+    public override Session.States InitialSessionState
     {
     	get
     	{
@@ -626,7 +597,7 @@ namespace Rsdn.RsdnNntp
     /// <summary>
     /// Posting are allowed or not for this data provider 
     /// </summary>
-    public bool PostingAllowed
+    public override bool PostingAllowed
     {
     	get
     	{
@@ -638,8 +609,10 @@ namespace Rsdn.RsdnNntp
     /// Configures data provider
     /// </summary>
     /// <param name="settings"></param>
-    public void Config(object settings)
+    public override void Config(object settings)
     {
+			base.Config(settings);
+
     	DataProviderSettings rsdnSettings = settings as DataProviderSettings;
     	if (rsdnSettings != null)
     	{
@@ -657,7 +630,6 @@ namespace Rsdn.RsdnNntp
 						break;
 				}
     		encoding = rsdnSettings.GetEncoding;
-    		cache.Capacity = rsdnSettings.CacheSize;
     		style = rsdnSettings.Formatting;
     	}
     }
@@ -683,7 +655,7 @@ namespace Rsdn.RsdnNntp
 		/// Get necessary configuration object type
 		/// </summary>
 		/// <returns></returns>
-    public System.Type GetConfigType()
+    public override System.Type GetConfigType()
     {
     	return typeof(DataProviderSettings);
     }
@@ -715,7 +687,7 @@ namespace Rsdn.RsdnNntp
 		/// <summary>
 		/// Identity of assembly (name version)
 		/// </summary>
-    public string Identity
+    public override string Identity
     {
     	get
     	{
@@ -728,7 +700,7 @@ namespace Rsdn.RsdnNntp
 		/// </summary>
 		/// <param name="messageID"></param>
 		/// <returns></returns>
-		public bool WantArticle(string messageID)
+		public override bool WantArticle(string messageID)
 		{
 			return false;
 		}

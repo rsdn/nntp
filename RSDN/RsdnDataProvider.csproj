@@ -131,11 +131,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Cache.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "DataProvider.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
