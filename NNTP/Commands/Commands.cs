@@ -14,8 +14,8 @@ using Rsdn.Nntp;
 
 namespace Rsdn.Nntp.Commands
 {
-	/// See RFC  977 'Network News Transport Protocol'
-	/// See RFC 2980 'Common NNTP Extensions'
+	// See RFC  977 'Network News Transport Protocol'
+	// See RFC 2980 'Common NNTP Extensions'
 	
 	/// <summary>
 	/// Generic NNTP client command
@@ -29,6 +29,10 @@ namespace Rsdn.Nntp.Commands
 		public const string CommandCategoryName = "RSDN NNTP Command";
 #endif
 
+		/// <summary>
+		/// Create command handler for specific session.
+		/// </summary>
+		/// <param name="session">Parent NNTP session.</param>
 		public Generic(Session session)
 		{
 			syntaxisChecker = null;
@@ -58,6 +62,11 @@ namespace Rsdn.Nntp.Commands
 		protected Session.States allowedStates;
 		protected Session.States prohibitedStates;
 
+		/// <summary>
+		/// Check if command is allowed in specified state.
+		/// </summary>
+		/// <param name="state">Necessary state.</param>
+		/// <returns>True if allowed.</returns>
 		public bool IsAllowed(Session.States state)
 		{
 			// not prohibited 
@@ -72,6 +81,9 @@ namespace Rsdn.Nntp.Commands
 			return false;
 		}
 
+		/// <summary>
+		/// Identification string for this assembly.
+		/// </summary>
 		protected static readonly string nntpID = Assembly.GetExecutingAssembly().GetName().Name + " " +
 			Assembly.GetExecutingAssembly().GetName().Version;
 
@@ -97,17 +109,28 @@ namespace Rsdn.Nntp.Commands
 	[NntpCommand("XOVER")]
 	public class Xover : Generic
 	{
+		/// <summary>
+		/// Syntaxis checker for XOVER command.
+		/// </summary>
 		protected static Regex XoverSyntaxisChecker =
 			new Regex(@"(?in)^XOVER([ \t]+(?<startNumber>\d+)" + 
 								@"([ \t]*(?<dash>-)[ \t]*(?<endNumber>\d+)?)?)?[ \t]*$",
 								RegexOptions.Compiled);
 
+		/// <summary>
+		/// Create XOVER command handler.
+		/// </summary>
+		/// <param name="session">Parent NNTP session.</param>
 		public Xover(Session session) : base(session)
 		{
 			allowedStates = Session.States.Normal;
 			syntaxisChecker = XoverSyntaxisChecker;
 		}
 
+		/// <summary>
+		/// Process XOVER command.
+		/// </summary>
+		/// <returns>Server's NNTP response</returns>
 		protected override Response ProcessCommand()
 		{
 			NewsArticle[] articleList;
@@ -143,7 +166,7 @@ namespace Rsdn.Nntp.Commands
 	}
 
 	/// <summary>
-	/// Common class for ARTICLE, HEAD, BODY & STAT client commands
+	/// Common class for ARTICLE, HEAD, BODY, STAT client commands
 	/// </summary>
 	[NntpCommand("ARTICLE")]
 	[NntpCommand("HEAD")]
@@ -152,19 +175,27 @@ namespace Rsdn.Nntp.Commands
 	public class ArticleHeadBodyStat : Generic
 	{
 		/// <summary>
-		/// coomand syntaxis checker's regular expression
+		/// Coomand syntaxis checker's regular expression
 		/// </summary>
 		protected static Regex ArticleHeadBodyStatSyntaxisChecker =
 			new Regex(@"(?in)^(?<command>ARTICLE|HEAD|BODY|STAT)" + 
 								@"([ \t]+((?<messageID>\<\S+\>)|(?<messageNumber>\d+)))?[ \t]*$",
 								RegexOptions.Compiled);
 
+		/// <summary>
+		/// Create command handler.
+		/// </summary>
+		/// <param name="session">Parent NNTP session.</param>
 		public ArticleHeadBodyStat(Session session) : base(session)	
 		{
 			allowedStates = Session.States.Normal;
 			syntaxisChecker = ArticleHeadBodyStatSyntaxisChecker;
 		}
 
+		/// <summary>
+		/// Process commands.
+		/// </summary>
+		/// <returns>Server's NNTP response</returns>
 		protected override Response ProcessCommand()
 		{
 			NntpResponse responseCode;
@@ -221,15 +252,26 @@ namespace Rsdn.Nntp.Commands
 	[NntpCommand("NEXT")]
 	public class Next : Generic
 	{
+		/// <summary>
+		/// NEXT command syntaxis checker
+		/// </summary>
 		protected static Regex NextSyntaxisChecker =
 			new Regex(@"(?in)^NEXT[ \t]*$",	RegexOptions.Compiled);
 
+		/// <summary>
+		/// Create NEXT command handler.
+		/// </summary>
+		/// <param name="session">Parent NNTP session.</param>
 		public Next(Session session) : base(session)
 		{
 			allowedStates = Session.States.Normal;
 			syntaxisChecker = NextSyntaxisChecker;
 		}
 
+		/// <summary>
+		/// Process command.
+		/// </summary>
+		/// <returns>Server's NNTP response</returns>
 		protected override Response ProcessCommand()
 		{
 			NewsArticle article = session.DataProvider.GetNextArticle();
@@ -244,15 +286,26 @@ namespace Rsdn.Nntp.Commands
 	[NntpCommand("LAST")]
 	public class Last : Generic
 	{
+		/// <summary>
+		/// LAST command syntaxis checker.
+		/// </summary>
 		protected static Regex LastSyntaxisChecker =
 			new Regex(@"(?in)^LAST[ \t]*$", RegexOptions.Compiled);
 
+		/// <summary>
+		/// Create command handler.
+		/// </summary>
+		/// <param name="session">Parent NNTP session.</param>
 		public Last(Session session) : base(session)
 		{
 			allowedStates = Session.States.Normal;
 			syntaxisChecker = LastSyntaxisChecker;
 		}
 
+		/// <summary>
+		/// Process command.
+		/// </summary>
+		/// <returns>Server's NNTP response</returns>
 		protected override Response ProcessCommand()
 		{
 			NewsArticle article = session.DataProvider.GetPrevArticle();
@@ -276,6 +329,10 @@ namespace Rsdn.Nntp.Commands
 			syntaxisChecker = GroupSyntaxisChecker;
 		}
 
+		/// <summary>
+		/// Process command.
+		/// </summary>
+		/// <returns>Server's NNTP response</returns>
 		protected override Response ProcessCommand()
 		{
 			string groupName = lastMatch.Groups["groupName"].Value;
@@ -308,12 +365,21 @@ namespace Rsdn.Nntp.Commands
 			headerItems.Add("lines");
 			headerItems.Add("xref");
 		}
+
+		/// <summary>
+		/// Create command handler.
+		/// </summary>
+		/// <param name="session">Parent NNTP session.</param>
 		public List(Session session) : base(session)
 		{
 			allowedStates = Session.States.Normal;
 			syntaxisChecker = ListSyntaxisChecker;
 		}
 
+		/// <summary>
+		/// Process command.
+		/// </summary>
+		/// <returns>Server's NNTP response</returns>
 		protected override Response ProcessCommand()
 		{
 			StringBuilder textResponse = new StringBuilder();
@@ -347,18 +413,29 @@ namespace Rsdn.Nntp.Commands
 	[NntpCommand("NEWGROUPS")]
 	public class NewGroups : Generic
 	{
+		/// <summary>
+		/// NEWGROUPS command syntaxis checker.
+		/// </summary>
 		protected static Regex NewGroupsSyntaxisChecker =
 			new	Regex(@"(?in)^NEWGROUPS[ \t]+(?<date>\d{6}[ \t]+\d{6})" +
 								@"([ \t]+(?<timezone>GMT))?([ \t]+" +
 								@"<(?<distributions>\w+(.\w+)*(,\w+(.\w+)*)*)>)?[ \t]*$",
 								RegexOptions.Compiled);
 
+		/// <summary>
+		/// Create command handler.
+		/// </summary>
+		/// <param name="session">Parent NNTP session.</param>
 		public NewGroups(Session session) : base(session)
 		{
 			allowedStates = Session.States.Normal;
 			syntaxisChecker = NewGroupsSyntaxisChecker;
 		}
 
+		/// <summary>
+		/// Process command.
+		/// </summary>
+		/// <returns>Server's NNTP Resaponse.</returns>
 		protected override Response ProcessCommand()
 		{
 			try
@@ -406,12 +483,20 @@ namespace Rsdn.Nntp.Commands
 								@"<(?<distributions>\w+(.\w+)*(,\w+(.\w+)*)*)>)?[ \t]*$",
 								RegexOptions.Compiled);
 
+		/// <summary>
+		/// Create command handler.
+		/// </summary>
+		/// <param name="session">Parent NNTP session.</param>
 		public NewNews(Session session) : base(session)
 		{
 			allowedStates = Session.States.Normal;
 			syntaxisChecker = NewNewsSyntaxisChecker;
 		}
 
+		/// <summary>
+		/// Process command.
+		/// </summary>
+		/// <returns>Server's NNTP response</returns>
 		protected override Response ProcessCommand()
 		{
 			try
@@ -459,15 +544,26 @@ namespace Rsdn.Nntp.Commands
 	[NntpCommand("POST")]
 	public class Post : Generic
 	{
+		/// <summary>
+		/// Command syntaxis checker.
+		/// </summary>
 		protected static Regex PostSyntaxisChecker =
 			new Regex(@"(?in)^POST[ \t]*$", RegexOptions.Compiled);
 
+		/// <summary>
+		/// Create command handler.
+		/// </summary>
+		/// <param name="session">Parent NNTP session.</param>
 		public Post(Session session) : base(session)
 		{
 			allowedStates = Session.States.Normal;
 			syntaxisChecker = PostSyntaxisChecker;
 		}
 
+		/// <summary>
+		/// Process command.
+		/// </summary>
+		/// <returns>Server's NNTP response</returns>
 		protected override Response ProcessCommand()
 		{
 			session.sessionState = Session.States.PostWaiting;
@@ -481,14 +577,25 @@ namespace Rsdn.Nntp.Commands
 	[NntpCommand("QUIT")]
 	public class Quit : Generic
 	{
+		/// <summary>
+		/// Command syntaxis checker.
+		/// </summary>
 		protected static Regex QuitSyntaxisChecker =
 			new Regex(@"(?in)^QUIT[ \t]*$", RegexOptions.Compiled);
 
+		/// <summary>
+		/// Create command handler.
+		/// </summary>
+		/// <param name="session">Parent NNTP session.</param>
 		public Quit(Session session) : base(session)
 		{
 			syntaxisChecker = QuitSyntaxisChecker;
 		}
 
+		/// <summary>
+		/// Process command.
+		/// </summary>
+		/// <returns>Server's NNTP response</returns>
 		protected override Response ProcessCommand()
 		{
 			return new Response(NntpResponse.Bye);
@@ -501,14 +608,25 @@ namespace Rsdn.Nntp.Commands
 	[NntpCommand("SLAVE")]
 	public class Slave : Generic
 	{
+		/// <summary>
+		/// Command syntaxis checker.
+		/// </summary>
 		protected static Regex SlaveSyntaxisChecker =
 			new	Regex(@"(?in)^SLAVE[ \t]*$", RegexOptions.Compiled);
 
+		/// <summary>
+		/// Create command handler.
+		/// </summary>
+		/// <param name="session">Parent NNTP session.</param>
 		public Slave(Session session) : base(session)
 		{
 			syntaxisChecker = SlaveSyntaxisChecker;
 		}
 
+		/// <summary>
+		/// Process command.
+		/// </summary>
+		/// <returns>Server's NNTP response</returns>
 		protected override Response ProcessCommand()
 		{
 			return new Response(NntpResponse.Slave); // ok
@@ -521,14 +639,25 @@ namespace Rsdn.Nntp.Commands
 	[NntpCommand("MODE")]
 	public class Mode : Generic
 	{
+		/// <summary>
+		/// Command syntaxis checker.
+		/// </summary>
 		protected static Regex ModeSyntaxisChecker =
 			new Regex(@"(?in)^MODE[ \t]+(?<mode>READER|STREAM)[ \t]*$",	RegexOptions.Compiled);
 
+		/// <summary>
+		/// Create command handler.
+		/// </summary>
+		/// <param name="session">Parent NNTP session.</param>
 		public Mode(Session session) : base(session)
 		{
 			syntaxisChecker = ModeSyntaxisChecker;
 		}
 
+		/// <summary>
+		/// Process command.
+		/// </summary>
+		/// <returns>Server's NNTP response</returns>
 		protected override Response ProcessCommand()
 		{
 			Response result;
@@ -549,15 +678,26 @@ namespace Rsdn.Nntp.Commands
 	[NntpCommand("AUTHINFO")]
 	public class AuthInfo : Generic
 	{
+		/// <summary>
+		/// Command syntaxis checker.
+		/// </summary>
 		protected static Regex AuthInfoSyntaxisChecker = 
 			new	Regex(@"(?in)^AUTHINFO[ \t]+(?<mode>USER|PASS)[ \t]+(?<param>\S+)[ \t]*$",
 								RegexOptions.Compiled);
 
+		/// <summary>
+		/// Create command handler.
+		/// </summary>
+		/// <param name="session">Parent NNTP session.</param>
 		public AuthInfo(Session session) : base(session)
 		{
 			syntaxisChecker = AuthInfoSyntaxisChecker;
 		}
 
+		/// <summary>
+		/// Process command.
+		/// </summary>
+		/// <returns>Server's NNTP response</returns>
 		protected override Response ProcessCommand()
 		{
 			Response result = null;
@@ -619,14 +759,25 @@ namespace Rsdn.Nntp.Commands
 	[NntpCommand("HELP")]
 	public class Help : Generic
 	{
+		/// <summary>
+		/// Command syntaxis checker.
+		/// </summary>
 		protected static Regex HelpSyntaxisChecker =
 			new Regex(@"(?in)^HELP[ \t]*$", RegexOptions.Compiled);
 
+		/// <summary>
+		/// Create command handler.
+		/// </summary>
+		/// <param name="session">Parent NNTP session.</param>
 		public Help(Session session) : base(session)
 		{
 			syntaxisChecker = HelpSyntaxisChecker;
 		}
 
+		/// <summary>
+		/// Process command.
+		/// </summary>
+		/// <returns>Server's NNTP response</returns>
 		protected override Response ProcessCommand()
 		{
 			StringBuilder supportCommands = new StringBuilder();
