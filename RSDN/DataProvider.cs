@@ -264,6 +264,23 @@ namespace Rsdn.RsdnNntp.Public
 			ProcessException(new DataProviderException(message));
     }
 
+		/// <summary>
+		/// Identity of assembly for information purposes
+		/// </summary>
+		protected static readonly string identity = Assembly.GetExecutingAssembly().GetName().Name + " " +
+			Assembly.GetExecutingAssembly().GetName().Version;
+
+		/// <summary>
+		/// Identity of assembly (name version)
+		/// </summary>
+		public override string Identity
+		{
+			get
+			{
+				return identity;
+			}
+		}
+
   	/// <summary>
   	/// Get necessary configuration object type
   	/// </summary>
