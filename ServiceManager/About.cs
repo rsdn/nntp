@@ -115,9 +115,9 @@ namespace derIgel.RsdnNntp
 			this.titleLabel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.titleLabel.Location = new System.Drawing.Point(72, 16);
 			this.titleLabel.Name = "titleLabel";
-			this.titleLabel.Size = new System.Drawing.Size(157, 14);
+			this.titleLabel.Size = new System.Drawing.Size(129, 14);
 			this.titleLabel.TabIndex = 3;
-			this.titleLabel.Text = "RSDN NNTP Server ver. ";
+			this.titleLabel.Text = "RSDN NNTP Server ";
 			// 
 			// About
 			// 
