@@ -22,6 +22,12 @@ namespace derIgel.MIME
 		/// </summary>
 		protected Hashtable filters;
 
+		/// <summary>
+		/// MIME encoding for non-ascii headers
+		/// Only base64 & Quoted-Printable encodings have meaning
+		/// </summary>
+		protected ContentTransferEncoding mimeEncoding = ContentTransferEncoding.QoutedPrintable;
+
 		public Header() : base()
 		{
 			filters = CollectionsUtil.CreateCaseInsensitiveHashtable();
@@ -64,7 +70,7 @@ namespace derIgel.MIME
 			get
 			{
 				return (this[name] == null) ? null : 
-					Util.OnlyASCIISymbols(this[name]) ? this[name] : Util.Encode(this[name], true, encoding);
+					Util.OnlyASCIISymbols(this[name]) ? this[name] : Util.Encode(this[name], encoding, mimeEncoding, true, false);
 			}
 		}
 

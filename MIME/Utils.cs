@@ -15,19 +15,84 @@ namespace derIgel.MIME
 		/// <summary>
 		/// maximum length of line
 		/// </summary>
-		public const int lineLength = 76;
-			
+		public const int LineLength = 76;
+
+		static protected readonly Regex split998 = new Regex(@".{1,998}", RegexOptions.Compiled);
+		
 		/// <summary>
-		/// text in base64 encoding in specified text encoding
+		/// Encode bytes to specified MIME encoding string
 		/// </summary>
-		public static string Encode(string text, bool header, Encoding encoding)
+		/// <param name="bytes">Bytes to encode</param>
+		/// <param name="contentEncoding">MIME Encoding</param>
+		/// <returns>MIME encoded byte stream</returns>
+		public static byte[] Encode(byte[] bytes, ContentTransferEncoding contentEncoding, bool breakLines)
+		{
+			StringBuilder result = new StringBuilder();
+			switch (contentEncoding)
+			{
+				case ContentTransferEncoding.Base64 :
+					result.Append(Convert.ToBase64String(bytes));
+					if (breakLines)
+						// break in lines
+						for (int i = LineLength; i < result.Length; i += LineLength + CRLF.Length)
+							result.Insert(i, CRLF);
+					break;
+				case ContentTransferEncoding.QoutedPrintable :
+					result.Append(ToQuotedPrintableString(bytes, breakLines));
+					break;
+				case ContentTransferEncoding.SevenBit :
+					// TODO: cut 8th bit
+				default :
+					// split per 1000 symbols (including trailing CRLF)
+					//writer.Write(encoding.GetBytes(split998.Replace(body.ToString(), "$&" + Util.CRLF)));
+					result.Append(BytesToString(bytes));
+					break;
+			}
+			return StringToBytes(result.ToString());
+		}
+
+		/// <summary>
+		/// Convert text to MIME encoded string with specified text and content transfer encodings
+		/// </summary>
+		/// <param name="text">Text to convert</param>
+		/// <param name="header">true, if convert for MIME header</param>
+		/// <param name="textEncoding">Target text encoding</param>
+		/// <param name="contentEncoding">Content-Transfer encoding.
+		///		In header only base64 & quoted-printable encodings have meaning</param>
+		/// <returns>MIME encoded text</returns>
+		public static string Encode(string text, Encoding textEncoding, ContentTransferEncoding contentEncoding, bool header, bool breakLines)
 		{
 			StringBuilder builder = new StringBuilder();
+			bool reallyHeader = false;
+
 			if (header)
-				builder.Append("=?").Append(encoding.HeaderName).Append("?b?").
-					Append(Convert.ToBase64String(encoding.GetBytes(text))).Append("?=");
-			else
-				builder.Append(Convert.ToBase64String(encoding.GetBytes(text)));
+				switch (contentEncoding)
+				{
+					case ContentTransferEncoding.Base64 :
+					case ContentTransferEncoding.QoutedPrintable :
+						reallyHeader = true;
+						builder.Append("=?").Append(textEncoding.HeaderName).Append('?').
+							Append((contentEncoding == ContentTransferEncoding.Base64) ? 'b' : 'q').Append('?');
+						break;
+				}
+			
+			switch (contentEncoding)
+			{
+				case ContentTransferEncoding.Base64 :
+				case ContentTransferEncoding.QoutedPrintable :
+					builder.Append(BytesToString(Encode(textEncoding.GetBytes(text), contentEncoding, breakLines)));
+					break;
+				case ContentTransferEncoding.SevenBit :
+					// cut 8th bit
+					builder.Append(Encoding.ASCII.GetString(Encoding.ASCII.GetBytes(text)));
+					break;
+				default :
+					builder.Append(text);
+					break;
+			}
+
+			if (reallyHeader)
+				builder.Append("?=");
 			
 			return builder.ToString();
 		}
@@ -79,17 +144,33 @@ namespace derIgel.MIME
 		static protected readonly Regex quotedPrintableDecodedSymbol =
 			new Regex(@"[^\x09\x20\x21-\x3c\x3e-\x7e]", RegexOptions.Compiled);
 
+		/// <summary>
+		/// Regular expression for breaking 'quoted-rintable' strings in lines
+		/// </summary>
 		static protected readonly Regex insertQuotedPrintableSoftBreaks =
-			new Regex(@".{1,76}(?<!=.?)", RegexOptions.Compiled);
+			new Regex(".{1," + LineLength + "}(?<!=.?)", RegexOptions.Compiled);
 
+		/// <summary>
+		/// Encode with 'quoted-printable' encoding
+		/// </summary>
+		/// <param name="bytes">source bytes</param>
+		/// <param name="breakLines">break in lines, if true</param>
+		/// <returns>'quoted-printable' encoded string</returns>
+		public static string ToQuotedPrintableString(byte[] bytes, bool breakLines)
+		{
+			string quotedString = quotedPrintableDecodedSymbol.Replace(BytesToString(bytes),
+					new MatchEvaluator(quotedPrintableDecodedSymbolMatchEvaluator));
+
+			return breakLines ? insertQuotedPrintableSoftBreaks.Replace(quotedString,	"$&=" + Util.CRLF) : quotedString;
+		}
+		/// <summary>
+		/// Encode with 'quoted-printable' encoding without line-breaking
+		/// </summary>
 		public static string ToQuotedPrintableString(byte[] bytes)
 		{
-			return insertQuotedPrintableSoftBreaks.Replace(
-				quotedPrintableDecodedSymbol.Replace(BytesToString(bytes),
-					new MatchEvaluator(quotedPrintableDecodedSymbolMatchEvaluator)),
-				"$&=" + Util.CRLF);
+			return ToQuotedPrintableString(bytes, false);
 		}
-			
+
 		static protected string quotedPrintableDecodedSymbolMatchEvaluator(Match match)
 		{
 			return "=" + ((int)match.Value[0]).ToString("X2"); // 2 hexadeximal digits
@@ -125,10 +206,9 @@ namespace derIgel.MIME
 	
 		public static string BytesToString(byte[] input, int length)
 		{
-			StringBuilder sb = new StringBuilder(length);
-			for (int i = 0; i < length; i++)
-				sb.Append((char)input[i]);
-			return sb.ToString();
+			char[] chars = new char[length];
+			Array.Copy(input, 0, chars, 0, length);
+			return new string(chars);
 		}
 	}
 }

@@ -34,12 +34,11 @@ namespace derIgel.MIME
 
 			ContentTypeEvent += new ContentTypeHandler(MessageContentTypeHandler);
 
+			this["Content-type"] = "text/plain; charset=us-ascii";
+
 			// default fields
 			if (useDefaultHeaders)
-			{
 				this["MIME-Version"] = "1.0";
-				this["Content-type"] = "text/plain; charset=us-ascii";
-			}
 		}
 
 		protected ArrayList entities;
@@ -170,7 +169,7 @@ namespace derIgel.MIME
 		/// <summary>
 		///  encoding for body
 		/// </summary>
-		protected Encoding encoding;
+		protected Encoding encoding = Encoding.ASCII;
 		/// <summary>
 		/// encoding for non-ascii header fields
 		/// </summary>
@@ -184,7 +183,7 @@ namespace derIgel.MIME
 		static readonly protected Regex contentTypeParameter = 
 			new Regex(@"\s*;\s*(?<attribute>[^\s""=]+)\s*=\s*(?<quote>"")?(?<value>[^\s""]+)(?(quote)"")(?<!;)");
 		static readonly protected Regex contentTypeRegex =
-			new Regex(string.Format(@"^(?<type>\S+)\s*/\s*(?<subtype>[^;\s]+)(?<parameter>{0})*",
+			new Regex(string.Format(@"^(?<type>\S+?)\s*/\s*(?<subtype>[^;\s]+)(?<parameter>{0})*",
 			contentTypeParameter),	RegexOptions.Compiled);
 
 		protected delegate void ContentTypeHandler(string type, string subtype, NameValueCollection parameters);
@@ -271,7 +270,7 @@ namespace derIgel.MIME
 		static public Message Parse(string text, bool checkMime)
 		{
 			// if need check Mime version - do not use default headers
-			Message message = new Message(!checkMime);
+			Message message = new Message(false);
 			Match headerAndBodyMatch = headerAndBody.Match(text);
 			if (!headerAndBodyMatch.Success)
 				throw new MimeFormattingException("MIME message is bad formatted.");
@@ -321,7 +320,6 @@ namespace derIgel.MIME
 			return message;
 		}
 
-		static protected readonly Regex split998 = new Regex(@".{1,998}", RegexOptions.Compiled);
 		public byte[] GetBody()
 		{
 			StringBuilder builder = new StringBuilder();
@@ -351,35 +349,12 @@ namespace derIgel.MIME
 				if (body is IBody)
 					writer.Write(((IBody)body).GetBody());
 				else
-					switch (transferEncoding)
-					{
-						case ContentTransferEncoding.Base64	:
-							// Encode in base64 
-							StringBuilder encodedString = new StringBuilder(Convert.ToBase64String(
-								(body is byte[]) ? (byte[])body : encoding.GetBytes(body.ToString())));
-							// break in lines
-							for (int i = Util.lineLength; i < encodedString.Length; i += Util.lineLength + Util.CRLF.Length)
-								encodedString.Insert(i, Util.CRLF);
-							writer.Write(encodedString.ToString().ToCharArray());
-							break;
-						case ContentTransferEncoding.QoutedPrintable :
-							// quoted printable encoding
-							writer.Write(Util.ToQuotedPrintableString(
-								(body is byte[]) ? (byte[])body : encoding.GetBytes(body.ToString())).ToCharArray());
-							break;
-						case ContentTransferEncoding.EightBit :
-							// split per 1000 symbols (including trailing CRLF)
-							//writer.Write(encoding.GetBytes(split998.Replace(body.ToString(), "$&" + Util.CRLF)));
-							writer.Write((body is byte[]) ? (byte[])body : encoding.GetBytes(body.ToString()));
-							break;
-						default	:
-							// split per 1000 symbols (including trailing CRLF)
-							// leave only 7bit from each 8-bit symbol
-							writer.Write(
-								Encoding.ASCII.GetBytes(Encoding.ASCII.GetString(
-								(body is byte[]) ? (byte[])body : encoding.GetBytes(body.ToString()))));
-							break;
-					}
+				{
+					if (body is byte[])
+						writer.Write(Util.Encode((byte[])body, transferEncoding, true));
+					else
+						writer.Write(Util.Encode(body.ToString(), encoding, transferEncoding, false, true).ToCharArray());
+				}
 			}
 			if (multipart)
 				writer.Write(string.Format("{0}--{1}--", Util.CRLF, multipartBoundary).ToCharArray());
