@@ -78,14 +78,26 @@ namespace Rsdn.Nntp.Cache
 		/// <param name="article">Article.</param>
 		protected void PutInCache(NewsArticle article)
 		{
-			cache.Add(article.MessageID, article, null, settings.AbsoluteExpiration == TimeSpan.Zero ?
-				AspCaching.Cache.NoAbsoluteExpiration : DateTime.Now.Add(settings.AbsoluteExpiration),
+			PutInCache(article, null);
+		}
+
+		/// <summary>
+		/// Put the message in cache considering cache salt.
+		/// </summary>
+		/// <param name="article">Article.</param>
+		/// <param name="cacheSalt">Additional cache managing parameter.</param>
+		protected void PutInCache(NewsArticle article, string cacheSalt)
+		{
+			cache.Add(article.MessageID + cacheSalt, article, null,
+				settings.AbsoluteExpiration == TimeSpan.Zero ?
+					AspCaching.Cache.NoAbsoluteExpiration : DateTime.Now.Add(settings.AbsoluteExpiration),
 				settings.SlidingExpiration, CacheItemPriority.AboveNormal, null);
 			CacheDependency dependecy =
-				new CacheDependency(null, new string[]{article.MessageID});
+				new CacheDependency(null, new string[]{article.MessageID + cacheSalt});
 			foreach (DictionaryEntry entry in article.MessageNumbers)
 			{
-				cache.Insert(entry.Key.ToString() + entry.Value.ToString(), article, dependecy);
+				cache.Insert(entry.Key.ToString() + entry.Value.ToString() + cacheSalt,
+					article, dependecy);
 			}
 		}
 
@@ -97,21 +109,34 @@ namespace Rsdn.Nntp.Cache
 		/// <param name="originalMessageID">Message-ID</param>
 		/// <param name="content">Necessary content of message.</param>
 		/// <returns>Message.</returns>
-		public NewsArticle GetArticle(string originalMessageID, NewsArticle.Content content)
+		public virtual NewsArticle GetArticle(string originalMessageID, NewsArticle.Content content)
+		{
+			return GetArticle(originalMessageID, content, null);
+		}
+
+		/// <summary>
+		/// Get article considering cache with additional cache managing parameter (caching salt).
+		/// </summary>
+		/// <param name="originalMessageID">Message-ID</param>
+		/// <param name="content">Necessary content of message.</param>
+		/// <param name="cacheSalt">Additional cache managing parameter.</param>
+		/// <returns>Message.</returns>
+		public virtual NewsArticle GetArticle(string originalMessageID, NewsArticle.Content content,
+			string cacheSalt)
 		{
 			NewsArticle article = null;
 
 			if (settings.Cache != CacheType.None)
 			{
 				// check message in cache
-				article = cache[originalMessageID] as NewsArticle;
+				article = cache[originalMessageID + cacheSalt] as NewsArticle;
 				if ((article == null) || !CheckContentSuitable(content, article.Contents))
 				// There is no suitable message in cache.
 				{
 					article = GetNonCachedArticle(originalMessageID, content);
 
 					// Put the message in the cache.
-					PutInCache(article);
+					PutInCache(article, cacheSalt);
 				}
 			}
 			else
@@ -121,21 +146,43 @@ namespace Rsdn.Nntp.Cache
 			return article;
 		}
 
-		public NewsArticle GetArticle(int articleNumber, string groupName, NewsArticle.Content content)
+		/// <summary>
+		/// Get article considering cache.
+		/// </summary>
+		/// <param name="articleNumber"></param>
+		/// <param name="groupName"></param>
+		/// <param name="content"></param>
+		/// <returns></returns>
+		public virtual NewsArticle GetArticle(int articleNumber, string groupName,
+			NewsArticle.Content content)
+		{
+			return GetArticle(articleNumber, groupName, content, null);
+		}
+
+		/// <summary>
+		/// Get article considering cache with additional cache managing parameter (caching salt).
+		/// </summary>
+		/// <param name="articleNumber"></param>
+		/// <param name="groupName"></param>
+		/// <param name="content"></param>
+		/// <param name="cacheSalt"></param>
+		/// <returns></returns>
+		public virtual NewsArticle GetArticle(int articleNumber, string groupName,
+			NewsArticle.Content content, string cacheSalt)
 		{
 			NewsArticle article = null;
 
 			if (settings.Cache != CacheType.None)
 			{
 				// check message in cache
-				article = cache[groupName + articleNumber.ToString()] as NewsArticle;
+				article = cache[groupName + articleNumber.ToString() + cacheSalt] as NewsArticle;
 				if ((article == null) || !CheckContentSuitable(content, article.Contents))
 					// There is no suitable message in cache.
 				{
 					article = GetNonCachedArticle(articleNumber, groupName, content);
 
 					// Put the message in the cache.
-					PutInCache(article);
+					PutInCache(article, cacheSalt);
 				}
 			}
 			else

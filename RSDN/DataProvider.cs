@@ -760,5 +760,28 @@ namespace Rsdn.RsdnNntp
 		{
 			return false;
 		}
+	
+		/// <summary>
+		/// Get cached article considering messag format
+		/// </summary>
+		/// <param name="articleNumber"></param>
+		/// <param name="groupName"></param>
+		/// <param name="content"></param>
+		/// <returns></returns>
+		public override NewsArticle GetArticle(int articleNumber, string groupName, NewsArticle.Content content)
+		{
+			return GetArticle(articleNumber, groupName, content, style.ToString());
+		}
+
+		/// <summary>
+		/// Get cached article considering messag format
+		/// </summary>
+		/// <param name="originalMessageID"></param>
+		/// <param name="content"></param>
+		/// <returns></returns>
+		public override NewsArticle GetArticle(string originalMessageID, Rsdn.Nntp.NewsArticle.Content content)
+		{
+			return base.GetArticle (originalMessageID, content, style.ToString());
+		}
 	}
 }
