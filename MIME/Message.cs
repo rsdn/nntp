@@ -413,36 +413,45 @@ namespace Rsdn.Mime
 			new Regex(string.Format(@"(?s)(?<header>.*?{0}){0}(?<body>.*)", Util.CRLF),
 			RegexOptions.Compiled);
 
-		/// <summary>
-		/// Parse bytes (ASCII encoding) to MIME message.
-		/// Expect MIME-Version header.
-		/// </summary>
-		/// <param name="byteArray">Byte array</param>
-		/// <returns>MIME message object</returns>
-		static public Message Parse(byte[] byteArray)
-		{
-			return Parse(Util.BytesToString(byteArray));
-		}
+//		/// <summary>
+//		/// Parse bytes (ASCII encoding) to MIME message.
+//		/// Expect MIME-Version header.
+//		/// </summary>
+//		/// <param name="byteArray">Byte array</param>
+//		/// <returns>MIME message object</returns>
+//		static public Message Parse(byte[] byteArray)
+//		{
+//			return Parse(Util.BytesToString(byteArray));
+//		}
+//
+//		/// <summary>
+//		/// Parse string to MIME message.
+//		/// Expect MIME-Version header.
+//		/// </summary>
+//		/// <param name="text">Input string</param>
+//		/// <returns>MIME message object</returns>
+//		static public Message Parse(string text)
+//		{
+//			return Parse(text, true);
+//		}
 
 		/// <summary>
-		/// Parse string to MIME message.
-		/// Expect MIME-Version header.
+		/// Regex for detercting of non-ascii chars.
 		/// </summary>
-		/// <param name="text">Input string</param>
-		/// <returns>MIME message object</returns>
-		static public Message Parse(string text)
-		{
-			return Parse(text, true);
-		}
+		protected static Regex nonAsciiCharacter = new Regex("[^\x00-\x7F]", RegexOptions.Compiled);
 
 		/// <summary>
 		/// Parse string to MIME message.
 		/// </summary>
 		/// <param name="text">Input string</param>
 		/// <param name="checkMime">If true - check presence of MIME-Version header.</param>
+		/// <param name="checkAscii">Check using only ASCII symbols.</param>
 		/// <returns>MIME message object</returns>
-		static public Message Parse(string text, bool checkMime)
+		static public Message Parse(string text, bool checkMime, bool checkAscii)
 		{
+			if (checkAscii && nonAsciiCharacter.IsMatch(text))
+				throw new MimeFormattingException("Only ASCII symbols allowed!");
+
 			// if need check Mime version - do not use default headers
 			Message message = new Message(false);
 			Match headerAndBodyMatch = headerAndBody.Match(text);
@@ -465,7 +474,7 @@ namespace Rsdn.Mime
 						Regex.Escape(message.multipartBoundary), Util.CRLF));
 					foreach (Match multipartMatch in multipartExtractor.Matches(
 						headerAndBodyMatch.Groups["body"].Value))
-							message.entities.Add(Message.Parse(multipartMatch.Groups["entityBody"].Value, false));
+							message.entities.Add(Message.Parse(multipartMatch.Groups["entityBody"].Value, false, checkAscii));
 					break;
 				default:
 					byte[] body;

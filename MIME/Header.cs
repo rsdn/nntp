@@ -94,7 +94,7 @@ namespace Rsdn.Mime
 		/// <summary>
 		/// regular expression for replacing non-ascii symbols
 		/// </summary>
-		protected static readonly Regex nonAsciiReplace = new Regex(@"([^\x00-\xFF]+\s*)+(?<!\s)", RegexOptions.Compiled);
+		protected static readonly Regex nonAsciiReplace = new Regex(@"([^\x00-\x7F]+\s*)+(?<!\s)", RegexOptions.Compiled);
 
 		/// <summary>
 		/// Get MIME encoded header item (if don't fit in ASCII symbols) with specific text and MIME encodings
@@ -140,7 +140,7 @@ namespace Rsdn.Mime
 		{
 			StringBuilder builder = new StringBuilder();
 			foreach (string key in AllKeys)
-				builder.AppendFormat("{0}: {1}{2}", key, this[key, encoding, mimeEncoding], Util.CRLF);
+				builder.AppendFormat("{0}: {1}", key, this[key, encoding, mimeEncoding]).Append(Util.CRLF);
 			return builder.ToString();
 		}
 

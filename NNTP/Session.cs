@@ -62,7 +62,6 @@ namespace Rsdn.Nntp
 			notAllowedStateAnswer = new Hashtable();
 			notAllowedStateAnswer[States.AuthRequired] = new Response(NntpResponse.AuthentificationRequired);
 			notAllowedStateAnswer[States.MoreAuthRequired] = new Response(NntpResponse.MoreAuthentificationRequired);
-
 		}
 
 #if PERFORMANCE_COUNTERS_OLD
@@ -279,7 +278,7 @@ namespace Rsdn.Nntp
 								case States.TransferWaiting :
 
 									posting = true;
-									Message postingMessage = Message.Parse(commandString);
+									Message postingMessage = Message.Parse(commandString, true, true);
 								
 									// add addtitional server headers
 									if (sender != null)
