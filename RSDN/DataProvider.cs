@@ -143,8 +143,20 @@ namespace Rsdn.RsdnNntp
     	}		
     	catch (System.Exception exception)
     	{
+				try
+				{
 					ProcessException(exception);
-			}
+				}
+				catch (DataProviderException providerEx)
+				{
+					if (providerEx.Error == DataProviderErrors.NoSuchGroup)
+					{
+						throw new DataProviderException(DataProviderErrors.NoSuchGroup, groupName, providerEx);
+					}
+					else
+						throw;
+				}
+    	}
     	currentGroupArticleStartNumber = requestedGroup.first;
     	return new NewsGroup(groupName,	requestedGroup.first, requestedGroup.last,
     		requestedGroup.last - requestedGroup.first + 1, true, requestedGroup.created);

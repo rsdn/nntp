@@ -331,7 +331,8 @@ namespace Rsdn.Nntp
 							switch (exception.Error)
 							{
 								case DataProviderErrors.NoSuchGroup:
-									result = new Response(NntpResponse.NoSuchGroup);
+									// Assume that exception's message contains not founded group name
+									result = new Response(NntpResponse.NoSuchGroup, null, exception.Message);
 									break;
 								case DataProviderErrors.NoSelectedGroup:
 									result = new Response(NntpResponse.NoSelectedGroup);

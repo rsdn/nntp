@@ -98,6 +98,19 @@ namespace Rsdn.Nntp
 		}
 
 		/// <summary>
+		/// Create Data Provider exception with specific error, error message and inner exception.
+		/// </summary>
+		/// <param name="error">Specific Data Provider's error.</param>
+		/// <param name="errorDescription">Error description.</param>
+		/// <param name="innerException">Inner exception.</param>
+		public DataProviderException (DataProviderErrors error, string errorDescription,
+																	Exception innerException) :
+			base(errorDescription, innerException)
+		{
+			this.error = error;
+		}
+
+		/// <summary>
 		/// Create Data Provider exception with specific error and error description.
 		/// </summary>
 		/// <param name="error">Specific Data Provider's error.</param>

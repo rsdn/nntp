@@ -97,7 +97,7 @@ namespace Rsdn.Nntp
 			answers[401] = "401 service temporarily unavailable - try later";
 			answers[402] = "402 connection timeout - bye!";
 			answers[403] = "403 command not allowed now"; //not standard
-			answers[411] = "411 no such news group";
+			answers[411] = "411 no such news group '{0}'";
 			answers[412] = "412 no newsgroup has been selected";
 			answers[420] = "420 no current article has been selected";
 			answers[421] = "421 no next article in this group";
