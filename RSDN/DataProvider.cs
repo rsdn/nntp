@@ -451,26 +451,8 @@ namespace Rsdn.RsdnNntp
 				// tagline
 				postingText += Util.CRLF + "[tagline]Posted via " + Manager.ServerID + "[/tagline]";
 				
-				// by default use original subject
-				string subject = message.Subject;
-
-				// check & modify subject if necessary (prevent 'Re: Re[2]' problem)
-				Match match = reDetecter.Match(message.Subject);
-				if (match.Success)
-				{
-					int answersCount = 0;
-					foreach(Capture capture in match.Groups["num"].Captures)
-						if (capture.Value == "")
-							answersCount ++;
-						else
-							answersCount += int.Parse(capture.Value);
-					
-					if (answersCount > 1)
-						subject = string.Format("Re[{0}]: ", answersCount);
-					else
-						subject = "Re: ";
-					subject += reDetecter.Replace(message.Subject, "");
-				}
+				// remove "Re" prefix from subject
+				string subject = reDetecter.Replace(message.Subject, "");
 
 				post_result result = 
 					webService.PostUnicodeMessage(username, password, mid, group, subject,
