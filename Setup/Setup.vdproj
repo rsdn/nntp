@@ -16,6 +16,12 @@
         "Entry"
         {
         "MsmKey" = "8:_0F2CA2C009BF2C11617E1D6192ABB3B8"
+        "OwnerKey" = "8:_A295B17FAF2A46728459EDDD4E09D8ED"
+        "MsmSig" = "8:mimed:\\derigel\\proj\\rsdnnntp\\mime\\obj\\debug\\mime.dll"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_0F2CA2C009BF2C11617E1D6192ABB3B8"
         "OwnerKey" = "8:_BBB3FF3D30F343AE879A71B3E97EB7DA"
         "MsmSig" = "8:mimed:\\derigel\\proj\\rsdnnntp\\mime\\obj\\debug\\mime.dll"
         }
@@ -30,48 +36,6 @@
         "MsmKey" = "8:_0F2CA2C009BF2C11617E1D6192ABB3B8"
         "OwnerKey" = "8:_69E531D88C1936629C9CF3C570D88184"
         "MsmSig" = "8:mimed:\\derigel\\proj\\rsdnnntp\\mime\\obj\\debug\\mime.dll"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_0F2CA2C009BF2C11617E1D6192ABB3B8"
-        "OwnerKey" = "8:_A295B17FAF2A46728459EDDD4E09D8ED"
-        "MsmSig" = "8:mimed:\\derigel\\proj\\rsdnnntp\\mime\\obj\\debug\\mime.dll"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_2DBF5E45D91F412B9CD53BD9F056BD8C"
-        "OwnerKey" = "8:_A295B17FAF2A46728459EDDD4E09D8ED"
-        "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_2DBF5E45D91F412B9CD53BD9F056BD8C"
-        "OwnerKey" = "8:_69E531D88C1936629C9CF3C570D88184"
-        "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_2DBF5E45D91F412B9CD53BD9F056BD8C"
-        "OwnerKey" = "8:_D2913851C614427E94B23E2E8A8BFA38"
-        "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_2DBF5E45D91F412B9CD53BD9F056BD8C"
-        "OwnerKey" = "8:_0F2CA2C009BF2C11617E1D6192ABB3B8"
-        "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_2DBF5E45D91F412B9CD53BD9F056BD8C"
-        "OwnerKey" = "8:_BBB3FF3D30F343AE879A71B3E97EB7DA"
-        "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_2DBF5E45D91F412B9CD53BD9F056BD8C"
-        "OwnerKey" = "8:_B389EFE1C7124CC5AF04813D17771C0A"
-        "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
         }
         "Entry"
         {
@@ -108,6 +72,42 @@
         "MsmKey" = "8:_89375A1A9FE84B3089B4CE547697D12B"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:E:\\VVTRENOGIN\\PROJ\\RSDNNNTPSERVER\\SETUP\\CONFIG.XML"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_8EFC7D8B748B4953AA07667CB9778D52"
+        "OwnerKey" = "8:_A295B17FAF2A46728459EDDD4E09D8ED"
+        "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_8EFC7D8B748B4953AA07667CB9778D52"
+        "OwnerKey" = "8:_D2913851C614427E94B23E2E8A8BFA38"
+        "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_8EFC7D8B748B4953AA07667CB9778D52"
+        "OwnerKey" = "8:_BBB3FF3D30F343AE879A71B3E97EB7DA"
+        "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_8EFC7D8B748B4953AA07667CB9778D52"
+        "OwnerKey" = "8:_B389EFE1C7124CC5AF04813D17771C0A"
+        "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_8EFC7D8B748B4953AA07667CB9778D52"
+        "OwnerKey" = "8:_69E531D88C1936629C9CF3C570D88184"
+        "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_8EFC7D8B748B4953AA07667CB9778D52"
+        "OwnerKey" = "8:_0F2CA2C009BF2C11617E1D6192ABB3B8"
+        "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
         }
         "Entry"
         {
@@ -296,7 +296,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:NNTP, Version=1.9.1177.29891, Culture=neutral"
+            "AssemblyAsmDisplayName" = "8:NNTP, Version=1.9.1177.31877, Culture=neutral"
                 "ScatterAssemblies"
                 {
                     "_69E531D88C1936629C9CF3C570D88184"
@@ -690,13 +690,13 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:RSDN NNTP Server"
-        "ProductCode" = "8:{FBECBB53-09E8-4B30-98D5-208E102B9C0C}"
-        "PackageCode" = "8:{54160F8A-4A7D-4679-B8B0-5D3A52B59B03}"
+        "ProductCode" = "8:{084B47DF-754F-4432-836F-0B5C54B93CAE}"
+        "PackageCode" = "8:{E521CB1D-0454-42A4-B034-8CBAD1D090B3}"
         "UpgradeCode" = "8:{7123A411-9564-4667-9C7C-C08988E1B0AC}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
-        "ProductVersion" = "8:1.4.7"
+        "ProductVersion" = "8:1.5"
         "Manufacturer" = "8:RSDN"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://rsdn.ru/forum/?group=desktop"
@@ -717,7 +717,7 @@
         }
         "MergeModule"
         {
-            "{AC8774A4-3E09-11D3-8E14-00C04F6837D0}:_2DBF5E45D91F412B9CD53BD9F056BD8C"
+            "{AC8774A4-3E09-11D3-8E14-00C04F6837D0}:_8EFC7D8B748B4953AA07667CB9778D52"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
