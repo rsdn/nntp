@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Specialized;
 using System.IO;
 using System.Net;
 using System.Text.RegularExpressions;
@@ -37,6 +38,7 @@ namespace Rsdn.RsdnNntp
   		get { return servername; }
   	}
 
+  	NameValueCollection processedImagesIDs = new NameValueCollection();
 		protected ArrayList processedImages = new ArrayList();
   	public Message[] GetProcessedImages()
   	{
@@ -54,21 +56,26 @@ namespace Rsdn.RsdnNntp
 				WebResponse response = null;
 				try
 				{
-					WebRequest req = WebRequest.Create(image.Groups["url"].Value);
-					req.Proxy = proxy;
-					response = req.GetResponse();
-					Message imgPart = new Message(false);
-					imgPart.ContentType = response.ContentType;
-					Guid imgContentID = Guid.NewGuid();
-					imgPart["Content-ID"] = '<' + imgContentID.ToString() + '>';
-					imgPart["Content-Location"] = req.RequestUri.ToString();
-					imgPart["Content-Disposition"] = "inline";
-					imgPart.TransferEncoding = ContentTransferEncoding.Base64;
-					using (BinaryReader reader = new BinaryReader(response.GetResponseStream()))
+					string imgContentID = processedImagesIDs[image.Groups["url"].Value];
+					if (imgContentID == null)
 					{
-						imgPart.Entities.Add(reader.ReadBytes((int)response.ContentLength));
+						WebRequest req = WebRequest.Create(image.Groups["url"].Value);
+						req.Proxy = proxy;
+						response = req.GetResponse();
+						Message imgPart = new Message(false);
+						imgPart.ContentType = response.ContentType;
+						imgContentID = Guid.NewGuid().ToString();
+						imgPart["Content-ID"] = '<' + imgContentID + '>';
+						imgPart["Content-Location"] = req.RequestUri.ToString();
+						imgPart["Content-Disposition"] = "inline";
+						imgPart.TransferEncoding = ContentTransferEncoding.Base64;
+						using (BinaryReader reader = new BinaryReader(response.GetResponseStream()))
+						{
+							imgPart.Entities.Add(reader.ReadBytes((int)response.ContentLength));
+						}
+						processedImages.Add (imgPart);
+						processedImagesIDs[image.Groups["url"].Value] = imgContentID;
 					}
-					processedImages.Add (imgPart);
 					return string.Format("<img border='0' src='{0}' />",
 						"cid:" + imgContentID);
 				}
