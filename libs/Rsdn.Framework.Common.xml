@@ -320,5 +320,25 @@
             <param name="str">Исходная строка.</param>
             <returns>Результирующая строка</returns>
         </member>
+        <member name="F:Rsdn.Framework.Common.Utils.invalidXmlCharacters">
+            <summary>
+            Regular expression for detecting invalid XML characters.
+            </summary>
+        </member>
+        <member name="M:Rsdn.Framework.Common.Utils.ProcessInvalidXmlCharacters(System.String,System.String)">
+            <summary>
+            Remove invalid xml characters.
+            </summary>
+            <param name="text">Input text.</param>
+            <param name="replacingSymbol">Replacing symbol for invalid characters.</param>
+            <returns>Processed text.</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Common.Utils.ProcessInvalidXmlCharacters(System.String)">
+            <summary>
+            Remove invalid xml characters (replace to "?").
+            </summary>
+            <param name="text">Input text.</param>
+            <returns>Processed text.</returns>
+        </member>
     </members>
 </doc>
