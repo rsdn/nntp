@@ -26,7 +26,7 @@ namespace Rsdn.RsdnNntp.Public
 			serviceAddress = new Uri(defaultServiceAddress);
 		}
 
-		protected const string defaultServiceAddress = "http://rsdn.ru/ws/service.asmx";
+		protected const string defaultServiceAddress = "http://rsdn.ru/ws/service2.asmx";
 
 		protected Uri serviceAddress;
 

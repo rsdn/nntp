@@ -108,15 +108,6 @@ namespace Rsdn.RsdnNntp.Common
     }
 
 		/// <summary>
-		/// Authentificated user name.
-		/// </summary>
-		protected string username = "";
-		/// <summary>
-		/// Authentificated user password.
-		/// </summary>
-		protected string password = "";
-
-		/// <summary>
 		/// Construct RSDN Data Provider
 		/// </summary>
     public RsdnDataCommonProvider() : base()
@@ -357,9 +348,6 @@ namespace Rsdn.RsdnNntp.Common
 			userInfo = InternalAuthentificate(user, pass, ip);
     	if (userInfo != null)
     	{
-				// Becasuse of server stores password's hash but not clear password
-				// set it to plaint text on client side 
-				userInfo.Password = pass;
 				// Put user information to cache for 1 hour.
 				cache.Add(cacheKey, userInfo, null, Cache.NoAbsoluteExpiration,
 					new TimeSpan(1, 0, 0), CacheItemPriority.AboveNormal, null);
@@ -371,8 +359,6 @@ namespace Rsdn.RsdnNntp.Common
     	}
     	else
     	{
-    		username = "";
-    		password = "";
 				return false;
     	}
     }
@@ -408,8 +394,6 @@ namespace Rsdn.RsdnNntp.Common
 		/// <param name="userInfo"></param>
 		protected virtual void SetUserInfo(IUserInfo userInfo)
 		{
-			username = userInfo.Name;
-			password = userInfo.Password;
 			if ((rsdnSettings != null) &&
 					(rsdnSettings.Formatting == FormattingStyle.UserSettings))
 				style = userInfo.MessageFormat;

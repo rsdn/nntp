@@ -7,7 +7,7 @@ namespace Rsdn.RsdnNntp.Public.RsdnService
 	/// <summary>
 	/// Summary description for CompressiRsdnService.
 	/// </summary>
-	public class CompressService : Service
+	public class CompressService : Service2
 	{
 	  protected override WebRequest GetWebRequest(Uri uri)
 	  {

@@ -1,27 +1,12 @@
 using System;
-using System.Collections.Specialized;
-using System.Globalization;
-using System.Reflection;
-using System.IO;
 using System.Net;
-using System.Text.RegularExpressions;
-using System.Configuration;
-using System.Text;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Runtime.Serialization.Formatters;
-using System.Runtime.Serialization;
-using System.Diagnostics;
-using System.Collections;
-using System.Web;
-using System.Web.Caching;
+using System.Reflection;
 
-using log4net;
+using Microsoft.Web.Services2.Security;
+using Microsoft.Web.Services2.Security.Tokens;
+
 using Rsdn.Framework.Common;
-using Rsdn.Framework.Formatting;
-
-using Rsdn.Mime;
 using Rsdn.Nntp;
-using Rsdn.Nntp.Cache;
 using Rsdn.RsdnNntp.Common;
 using Rsdn.RsdnNntp.Public.RsdnService;
 using Rsdn.RsdnNntp.RsdnService;
@@ -38,24 +23,51 @@ namespace Rsdn.RsdnNntp.Public
 		/// </summary>
     public RsdnDataPublicProvider() : base()
     {
-    	webService = new Service();
+    	webService = new Service2();
     }
 
     /// <summary>
     /// RSDN forums' web-service proxy
     /// </summary>
-    protected Service webService;
+    protected Service2 webService;
+
+  	protected UsernameToken usernameToken;
+
+		protected void SetUsernameToken()
+		{
+			;//SetUsernameToken(usernameToken);
+		}
+
+		protected void SetUsernameToken(UsernameToken userToken)
+		{
+			webService.RequestSoapContext.Security.Tokens.Add(userToken);
+			//X509SecurityToken serverToken = GetSecurityToken();
+			//webService.RequestSoapContext.Security.Elements.Add(
+				//new EncryptedData(serverToken, "#" + usernameToken.Id));
+			MessageSignature sig = new MessageSignature(userToken);
+			webService.RequestSoapContext.Security.Elements.Add(sig);
+			webService.RequestSoapContext.Security.Timestamp.TtlInSeconds = 60;
+ 		}
+
+  	/// <summary>
+  	/// Set data provider's parameters from IUserInfo object.
+  	/// </summary>
+  	/// <param name="userInfo"></param>
+  	protected override void SetUserInfo(IUserInfo userInfo)
+  	{
+  		base.SetUserInfo(userInfo);
+			usernameToken =
+				new UsernameToken(userInfo.Name, userInfo.Password, PasswordOption.SendPlainText);
+  	}
 
   	public override IGroup InternalGetGroup(string groupName)
   	{
 			try
 			{
-				group requestedGroup = webService.GroupInfo(groupName, username, password);
-				if (requestedGroup.error != null)
-					ProcessErrorMessage(requestedGroup.error);
-				return new Group(requestedGroup);
+				SetUsernameToken();
+				return new Group(webService.GroupInfo(groupName));
 			}		
-			catch (System.Exception exception)
+			catch (Exception exception)
 			{
 				try
 				{
@@ -78,16 +90,14 @@ namespace Rsdn.RsdnNntp.Public
   	{
 			try
 			{
-				group_list groupList =
-					webService.GetGroupList(username, password, startTime);
-				if (groupList.error != null)
-					ProcessErrorMessage(groupList.error);
+				SetUsernameToken();
+				group_list groupList = webService.GetGroupList(startTime);
 				Group[] groups = new Group[groupList.groups.Length];
 				for (int i = 0; i < groups.Length; i++)
 					groups[i] = new Group(groupList.groups[i]);
 				return groups;
 			}				
-			catch (System.Exception exception)
+			catch (Exception exception)
 			{
 				ProcessException(exception);
 				return null;
@@ -98,13 +108,10 @@ namespace Rsdn.RsdnNntp.Public
   	{
 			try
 			{
-				article message =
-					webService.GetArticle(groupName, articleNumber, username,	password);
-				if (message.error != null)
-					ProcessErrorMessage(message.error);
-				return new Article(message);
+				SetUsernameToken();
+				return new Article(webService.GetArticle(groupName, articleNumber));
 			}
-			catch (System.Exception exception)
+			catch (Exception exception)
 			{
 				ProcessException(exception);
 				return null;
@@ -115,12 +122,10 @@ namespace Rsdn.RsdnNntp.Public
   	{
 			try
 			{
-				article message = webService.GetArticleByID(messageID , username,	password);
-				if (message.error != null)
-					ProcessErrorMessage(message.error);
-				return new Article(message);
+				SetUsernameToken();
+				return new Article(webService.GetArticleByID(messageID));
 			}	
-			catch (System.Exception exception)
+			catch (Exception exception)
 			{
 				ProcessException(exception);
 				return null;
@@ -136,28 +141,30 @@ namespace Rsdn.RsdnNntp.Public
   	/// <returns>User's info. Nulll if user is not authentificated.</returns>
   	public override IUserInfo InternalAuthentificate(string user, string pass, IPAddress ip)
   	{
-			if (Utils.InvalidXmlCharacters.IsMatch(user))
-				throw new DataProviderException(DataProviderErrors.NoPermission,
-					"Username contains not allowed symbols.");
-			if (Utils.InvalidXmlCharacters.IsMatch(pass))
-				throw new DataProviderException(DataProviderErrors.NoPermission,
-					"Password contains not allowed symbols.");
-
-			if (webService.Authentication(user, pass).ok)
+			try
 			{
-				return new UserInfo(webService.GetUserInfo(user, pass));
-			}
-			else
+				
+				SetUsernameToken(new UsernameToken(user, Utils.GetPasswordHash(user, pass),
+					PasswordOption.SendPlainText));
+				webService.Authentication();
+				return new UserInfo(webService.GetUserInfo());
+			}	
+			catch (Exception exception)
+			{
+
+				ProcessException(exception);
 				return null;
+			}	
   	}
 
   	protected override IUserInfo GetUserInfoByID(int id)
   	{
 			try
 			{
-				return new UserInfo(webService.GetUserInfoByID(username, password, id));
+				SetUsernameToken();
+				return new UserInfo(webService.GetUserInfoByID(id));
 			}			
-			catch (System.Exception exception)
+			catch (Exception exception)
 			{
 				ProcessException(exception);
 				return null;
@@ -168,10 +175,8 @@ namespace Rsdn.RsdnNntp.Public
   	{
 			try
 			{
-		    article_list articleList =
-					webService.ArticleList(groupName, startNumber, endNumber, username, password);
-				if (articleList.error != null)
-					ProcessErrorMessage(articleList.error);
+				SetUsernameToken();
+		    article_list articleList = webService.ArticleList(groupName, startNumber, endNumber);
 				// sometimes web-service return null....
 				if (articleList != null)
 				{
@@ -183,7 +188,7 @@ namespace Rsdn.RsdnNntp.Public
 				else
 					return new Article[0];
     	}
-			catch (System.Exception exception)
+			catch (Exception exception)
 			{
 			  ProcessException(exception);
 				return null;
@@ -194,16 +199,14 @@ namespace Rsdn.RsdnNntp.Public
   	{
 			try
 			{
-				article_list articleList =
-					webService.ArticleListFromDate(groups, startTime, username, password);
-				if (articleList.error != null)
-					ProcessErrorMessage(articleList.error);
+				SetUsernameToken();
+				article_list articleList = webService.ArticleListFromDate(groups, startTime);
 				Article[] iArticles = new Article[articleList.articles.Length];
 				for (int i = 0; i < iArticles.Length; i++)
 					iArticles[i] = new Article(articleList.articles[i]);
 				return iArticles;
 			}
-			catch (System.Exception exception)
+			catch (Exception exception)
 			{
 				ProcessException(exception);
 				return null;
@@ -212,57 +215,53 @@ namespace Rsdn.RsdnNntp.Public
 
   	protected override string PostFile(string filename, string mimeType, byte[] content)
   	{
-			return webService.PostFile(filename, mimeType, content,
-				username, password);
+			try
+			{
+				SetUsernameToken();
+				return webService.PostFile(filename, mimeType, content);
+			}
+			catch (Exception exception)
+			{
+				ProcessException(exception);
+				return null;
+			}	
   	}
 
   	protected override void PostMessage(int mid, string group, string subject, string message)
   	{
-			post_result result = 
-				webService.PostMessage(username, password, mid, group,
-				Utils.ProcessInvalidXmlCharacters(subject),
-				Utils.ProcessInvalidXmlCharacters(message));
-
-			if (!result.ok)
-				throw new DataProviderException(DataProviderErrors.PostingFailed, result.error);
+			try
+			{
+				SetUsernameToken();
+				webService.PostMessage(mid, group,
+					Utils.ProcessInvalidXmlCharacters(subject),
+					Utils.ProcessInvalidXmlCharacters(message));
+			}
+			catch (Exception exception)
+			{
+				ProcessException(exception);
+			}	
   	}
 
     /// <summary>
     /// Process exception raised during request to data provider
     /// </summary>
     /// <param name="exception"></param>
-    protected void ProcessException(System.Exception exception)
+    protected void ProcessException(Exception exception)
     {
     	if (typeof(InvalidOperationException).IsAssignableFrom(exception.GetType()))
     		// check for System.InvalidOperationException (html instead xml in answer),
 				// System.Net.WebException (connection problems)
     		throw new DataProviderException(DataProviderErrors.ServiceUnaviable, exception);
 
-			switch (exception.Message)
-			{
-				case "1 Incorrect group name." :
-					throw new DataProviderException(DataProviderErrors.NoSuchGroup);
-				case "2 Incorrect login name or password" :
-				{
-					if (cache[username+password] != null)
-						cache.Remove(username+password);
-					throw new DataProviderException(DataProviderErrors.NoPermission);
-				}
-				case "3 Article not found." :
-					throw new DataProviderException(DataProviderErrors.NoSuchArticle);
-				default:
-					throw exception;
-			}
+			if (exception.Message.IndexOf("1 Incorrect group name.") >= 0)
+				throw new DataProviderException(DataProviderErrors.NoSuchGroup);
+			else if (exception.Message.IndexOf("2 Incorrect login name or password") >= 0)
+				throw new DataProviderException(DataProviderErrors.NoPermission);
+			else if (exception.Message.IndexOf("3 Article not found.") >= 0)
+				throw new DataProviderException(DataProviderErrors.NoSuchArticle);
+			else
+				throw exception;
 		}
-
-    /// <summary>
-    /// Parse error messages from web-service
-    /// </summary>
-		/// <param name="message">Erorr message</param>
-    protected void ProcessErrorMessage(string message)
-    {
-			ProcessException(new DataProviderException(message));
-    }
 
 		/// <summary>
 		/// Identity of assembly for information purposes
@@ -285,7 +284,7 @@ namespace Rsdn.RsdnNntp.Public
   	/// Get necessary configuration object type
   	/// </summary>
   	/// <returns></returns>
-  	public override System.Type GetConfigType()
+  	public override Type GetConfigType()
   	{
   		return typeof(DataProviderSettings);
   	}
@@ -305,7 +304,7 @@ namespace Rsdn.RsdnNntp.Public
     	if (rsdnSettings != null)
     	{
 				webService = rsdnSettings.EnableHttpCompression ?
-					new CompressService() : new Service();
+					new CompressService() : new Service2();
 
     		serverSchemeAndName = rsdnSettings.ServiceUri.GetLeftPart(UriPartial.Authority);
 				serverName = rsdnSettings.ServiceUri.Host;
@@ -329,5 +328,5 @@ namespace Rsdn.RsdnNntp.Public
 				formatter.CanonicalRsdnHostName = serverName;
     	}
     }
-	}
+  }
 }

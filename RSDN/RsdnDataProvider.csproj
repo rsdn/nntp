@@ -141,10 +141,19 @@
                     Project = "{A6ACE0D8-88D2-4306-AFB6-7A3EDD509D28}"
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
+                <Reference
+                    Name = "Microsoft.Web.Services2"
+                    AssemblyName = "Microsoft.Web.Services2"
+                    HintPath = "..\libs\Microsoft.Web.Services2.dll"
+                />
             </References>
         </Build>
         <Files>
             <Include>
+                <File
+                    RelPath = "app.config"
+                    BuildAction = "None"
+                />
                 <File
                     RelPath = "Article.cs"
                     SubType = "Code"
@@ -240,7 +249,7 @@
                 />
                 <Folder
                     RelPath = "Web References\RsdnService\"
-                    WebReferenceUrl = "http://rsdn.ru/ws/service.asmx"
+                    WebReferenceUrl = "http://rsdn.ru/ws/service2.asmx"
                     UrlBehavior = "Dynamic"
                 />
                 <Folder

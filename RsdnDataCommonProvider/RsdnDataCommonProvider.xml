@@ -283,16 +283,6 @@
             <param name="obj">object to save</param>
             <param name="filename">name of file to save</param>
         </member>
-        <member name="F:Rsdn.RsdnNntp.Common.RsdnDataCommonProvider.username">
-            <summary>
-            Authentificated user name.
-            </summary>
-        </member>
-        <member name="F:Rsdn.RsdnNntp.Common.RsdnDataCommonProvider.password">
-            <summary>
-            Authentificated user password.
-            </summary>
-        </member>
         <member name="M:Rsdn.RsdnNntp.Common.RsdnDataCommonProvider.#ctor">
             <summary>
             Construct RSDN Data Provider

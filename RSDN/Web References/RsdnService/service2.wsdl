@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s0="http://rsdn.ru/ws/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://rsdn.ru/ws/" xmlns="http://schemas.xmlsoap.org/wsdl/">
+<definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s0="http://rsdn.ru/ws2/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://rsdn.ru/ws2/" xmlns="http://schemas.xmlsoap.org/wsdl/">
   <types>
-    <s:schema elementFormDefault="qualified" targetNamespace="http://rsdn.ru/ws/">
+    <s:schema elementFormDefault="qualified" targetNamespace="http://rsdn.ru/ws2/">
       <s:element name="PostMessage">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="login" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="psw" type="s:string" />
             <s:element minOccurs="1" maxOccurs="1" name="mid" type="s:int" />
             <s:element minOccurs="0" maxOccurs="1" name="group" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="subject" type="s:string" />
@@ -15,25 +13,10 @@
         </s:complexType>
       </s:element>
       <s:element name="PostMessageResponse">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="PostMessageResult" type="s0:post_result" />
-          </s:sequence>
-        </s:complexType>
+        <s:complexType />
       </s:element>
-      <s:complexType name="post_result">
-        <s:sequence>
-          <s:element minOccurs="0" maxOccurs="1" name="error" type="s:string" />
-          <s:element minOccurs="1" maxOccurs="1" name="ok" type="s:boolean" />
-        </s:sequence>
-      </s:complexType>
       <s:element name="GetUserInfo">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="login" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="psw" type="s:string" />
-          </s:sequence>
-        </s:complexType>
+        <s:complexType />
       </s:element>
       <s:element name="GetUserInfoResponse">
         <s:complexType>
@@ -107,8 +90,6 @@
       <s:element name="GetUserInfoByID">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="login" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="psw" type="s:string" />
             <s:element minOccurs="1" maxOccurs="1" name="id" type="s:int" />
           </s:sequence>
         </s:complexType>
@@ -123,8 +104,6 @@
       <s:element name="GetGroupList">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="login" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="psw" type="s:string" />
             <s:element minOccurs="1" maxOccurs="1" name="dtc" type="s:dateTime" />
           </s:sequence>
         </s:complexType>
@@ -162,8 +141,6 @@
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="0" maxOccurs="1" name="name" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="login" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="psw" type="s:string" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -179,8 +156,6 @@
           <s:sequence>
             <s:element minOccurs="0" maxOccurs="1" name="group" type="s:string" />
             <s:element minOccurs="1" maxOccurs="1" name="number" type="s:int" />
-            <s:element minOccurs="0" maxOccurs="1" name="login" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="psw" type="s:string" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -217,8 +192,6 @@
           <s:sequence>
             <s:element minOccurs="0" maxOccurs="1" name="group" type="s:string" />
             <s:element minOccurs="1" maxOccurs="1" name="number" type="s:int" />
-            <s:element minOccurs="0" maxOccurs="1" name="login" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="psw" type="s:string" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -233,8 +206,6 @@
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="1" maxOccurs="1" name="mid" type="s:int" />
-            <s:element minOccurs="0" maxOccurs="1" name="login" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="psw" type="s:string" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -249,8 +220,6 @@
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="1" maxOccurs="1" name="mid" type="s:int" />
-            <s:element minOccurs="0" maxOccurs="1" name="login" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="psw" type="s:string" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -267,8 +236,6 @@
             <s:element minOccurs="0" maxOccurs="1" name="group" type="s:string" />
             <s:element minOccurs="1" maxOccurs="1" name="first" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="last" type="s:int" />
-            <s:element minOccurs="0" maxOccurs="1" name="login" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="psw" type="s:string" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -297,8 +264,6 @@
           <s:sequence>
             <s:element minOccurs="0" maxOccurs="1" name="groups" type="s0:ArrayOfString" />
             <s:element minOccurs="1" maxOccurs="1" name="startDate" type="s:dateTime" />
-            <s:element minOccurs="0" maxOccurs="1" name="login" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="psw" type="s:string" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -315,33 +280,16 @@
         </s:complexType>
       </s:element>
       <s:element name="Authentication">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="login" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="psw" type="s:string" />
-          </s:sequence>
-        </s:complexType>
+        <s:complexType />
       </s:element>
       <s:element name="AuthenticationResponse">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="1" maxOccurs="1" name="AuthenticationResult" type="s0:auth_info" />
-          </s:sequence>
-        </s:complexType>
+        <s:complexType />
       </s:element>
-      <s:complexType name="auth_info">
-        <s:sequence>
-          <s:element minOccurs="0" maxOccurs="1" name="error" type="s:string" />
-          <s:element minOccurs="1" maxOccurs="1" name="ok" type="s:boolean" />
-        </s:sequence>
-      </s:complexType>
       <s:element name="GetLink">
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="0" maxOccurs="1" name="link" type="s:string" />
             <s:element minOccurs="1" maxOccurs="1" name="type" type="s0:LinkType" />
-            <s:element minOccurs="0" maxOccurs="1" name="login" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="psw" type="s:string" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -370,8 +318,6 @@
             <s:element minOccurs="0" maxOccurs="1" name="fileName" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="contentType" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="content" type="s:base64Binary" />
-            <s:element minOccurs="0" maxOccurs="1" name="login" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="psw" type="s:string" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -468,7 +414,7 @@
   <message name="PostFileSoapOut">
     <part name="parameters" element="s0:PostFileResponse" />
   </message>
-  <portType name="ServiceSoap">
+  <portType name="Service2Soap">
     <operation name="PostMessage">
       <documentation>Accepts Unicode formatted message postings.</documentation>
       <input message="s0:PostMessageSoapIn" />
@@ -540,10 +486,10 @@
       <output message="s0:PostFileSoapOut" />
     </operation>
   </portType>
-  <binding name="ServiceSoap" type="s0:ServiceSoap">
+  <binding name="Service2Soap" type="s0:Service2Soap">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
     <operation name="PostMessage">
-      <soap:operation soapAction="http://rsdn.ru/ws/PostMessage" style="document" />
+      <soap:operation soapAction="http://rsdn.ru/ws2/PostMessage" style="document" />
       <input>
         <soap:body use="literal" />
       </input>
@@ -552,7 +498,7 @@
       </output>
     </operation>
     <operation name="GetUserInfo">
-      <soap:operation soapAction="http://rsdn.ru/ws/GetUserInfo" style="document" />
+      <soap:operation soapAction="http://rsdn.ru/ws2/GetUserInfo" style="document" />
       <input>
         <soap:body use="literal" />
       </input>
@@ -561,7 +507,7 @@
       </output>
     </operation>
     <operation name="GetUserInfoByID">
-      <soap:operation soapAction="http://rsdn.ru/ws/GetUserInfoByID" style="document" />
+      <soap:operation soapAction="http://rsdn.ru/ws2/GetUserInfoByID" style="document" />
       <input>
         <soap:body use="literal" />
       </input>
@@ -570,7 +516,7 @@
       </output>
     </operation>
     <operation name="GetGroupList">
-      <soap:operation soapAction="http://rsdn.ru/ws/GetGroupList" style="document" />
+      <soap:operation soapAction="http://rsdn.ru/ws2/GetGroupList" style="document" />
       <input>
         <soap:body use="literal" />
       </input>
@@ -579,7 +525,7 @@
       </output>
     </operation>
     <operation name="GroupInfo">
-      <soap:operation soapAction="http://rsdn.ru/ws/GroupInfo" style="document" />
+      <soap:operation soapAction="http://rsdn.ru/ws2/GroupInfo" style="document" />
       <input>
         <soap:body use="literal" />
       </input>
@@ -588,7 +534,7 @@
       </output>
     </operation>
     <operation name="GetArticle">
-      <soap:operation soapAction="http://rsdn.ru/ws/GetArticle" style="document" />
+      <soap:operation soapAction="http://rsdn.ru/ws2/GetArticle" style="document" />
       <input>
         <soap:body use="literal" />
       </input>
@@ -597,7 +543,7 @@
       </output>
     </operation>
     <operation name="GetFormattedArticle">
-      <soap:operation soapAction="http://rsdn.ru/ws/GetFormattedArticle" style="document" />
+      <soap:operation soapAction="http://rsdn.ru/ws2/GetFormattedArticle" style="document" />
       <input>
         <soap:body use="literal" />
       </input>
@@ -606,7 +552,7 @@
       </output>
     </operation>
     <operation name="GetArticleByID">
-      <soap:operation soapAction="http://rsdn.ru/ws/GetArticleByID" style="document" />
+      <soap:operation soapAction="http://rsdn.ru/ws2/GetArticleByID" style="document" />
       <input>
         <soap:body use="literal" />
       </input>
@@ -615,7 +561,7 @@
       </output>
     </operation>
     <operation name="GetFormattedArticleByID">
-      <soap:operation soapAction="http://rsdn.ru/ws/GetFormattedArticleByID" style="document" />
+      <soap:operation soapAction="http://rsdn.ru/ws2/GetFormattedArticleByID" style="document" />
       <input>
         <soap:body use="literal" />
       </input>
@@ -624,7 +570,7 @@
       </output>
     </operation>
     <operation name="ArticleList">
-      <soap:operation soapAction="http://rsdn.ru/ws/ArticleList" style="document" />
+      <soap:operation soapAction="http://rsdn.ru/ws2/ArticleList" style="document" />
       <input>
         <soap:body use="literal" />
       </input>
@@ -633,7 +579,7 @@
       </output>
     </operation>
     <operation name="ArticleListFromDate">
-      <soap:operation soapAction="http://rsdn.ru/ws/ArticleListFromDate" style="document" />
+      <soap:operation soapAction="http://rsdn.ru/ws2/ArticleListFromDate" style="document" />
       <input>
         <soap:body use="literal" />
       </input>
@@ -642,7 +588,7 @@
       </output>
     </operation>
     <operation name="Authentication">
-      <soap:operation soapAction="http://rsdn.ru/ws/Authentication" style="document" />
+      <soap:operation soapAction="http://rsdn.ru/ws2/Authentication" style="document" />
       <input>
         <soap:body use="literal" />
       </input>
@@ -651,7 +597,7 @@
       </output>
     </operation>
     <operation name="GetLink">
-      <soap:operation soapAction="http://rsdn.ru/ws/GetLink" style="document" />
+      <soap:operation soapAction="http://rsdn.ru/ws2/GetLink" style="document" />
       <input>
         <soap:body use="literal" />
       </input>
@@ -660,7 +606,7 @@
       </output>
     </operation>
     <operation name="PostFile">
-      <soap:operation soapAction="http://rsdn.ru/ws/PostFile" style="document" />
+      <soap:operation soapAction="http://rsdn.ru/ws2/PostFile" style="document" />
       <input>
         <soap:body use="literal" />
       </input>
@@ -669,10 +615,10 @@
       </output>
     </operation>
   </binding>
-  <service name="Service">
+  <service name="Service2">
     <documentation>The service provides access to the RSDN forums. </documentation>
-    <port name="ServiceSoap" binding="s0:ServiceSoap">
-      <soap:address location="http://rsdn.ru/ws/service.asmx" />
+    <port name="Service2Soap" binding="s0:Service2Soap">
+      <soap:address location="http://rsdn.ru/ws/service2.asmx" />
     </port>
   </service>
 </definitions>
