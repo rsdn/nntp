@@ -229,7 +229,6 @@ namespace Rsdn.Nntp
 			foreach (Type type in assembly.GetTypes())
 				if (type.IsPublic && ((filter == null) || (filter.IsAssignableFrom(type))))
 				{
-					Trace.WriteLine(type.ToString());
 					if (types[type.Namespace] == null)
 					{
 						namespacesCombo.Items.Add(type.Namespace);

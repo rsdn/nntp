@@ -12,6 +12,7 @@ using System.Runtime.Serialization;
 using System.Diagnostics;
 using System.Collections;
 
+using log4net;
 using Rsdn.Framework.Formatting;
 
 using Rsdn.Mime;
@@ -49,6 +50,11 @@ namespace Rsdn.RsdnNntp
     protected static string cacheFilename =
     	Assembly.GetExecutingAssembly().GetName().Name + ".cache";
 
+		/// <summary>
+		/// Logger 
+		/// </summary>
+		private static ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
     /// <summary>
     /// Read caches at the start
     /// </summary>
@@ -62,7 +68,7 @@ namespace Rsdn.RsdnNntp
     	}
     	catch (Exception e)
     	{
-    		Trace.Fail("Messages cache corrupted: " + e.ToString());
+    		logger.Error("Messages cache corrupted", e);
     	}
 
     	// load references cache
@@ -73,7 +79,7 @@ namespace Rsdn.RsdnNntp
     	}
     	catch (Exception e)
     	{
-    		Trace.Fail("References cache corrupted: " + e.ToString());
+				logger.Error("References cache corrupted", e);
     	}
     }
 

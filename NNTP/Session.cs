@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
 using System.Net;
+using log4net;
 
 using Rsdn.Mime;
 using Rsdn.Nntp.Commands;
@@ -23,13 +24,13 @@ namespace Rsdn.Nntp
 		public static readonly string Hostname;
 		public static readonly string FullHostname;
 
-		protected static readonly TraceSwitch tracing;
+		/// <summary>
+		/// Logger
+		/// </summary>
+		private static ILog logger = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
 		static Session()
 		{
-			// tracing
-			tracing = new TraceSwitch("Show", "RSDN NNTP Server Tracing");
-
 			// DNS
 			try
 			{
@@ -187,8 +188,9 @@ namespace Rsdn.Nntp
 		/// </summary>
 		public void Process(Object obj)
 		{
-			Trace.WriteLineIf(tracing.TraceInfo,
-				string.Format("Session started. Local end point {0}.", client.LocalEndPoint), sessionID);
+			//TODO: SessionID using!
+			if (logger.IsInfoEnabled)
+				logger.Info(string.Format("Session started. Local end point {0}.", client.LocalEndPoint));
 
 			string delimeter;
 			Response result = null;
@@ -248,7 +250,8 @@ namespace Rsdn.Nntp
 						bufferString.Remove(0, bufferString.ToString().IndexOf(delimeter) + delimeter.Length);
 						
 						// tracing
-						Trace.WriteLineIf(tracing.TraceInfo, commandString, sessionID);
+						//TODO: SessionID!
+						logger.Debug(commandString);
 
 						// especialy for Outlook Express
 						// it send sometimes blank lines
@@ -352,25 +355,22 @@ namespace Rsdn.Nntp
 						// not good....
 						catch(Exception e)
 						{
-							if (tracing.TraceError)
+							// TODO: SessionID!
+							if (logger.IsErrorEnabled)
 							{
-								Trace.WriteLine(
+								logger.Error(
 									string.Format("Exception during processing...\n" +
 										"(selected group '{0}', last request '{1}')\n{2}",
-										dataProvider.CurrentGroup, commandString, e), sessionID);
+										dataProvider.CurrentGroup, commandString, e));
 							}
 							result = new Response(NntpResponse.ProgramFault);
 						}
 
 						Answer(result);
 
-						// tracing....
-						if (tracing.TraceVerbose)
-							Trace.Write(result, sessionID);
-						else if (tracing.TraceInfo)
-							// trace only first line
-							Trace.WriteLine(result.ToString().Split(new char[]{'\n', '\r'}, 2)[0],
-								sessionID);
+						// TODO: SessionID!
+						if (logger.IsDebugEnabled)
+							logger.Debug(result);
 
 						if (result.Code >= 400)
 							// result code indicates error
@@ -408,11 +408,12 @@ namespace Rsdn.Nntp
 			catch (Exception e)
 			{
 				// something wrong......
-				Trace.Fail(e.ToString());
+				logger.Fatal("Fatal error", e);
 			}
 			finally
 			{
-				Trace.WriteLineIf(tracing.TraceInfo, "Session finished", sessionID);
+				// TODO: SessionID
+				logger.Info("Session finished");
 				Dispose();
 			}
 		}

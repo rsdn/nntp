@@ -4,10 +4,12 @@ using System.ServiceProcess;
 using System.IO;
 using System.Configuration;
 using System.Reflection;
-using System.Diagnostics;
 using System.Threading;
+using log4net;
 
 using Rsdn.Nntp;
+
+[assembly: log4net.Config.DOMConfigurator(Watch=true)]
 
 namespace Rsdn.RsdnNntp
 {
@@ -17,6 +19,11 @@ namespace Rsdn.RsdnNntp
 		/// Required designer variable.
 		/// </summary>
 		private System.ComponentModel.Container components = null;
+
+		/// <summary>
+		/// Logger 
+		/// </summary>
+		private static ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
 		public RsdnNntpServer()
 		{
@@ -39,9 +46,6 @@ namespace Rsdn.RsdnNntp
 			//
 			ServicesToRun = new System.ServiceProcess.ServiceBase[] { new RsdnNntpServer() };
 
-			// tracing
-			Trace.Listeners.Add(new EventLogWithFailTraceListener(ServicesToRun[0].EventLog));
-				
 			System.ServiceProcess.ServiceBase.Run(ServicesToRun);
 		}
 
@@ -92,7 +96,7 @@ namespace Rsdn.RsdnNntp
 			}
 			catch (Exception e)
 			{
-				Trace.Fail(e.ToString());
+				logger.Fatal("RSDN NNTP Server can't start.", e);
 				nntpManager = null;
 				// start timer, which will stop service in 1 sec
 				Timer timer = new Timer(new TimerCallback(Stop), null, 1000, Timeout.Infinite);
@@ -114,7 +118,7 @@ namespace Rsdn.RsdnNntp
 			}
 			catch (Exception e)
 			{
-				Trace.Fail(e.ToString());
+				logger.Fatal("RSDN NNTP Server can't stop.", e);
 			}
 		}
 

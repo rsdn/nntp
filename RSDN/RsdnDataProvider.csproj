@@ -114,7 +114,12 @@
                 <Reference
                     Name = "Rsdn.Framework.Formatting"
                     AssemblyName = "Rsdn.Framework.Formatting"
-                    HintPath = "Rsdn.Framework.Formatting.dll"
+                    HintPath = "..\libs\Rsdn.Framework.Formatting.dll"
+                />
+                <Reference
+                    Name = "log4net-net-1.1"
+                    AssemblyName = "log4net-net-1.1"
+                    HintPath = "..\libs\log4net-net-1.1.dll"
                 />
             </References>
         </Build>
@@ -174,14 +179,6 @@
                     RelPath = "ReferenceCache.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Rsdn.Framework.Common.dll"
-                    BuildAction = "Content"
-                />
-                <File
-                    RelPath = "Rsdn.Framework.Formatting.dll"
-                    BuildAction = "Content"
                 />
                 <File
                     RelPath = "Settings.cs"

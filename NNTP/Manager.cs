@@ -8,6 +8,7 @@ using System.Configuration;
 using System.Text;
 using System.Reflection;
 using System.IO;
+using log4net;
 
 namespace Rsdn.Nntp
 {
@@ -48,13 +49,13 @@ namespace Rsdn.Nntp
 		protected internal PerformanceCounter bytesTotalCounter;
 #endif
 
-		protected static readonly TraceSwitch tracing;
+		/// <summary>
+		/// Logger
+		/// </summary>
+		private static ILog logger = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
 		static Manager()
 		{
-			// tracing
-			tracing = new TraceSwitch("Show", "RSDN NNTP Server Tracing");
-
 #if PERFORMANCE_COUNTERS
 			// create performance counters' category if necessary
 			if (!PerformanceCounterCategory.Exists(ServerCategoryName ))
@@ -148,15 +149,15 @@ namespace Rsdn.Nntp
 			stopEvent.Reset();
 
 			// trace start message
-			if (tracing.TraceWarning)
+			if (logger.IsInfoEnabled)
 			{
-				StringBuilder startInfo = new StringBuilder("Server started. Listen on ");
+				StringBuilder startInfo = new StringBuilder(string.Format("Server {0} started. Listen on ", settings.Name));
 				for (int i = 0; i < listeners.Length; i++)
 				{
 					if (i > 0) startInfo.Append(',');
 					startInfo.Append(listeners[i].LocalEndPoint);
 				}
-				Trace.WriteLine(startInfo.Append('.'), settings.Name);
+				logger.Info(startInfo.Append('.'));
 			}
 		}
 
@@ -241,7 +242,8 @@ namespace Rsdn.Nntp
 		public void Pause()
 		{
 			paused = true;
-			Trace.WriteLineIf(tracing.TraceWarning, "Server paused", settings.Name);
+			if (logger.IsInfoEnabled)
+				logger.Info(string.Format("Server {0} paused.", settings.Name));
 		}
 
 		/// <summary>
@@ -250,7 +252,8 @@ namespace Rsdn.Nntp
 		public void Resume()
 		{
 			paused = false;
-			Trace.WriteLineIf(tracing.TraceWarning, "Server resumed", settings.Name);
+			if (logger.IsInfoEnabled)
+				logger.Info(string.Format("Server {0} resumed.", settings.Name));
 		}
 
 		/// <summary>
@@ -263,10 +266,11 @@ namespace Rsdn.Nntp
 			if (!noSessions.WaitOne(waitSessionsTimeout, false))
 			{
 				sessions.Clear();
-				Trace.WriteLineIf(tracing.TraceWarning, "Server forced closing of child sessions",
-					settings.Name);
+				if (logger.IsInfoEnabled)
+					logger.Info(string.Format("Server {0} forced closing of child sessions.", settings.Name));
 			}
-			Trace.WriteLineIf(tracing.TraceWarning, "Server stopped", settings.Name);
+			if (logger.IsInfoEnabled)
+				logger.Info(string.Format("Server {0} stopped.", settings.Name));
 		}
 
 		/// <summary>

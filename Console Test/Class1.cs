@@ -1,7 +1,9 @@
 using System;
-using System.Diagnostics;
 using System.Configuration;
 using Rsdn.Nntp;
+using log4net;
+
+[assembly: log4net.Config.DOMConfigurator(Watch=true)]
 
 namespace ForumTest
 {
@@ -16,9 +18,7 @@ namespace ForumTest
 		[STAThread]
 		static void Main(string[] args)
 		{
-			// Show trace on display
-			Trace.Listeners.Add(new TextWriterTraceListener(System.Console.Out));
-
+			ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 			try
 			{
         NntpSettings serverSettings =
@@ -33,7 +33,7 @@ namespace ForumTest
 			}
 			catch (Exception e)
 			{
-				Trace.Fail(e.ToString());
+				logger.Fatal("ConsoleApp", e);
 			}
 		}
 	}
