@@ -73,8 +73,8 @@ namespace Rsdn.Nntp
 		/// <summary>
 		/// Get news group's description.
 		/// </summary>
-		/// <param name="groupName"></param>
-		/// <returns></returns>
+		/// <param name="groupName">News group name.</param>
+		/// <returns>News group description.</returns>
 		NewsGroup GetGroup(string groupName);
 
 		/// <summary>

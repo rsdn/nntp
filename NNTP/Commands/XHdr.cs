@@ -36,8 +36,6 @@ namespace Rsdn.Nntp.Commands
 		/// <returns>Server's NNTP response</returns>
 		protected override Response ProcessCommand()
 		{
-			session.logger.Info("XHDR!");
-
 			NewsArticle[] articleList;
 			if (lastMatch.Groups["messageID"].Success)
 			{
