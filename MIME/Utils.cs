@@ -180,9 +180,11 @@ namespace Rsdn.Mime
 
 		/// <summary>
 		/// Regular expression for detect symbols which not needed to encode in quoted printable coding.
+		/// Question symbol (0x3f, '?') is not required to be encoded in general Q-encoded word,
+		/// but need to be encoded in header. So, encode it always...
 		/// </summary>
 		static protected readonly Regex quotedPrintableDecodedSymbol =
-			new Regex(@"[^\x21-\x3c\x3e-\x7e]", RegexOptions.Compiled);
+			new Regex(@"[^\x21-\x3c\x3e\x40-\x7e]", RegexOptions.Compiled);
 
 		/// <summary>
 		/// Regular expression for breaking 'quoted-rintable' strings in lines
