@@ -405,7 +405,7 @@ namespace Rsdn.Mime
 		/// Regular expression for extracting header fileds.
 		/// </summary>
 		static readonly protected Regex headerField =
-			new Regex(@"(?m)^(?<fieldName>\S+)\s*:\s*(?<fieldBody>.*)\s*" + Util.CRLF);
+			new Regex(@"(?m)^(?<fieldName>\S+)[ \t]*:[ \t]*(?<fieldBody>.*?)[ \t]*" + Util.CRLF);
 		/// <summary>
 		/// Regular expression for select message header and body
 		/// </summary>
