@@ -520,9 +520,9 @@ namespace Rsdn.Nntp
 			get {return dataProvider;}
 		}
 		/// <summary>
-		/// connection timeout interval in milliseconds (3 min)
+		/// connection timeout interval in milliseconds (5 min)
 		/// </summary>
-		protected const int connectionTimeout = 180000;
+		protected const int connectionTimeout = 300000;
 
 		/// <summary>
 		/// free management resources
