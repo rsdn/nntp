@@ -130,18 +130,17 @@ namespace derIgel.NNTP
 		/// </summary>
 		public static byte[] ModifyTextResponse(byte[] response)
 		{
-			if (response != null)
-			{
-				StringBuilder textRepresentation = new StringBuilder(
-					// double start points
-					EncodeNNTPMessage.Replace(Util.BytesToString(response), ".."));
+			if (response == null)
+				return new byte[0];
+	
+			StringBuilder textRepresentation = new StringBuilder(
+				// double start points
+				EncodeNNTPMessage.Replace(Util.BytesToString(response), ".."));
+			if (textRepresentation.Length > 0)
 				if (!textRepresentation.ToString().EndsWith(Util.CRLF))
 					textRepresentation.Append(Util.CRLF);
-				textRepresentation.Append(".").Append(Util.CRLF);
-				return Util.StringToBytes(textRepresentation.ToString());
-			}
-			else
-				return new byte[0];
+			textRepresentation.Append(".").Append(Util.CRLF);
+			return Util.StringToBytes(textRepresentation.ToString());
 		}
 
 		protected static readonly Regex DecodeNNTPMessage =

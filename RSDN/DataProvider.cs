@@ -14,7 +14,7 @@ namespace derIgel.RsdnNntp
 	/// <summary>
 	/// 
 	/// </summary>
-	public class RsdnDataProvider : derIgel.NNTP.DataProvider
+	public class RsdnDataProvider : derIgel.NNTP.IDataProvider
 	{
 		/// <summary>
 		/// read cache at the start
@@ -36,20 +36,10 @@ namespace derIgel.RsdnNntp
 			cache.Serialize(cacheFilename);
 		}
 
-		public RsdnDataProvider(NNTPSettings settings) : base(settings)
+		public RsdnDataProvider()
 		{
-			initialSessionState = Session.States.AuthRequired;
-			postingAllowed = true;
 			webService = new Forum();
 			encoding = System.Text.Encoding.UTF8;
-			RsdnDataProviderSettings rsdnSettings = settings as RsdnDataProviderSettings;
-			if (rsdnSettings != null)
-			{
-				webService.Url = ((RsdnDataProviderSettings)rsdnSettings).Service;
-				webService.Proxy = rsdnSettings.GetProxy;
-				encoding = rsdnSettings.GetEncoding;
-				cache.Capacity = rsdnSettings.CacheSize;
-			}
 			Stream io = Assembly.GetExecutingAssembly().GetManifestResourceStream("derIgel.RsdnNntp.Header.htm");
 			StreamReader reader = new StreamReader(io);
 			htmlMessageTemplate = reader.ReadToEnd();
@@ -57,8 +47,27 @@ namespace derIgel.RsdnNntp
 		}
 
 		protected Forum webService;
+		protected string username = "";
+		protected string password = "";
+		/// <summary>
+		/// Current selected group
+		/// </summary>
+		protected string currentGroup = null;
+		/// <summary>
+		/// Current selected article
+		/// </summary>
+		protected int currentArticle = -1;
 
-		public override NewsGroup GetGroup(string groupName)
+		public NewsArticle GetArticle(NewsArticle.Content content)
+		{
+			if (currentArticle == -1)
+				throw new DataProviderException((currentGroup == null) ?
+					DataProviderErrors.NoSelectedGroup : DataProviderErrors.NoSelectedArticle);
+
+			return GetArticle(currentArticle, content);
+		}
+
+		public NewsGroup GetGroup(string groupName)
 		{
 			group requestedGroup = null;
 			try
@@ -78,10 +87,10 @@ namespace derIgel.RsdnNntp
 				requestedGroup.last - requestedGroup.first + 1, true);
 		}
 
-		public override NewsArticle GetArticle(int articleNumber, NewsArticle.Content content)
+		public NewsArticle GetArticle(int articleNumber, NewsArticle.Content content)
 		{
 			if (currentGroup == null)
-				throw new Exception(Errors.NoSelectedGroup);
+				throw new DataProviderException(DataProviderErrors.NoSelectedGroup);
 
 			NewsArticle newsMessage = null;
 			// access to cache
@@ -115,7 +124,7 @@ namespace derIgel.RsdnNntp
 
 		static protected readonly Regex messageIdNumber =
 			new Regex(@"<(?<messageIdNumber>\d+)@\S+>", RegexOptions.Compiled);
-		public override NewsArticle GetArticle(string messageID, NewsArticle.Content content)
+		public NewsArticle GetArticle(string messageID, NewsArticle.Content content)
 		{
 			NewsArticle newsMessage = null;
 			// access to cache
@@ -146,44 +155,44 @@ namespace derIgel.RsdnNntp
 			return newsMessage;
 		}
 
-		public override NewsArticle GetNextArticle()
+		public NewsArticle GetNextArticle()
 		{
 			if (currentGroup == null)
-				throw new Exception(Errors.NoSelectedGroup);
+				throw new DataProviderException(DataProviderErrors.NoSelectedGroup);
 
 			if (currentArticle == -1)
-				throw new Exception(Errors.NoSelectedArticle);
+				throw new DataProviderException(DataProviderErrors.NoSelectedArticle);
 
 			NewsArticle[] articleList = GetArticleList(currentArticle + 1, currentGroupArticleEndNumber,
 				NewsArticle.Content.Header);
 	
 			if (articleList.Length == 0)
-				throw new Exception(Errors.NoNextArticle);
+				throw new DataProviderException(DataProviderErrors.NoNextArticle);
 
 			currentArticle = articleList[0].Number;
 
 			return articleList[0];
 		}
 
-		public override NewsArticle GetPrevArticle()
+		public NewsArticle GetPrevArticle()
 		{
 			if (currentGroup == null)
-				throw new Exception(Errors.NoSelectedGroup);
+				throw new DataProviderException(DataProviderErrors.NoSelectedGroup);
 
 			if (currentArticle == -1)
-				throw new Exception(Errors.NoSelectedArticle);
+				throw new DataProviderException(DataProviderErrors.NoSelectedArticle);
 
 			NewsArticle[] articleList = GetArticleList(currentGroupArticleStartNumber,
 				currentArticle - 1,	NewsArticle.Content.Header);
 	
 			if (articleList.Length == 0)
-				throw new Exception(Errors.NoPrevArticle);
+				throw new DataProviderException(DataProviderErrors.NoPrevArticle);
 
 			currentArticle = articleList[articleList.Length - 1].Number;
 			return articleList[articleList.Length - 1];
 		}
 
-		public override NewsGroup[] GetGroupList(DateTime startDate, string[] distributions)
+		public NewsGroup[] GetGroupList(DateTime startDate, string[] distributions)
 		{
 			// minimum date, supported by web service, is unknown...
 			// So take midnight of 30 december 1899
@@ -210,20 +219,22 @@ namespace derIgel.RsdnNntp
 			return listOfGroups;
 		}
 
-		public override NewsArticle[] GetArticleList(string[] newsgroups, System.DateTime date,
+		public NewsArticle[] GetArticleList(string[] newsgroups, System.DateTime date,
 			string[] distributions)
 		{
-			throw new Exception(Errors.NotSupported);
+			throw new DataProviderException(DataProviderErrors.NotSupported);
 		}
 
-		public override bool Authentificate(string user, string pass)
+		public bool Authentificate(string user, string pass)
 		{
 			auth_info auth = null;
 			try
 			{
 				auth = webService.Authentication(user, pass);
 				if (!auth.ok)
-					throw new Exception(Errors.PostingFailed);
+					throw new DataProviderException(DataProviderErrors.PostingFailed);
+				username = user;
+				password = pass;
 			}
 			catch (System.Exception exception)
 			{
@@ -248,8 +259,7 @@ namespace derIgel.RsdnNntp
 				if (message.pid != string.Empty)
 					newsMessage["References"] = "<" + message.pid + message.postfix + ">";
 				newsMessage["Newsgroups"] = newsgroup;
-				newsMessage["X-Mailer"] = serverID;
-				newsMessage["NNTP-Posting-Host"] = Dns.GetHostName();
+				newsMessage["X-Server"] = serverID;
 			}
 
 			if ((content == NewsArticle.Content.Body) ||
@@ -275,11 +285,11 @@ namespace derIgel.RsdnNntp
 			return newsMessage;
 		}
 
-		public override NNTP.NewsArticle[] GetArticleList(int startNumber, int endNumber,
+		public NNTP.NewsArticle[] GetArticleList(int startNumber, int endNumber,
 			NNTP.NewsArticle.Content content)
 		{
 			if (this.currentGroup == null)
-				throw new Exception(Errors.NoSelectedGroup);
+				throw new DataProviderException(DataProviderErrors.NoSelectedGroup);
 
 			article_list articleList = null;
 			try
@@ -317,7 +327,7 @@ namespace derIgel.RsdnNntp
 			((AssemblyInformationalVersionAttribute)Attribute.GetCustomAttribute(Assembly.GetExecutingAssembly(),
 				typeof(AssemblyInformationalVersionAttribute))).InformationalVersion;
 
-		public override void PostMessage(Message message)
+		public void PostMessage(Message message)
 		{
 			try
 			{
@@ -360,7 +370,7 @@ namespace derIgel.RsdnNntp
 		{
 			if (exception.GetType() == typeof(System.Net.WebException))
 				// problems with connection?
-				throw new Exception(Errors.ServiceUnaviable, exception);
+				throw new DataProviderException(DataProviderErrors.ServiceUnaviable, exception);
 
 			// if not handeled - throw forward
 			throw exception;
@@ -371,16 +381,44 @@ namespace derIgel.RsdnNntp
 			switch (message)
 			{
 				case "1 Incorrect group name." :
-					throw new Exception(Errors.NoSuchGroup);
+					throw new DataProviderException(DataProviderErrors.NoSuchGroup);
 				case "2 Incorrect login name or password" :
-					throw new Exception(Errors.NoPermission);
+					throw new DataProviderException(DataProviderErrors.NoPermission);
 				case "3 Article not found." :
-					throw new Exception(Errors.NoSuchArticle);
+					throw new DataProviderException(DataProviderErrors.NoSuchArticle);
 				case "Timeout expired." +
 					"  The timeout period elapsed prior to completion of the operation or the server is not responding." :
-					throw new Exception(Errors.ServiceUnaviable);
+					throw new DataProviderException(DataProviderErrors.ServiceUnaviable);
 				default:
-					throw new DataProvider.Exception(DataProvider.Errors.UnknownError);
+					throw new DataProviderException(DataProviderErrors.UnknownError);
+			}
+		}
+
+		public derIgel.NNTP.Session.States InitialSessionState
+		{
+			get
+			{
+				return Session.States.AuthRequired;
+			}
+		}
+
+		public bool PostingAllowed
+		{
+			get
+			{
+				return true;
+			}
+		}
+
+		public void Config(derIgel.NNTP.NNTPSettings settings)
+		{
+			RsdnDataProviderSettings rsdnSettings = settings as RsdnDataProviderSettings;
+			if (rsdnSettings != null)
+			{
+				webService.Url = rsdnSettings.Service;
+				webService.Proxy = rsdnSettings.GetProxy;
+				encoding = rsdnSettings.GetEncoding;
+				cache.Capacity = rsdnSettings.CacheSize;
 			}
 		}
 	}

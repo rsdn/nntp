@@ -45,7 +45,7 @@ namespace derIgel.NNTP
 
 		}
 
-		public Session(Socket client, DataProvider dataProvider, WaitHandle exitEvent, Statistics stat,
+		public Session(Socket client, IDataProvider dataProvider, WaitHandle exitEvent, Statistics stat,
 			TextWriter errorOutput)
 		{
 			sessionState = dataProvider.InitialSessionState;
@@ -68,6 +68,8 @@ namespace derIgel.NNTP
 		}
 
 		protected static Hashtable commandsTypes;
+		public string Username;
+		public string Password;
 
 		// resonse answer from server
 		protected void Answer(int code)
@@ -173,42 +175,42 @@ namespace derIgel.NNTP
 						{
 							result = new Response(503);
 						}
-						catch (DataProvider.Exception exception)
+						catch (DataProviderException exception)
 						{
 							switch (exception.Error)
 							{
-								case DataProvider.Errors.NoSuchGroup:
+								case DataProviderErrors.NoSuchGroup:
 									result = new Response(411);
 									break;
-								case DataProvider.Errors.NoSelectedGroup:
+								case DataProviderErrors.NoSelectedGroup:
 									result = new Response(412);
 									break;
-								case DataProvider.Errors.NoSelectedArticle:
+								case DataProviderErrors.NoSelectedArticle:
 									result = new Response(420);
 									break;
-								case DataProvider.Errors.NoNextArticle:
+								case DataProviderErrors.NoNextArticle:
 									result = new Response(421);
 									break;
-								case DataProvider.Errors.NoPrevArticle:
+								case DataProviderErrors.NoPrevArticle:
 									result = new Response(422);
 									break;
-								case DataProvider.Errors.NoSuchArticleNumber:
+								case DataProviderErrors.NoSuchArticleNumber:
 									result = new Response(423);
 									break;
-								case DataProvider.Errors.NoSuchArticle:
+								case DataProviderErrors.NoSuchArticle:
 									result = new Response(430);
 									break;
-								case DataProvider.Errors.NoPermission:
+								case DataProviderErrors.NoPermission:
 									result = new Response(480);
 									sessionState = States.AuthRequired;
 									break;
-								case DataProvider.Errors.NotSupported:
+								case DataProviderErrors.NotSupported:
 									result = new Response(500);
 									break;
-								case DataProvider.Errors.PostingFailed:
+								case DataProviderErrors.PostingFailed:
 									result = new Response(441);
 									break;
-								case DataProvider.Errors.ServiceUnaviable:
+								case DataProviderErrors.ServiceUnaviable:
 									result = new Response(400);
 									break;
 								default:
@@ -303,16 +305,12 @@ namespace derIgel.NNTP
 		/// Associative arrays of NNTP client commands
 		/// </summary>
 		protected internal Hashtable commands;
-		/// <summary>
-		/// Current selected group
-		/// </summary>
-		protected string currentGroup = null;
-		/// <summary>
-		/// Current selected article
-		/// </summary>
-		protected int currentArticle = -1;
 
-		protected internal DataProvider dataProvider;
+		protected IDataProvider dataProvider;
+		public IDataProvider DataProvider
+		{
+			get {return dataProvider;}
+		}
 		/// <summary>
 		/// connection timeout interval in milliseconds (3 min)
 		/// </summary>

@@ -97,7 +97,12 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "DataProvider.cs"
+                    RelPath = "Errors.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "IDataProvider.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

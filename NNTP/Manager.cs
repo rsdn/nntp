@@ -51,11 +51,8 @@ namespace derIgel.NNTP
 		/// </summary>
 		public Manager(Type dataProviderType, NNTPSettings settings)
 		{
-			if (!dataProviderType.IsSubclassOf(typeof(DataProvider)))
-				throw new ArgumentException("dataProviderType is not inherited from DataProvider class",
-					"dataProviderType");
-			if (dataProviderType.IsAbstract)
-				throw new ArgumentException("dataProviderType is abstract class",
+			if (Array.BinarySearch(dataProviderType.GetInterfaces(), typeof(IDataProvider)) < 0)
+				throw new ArgumentException("dataProviderType is not implemented DataProvider interface.",
 					"dataProviderType");
 
 			this.dataProviderType = dataProviderType;
@@ -135,10 +132,9 @@ namespace derIgel.NNTP
 					}
 					else
 					{
-						DataProvider dataProvider = Activator.CreateInstance(dataProviderType,
-							new object[]{settings}) as DataProvider;
-						Session session = new Session(socket, dataProvider,	stopEvent,
-							stat, errorOutput);
+						IDataProvider dataProvider = Activator.CreateInstance(dataProviderType) as IDataProvider;
+						dataProvider.Config(settings);
+						Session session = new Session(socket, dataProvider,	stopEvent, stat, errorOutput);
 						session.Disposed += new EventHandler(SessionDisposedHandler);
 						sessions.Add(session);
 						ThreadPool.QueueUserWorkItem(new WaitCallback(session.Process), this);

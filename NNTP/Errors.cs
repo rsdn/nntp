@@ -1,0 +1,36 @@
+using System;
+
+namespace derIgel.NNTP
+{
+	public enum DataProviderErrors
+	{
+		UnknownError, NoSelectedGroup, NoSelectedArticle, NoSuchArticleNumber,
+		NoSuchArticle, NoNextArticle, NoPrevArticle, NoSuchGroup, NoPermission,
+		NotSupported, PostingFailed, ServiceUnaviable
+	} 
+
+	public class DataProviderException  : ApplicationException
+	{
+		public DataProviderException (DataProviderErrors error) :
+			base("DataProvider error")
+		{
+			this.error = error;
+		}
+
+		public DataProviderException (DataProviderErrors error, Exception innerException) :
+			base("DataProvider error", innerException)
+		{
+			this.error = error;
+		}
+
+		protected DataProviderErrors error;
+
+		public DataProviderErrors Error
+		{
+			get
+			{
+				return error;
+			}
+		}
+	}
+}

@@ -108,13 +108,13 @@ namespace derIgel.NNTP.Commands
 						endNumber = Convert.ToInt32(lastMatch.Groups["endNumber"].Value);
 					else
 						endNumber = -1;
-				articleList = session.dataProvider.
+				articleList = session.DataProvider.
 					GetArticleList(startNumber, endNumber, NewsArticle.Content.Header);
 			}
 			else
 			{
 				articleList = new NewsArticle[1];
-				articleList[0] = session.dataProvider.GetArticle(NewsArticle.Content.Header);
+				articleList[0] = session.DataProvider.GetArticle(NewsArticle.Content.Header);
 			}
 			StringBuilder output = new StringBuilder();
 			foreach (NewsArticle article in articleList)
@@ -181,16 +181,16 @@ namespace derIgel.NNTP.Commands
 			NewsArticle article;
 			if (lastMatch.Groups["messageID"].Success)
 			{
-				article = session.dataProvider.GetArticle(
+				article = session.DataProvider.GetArticle(
 					lastMatch.Groups["messageID"].Value, content);
 			}
 			else
 				if (lastMatch.Groups["messageNumber"].Success)
-				article = session.dataProvider.GetArticle(
+				article = session.DataProvider.GetArticle(
 					Convert.ToInt32(lastMatch.Groups["messageNumber"].Value),
 					content);
 			else
-				article = session.dataProvider.GetArticle(NewsArticle.Content.HeaderAndBody);
+				article = session.DataProvider.GetArticle(NewsArticle.Content.HeaderAndBody);
 			
 			return new Response(responseCode, article.GetBody(),
 				article.Number, article["Message-ID"]);
@@ -214,7 +214,7 @@ namespace derIgel.NNTP.Commands
 
 		protected override Response ProcessCommand()
 		{
-			NewsArticle article = session.dataProvider.GetNextArticle();
+			NewsArticle article = session.DataProvider.GetNextArticle();
 			return new Response(223, null, article.Number, article["Message-ID"]);
 		}
 	}
@@ -236,7 +236,7 @@ namespace derIgel.NNTP.Commands
 
 		protected override Response ProcessCommand()
 		{
-			NewsArticle article = session.dataProvider.GetPrevArticle();
+			NewsArticle article = session.DataProvider.GetPrevArticle();
 			return new Response(223, null, article.Number, article["Message-ID"]);
 		}
 	}
@@ -259,7 +259,7 @@ namespace derIgel.NNTP.Commands
 		protected override Response ProcessCommand()
 		{
 			string groupName = lastMatch.Groups["groupName"].Value;
-			NewsGroup group = session.dataProvider.GetGroup(groupName);
+			NewsGroup group = session.DataProvider.GetGroup(groupName);
 			return new Response(211, null, group.EtimatedArticles, group.FirstArticleNumber,
 				group.LastArticleNumber, groupName);
 		}
@@ -282,7 +282,7 @@ namespace derIgel.NNTP.Commands
 
 		protected override Response ProcessCommand()
 		{
-			NewsGroup[] groupList = session.dataProvider.GetGroupList(new DateTime(), null);
+			NewsGroup[] groupList = session.DataProvider.GetGroupList(new DateTime(), null);
 			StringBuilder textResponse = new StringBuilder();
 			foreach (NewsGroup group in groupList)
 				textResponse.AppendFormat("{0} {1} {2} {3}{4}",
@@ -330,7 +330,7 @@ namespace derIgel.NNTP.Commands
 						lastMatch.Groups["distributions"].Value.
 						Split(new char[]{','});
 			
-				NewsGroup[] groupList = session.dataProvider.GetGroupList(date, distributions);
+				NewsGroup[] groupList = session.DataProvider.GetGroupList(date, distributions);
 				StringBuilder textResponse = new StringBuilder();
 				foreach (NewsGroup group in groupList)
 					textResponse.AppendFormat("{0} {1} {2} {3}{4}",
@@ -390,7 +390,7 @@ namespace derIgel.NNTP.Commands
 						Split(new char[]{','});
 			
 				NewsArticle[] articleList =
-					session.dataProvider.GetArticleList(newsgroups, date, distributions);
+					session.DataProvider.GetArticleList(newsgroups, date, distributions);
 				StringBuilder textResponse = new StringBuilder();
 				foreach (NewsArticle article in articleList)
 					textResponse.AppendFormat("{0}{1}", article["Message-ID"],
@@ -485,7 +485,7 @@ namespace derIgel.NNTP.Commands
 			Response result;
 			if (lastMatch.Groups["mode"].Value.ToUpper() == "READER")
 				// MODE READER
-				result = new Response(session.dataProvider.PostingAllowed ? 200 : 201);
+				result = new Response(session.DataProvider.PostingAllowed ? 200 : 201);
 			else
 				// MODE STREAM
 				result = new Response(500);
@@ -517,11 +517,13 @@ namespace derIgel.NNTP.Commands
 				{
 					case	Session.States.Normal	:
 					case	Session.States.AuthRequired	:
-						session.dataProvider.username	=	lastMatch.Groups["param"].Value;
+						session.Username	=	lastMatch.Groups["param"].Value;
 						session.sessionState = Session.States.MoreAuthRequired;
 						result = new Response(381);
 						break;
 					case Session.States.MoreAuthRequired	:
+						session.sessionState = Session.States.AuthRequired;
+						session.Username = "";
 						result = new Response(482);
 						break;
 				}
@@ -534,15 +536,16 @@ namespace derIgel.NNTP.Commands
 						result = new Response(482);
 						break;
 					case Session.States.MoreAuthRequired	:
-						session.dataProvider.password	=	lastMatch.Groups["param"].Value;
-						if (session.dataProvider.Authentificate(session.dataProvider.username,
-							session.dataProvider.password))
+						session.Password	=	lastMatch.Groups["param"].Value;
+						if (session.DataProvider.Authentificate(session.Username, session.Password))
 						{
 							session.sessionState = Session.States.Normal;
 							result = new Response(281);
 						}
 						else
 						{
+							session.Username = "";
+							session.Password = "";
 							session.sessionState = Session.States.AuthRequired;
 							result = new Response(502);
 						}
