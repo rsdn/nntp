@@ -5,7 +5,9 @@ using System.Collections;
 
 namespace Rsdn.Mime
 {
-	// helper class
+	/// <summary>
+	/// Helper class
+	/// </summary>
 	public class Util
 	{
 		/// <summary>
@@ -17,15 +19,20 @@ namespace Rsdn.Mime
 		/// </summary>
 		public const int LineLength = 76;
 
+		/// <summary>
+		/// Regular expression to split text in 998 characters chunks.
+		/// </summary>
 		static protected readonly Regex split998 = new Regex(@".{1,998}", RegexOptions.Compiled);
 		
 		/// <summary>
-		/// Encode bytes to specified MIME encoding string
+		/// Encode bytes to specified MIME encoding string.
 		/// </summary>
-		/// <param name="bytes">Bytes to encode</param>
-		/// <param name="contentEncoding">MIME Encoding</param>
-		/// <returns>MIME encoded byte stream</returns>
-		public static string Encode(byte[] bytes, ContentTransferEncoding contentEncoding, bool breakLines)
+		/// <param name="bytes">Bytes to encode.</param>
+		/// <param name="contentEncoding">MIME Encoding.</param>
+		/// <param name="breakLines">Split in lines if true.</param>
+		/// <returns>MIME encoded byte stream.</returns>
+		public static string Encode(byte[] bytes, ContentTransferEncoding contentEncoding,
+			bool breakLines)
 		{
 			StringBuilder result = new StringBuilder();
 			switch (contentEncoding)
@@ -60,9 +67,11 @@ namespace Rsdn.Mime
 		/// <param name="header">true, if convert for MIME header</param>
 		/// <param name="textEncoding">Target text encoding</param>
 		/// <param name="contentEncoding">Content-Transfer encoding.
-		///		In header only base64 & quoted-printable encodings have meaning</param>
+		///		In header only base64 and quoted-printable encodings have meaning</param>
+		/// <param name="breakLines">Split in lines if true.</param>
 		/// <returns>MIME encoded text</returns>
-		public static string Encode(string text, Encoding textEncoding, ContentTransferEncoding contentEncoding, bool header, bool breakLines)
+		public static string Encode(string text, Encoding textEncoding,
+			ContentTransferEncoding contentEncoding, bool header, bool breakLines)
 		{
 			StringBuilder builder = new StringBuilder();
 			bool reallyHeader = false;
@@ -99,6 +108,11 @@ namespace Rsdn.Mime
 			return builder.ToString();
 		}
 
+		/// <summary>
+		/// Check if text contains only ASCII symbols.
+		/// </summary>
+		/// <param name="text">Input text.</param>
+		/// <returns>True if containf only ASCII symbols, false otherwise.</returns>
 		public static bool OnlyASCIISymbols(string text)
 		{
 			bool result = true;
@@ -110,7 +124,12 @@ namespace Rsdn.Mime
 				}
 			return result;
 		}
-
+		
+		/// <summary>
+		/// Check if byte stream contains only ASCII symbols.
+		/// </summary>
+		/// <param name="bytes">Input byte stream</param>
+		/// <returns>True if containf only ASCII symbols, false otherwise.</returns>
 		public static bool OnlyASCIISymbols(byte[] bytes)
 		{
 			bool result = true;
@@ -123,12 +142,23 @@ namespace Rsdn.Mime
 			return result;
 		}
 
+		/// <summary>
+		/// Regular expression to extract quoted-prinatble encode symbols.
+		/// </summary>
 		static protected readonly Regex quotedPrintableEncodedSymbol =
 			new Regex(@"(?i)=(?<code>[0-9a-f]{2})", RegexOptions.Compiled);
 
+		/// <summary>
+		/// Regular expression to detect soft breaks in quoted-prinatble text.
+		/// </summary>
 		static protected readonly Regex quotedPrintableSoftBreaks =
 			new Regex(@"=" + CRLF, RegexOptions.Compiled);
 		
+		/// <summary>
+		/// Decode quoted-prntable text.
+		/// </summary>
+		/// <param name="encodedText">Encoded text.</param>
+		/// <returns>Decoded text.</returns>
 		public static byte[] FromQuotedPrintableString(string encodedText)
 		{
 			string decodedSymbols = quotedPrintableSoftBreaks.Replace(
@@ -138,11 +168,19 @@ namespace Rsdn.Mime
 			return StringToBytes(decodedSymbols);
 		}
 
+		/// <summary>
+		/// Decode quoted-printable character.
+		/// </summary>
+		/// <param name="match">Input character match.</param>
+		/// <returns>Decoded character.</returns>
 		static protected string quotedPrintableEncodedSymbolMatchEvaluator(Match match)
 		{
 		 return ((char)Convert.ToInt32(match.Groups["code"].Value, 16)).ToString();
 		}
 
+		/// <summary>
+		/// Regular expression for detect symbols which not needed to encode in quoted printable coding.
+		/// </summary>
 		static protected readonly Regex quotedPrintableDecodedSymbol =
 			new Regex(@"[^\x21-\x3c\x3e-\x7e]", RegexOptions.Compiled);
 
@@ -173,6 +211,11 @@ namespace Rsdn.Mime
 			return ToQuotedPrintableString(bytes, false);
 		}
 
+		/// <summary>
+		/// Encode charcter to quoted-encoded view.
+		/// </summary>
+		/// <param name="match">Input chracter match.</param>
+		/// <returns>Encoded character.</returns>
 		static protected string quotedPrintableDecodedSymbolMatchEvaluator(Match match)
 		{
 			return "=" + ((int)match.Value[0]).ToString("X2"); // 2 hexadeximal digits
@@ -194,6 +237,11 @@ namespace Rsdn.Mime
 			return Encoding.GetEncoding("iso8859-1").GetString(input, 0, length);
 		}
 
+		/// <summary>
+		/// Convert byte array to string.
+		/// </summary>
+		/// <param name="input">Byte array.</param>
+		/// <returns>Result string.</returns>
 		public static string BytesToString(byte[] input)
 		{
 			return BytesToString(input, input.Length);

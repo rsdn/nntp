@@ -18,21 +18,33 @@ namespace Rsdn.Mime
 	public class Header : NameValueCollection
 	{
 		/// <summary>
-		/// hashtable for header identities filters
+		/// Hashtable for header identities' filters
 		/// </summary>
 		protected Hashtable filters;
 
+		/// <summary>
+		/// Construct empty header.
+		/// </summary>
 		public Header() : base()
 		{
 			filters = CollectionsUtil.CreateCaseInsensitiveHashtable();
 		}
 
+		/// <summary>
+		/// Get header identity content.
+		/// </summary>
 		public new string this[string name]
 		{
 			get	{return base[name]; }
 			set {base[name] = FilterHeaderIdentity(name, DecodeHeaderFieldValue(value));}
 		}
 
+		/// <summary>
+		/// Filter header identity.
+		/// </summary>
+		/// <param name="name">Name of identity (header name).</param>
+		/// <param name="value">Content of identity.</param>
+		/// <returns></returns>
 		public string FilterHeaderIdentity(string name, string value)
 		{
 			string result = value;
@@ -43,6 +55,11 @@ namespace Rsdn.Mime
 			return result;
 		}
 
+		/// <summary>
+		/// Add header identity's filter to the chain.
+		/// </summary>
+		/// <param name="name">Name of identity.</param>
+		/// <param name="handler">Filter handler.</param>
 		public void AddFilter(string name, FilterHandler handler)
 		{
 			if (filters[name] == null)
@@ -50,14 +67,24 @@ namespace Rsdn.Mime
 			((ArrayList)filters[name]).Add(handler);
 		}
 
+		/// <summary>
+		/// Remoce header identity's filter from the chain.
+		/// </summary>
+		/// <param name="name">Name of identity.</param>
+		/// <param name="handler">Filter handler.</param>
 		public void RemoveFilter(string name, FilterHandler handler)
 		{
 			if (filters[name] != null)
 				((ArrayList)filters[name]).Remove(handler);
 		}
 
-		// text & mime encoding to pass in non-ascii replacer
+		/// <summary>
+		/// Text encoding for Non-ASCII characters
+		/// </summary>
 		protected Encoding encoding;
+		/// <summary>
+		/// MIME Encoding for Non-ASCII characters
+		/// </summary>
 		protected ContentTransferEncoding mimeEncoding;
 		/// <summary>
 		/// Regular expressions for mime header folding
@@ -70,7 +97,7 @@ namespace Rsdn.Mime
 		protected static readonly Regex nonAsciiReplace = new Regex(@"([^\x00-\xFF]+\s*)+(?<!\s)", RegexOptions.Compiled);
 
 		/// <summary>
-		/// Get MIME encoded header item (if don't fit in ASCII symbols) with specific text & MIME encodings
+		/// Get MIME encoded header item (if don't fit in ASCII symbols) with specific text and MIME encodings
 		/// </summary>
 		public string this[string name, Encoding encoding, ContentTransferEncoding mimeEncoding]
 		{
@@ -88,6 +115,11 @@ namespace Rsdn.Mime
 			}
 		}
 
+		/// <summary>
+		/// Encode Non-ASCII character sequence with defined MIME and Text encodings.
+		/// </summary>
+		/// <param name="match"></param>
+		/// <returns></returns>
 		protected string NonAsciiReplacer(Match match)
 		{
 			return Util.Encode(match.Value, encoding, mimeEncoding, true, false);
@@ -133,7 +165,7 @@ namespace Rsdn.Mime
 		/// <summary>
 		/// Decode mime encoded parts
 		/// </summary>
-		/// <param name="encodedValue"></param>
+		/// <param name="encodedValue">Regex match with character sequence.</param>
 		/// <returns></returns>
 		public static string DecodeHeaderFieldValue(string encodedValue)
 		{
@@ -142,6 +174,11 @@ namespace Rsdn.Mime
 					new MatchEvaluator(DecodeEncodedMatch));
 		}
 
+		/// <summary>
+		/// Decode MIME-Encoded header parts.
+		/// </summary>
+		/// <param name="encodedMatch">Regex match with encoded part.</param>
+		/// <returns></returns>
 		protected static string DecodeEncodedMatch(Match encodedMatch)
 		{
 			string result = encodedMatch.Groups["value"].Value;
@@ -159,6 +196,10 @@ namespace Rsdn.Mime
 			return result;
 		}
 
+		/// <summary>
+		/// Get MIME formatted presentation of the header.
+		/// </summary>
+		/// <returns></returns>
 		public override string ToString()
 		{
 			// encode header without MIME encoding
