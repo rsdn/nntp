@@ -229,8 +229,8 @@ namespace derIgel.NNTP
 									
 									// add addtitional server headers
 									postingMessage["Sender"] = sender;
-										postingMessage["Path"] = fullHostname +
-											((postingMessage["Path"] != null) ? "!" + postingMessage["Path"] : null);
+									postingMessage["Path"] = fullHostname +
+										((postingMessage["Path"] != null) ? "!" + postingMessage["Path"] : null);
 									
 									dataProvider.PostMessage(postingMessage);
 									result = new Response(NntpResponse.PostedOk);
@@ -322,14 +322,14 @@ namespace derIgel.NNTP
 
 						// tracing....
 						if (tracing.TraceVerbose)
-              Trace.Write(result, client.RemoteEndPoint.ToString());
+							Trace.Write(result, client.RemoteEndPoint.ToString());
 						else if (tracing.TraceInfo)
 							// trace only first line
 							Trace.WriteLine(result.ToString().Split(new char[]{'\n', '\r'}, 2)[0],
-									 client.RemoteEndPoint.ToString());
+								client.RemoteEndPoint.ToString());
 
 						if (result.Code >= 400)
-						// result code indicates error
+							// result code indicates error
 						{
 #if PERFORMANCE_COUNTERS
 							badRequestsCounter.Increment();
@@ -360,6 +360,11 @@ namespace derIgel.NNTP
 			catch (IOException)
 			{
 				// network error
+			}
+			catch (Exception e)
+			{
+				// something wrong......
+				Trace.Fail(e.ToString());
 			}
 			finally
 			{

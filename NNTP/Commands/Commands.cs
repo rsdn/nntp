@@ -542,7 +542,8 @@ namespace derIgel.NNTP.Commands
 			Response result;
 			if (lastMatch.Groups["mode"].Value.ToUpper() == "READER")
 				// MODE READER
-				result = new Response(session.DataProvider.PostingAllowed ? NntpResponse.Ok : NntpResponse.OkNoPosting);
+				result = new Response(session.DataProvider.PostingAllowed ? NntpResponse.Ok : NntpResponse.OkNoPosting,
+					null, Manager.ServerID);
 			else
 				// MODE STREAM
 				result = new Response(NntpResponse.NotRecognized);
