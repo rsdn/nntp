@@ -248,6 +248,8 @@ namespace derIgel.RsdnNntp
 				if (message.pid != string.Empty)
 					newsMessage["References"] = "<" + message.pid + message.postfix + ">";
 				newsMessage["Newsgroups"] = newsgroup;
+				newsMessage["X-Mailer"] = serverID;
+				newsMessage["NNTP-Posting-Host"] = Dns.GetHostName();
 			}
 
 			if ((content == NewsArticle.Content.Body) ||
@@ -311,9 +313,9 @@ namespace derIgel.RsdnNntp
 		/// </summary>
 		protected int currentGroupArticleEndNumber = -1;
 
-		protected static readonly AssemblyInformationalVersionAttribute productVersion = 
-			(AssemblyInformationalVersionAttribute)Attribute.GetCustomAttribute(Assembly.GetExecutingAssembly(),
-				typeof(AssemblyInformationalVersionAttribute));
+		protected static readonly string serverID = "RSDN NNTP Server " + 
+			((AssemblyInformationalVersionAttribute)Attribute.GetCustomAttribute(Assembly.GetExecutingAssembly(),
+				typeof(AssemblyInformationalVersionAttribute))).InformationalVersion;
 
 		public override void PostMessage(Message message)
 		{
@@ -329,8 +331,7 @@ namespace derIgel.RsdnNntp
 					plainText.Append(text);
 
 				// tagline
-				plainText.Append("[tagline]Posted via RSDN NNTP Server ").
-					Append(productVersion.InformationalVersion).Append("[/tagline]");
+				plainText.Append("[tagline]Posted via ").Append(serverID).Append("[/tagline]");
 
 				post_result result =
 					webService.PostUnicodeMessage(username, password, mid, group, message.Subject, plainText.ToString());
