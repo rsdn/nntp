@@ -17,7 +17,7 @@
                 DelaySign = "false"
                 OutputType = "Exe"
                 PreBuildEvent = ""
-                PostBuildEvent = "copy $(TargetFileName) $(SolutionDir)\bin\Release\$(TargetFileName)"
+                PostBuildEvent = ""
                 RootNamespace = "Forum"
                 RunPostBuildEvent = "OnBuildSuccess"
                 StartupObject = "ForumTest.Class1"
