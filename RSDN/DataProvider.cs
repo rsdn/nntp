@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Specialized;
 using System.Reflection;
 using System.IO;
 using System.Net;
@@ -619,6 +620,69 @@ namespace Rsdn.RsdnNntp
 				// get posting news group
 				string group = message["Newsgroups"].Split(new char[]{','}, 2)[0].Trim();
     		
+				// process attachments
+				if (true)
+				{
+					NameValueCollection processedFiles = new NameValueCollection();
+					foreach (Message entity in message.Entities)
+					{
+						string disposition = entity.GetHeaderFieldValue("Content-Disposition");
+						if ((disposition != null) && (disposition.ToLower().Equals("attachment")))
+						{
+							string filename =
+								entity.GetHeaderFieldParameters("Content-Disposition")["filename"];
+
+							if (filename == null)
+								filename = Guid.NewGuid().ToString();
+
+							// post file ....
+							byte[] binaryFile = new byte[0];
+							foreach (object body in entity.Entities)
+							{
+								byte[] binaryBody;
+								if (body is byte[])
+								{
+									binaryBody = (byte[])body;
+								}
+								else
+									binaryBody = entity.Encoding.GetBytes(body.ToString());
+								byte[] newBinaryFile = new byte[binaryFile.Length + binaryBody.Length];
+								Buffer.BlockCopy(binaryFile, 0, newBinaryFile, 0, binaryFile.Length);
+								Buffer.BlockCopy(binaryBody, 0, newBinaryFile, binaryFile.Length, binaryBody.Length);
+								binaryFile = newBinaryFile;
+							}
+
+							FileInfo file = new FileInfo(
+								Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory),
+								filename));
+
+							if (file.Exists)
+								throw new DataProviderException(DataProviderErrors.PostingFailed,
+									"Attached file(s) already exists.");
+
+							using (FileStream stream = file.Create())
+							{
+								stream.Write(binaryFile, 0, binaryFile.Length);
+							}
+
+							//filename, 
+							//string.Format("{0}/{1}",
+							//entity.ContentTypeType, entity.ContentTypeSubtype), binaryFile
+							processedFiles[filename] = "file://" + file.FullName;
+						}
+					}
+
+					if (processedFiles.Count > 0)
+					{
+						postingText.Append(Util.CRLF).Append("Attached files:");
+						foreach (string filename in processedFiles.AllKeys)
+						{
+							postingText.Append(Util.CRLF).
+								AppendFormat("[url={1}]{0}[/url]", filename, processedFiles[filename]);
+						}
+					}
+				}
+
 				// add tagline
 				postingText.Append(Util.CRLF).Append("[tagline]Posted via " + Manager.ServerID + "[/tagline]");
     		
