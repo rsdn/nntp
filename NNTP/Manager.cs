@@ -126,7 +126,7 @@ namespace Rsdn.Nntp
 				PerformanceCounterCategory.Create(ServerCategoryName , "", perfomanceCountersCollection);
 			}
 
-			/// create global performance counters
+			// create global performance counters
 			CreatePerformanceCounters(globalPerformanceCounters, GlobalInstanceName);
 #endif
 		}
@@ -156,7 +156,7 @@ namespace Rsdn.Nntp
 			sessions = new ArrayList();
 
 #if PERFORMANCE_COUNTERS
-			/// create performance counters
+			// create performance counters
 			CreatePerformanceCounters(performanceCounters, settings.Name);
 #endif
 		}

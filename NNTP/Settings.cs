@@ -152,13 +152,13 @@ namespace Rsdn.Nntp
 			XmlDocument doc = new XmlDocument();
 			doc.Load(filename);
 
-			/// Collect all data provider's types
+			// Collect all data provider's types
 			foreach (XmlNode dataProviderTypeNode in doc.DocumentElement.
 				SelectNodes("/Settings/DataProviderTypeName"))
 				dataProviderTypes.Add(((IDataProvider)Activator.CreateInstance(
 					Type.GetType(dataProviderTypeNode.InnerText, true))).GetConfigType());
 			
-			/// Deserialize settings with known types of data provider's config objects
+			// Deserialize settings with known types of data provider's config objects
 			XmlSerializer serializer = new XmlSerializer(typeof(NntpSettings), null,
 				(Type[])dataProviderTypes.ToArray(typeof(Type)), new XmlRootAttribute("Settings"), null);
 			
