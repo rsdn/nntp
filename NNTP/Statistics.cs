@@ -11,6 +11,8 @@ using System.Net;
 
 namespace derIgel.NNTP
 {
+	using Util = derIgel.MIME.Util;
+
 	/// <summary>
 	/// Summary description for Statistics.
 	/// </summary>
@@ -81,7 +83,7 @@ namespace derIgel.NNTP
 				catch (Exception e)
 				{
 					#if DEBUG || SHOW
-					System.Console.Error.WriteLine("\tmailsend: " + derIgel.Utils.Util.ExpandException(e));
+					System.Console.Error.WriteLine("\tmailsend: " + Util.ExpandException(e));
 					#endif
 					return;
 				}

@@ -10,10 +10,10 @@ using System.Threading;
 using System.Net.Sockets;
 using System.Reflection;
 using System.IO;
-using derIgel.Utils;
 using System.Configuration;
+using derIgel.MIME;
 
-namespace derIgel
+namespace derIgel.RsdnNntp
 {
 	public class RsdnNntpServer : System.ServiceProcess.ServiceBase
 	{
@@ -57,6 +57,7 @@ namespace derIgel
 			// 
 			this.AutoLog = false;
 			this.CanPauseAndContinue = true;
+			this.CanShutdown = true;
 			this.ServiceName = "rsdnnntp";
 
 		}
@@ -141,6 +142,11 @@ namespace derIgel
 		protected override void OnContinue()
 		{
 			nntpManager.Resume();
+		}
+
+		protected override void OnShutdown()
+		{
+			OnStop();
 		}
 	}
 }

@@ -273,7 +273,8 @@ namespace derIgel.RsdnNntp
 					service.StartService();
 					break;
 			}
-			RefreshStatus();		
+			RefreshStatus();
+			controlPanel.ShowAlert(false);
 		}
 
 		private void Pause(object sender, System.EventArgs e)

@@ -119,7 +119,7 @@ namespace derIgel.NNTP
 
 		public void Serialize(Stream stream)
 		{
-			XmlWriter fileWriter = new XmlTextWriter(stream, System.Text.Encoding.ASCII);
+			XmlWriter fileWriter = new XmlTextWriter(stream, System.Text.Encoding.UTF8);
 			XmlSerializer serializer = new XmlSerializer(this.GetType());
 			serializer.Serialize(fileWriter, this);
 			fileWriter.Close();
@@ -127,7 +127,7 @@ namespace derIgel.NNTP
 
 		public static object Deseriazlize(string filename, Type type)
 		{
-			return Deseriazlize(new FileStream(filename, FileMode.Open), type);
+			return Deseriazlize(new FileStream(filename, FileMode.Open, FileAccess.Read), type);
 		}
 
 		public static object Deseriazlize(Stream stream, Type type)

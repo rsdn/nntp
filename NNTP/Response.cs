@@ -3,9 +3,12 @@ using System.Collections;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
+using derIgel.MIME;
 
 namespace derIgel.NNTP
 {
+	using Util = derIgel.MIME.Util;
+
 	/// <summary>
 	/// NNTP Server response
 	/// </summary>
@@ -87,7 +90,7 @@ namespace derIgel.NNTP
 			try
 			{
 				byte[] modifiedBody = ModifyTextResponse(bodyResponse);
-				string answer = string.Format(answers[code] as string + derIgel.Utils.Util.CRLF, parameters);
+				string answer = string.Format(answers[code] as string + Util.CRLF, parameters);
 				int answerBytes = Encoding.ASCII.GetByteCount(answer);
 				byte[] result = new byte[answerBytes + modifiedBody.Length];
 				Encoding.ASCII.GetBytes(answer).CopyTo(result, 0);
@@ -129,14 +132,13 @@ namespace derIgel.NNTP
 		{
 			if (response != null)
 			{
-				// 8 bit encoding
-				Encoding latinEncoding = Encoding.GetEncoding("iso-8859-1");
 				StringBuilder textRepresentation = new StringBuilder(
 					// double start points
-					EncodeNNTPMessage.Replace(latinEncoding.GetString(response), ".."));
-				textRepresentation.Append(derIgel.Utils.Util.CRLF).Append(".").
-					Append(derIgel.Utils.Util.CRLF);
-				return latinEncoding.GetBytes(textRepresentation.ToString());
+					EncodeNNTPMessage.Replace(Util.BytesToString(response), ".."));
+				if (!textRepresentation.ToString().EndsWith(Util.CRLF))
+					textRepresentation.Append(Util.CRLF);
+				textRepresentation.Append(".").Append(Util.CRLF);
+				return Util.StringToBytes(textRepresentation.ToString());
 			}
 			else
 				return new byte[0];
@@ -152,11 +154,9 @@ namespace derIgel.NNTP
 		{
 			if (response != null)
 			{
-				// 8 bit encoding
-				Encoding latinEncoding = Encoding.GetEncoding("iso-8859-1");
 				StringBuilder textRepresentation = new StringBuilder(
-					DecodeNNTPMessage.Replace(latinEncoding.GetString(response), "."));
-				return latinEncoding.GetBytes(textRepresentation.ToString());
+					DecodeNNTPMessage.Replace(Util.BytesToString(response), "."));
+				return Util.StringToBytes(textRepresentation.ToString());
 			}
 			else
 				return new byte[0];

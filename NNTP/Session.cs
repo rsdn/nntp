@@ -7,9 +7,12 @@ using System.Threading;
 using System.Reflection;
 using derIgel.NNTP.Commands;
 using System.Text.RegularExpressions;
+using derIgel.MIME;
 
 namespace derIgel.NNTP
 {
+	using Util = derIgel.MIME.Util;
+
 	/// <summary>
 	/// NNTP Session
 	/// </summary>
@@ -81,11 +84,8 @@ namespace derIgel.NNTP
 		/// <summary>
 		/// Process client
 		/// </summary>
-		public void Process(Object state)
+		public void Process(Object manager)
 		{
-			// 8-bit encoder
-			Encoding latinEncoding = Encoding.GetEncoding("iso-8859-1");
-
 			string delimeter;
 			Response result = null;
 			try
@@ -114,16 +114,16 @@ namespace derIgel.NNTP
 						}
 						int receivedBytes = netStream.EndRead(asyncResult);
 						if (receivedBytes  > 0)
-							bufferString.Append(latinEncoding.GetString(commandBuffer, 0, receivedBytes));
+							bufferString.Append(Util.BytesToString(commandBuffer, receivedBytes));
 						else
 							return;
 					}
 					while (netStream.DataAvailable);
 
 					if (sessionState == States.PostWaiting)
-						delimeter = derIgel.Utils.Util.CRLF + "." + derIgel.Utils.Util.CRLF;
+						delimeter = Util.CRLF + "." + Util.CRLF;
 					else
-						delimeter = derIgel.Utils.Util.CRLF;
+						delimeter = Util.CRLF;
 
 					if (bufferString.ToString().IndexOf(delimeter) != -1)
 					{
@@ -141,7 +141,7 @@ namespace derIgel.NNTP
 							switch (sessionState)
 							{
 								case States.PostWaiting	:
-									dataProvider.PostMessage(latinEncoding.GetBytes(commandString));
+									dataProvider.PostMessage(Message.Parse(commandString));
 									sessionState = States.Normal;
 									result = new Response(240);
 									break;
@@ -219,7 +219,7 @@ namespace derIgel.NNTP
 						catch(Exception e)
 						{
 							#if DEBUG || SHOW
-								errorOutput.WriteLine("\texception: " + derIgel.Utils.Util.ExpandException(e));
+								errorOutput.WriteLine("\texception: " + Util.ExpandException(e));
 							#endif
 							result = new Response(503);
 						}
@@ -227,7 +227,7 @@ namespace derIgel.NNTP
 						Answer(result);
 
 #if DEBUG || SHOW
-						string firstLine = latinEncoding.GetString(result.GetResponse());
+						string firstLine = Encoding.ASCII.GetString(result.GetResponse());
 						/*if ((firstLine.Length -
 									(firstLine.IndexOf(derIgel.Utils.Util.CRLF) + derIgel.Utils.Util.CRLF.Length)) > 0)
 						{

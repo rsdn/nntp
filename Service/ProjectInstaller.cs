@@ -3,7 +3,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Configuration.Install;
 
-namespace RSDN
+namespace derIgel.RsdnNntp
 {
 	/// <summary>
 	/// Summary description for ProjectInstaller.

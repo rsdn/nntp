@@ -84,7 +84,7 @@
                     HintPath = "C:\WINNT\Microsoft.NET\Framework\v1.0.3705\System.Web.Services.dll"
                 />
                 <Reference
-                    Name = "Mail"
+                    Name = "MIME"
                     Project = "{3246EAC3-12D9-4396-A36F-C10DB122873D}"
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />

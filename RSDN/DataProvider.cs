@@ -4,10 +4,10 @@ using System.Reflection;
 using System.IO;
 using derIgel.NNTP;
 using System.Net;
-using derIgel.Mail;
 using System.Text.RegularExpressions;
 using System.Configuration;
 using System.Text;
+using derIgel.MIME;
 
 namespace derIgel.RsdnNntp
 {
@@ -236,14 +236,14 @@ namespace derIgel.RsdnNntp
 		{
 			NewsArticle newsMessage = new NewsArticle("<" + message.id + message.postfix + ">",
 				message.num);
-			newsMessage.Encoding = encoding;
+			newsMessage.HeaderEncoding = encoding;
 
 			if ((content == NewsArticle.Content.Header) ||
 				(content == NewsArticle.Content.HeaderAndBody))
 			{
-				newsMessage["From"] = string.Format("{0} <{1}>", message.author, null);
-				newsMessage["Date"] = message.date.ToUniversalTime().ToString("r");
-				newsMessage["Subject"] = message.subject;
+				newsMessage.From = string.Format("{0} <{1}>", message.author, null);
+				newsMessage.Date = message.date;
+				newsMessage.Subject = message.subject;
 
 				if (message.pid != string.Empty)
 					newsMessage["References"] = "<" + message.pid + message.postfix + ">";
@@ -256,19 +256,17 @@ namespace derIgel.RsdnNntp
 				string htmlText = string.Format(htmlMessageTemplate, message.authorid, message.author,
 					message.gid, message.id, message.fmtmessage, message.userType, message.homePage);
 				Message htmlTextBody = new Message();
-				htmlTextBody.Bodies.Add(/*encoding.GetString(outputStream.GetBuffer())*/htmlText);
-				htmlTextBody.Encoding = encoding;
-				htmlTextBody.BodyEncoding = Message.BodyEncodingEnum.Base64;
-				htmlTextBody.ContentType = "text/html";
+				htmlTextBody.Entities.Add(htmlText);
+				htmlTextBody.TransferEncoding = ContentTransferEncoding.Base64;
+				htmlTextBody.ContentType = string.Format("text/html; charset=\"{0}\"", encoding.BodyName);
 
 				Message plainTextBody = new Message();
-				plainTextBody.Bodies.Add(message.message);
-				plainTextBody.Encoding = encoding;
-				plainTextBody.BodyEncoding = Message.BodyEncodingEnum.Base64;
-				plainTextBody.ContentType = "text/plain";
+				plainTextBody.Entities.Add(message.message);
+				plainTextBody.TransferEncoding = ContentTransferEncoding.Base64;
+				plainTextBody.ContentType = string.Format("text/plain; charset=\"{0}\"", encoding.BodyName);
 
-				newsMessage.Bodies.Add(plainTextBody);
-				newsMessage.Bodies.Add(htmlTextBody);
+				newsMessage.Entities.Add(plainTextBody);
+				newsMessage.Entities.Add(htmlTextBody);
 				newsMessage.ContentType = "multipart/alternative";
 			}
 	
@@ -313,12 +311,29 @@ namespace derIgel.RsdnNntp
 		/// </summary>
 		protected int currentGroupArticleEndNumber = -1;
 
-		public override void PostMessage(byte[] message)
+		protected static readonly AssemblyInformationalVersionAttribute productVersion = 
+			(AssemblyInformationalVersionAttribute)Attribute.GetCustomAttribute(Assembly.GetExecutingAssembly(),
+				typeof(AssemblyInformationalVersionAttribute));
+
+		public override void PostMessage(Message message)
 		{
 			try
 			{
-				post_result result = webService.PostMIMEMessage(username, password,
-					Encoding.GetEncoding("iso-8859-1").GetString(message));
+				int mid = 0;
+				if (message["References"] != null)
+					foreach (Match messageIDMatch in messageIdNumber.Matches(message["References"]))
+						mid = int.Parse(messageIDMatch.Groups["messageIdNumber"].Value);
+				string group = message["Newsgroups"].Split(new char[]{','}, 2)[0].Trim();
+				StringBuilder plainText = new StringBuilder();
+				foreach (string text in message.Entities)
+					plainText.Append(text);
+
+				// tagline
+				plainText.Append("[tagline]Posted via RSDN NNTP Server ").
+					Append(productVersion.InformationalVersion).Append("[/tagline]");
+
+				post_result result =
+					webService.PostUnicodeMessage(username, password, mid, group, message.Subject, plainText.ToString());
 				if (!result.ok)
 					ProcessErrorMessage(result.error);
 			}
@@ -342,12 +357,8 @@ namespace derIgel.RsdnNntp
 
 		protected void ProcessException(System.Exception exception)
 		{
-			if (exception.GetType() == typeof(System.Web.Services.Protocols.SoapException))
-			{
-				ProcessErrorMessage(Regex.Match(exception.Message, @"^.+ ---> .+: (?<error>.+)").Groups["error"].Value);
-			}
-			else
-				if (exception.GetType() == typeof(System.Net.WebException))
+			if (exception.GetType() == typeof(System.Net.WebException))
+				// problems with connection?
 				throw new Exception(Errors.ServiceUnaviable, exception);
 
 			// if not handeled - throw forward
@@ -358,7 +369,7 @@ namespace derIgel.RsdnNntp
 		{
 			switch (message)
 			{
-				case "1 Incorrect group name" :
+				case "1 Incorrect group name." :
 					throw new Exception(Errors.NoSuchGroup);
 				case "2 Incorrect login name or password" :
 					throw new Exception(Errors.NoPermission);

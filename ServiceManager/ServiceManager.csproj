@@ -126,6 +126,10 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "alert.ico"
+                    BuildAction = "Content"
+                />
+                <File
                     RelPath = "app.config"
                     BuildAction = "None"
                 />

@@ -1,4 +1,5 @@
 using System;
+using derIgel.MIME;
 
 namespace derIgel
 {
@@ -83,12 +84,7 @@ namespace derIgel
 				return true;
 			}
 
-			public abstract void PostMessage(byte[] message);
-
-			public virtual void PostMessage(NewsArticle article)
-			{
-				PostMessage(article.GetBody());
-			}
+			public abstract void PostMessage(Message article);
 
 			protected internal string username = "";
 			protected internal string password = "";

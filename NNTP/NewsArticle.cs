@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Text;
 using System.Text.RegularExpressions;
-using derIgel.Utils;
+using derIgel.MIME;
 
 namespace derIgel.NNTP
 {
@@ -11,13 +11,12 @@ namespace derIgel.NNTP
 	/// Newsgroup article
 	/// </summary>
 	[Serializable]
-	public class NewsArticle : derIgel.Mail.Message
+	public class NewsArticle : Message
 	{
 		public NewsArticle(string messageID, int messageNumber)
 		{
 			this.messageNumber = messageNumber;
-			BodyEncoding = BodyEncodingEnum.Base64;
-			systemHeaders["Message-ID"] = messageID;
+			this["Message-ID"] = messageID;
 		}
 
 		protected	int messageNumber;
@@ -27,10 +26,12 @@ namespace derIgel.NNTP
 		public string MessageID
 		{
 			get { return this["Message-ID"]; }
+			set { this["Message-ID"] = value; }
 		}
 		public int Number
 		{
 			get	{	return messageNumber;	}
+			set	{	messageNumber = value;}
 		}
 
 		/// <summary>
