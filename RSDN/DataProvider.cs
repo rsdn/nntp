@@ -279,14 +279,14 @@ namespace derIgel.RsdnNntp
 				{
 					newsMessage.Entities.Add(PrepareText(message.message));
 					newsMessage.TransferEncoding = ContentTransferEncoding.Base64;
-					newsMessage.ContentType = string.Format("text/plain; charset=\"{0}\"", encoding.BodyName);
+					newsMessage.ContentType = string.Format("text/plain; charset=\"{0}\"", encoding.WebName);
 				}
 				else
 				{
 					Message plainTextBody = new Message(false);
 					plainTextBody.Entities.Add(PrepareText(message.message));
 					plainTextBody.TransferEncoding = ContentTransferEncoding.Base64;
-					plainTextBody.ContentType = string.Format("text/plain; charset=\"{0}\"", encoding.BodyName);
+					plainTextBody.ContentType = string.Format("text/plain; charset=\"{0}\"", encoding.WebName);
 
 					Message htmlTextBody = new Message(false);
 					string htmlText = string.Format(htmlMessageTemplate, message.authorid, message.author,
@@ -296,7 +296,7 @@ namespace derIgel.RsdnNntp
 						(message.homePage != null) ? formatMessage.PrepareText(message.homePage, true) : null);
 					htmlTextBody.Entities.Add(htmlText);
 					htmlTextBody.TransferEncoding = ContentTransferEncoding.Base64;
-					htmlTextBody.ContentType = string.Format("text/html; charset=\"{0}\"", encoding.BodyName);
+					htmlTextBody.ContentType = string.Format("text/html; charset=\"{0}\"", encoding.WebName);
 
 					newsMessage.Entities.Add(plainTextBody);
 					newsMessage.Entities.Add(htmlTextBody);
