@@ -419,7 +419,7 @@ namespace derIgel.RsdnNntp
 			}
 		}
 
-		public void Config(derIgel.NNTP.NNTPSettings settings)
+		public void Config(object settings)
 		{
 			DataProviderSettings rsdnSettings = settings as DataProviderSettings;
 			if (rsdnSettings != null)
@@ -452,6 +452,11 @@ namespace derIgel.RsdnNntp
 			{
 				return currentGroup;
 			}
+		}
+
+		public System.Type GetConfigType()
+		{
+			return typeof(DataProviderSettings);
 		}
 	}
 }

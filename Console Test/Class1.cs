@@ -23,14 +23,12 @@ namespace ForumTest
 		{
 			try
 			{
-				Type settingsType = Assembly.LoadFrom(ConfigurationSettings.AppSettings["settings.Assembly"]).
-					GetType(ConfigurationSettings.AppSettings["settings.Type"], true);
-
-				Type dataProviderType = Assembly.Load(ConfigurationSettings.AppSettings["dataProvider.Assembly"]).
+				Type dataProviderType = Assembly.LoadFrom(ConfigurationSettings.AppSettings["dataProvider.Assembly"]).
 					GetType(ConfigurationSettings.AppSettings["dataProvider.Type"], true);
 
-				object serverSettings = NNTPSettings.Deseriazlize(
-					ConfigurationSettings.AppSettings["settings.ConfigFile"], settingsType);
+        object serverSettings = NNTPSettings.Deseriazlize(
+					ConfigurationSettings.AppSettings["settings.ConfigFile"],
+					((IDataProvider)Activator.CreateInstance(dataProviderType)).GetConfigType());
 
 				Manager nntpManager = new Manager(dataProviderType,	(NNTPSettings)serverSettings);
 				nntpManager.Start();

@@ -86,14 +86,12 @@ namespace derIgel.RsdnNntp
 				Directory.SetCurrentDirectory(
 					Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
 
-				Type settingsType = Assembly.LoadFrom(ConfigurationSettings.AppSettings["settings.Assembly"]).
-					GetType(ConfigurationSettings.AppSettings["settings.Type"], true);
-
-				Type dataProviderType = Assembly.LoadFrom(ConfigurationSettings.AppSettings["dataProvider.Assembly"])
-					.GetType(ConfigurationSettings.AppSettings["dataProvider.Type"], true);
+				Type dataProviderType = Assembly.LoadFrom(ConfigurationSettings.AppSettings["dataProvider.Assembly"]).
+					GetType(ConfigurationSettings.AppSettings["dataProvider.Type"], true);
 
 				object serverSettings = NNTPSettings.Deseriazlize(
-					ConfigurationSettings.AppSettings["settings.ConfigFile"], settingsType);
+					ConfigurationSettings.AppSettings["settings.ConfigFile"],
+					((IDataProvider)Activator.CreateInstance(dataProviderType)).GetConfigType());
 
 				nntpManager = new Manager(dataProviderType,	(NNTPSettings)serverSettings);
 				nntpManager.Start();

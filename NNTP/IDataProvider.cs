@@ -8,6 +8,8 @@ namespace derIgel.NNTP
 	/// </summary>
 	public interface IDataProvider
 	{
+		Type GetConfigType();
+
 		NewsArticle GetArticle(string originalMessageID,
 			NewsArticle.Content content);
 
@@ -57,6 +59,6 @@ namespace derIgel.NNTP
 			get;
 		}
 
-		void Config(NNTPSettings settings);
+		void Config(object settings);
 	}
 }

@@ -49,8 +49,9 @@ namespace derIgel.RsdnNntp
 
 		static Notify()
 		{
-			Type settingsType = Assembly.LoadFrom(ConfigurationSettings.AppSettings["settings.Assembly"])
-				.GetType(ConfigurationSettings.AppSettings["settings.Type"], true);
+			Type settingsType = ((IDataProvider)Activator.CreateInstanceFrom(
+				ConfigurationSettings.AppSettings["dataProvider.Assembly"],
+				ConfigurationSettings.AppSettings["dataProvider.Type"]).Unwrap()).GetConfigType();
 
 			AssemblyName assemblyName = new AssemblyName();
 			assemblyName.Name = "DynamicAssembly";

@@ -38,9 +38,6 @@ namespace derIgel.RsdnNntp
 			AddAssembly(Assembly.GetExecutingAssembly());
 			AddAssembly(Assembly.Load("RsdnNntpServer"));
 			AddAssembly(Assembly.LoadFrom(ConfigurationSettings.AppSettings["dataProvider.Assembly"]));
-			if (ConfigurationSettings.AppSettings["settings.Assembly"] !=
-						ConfigurationSettings.AppSettings["dataProvider.Assembly"])
-				AddAssembly(Assembly.LoadFrom(ConfigurationSettings.AppSettings["settings.Assembly"]));
 		}
 
 		/// <summary>
