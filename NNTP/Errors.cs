@@ -1,6 +1,6 @@
 using System;
 
-namespace derIgel.NNTP
+namespace Rsdn.Nntp
 {
 	public enum DataProviderErrors
 	{

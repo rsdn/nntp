@@ -7,19 +7,19 @@ using System.IO;
 using System.Collections;
 using System.Diagnostics;
 
-namespace derIgel.NNTP
+namespace Rsdn.Nntp
 {
 	/// <summary>
-	/// Summary description for NNTPSettings.
+	/// Summary description for NntpSettings.
 	/// </summary>
-	public class NNTPSettings
+	public class NntpSettings
 	{
-		public NNTPSettings()
+		public NntpSettings()
 		{
 			bindings = new ServerEndPoint[0];
 		}
 
-		public NNTPSettings(NNTPSettings settings)
+		public NntpSettings(NntpSettings settings)
 		{
 			bindings = settings.bindings;
 			dataProviderType = settings.dataProviderType;
@@ -107,7 +107,7 @@ namespace derIgel.NNTP
 			fileWriter.Close();
 		}
 
-		public static NNTPSettings Deseriazlize(string filename)
+		public static NntpSettings Deseriazlize(string filename)
 		{
 			ArrayList dataProviderTypes = new ArrayList();
 			
@@ -121,12 +121,12 @@ namespace derIgel.NNTP
 					Type.GetType(dataProviderTypeNode.InnerText, true))).GetConfigType());
 			
 			/// Deserialize settings with known types of data provider's config objects
-			XmlSerializer serializer = new XmlSerializer(typeof(NNTPSettings), null,
+			XmlSerializer serializer = new XmlSerializer(typeof(NntpSettings), null,
 				(Type[])dataProviderTypes.ToArray(typeof(Type)), new XmlRootAttribute("Settings"), null);
 			
 			XmlReader fileReader = new XmlTextReader(filename);
 
-			NNTPSettings serverSettings = (NNTPSettings)serializer.Deserialize(fileReader);
+			NntpSettings serverSettings = (NntpSettings)serializer.Deserialize(fileReader);
 
 			fileReader.Close();
 

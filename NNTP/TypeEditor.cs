@@ -3,7 +3,7 @@ using System.Drawing.Design;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
-namespace derIgel.NNTP
+namespace Rsdn.Nntp
 {
 	/// <summary>
 	/// 

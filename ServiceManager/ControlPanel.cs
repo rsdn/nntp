@@ -6,10 +6,11 @@ using System.Windows.Forms;
 using System.Configuration;
 using System.Xml;
 using System.Security;
-using derIgel.NNTP;
 using System.Management;
 
-namespace derIgel.RsdnNntp
+using Rsdn.Nntp;
+
+namespace Rsdn.RsdnNntp
 {
 	/// <summary>
 	/// Summary description for ControlPanel.
@@ -258,7 +259,7 @@ namespace derIgel.RsdnNntp
 			{
 				MessageBox.Show(this, "You don't have access rights for config.", "RSDN NNTP Manager",
 					MessageBoxButtons.OK,	MessageBoxIcon.Error);
-				Settings = new Settings(NNTPSettings.Deseriazlize(ConfigurationSettings.AppSettings["service.Config"]));
+				Settings = new Settings(NntpSettings.Deseriazlize(ConfigurationSettings.AppSettings["service.Config"]));
 				ShowAlert(false);
 			}
 			catch (ManagementException) { }

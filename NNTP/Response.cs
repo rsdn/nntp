@@ -3,11 +3,12 @@ using System.Collections;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
-using derIgel.MIME;
 
-namespace derIgel.NNTP
+using Rsdn.Mime;
+
+namespace Rsdn.Nntp
 {
-	using Util = derIgel.MIME.Util;
+	using Util = Rsdn.Mime.Util;
 
 	/// <summary>
 	/// NNTP Response's codes
@@ -176,7 +177,7 @@ namespace derIgel.NNTP
 		/// </summary>
 		protected string reponsesBody;
 
-		protected static readonly Regex EncodeNNTPMessage =
+		protected static readonly Regex EncodeNntpMessage =
 			new Regex(@"(?m)^\.", RegexOptions.Compiled);
 
 		/// <summary>
@@ -189,7 +190,7 @@ namespace derIgel.NNTP
 	
 			StringBuilder textRepresentation = new StringBuilder(
 				// double start points
-				EncodeNNTPMessage.Replace(response, ".."));
+				EncodeNntpMessage.Replace(response, ".."));
 			if (textRepresentation.Length > 0)
 				if (!textRepresentation.ToString().EndsWith(Util.CRLF))
 					textRepresentation.Append(Util.CRLF);

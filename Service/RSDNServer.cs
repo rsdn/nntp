@@ -1,14 +1,15 @@
 using System;
 using System.ComponentModel;
 using System.ServiceProcess;
-using derIgel.NNTP;
 using System.IO;
 using System.Configuration;
 using System.Reflection;
 using System.Diagnostics;
 using System.Threading;
 
-namespace derIgel.RsdnNntp
+using Rsdn.Nntp;
+
+namespace Rsdn.RsdnNntp
 {
 	public class RsdnNntpServer : System.ServiceProcess.ServiceBase
 	{
@@ -86,7 +87,7 @@ namespace derIgel.RsdnNntp
 					Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
 
 				nntpManager = new Manager(
-					NNTPSettings.Deseriazlize(ConfigurationSettings.AppSettings["settings.ConfigFile"]));
+					NntpSettings.Deseriazlize(ConfigurationSettings.AppSettings["settings.ConfigFile"]));
 				nntpManager.Start();
 			}
 			catch (Exception e)

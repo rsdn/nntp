@@ -6,7 +6,7 @@ using System.Windows.Forms;
 using System.Reflection;
 using System.Diagnostics;
 
-namespace derIgel.NNTP
+namespace Rsdn.Nntp
 {
 	/// <summary>
 	/// Summary description for TypeEditorForm.

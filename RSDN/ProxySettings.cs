@@ -7,7 +7,7 @@ using System.Xml.Serialization;
 using System.Text;
 using System.Security.Cryptography;
 
-namespace derIgel.RsdnNntp
+namespace Rsdn.RsdnNntp
 {
 	/// <summary>
 	/// Helper class for XML Serializatiob of WebProxy class

@@ -1,26 +1,27 @@
 using System;
 using System.Text.RegularExpressions;
 using System.Net.Sockets;
-using derIgel.NNTP;
 using System.Text;
-using derIgel.MIME;
 using System.Reflection;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Net;
 
-[assembly:derIgel.NNTP.Commands.NNTPCommandsAssembly()]
+using Rsdn.Mime;
+using Rsdn.Nntp;
 
-namespace derIgel.NNTP.Commands
+[assembly:Rsdn.Nntp.Commands.NntpCommandsAssembly()]
+
+namespace Rsdn.Nntp.Commands
 {
 	/// See RFC  977 'Network News Transport Protocol'
 	/// See RFC 2980 'Common NNTP Extensions'
 	
-	using Util = derIgel.MIME.Util;
+	using Util = Rsdn.Mime.Util;
 	
 	[AttributeUsage(AttributeTargets.Assembly, Inherited = false,
 		 AllowMultiple = false)]
-	public class NNTPCommandsAssemblyAttribute : Attribute
+	public class NntpCommandsAssemblyAttribute : Attribute
 	{
 	}
 		
@@ -29,9 +30,9 @@ namespace derIgel.NNTP.Commands
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Assembly, Inherited = false,
 			AllowMultiple = true)]
-	public class NNTPCommandAttribute : Attribute
+	public class NntpCommandAttribute : Attribute
 	{
-		public NNTPCommandAttribute(string commandName)
+		public NntpCommandAttribute(string commandName)
 		{
 			command = commandName;
 		}
@@ -123,7 +124,7 @@ namespace derIgel.NNTP.Commands
 	/// <summary>
 	/// XOVER client command
 	/// </summary>
-	[NNTPCommand("XOVER")]
+	[NntpCommand("XOVER")]
 	public class Xover : Generic
 	{
 		protected static Regex XoverSyntaxisChecker =
@@ -174,10 +175,10 @@ namespace derIgel.NNTP.Commands
 	/// <summary>
 	/// Common class for ARTICLE, HEAD, BODY & STAT client commands
 	/// </summary>
-	[NNTPCommand("ARTICLE")]
-	[NNTPCommand("HEAD")]
-	[NNTPCommand("BODY")]
-	[NNTPCommand("STAT")]
+	[NntpCommand("ARTICLE")]
+	[NntpCommand("HEAD")]
+	[NntpCommand("BODY")]
+	[NntpCommand("STAT")]
 	public class ArticleHeadBodyStat : Generic
 	{
 		protected static Regex ArticleHeadBodyStatSyntaxisChecker =
@@ -244,7 +245,7 @@ namespace derIgel.NNTP.Commands
 	/// <summary>
 	/// NEXT client command
 	/// </summary>
-	[NNTPCommand("NEXT")]
+	[NntpCommand("NEXT")]
 	public class Next : Generic
 	{
 		protected static Regex NextSyntaxisChecker =
@@ -267,7 +268,7 @@ namespace derIgel.NNTP.Commands
 	/// <summary>
 	/// LAST client command
 	/// </summary>
-	[NNTPCommand("LAST")]
+	[NntpCommand("LAST")]
 	public class Last : Generic
 	{
 		protected static Regex LastSyntaxisChecker =
@@ -290,7 +291,7 @@ namespace derIgel.NNTP.Commands
 	/// <summary>
 	/// GROUP client command
 	/// </summary>
-	[NNTPCommand("GROUP")]
+	[NntpCommand("GROUP")]
 	public class Group : Generic
 	{
 		protected static Regex GroupSyntaxisChecker =
@@ -314,7 +315,7 @@ namespace derIgel.NNTP.Commands
 	/// <summary>
 	/// LIST, LIST NEWGROUPS, & LIST OVERVIEW.FMT client's commands
 	/// </summary>
-	[NNTPCommand("LIST")]
+	[NntpCommand("LIST")]
 	public class List : Generic
 	{
 		public static readonly StringCollection headerItems = new StringCollection();
@@ -370,7 +371,7 @@ namespace derIgel.NNTP.Commands
 	/// <summary>
 	/// NEWGROUPS client command
 	/// </summary>
-	[NNTPCommand("NEWGROUPS")]
+	[NntpCommand("NEWGROUPS")]
 	public class NewGroups : Generic
 	{
 		protected static Regex NewGroupsSyntaxisChecker =
@@ -423,7 +424,7 @@ namespace derIgel.NNTP.Commands
 	/// <summary>
 	/// NEWNEWS client command
 	/// </summary>
-	[NNTPCommand("NEWNEWS")]
+	[NntpCommand("NEWNEWS")]
 	public class NewNews : Generic
 	{
 		protected static Regex NewNewsSyntaxisChecker =
@@ -482,7 +483,7 @@ namespace derIgel.NNTP.Commands
 	/// <summary>
 	/// POST client command
 	/// </summary>
-	[NNTPCommand("POST")]
+	[NntpCommand("POST")]
 	public class Post : Generic
 	{
 		protected static Regex PostSyntaxisChecker =
@@ -504,7 +505,7 @@ namespace derIgel.NNTP.Commands
 	/// <summary>
 	/// QUIT client command
 	/// </summary>
-	[NNTPCommand("QUIT")]
+	[NntpCommand("QUIT")]
 	public class Quit : Generic
 	{
 		protected static Regex QuitSyntaxisChecker =
@@ -524,7 +525,7 @@ namespace derIgel.NNTP.Commands
 	/// <summary>
 	/// SLAVE client command
 	/// </summary>
-	[NNTPCommand("SLAVE")]
+	[NntpCommand("SLAVE")]
 	public class Slave : Generic
 	{
 		protected static Regex SlaveSyntaxisChecker =
@@ -544,7 +545,7 @@ namespace derIgel.NNTP.Commands
 	/// <summary>
 	/// MODE READER and MODE STREAM client command
 	/// </summary>
-	[NNTPCommand("MODE")]
+	[NntpCommand("MODE")]
 	public class Mode : Generic
 	{
 		protected static Regex ModeSyntaxisChecker =
@@ -572,7 +573,7 @@ namespace derIgel.NNTP.Commands
 	/// <summary>
 	/// AUTHINFO USER and AUTHINFO PASS client commands
 	/// </summary>
-	[NNTPCommand("AUTHINFO")]
+	[NntpCommand("AUTHINFO")]
 	public class AuthInfo : Generic
 	{
 		protected static Regex AuthInfoSyntaxisChecker = 
@@ -642,7 +643,7 @@ namespace derIgel.NNTP.Commands
 	/// <summary>
 	/// HELP client command
 	/// </summary>
-	[NNTPCommand("HELP")]
+	[NntpCommand("HELP")]
 	public class Help : Generic
 	{
 		protected static Regex HelpSyntaxisChecker =

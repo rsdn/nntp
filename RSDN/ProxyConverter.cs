@@ -3,7 +3,7 @@ using System.Net;
 using System.ComponentModel;
 using System.Text;
 
-namespace derIgel.RsdnNntp
+namespace Rsdn.RsdnNntp
 {
 	/// <summary>
 	/// Summary description for ProxyConverter.

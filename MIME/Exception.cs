@@ -1,6 +1,6 @@
 using System;
 
-namespace derIgel.MIME
+namespace Rsdn.Mime
 {
 	/// <summary>
 	/// Summary description for Exception.

@@ -2,7 +2,7 @@ using System;
 using System.ComponentModel;
 using System.Text;
 
-namespace derIgel.NNTP
+namespace Rsdn.Nntp
 {
 	/// <summary>
 	/// Summary description for BindingsConverter.

@@ -1,6 +1,6 @@
 using System;
 
-namespace derIgel.MIME
+namespace Rsdn.Mime
 {
 	/// <summary>
 	/// MIME body message interface

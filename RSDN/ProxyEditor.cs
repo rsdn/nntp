@@ -4,7 +4,7 @@ using System.Windows.Forms;
 using System.Windows.Forms.Design;
 using System.Net;
 
-namespace derIgel.RsdnNntp
+namespace Rsdn.RsdnNntp
 {
 	/// <summary>
 	/// 

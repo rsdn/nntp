@@ -16,7 +16,7 @@
                 DefaultTargetSchema = "IE50"
                 DelaySign = "false"
                 OutputType = "WinExe"
-                RootNamespace = "derIgel.RsdnNntp"
+                RootNamespace = "Rsdn.RsdnNntp"
                 StartupObject = ""
             >
                 <Config

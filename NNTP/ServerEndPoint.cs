@@ -3,10 +3,11 @@ using System.Collections;
 using System.Net;
 using System.ComponentModel;
 using System.Globalization;
-using derIgel.ROOT.CIMV2;
 using System.Xml.Serialization;
 
-namespace derIgel.NNTP
+using Rsdn.WMI.ROOT.CIMV2;
+
+namespace Rsdn.Nntp
 {
 	#region IPAddressConverter
 	public class IPAddressConverter : TypeConverter

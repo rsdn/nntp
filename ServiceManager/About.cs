@@ -6,7 +6,7 @@ using System.Windows.Forms;
 using System.Reflection;
 using System.Configuration;
 
-namespace derIgel.RsdnNntp
+namespace Rsdn.RsdnNntp
 {
 	/// <summary>
 	/// Summary description for About.
@@ -30,10 +30,10 @@ namespace derIgel.RsdnNntp
 			InitializeComponent();
 
 			richTextAbout.LoadFile(
-				Assembly.GetExecutingAssembly().GetManifestResourceStream("derIgel.RsdnNntp.About.rtf"),
+				Assembly.GetExecutingAssembly().GetManifestResourceStream("Rsdn.RsdnNntp.About.rtf"),
 				RichTextBoxStreamType.RichText);
 
-			titleLabel.Text = derIgel.NNTP.Manager.ServerID;
+			titleLabel.Text = Rsdn.Nntp.Manager.ServerID;
 
 			Assembly.Load("RsdnNntpServer");
 			foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())

@@ -5,15 +5,16 @@ using System.Text;
 using System.Collections;
 using System.Threading;
 using System.Reflection;
-using derIgel.NNTP.Commands;
 using System.Text.RegularExpressions;
-using derIgel.MIME;
 using System.Diagnostics;
 using System.Net;
 
-namespace derIgel.NNTP
+using Rsdn.Mime;
+using Rsdn.Nntp.Commands;
+
+namespace Rsdn.Nntp
 {
-	using Util = derIgel.MIME.Util;
+	using Util = Rsdn.Mime.Util;
 
 	/// <summary>
 	/// NNTP Session
@@ -46,15 +47,15 @@ namespace derIgel.NNTP
 			commandsTypes = new Hashtable();
 			// initialize types for NNTP commands classes
 			foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
-				if (assembly.IsDefined(typeof(NNTPCommandsAssemblyAttribute), false))
+				if (assembly.IsDefined(typeof(NntpCommandsAssemblyAttribute), false))
 					// if assembly contains NNTP commands
 					foreach (Type type in	assembly.GetTypes())
-						if (type.IsDefined(typeof(NNTPCommandAttribute), false)&&
+						if (type.IsDefined(typeof(NntpCommandAttribute), false)&&
 								type.IsSubclassOf(typeof(Generic)) &&
 								!type.IsAbstract)
 						{
-							foreach(object attr in type.GetCustomAttributes(typeof(NNTPCommandAttribute), true))
-								commandsTypes[((NNTPCommandAttribute)attr).Name] = type;
+							foreach(object attr in type.GetCustomAttributes(typeof(NntpCommandAttribute), true))
+								commandsTypes[((NntpCommandAttribute)attr).Name] = type;
 						}
 
 			// answers for commands during allowed states
@@ -335,7 +336,7 @@ namespace derIgel.NNTP
 									break;
 							}
 						}
-						catch (derIgel.MIME.MimeFormattingException)
+						catch (MimeFormattingException)
 						{
 							result = new Response(NntpResponse.PostingFailed);
 						}

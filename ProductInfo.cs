@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 //
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("RSDN NNTP Server")]
-[assembly: AssemblyCopyright("(c) 2002 der Igel")]
+[assembly: AssemblyCopyright("© 2002-2003 der Igel")]
 [assembly: AssemblyTrademark("")]
 
 //

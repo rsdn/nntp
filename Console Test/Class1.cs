@@ -1,7 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Configuration;
-using derIgel.NNTP;
+using Rsdn.Nntp;
 
 namespace ForumTest
 {
@@ -21,8 +21,8 @@ namespace ForumTest
 
 			try
 			{
-        NNTPSettings serverSettings =
-					NNTPSettings.Deseriazlize(ConfigurationSettings.AppSettings["settings.ConfigFile"]);
+        NntpSettings serverSettings =
+					NntpSettings.Deseriazlize(ConfigurationSettings.AppSettings["settings.ConfigFile"]);
 
 				Manager nntpManager = new Manager(serverSettings);
 				nntpManager.Start();

@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel;
 
-namespace derIgel.NNTP
+namespace Rsdn.Nntp
 {
 	/// <summary>
 	/// Summary description for TypeConverter.

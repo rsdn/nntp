@@ -1,74 +1,71 @@
 using System;
 
-namespace derIgel
+namespace Rsdn.Nntp
 {
-	namespace NNTP
+	/// <summary>
+	/// News Group
+	/// </summary>
+	public class NewsGroup
 	{
-		/// <summary>
-		/// News Group
-		/// </summary>
-		public class NewsGroup
+		public NewsGroup(string name, int firstArticleNumber, int lastArticleNumber,
+			int etimatedArticles, bool postingAllowed)
 		{
-			public NewsGroup(string name, int firstArticleNumber, int lastArticleNumber,
-				int etimatedArticles, bool postingAllowed)
-			{
-				this.name = name;
-				this.firstArticleNumber = firstArticleNumber;
-				this.lastArticleNumber = lastArticleNumber;
-				this.etimatedArticles = etimatedArticles;
-				this.postingAllowed = postingAllowed;
-			}
-			protected	string name;
-			protected string description;
-			protected int firstArticleNumber;
-			protected int lastArticleNumber;
-			protected int etimatedArticles;
-			protected bool postingAllowed;
+			this.name = name;
+			this.firstArticleNumber = firstArticleNumber;
+			this.lastArticleNumber = lastArticleNumber;
+			this.etimatedArticles = etimatedArticles;
+			this.postingAllowed = postingAllowed;
+		}
+		protected	string name;
+		protected string description;
+		protected int firstArticleNumber;
+		protected int lastArticleNumber;
+		protected int etimatedArticles;
+		protected bool postingAllowed;
 
-			public string Name
+		public string Name
+		{
+			get
 			{
-				get
-				{
-					return name;
-				}
+				return name;
 			}
+		}
 
-			public string Description
+		public string Description
+		{
+			get {return description;}
+			set {description = value;}
+		}
+
+		public int FirstArticleNumber
+		{
+			get
 			{
-				get {return description;}
-				set {description = value;}
+				return firstArticleNumber;
 			}
+		}
 
-			public int FirstArticleNumber
+		public int LastArticleNumber
+		{
+			get
 			{
-				get
-				{
-					return firstArticleNumber;
-				}
+				return lastArticleNumber;
 			}
+		}
 
-			public int LastArticleNumber
+		public int EtimatedArticles
+		{
+			get
 			{
-				get
-				{
-					return lastArticleNumber;
-				}
+				return etimatedArticles;
 			}
+		}
 
-			public int EtimatedArticles
+		public bool PostingAllowed
+		{
+			get
 			{
-				get
-				{
-					return etimatedArticles;
-				}
-			}
-
-			public bool PostingAllowed
-			{
-				get
-				{
-					return postingAllowed;
-				}
+				return postingAllowed;
 			}
 		}
 	}

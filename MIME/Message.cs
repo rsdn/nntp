@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.IO;
 
-namespace derIgel.MIME
+namespace Rsdn.Mime
 {
 
 	public enum MailPriority {Highest = 1, High, Normal, Low, Lowest}

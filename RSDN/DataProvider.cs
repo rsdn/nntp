@@ -1,22 +1,24 @@
 using System;
-using derIgel.RsdnNntp.ru.rsdn;
 using System.Reflection;
 using System.IO;
-using derIgel.NNTP;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Configuration;
 using System.Text;
-using derIgel.MIME;
-using RSDN.Common;
 using System.Web;
 
-namespace derIgel.RsdnNntp
+using RSDN.Common;
+
+using Rsdn.Mime;
+using Rsdn.Nntp;
+using Rsdn.RsdnNntp.ru.rsdn;
+
+namespace Rsdn.RsdnNntp
 {
 	/// <summary>
 	/// RSDN Data Provider
 	/// </summary>
-	public class RsdnDataProvider : derIgel.NNTP.IDataProvider
+	public class RsdnDataProvider : IDataProvider
 	{
 		/// <summary>
 		/// read cache at the start
@@ -42,7 +44,7 @@ namespace derIgel.RsdnNntp
 		{
 			webService = new Forum();
 			encoding = System.Text.Encoding.UTF8;
-			Stream io = Assembly.GetExecutingAssembly().GetManifestResourceStream("derIgel.RsdnNntp.Header.htm");
+			Stream io = Assembly.GetExecutingAssembly().GetManifestResourceStream("Rsdn.RsdnNntp.Header.htm");
 			StreamReader reader = new StreamReader(io);
 			htmlMessageTemplate = reader.ReadToEnd();
 			reader.Close();
@@ -376,8 +378,7 @@ namespace derIgel.RsdnNntp
 			return newsMessage;
 		}
 
-		public NNTP.NewsArticle[] GetArticleList(int startNumber, int endNumber,
-			NNTP.NewsArticle.Content content)
+		public NewsArticle[] GetArticleList(int startNumber, int endNumber, NewsArticle.Content content)
 		{
 			if (this.currentGroup == null)
 				throw new DataProviderException(DataProviderErrors.NoSelectedGroup);
@@ -505,7 +506,7 @@ namespace derIgel.RsdnNntp
 		/// <summary>
 		/// Initial session's state for this data provider
 		/// </summary>
-		public derIgel.NNTP.Session.States InitialSessionState
+		public Session.States InitialSessionState
 		{
 			get
 			{

@@ -16,7 +16,7 @@
                 DefaultTargetSchema = "IE50"
                 DelaySign = "false"
                 OutputType = "Library"
-                RootNamespace = "derIgel.MIME"
+                RootNamespace = "Rsdn.Mime"
                 StartupObject = ""
             >
                 <Config

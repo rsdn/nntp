@@ -6,15 +6,16 @@ using System.Windows.Forms;
 using Win32Util;
 using System.Threading;
 using System.Configuration;
-using derIgel.ROOT.CIMV2;
 using System.Management;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.IO;
 using System.Xml.Serialization;
-using derIgel.NNTP;
 
-namespace derIgel.RsdnNntp
+using Rsdn.Nntp;
+using Rsdn.WMI.ROOT.CIMV2;
+
+namespace Rsdn.RsdnNntp
 {
 	/// <summary>
 	/// Summary description for Notify.
@@ -52,11 +53,11 @@ namespace derIgel.RsdnNntp
 
 			try
 			{
-				serverSettings = NNTPSettings.Deseriazlize(ConfigurationSettings.AppSettings["settings.ConfigFile"]);
+				serverSettings = NntpSettings.Deseriazlize(ConfigurationSettings.AppSettings["settings.ConfigFile"]);
 			}
 			catch (Exception)
 			{
-				serverSettings = new NNTPSettings();
+				serverSettings = new NntpSettings();
 			}
 
 			serviceManagementPath = new ManagementPath(string.Format(@"\\{0}\root\CIMV2:Win32_Service.Name=""{1}""",
@@ -80,7 +81,7 @@ namespace derIgel.RsdnNntp
 		/// <summary>
 		/// Server setting
 		/// </summary>
-		protected NNTPSettings serverSettings;
+		protected NntpSettings serverSettings;
 
 		/// <summary>
 		/// Clean up any resources being used.

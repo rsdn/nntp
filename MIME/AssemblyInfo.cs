@@ -11,7 +11,7 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct(".Net MIME Library")]
-[assembly: AssemblyCopyright("(c) 2002 der Igel")]
+[assembly: AssemblyCopyright("© 2002-2003 der Igel")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]		
 
@@ -26,7 +26,7 @@ using System.Runtime.CompilerServices;
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
 
-[assembly: AssemblyVersion("0.10.*")]
+[assembly: AssemblyVersion("0.11.*")]
 
 //
 // In order to sign your assembly you must specify a key to use. Refer to the 

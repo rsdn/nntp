@@ -1,7 +1,8 @@
 using System;
-using derIgel.MIME;
 
-namespace derIgel.NNTP
+using Rsdn.Mime;
+
+namespace Rsdn.Nntp
 {
 	/// <summary>
 	/// data provider interface

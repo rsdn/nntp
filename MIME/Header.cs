@@ -4,7 +4,7 @@ using System.Text;
 using System.Collections;
 using System.Text.RegularExpressions;
 
-namespace derIgel.MIME
+namespace Rsdn.Mime
 {
 	/// <summary>
 	/// delegate for header filter processing

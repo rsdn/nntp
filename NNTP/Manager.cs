@@ -9,9 +9,9 @@ using System.Text;
 using System.Reflection;
 using System.IO;
 
-namespace derIgel.NNTP
+namespace Rsdn.Nntp
 {
-	using Util = derIgel.MIME.Util;
+	using Util = Rsdn.Mime.Util;
 
 	/// <summary>
 	/// NNTP Connection Manager 
@@ -101,7 +101,7 @@ namespace derIgel.NNTP
 		/// <summary>
 		/// NNTP Connection Manager constructor
 		/// </summary>
-		public Manager(NNTPSettings settings)
+		public Manager(NntpSettings settings)
 		{
 			if (!typeof(IDataProvider).IsAssignableFrom(settings.DataProviderType))
 				throw new ArgumentException("DataProviderType in settings object is not implemented DataProvider interface.",
@@ -266,7 +266,7 @@ namespace derIgel.NNTP
 		/// <summary>
 		/// NNTP server settings
 		/// </summary>
-		protected NNTPSettings settings;
+		protected NntpSettings settings;
 
 		public void Close()
 		{

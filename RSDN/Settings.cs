@@ -4,9 +4,10 @@ using System.Collections;
 using System.ComponentModel.Design;
 using System.Xml.Serialization;
 using System.Net;
-using derIgel.NNTP;
 
-namespace derIgel.RsdnNntp
+using Rsdn.Nntp;
+
+namespace Rsdn.RsdnNntp
 {
 	/// <summary>
 	/// MIME message formatting style

@@ -3,9 +3,10 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Text;
 using System.Text.RegularExpressions;
-using derIgel.MIME;
 
-namespace derIgel.NNTP
+using Rsdn.Mime;
+
+namespace Rsdn.Nntp
 {
 	/// <summary>
 	/// Newsgroup article

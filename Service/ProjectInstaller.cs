@@ -4,9 +4,10 @@ using System.ComponentModel;
 using System.Configuration.Install;
 using System.IO;
 using System.Diagnostics;
-using derIgel.NNTP;
 
-namespace derIgel.RsdnNntp
+using Rsdn.Nntp;
+
+namespace Rsdn.RsdnNntp
 {
 	/// <summary>
 	/// Summary description for ProjectInstaller.
