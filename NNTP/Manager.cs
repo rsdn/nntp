@@ -193,6 +193,8 @@ namespace Rsdn.Nntp
 						Session session = new Session(socket, dataProvider,	this);
 						session.Disposed += new EventHandler(SessionDisposedHandler);
 						sessions.Add(session);
+						// reset event (now we have child sessions)
+						noSessions.Reset();
 						ThreadPool.QueueUserWorkItem(new WaitCallback(session.Process), this);
 #if PERFORMANCE_COUNTERS
 						connectionsCounter.Increment();
@@ -212,9 +214,9 @@ namespace Rsdn.Nntp
 		}
 
 		/// <summary>
-		/// timeout for check of endng of sessions
+		/// enforce close child sessions after this timeout
 		/// </summary>
-		protected const int sessionsCheckInterval = 500;
+		protected const int waitSessionsTimeout = 30000;
 
 		/// <summary>
 		/// signalled when need to pause
@@ -258,19 +260,36 @@ namespace Rsdn.Nntp
 		{
 			Dispose();
 			stopEvent.Set();
-			while (sessions.Count > 0)
-				Thread.Sleep(sessionsCheckInterval);
+			if (!noSessions.WaitOne(waitSessionsTimeout, false))
+			{
+				sessions.Clear();
+				Trace.WriteLineIf(tracing.TraceWarning, "Server forced closing of child sessions",
+					settings.Name);
+			}
 			Trace.WriteLineIf(tracing.TraceWarning, "Server stopped", settings.Name);
 		}
 
+		/// <summary>
+		/// array contains references to child nntp sessions
+		/// </summary>
 		protected ArrayList sessions;
+
+		/// <summary>
+		/// event, signalled when no child sessions
+		/// </summary>
+		protected ManualResetEvent noSessions = new ManualResetEvent(true);
 
 		public void SessionDisposedHandler(object obj, EventArgs args)
 		{
 			// check to ensure taht we have that object
 			if (sessions.Contains(obj))
 			{
+				// remove session from array
 				sessions.Remove(obj);
+				// signal when there are no sessions
+				if (sessions.Count == 0)
+					noSessions.Set();
+
 #if PERFORMANCE_COUNTERS
 				connectionsCounter.Decrement();
 				globalConnectionsCounter.Decrement();
