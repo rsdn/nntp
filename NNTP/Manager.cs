@@ -5,7 +5,9 @@ using System.Threading;
 using System.Diagnostics;
 using System.Collections;
 using System.Configuration;
-using derIgel.Utils;
+
+using System.Reflection;
+using System.IO;
 
 namespace derIgel
 {
@@ -16,11 +18,31 @@ namespace derIgel
 		/// </summary>
 		public class Manager
 		{
+			protected TextWriter errorOutput = System.Console.Error;
+
+			protected static Statistics stat;
+			protected static string statFilename;
+
+			static Manager()
+			{
+				statFilename = Assembly.GetExecutingAssembly().GetName().Name + ".stat";
+				if (File.Exists(statFilename))
+					stat = Statistics.Deserialize(statFilename);
+				else
+					stat = new Statistics();
+			}
+
+			/// <summary>
+			/// Write statistics at the end
+			/// </summary>
+			~Manager()
+			{
+				stat.Serialize(statFilename);
+			}
+
 			/// <summary>
 			/// NNTP Connection Manager constructor
-			/// To use default port define port as -1
 			/// dataProvider is provider of data
-			/// To log errors define errorLog, otherwise set null
 			/// </summary>
 			public Manager(Type dataProviderType, NNTPSettings settings)
 			{
@@ -33,7 +55,15 @@ namespace derIgel
 
 				this.dataProviderType = dataProviderType;
 				this.settings = settings;
-				
+					
+				stat.fromMail = settings.FromMail;
+				stat.toMail = settings.ToMail;
+				stat.fromServer = settings.FromServer;
+				stat.interval = new TimeSpan(0, settings.IntervalMinutes, 0);
+
+				if (settings.ErrorOutputFilename != null)
+					errorOutput = new StreamWriter(settings.ErrorOutputFilename, false, System.Text.Encoding.ASCII);
+
 				stopEvent = new ManualResetEvent(true);
 				pauseEvent = new ManualResetEvent(false);
 				sessions = new ArrayList();
@@ -76,7 +106,8 @@ namespace derIgel
 							case	WaitHandle.WaitTimeout	:
 								DataProvider dataProvider = Activator.CreateInstance(dataProviderType,
 									new object[]{settings}) as DataProvider;
-								Session session = new Session(socket, dataProvider,	stopEvent);
+								Session session = new Session(socket, dataProvider,	stopEvent,
+									stat, errorOutput);
 								session.Disposed += new EventHandler(SessionDisposedHandler);
 								sessions.Add(session);
 								ThreadPool.QueueUserWorkItem(new WaitCallback(session.Process));
@@ -92,8 +123,8 @@ namespace derIgel
 					}
 					catch(Exception e)
 					{
-						#if DEBUG
-							System.Console.WriteLine(Util.ExpandException(e));
+						#if DEBUG || SHOW
+							errorOutput.WriteLine(derIgel.Utils.Util.ExpandException(e));
 						#endif
 					}
 				}
@@ -119,6 +150,7 @@ namespace derIgel
 
 			public void Pause()
 			{
+				errorOutput.Flush();
 				pauseEvent.Set();
 			}
 
@@ -129,6 +161,7 @@ namespace derIgel
 
 			public void Stop()
 			{
+				errorOutput.Flush();
 				stopEvent.Set();
 				while (sessions.Count > 0)
 					Thread.Sleep(sessionsCheckInterval);

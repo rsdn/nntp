@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Net.Sockets;
-using derIgel.Utils;
 using System.Text;
 
 namespace derIgel.NNTP
@@ -88,11 +87,11 @@ namespace derIgel.NNTP
 			string content = answers[code] as string;
 			try
 			{
-				content += Util.CRLF;
+				content += derIgel.Utils.Util.CRLF;
 				if (parameters != null)
 					content = string.Format(content, parameters);
 				if (bodyResponse != null)
-					content += ModifyTextResponse(bodyResponse) + "." + Util.CRLF;
+					content += ModifyTextResponse(bodyResponse) + "." + derIgel.Utils.Util.CRLF;
 			}
 			catch(FormatException e)
 			{
@@ -125,9 +124,9 @@ namespace derIgel.NNTP
 		/// </summary>
 		public static string ModifyTextResponse(string text)
 		{
-			text.Replace(Util.CRLF + ".", Util.CRLF+ "..");
-			if ((text != string.Empty) && !text.EndsWith(Util.CRLF))
-				text += Util.CRLF;
+			text.Replace(derIgel.Utils.Util.CRLF + ".", derIgel.Utils.Util.CRLF+ "..");
+			if ((text != string.Empty) && !text.EndsWith(derIgel.Utils.Util.CRLF))
+				text += derIgel.Utils.Util.CRLF;
 			return text;
 		}
 

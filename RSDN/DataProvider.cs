@@ -38,7 +38,8 @@ namespace derIgel.RsdnNntp
 
 		public RsdnDataProvider(NNTPSettings settings) : base(settings)
 		{
-			PostingAllowed = true;
+			initialSessionState = Session.States.AuthRequired;
+			postingAllowed = true;
 			webService = new Forum();
 			encoding = System.Text.Encoding.UTF8;
 			RsdnDataProviderSettings rsdnSettings = settings as RsdnDataProviderSettings;
@@ -64,9 +65,9 @@ namespace derIgel.RsdnNntp
 			{
 				requestedGroup = webService.GroupInfo(groupName, username, password);
 			}		
-			catch (System.Web.Services.Protocols.SoapException exception)
+			catch (System.Exception exception)
 			{
-				ProcessSoapException(exception);
+				ProcessException(exception);
 			}
 			currentGroup = groupName;
 			currentGroupArticleStartNumber = requestedGroup.first;
@@ -85,7 +86,7 @@ namespace derIgel.RsdnNntp
 			if (cache.Capacity > 0)
 				lock(cache)
 				{
-					newsMessage = cache[new Cache.NewsArticleIdentity(null, currentGroup, articleNumber)];
+					newsMessage = cache[currentGroup, articleNumber];
 				}
 
 			if (newsMessage == null)
@@ -96,21 +97,13 @@ namespace derIgel.RsdnNntp
 					message = webService.GetFormattedArticle(currentGroup, articleNumber,
 						username,	password);
 				}
-				catch (System.Web.Services.Protocols.SoapException exception)
+				catch (System.Exception exception)
 				{
-					ProcessSoapException(exception);
+					ProcessException(exception);
 				}	
 
 				if (message.error != null)
-					switch (Convert.ToInt32(message.error.Split(new char[]{'\t', ' '}, 2)[0]))
-					{
-						case 3:
-							throw new DataProvider.Exception(DataProvider.Errors.NoSuchArticle);
-							//break;
-						default:
-							throw new DataProvider.Exception(DataProvider.Errors.UnknownError);
-							//break;
-					}
+					ProcessErrorMessage(message.error);
 
 				currentArticle = articleNumber;
 				newsMessage = ToNNTPArticle(message, currentGroup, content);
@@ -118,10 +111,11 @@ namespace derIgel.RsdnNntp
 				if (cache.Capacity > 0)
 					lock(cache)
 					{
-						cache[new Cache.NewsArticleIdentity(newsMessage.MessageID, currentGroup, articleNumber)] =
+						cache[newsMessage.MessageID, currentGroup, articleNumber] =
 							newsMessage;
 					}					
 			}
+
 			return newsMessage;
 		}
 
@@ -182,9 +176,9 @@ namespace derIgel.RsdnNntp
 			{
 				groupList = webService.GetGroupList(username, password, startDate);
 			}				
-			catch (System.Web.Services.Protocols.SoapException exception)
+			catch (System.Exception exception)
 			{
-				ProcessSoapException(exception);
+				ProcessException(exception);
 			}	
 			NewsGroup[] listOfGroups = new NewsGroup[groupList.groups.GetLength(0)];
 			for (int i = 0; i < groupList.groups.GetLength(0); i++)
@@ -207,9 +201,9 @@ namespace derIgel.RsdnNntp
 			{
 				auth = webService.Authentication(user, pass);
 			}
-			catch (System.Web.Services.Protocols.SoapException exception)
+			catch (System.Exception exception)
 			{
-				ProcessSoapException(exception);
+				ProcessException(exception);
 			}
 			return auth.ok;
 		}
@@ -237,29 +231,11 @@ namespace derIgel.RsdnNntp
 			{
 				string htmlText = string.Format(htmlMessageTemplate, message.authorid, message.author,
 					message.gid, message.id, message.fmtmessage);
-//					MemoryStream outputStream = new MemoryStream();
-//					GZipOutputStream gzipStream = new GZipOutputStream(outputStream);
-//					gzipStream.Write(encoding.GetBytes(htmlText), 0, encoding.GetBytes(htmlText).Length);
-//					gzipStream.Close();
-//
-//					
-//					string res = null;
-//					MemoryStream inputStream = new MemoryStream(outputStream.GetBuffer());
-//					GZipInputStream gzipI = new GZipInputStream(inputStream);
-//					byte[] buffer = new byte[1024];
-//					while (gzipI.Available > 0)
-//					{
-//						int read = gzipI.Read(buffer, 0, 1024);
-//						res += encoding.GetString(buffer, 0, read);
-//					}
-//					gzipI.Close();
-
 				Message htmlTextBody = new Message();
 				htmlTextBody.Bodies.Add(/*encoding.GetString(outputStream.GetBuffer())*/htmlText);
 				htmlTextBody.Encoding = encoding;
 				htmlTextBody.BodyEncoding = Message.BodyEncodingEnum.Base64;
 				htmlTextBody.ContentType = "text/html";
-				htmlTextBody["Content-Encoding"] = "gzip";
 
 				Message plainTextBody = new Message();
 				plainTextBody.Bodies.Add(message.message);
@@ -288,9 +264,9 @@ namespace derIgel.RsdnNntp
 					(startNumber == -1) ? currentGroupArticleStartNumber : startNumber,
 					(endNumber == -1) ? currentGroupArticleEndNumber : endNumber, username, password);
 			}
-			catch (System.Web.Services.Protocols.SoapException exception)
+			catch (System.Exception exception)
 			{
-				ProcessSoapException(exception);
+				ProcessException(exception);
 			}	
 
 			NewsArticle[] articleArray = new NewsArticle[articleList.articles.GetLength(0)];
@@ -319,9 +295,9 @@ namespace derIgel.RsdnNntp
 				if (!result.ok)
 					throw new Exception(Errors.PostingFailed);
 			}
-			catch (System.Web.Services.Protocols.SoapException exception)
+			catch (System.Exception exception)
 			{
-				ProcessSoapException(exception);
+				ProcessException(exception);
 			}	
 		}
 
@@ -337,14 +313,30 @@ namespace derIgel.RsdnNntp
 		/// </summary>
 		static string cacheFilename;
 
-		protected void ProcessSoapException(System.Web.Services.Protocols.SoapException exception)
+		protected void ProcessException(System.Exception exception)
 		{
-			switch (Regex.Match(exception.Message, @"^.+ ---> .+: (?<error>.+)").Groups["error"].Value)
+			if (exception.GetType() == typeof(System.Web.Services.Protocols.SoapException))
+			{
+				ProcessErrorMessage(Regex.Match(exception.Message, @"^.+ ---> .+: (?<error>.+)").Groups["error"].Value);
+			}
+			else
+				if (exception.GetType() == typeof(System.Net.WebException))
+				throw new Exception(Errors.ServiceUnaviable, exception);
+
+			// if not handeled - throw forward
+			throw exception;
+		}
+
+		protected void ProcessErrorMessage(string message)
+		{
+			switch (message)
 			{
 				case "1 Incorrect group name":
 					throw new Exception(Errors.NoSuchGroup);
 				case "2 Incorrect login name or password":
 					throw new Exception(Errors.NoPermission);
+				case "3 Article not found.":
+					throw new Exception(Errors.NoSuchArticle);
 				default:
 					throw new DataProvider.Exception(DataProvider.Errors.UnknownError);
 			}

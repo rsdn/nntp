@@ -5,99 +5,139 @@ using System.Xml.Serialization;
 using System.ComponentModel;
 using System.IO;
 
-namespace derIgel
+namespace derIgel.NNTP
 {
-	namespace NNTP
-	{
 	/// <summary>
 	/// Summary description for NNTPSettings.
 	/// </summary>
-		[XmlRoot("Settings")]
-		public class NNTPSettings
+	[XmlRoot("Settings")]
+	public class NNTPSettings
+	{
+	#region Statistics
+
+		protected string fromMail;
+		[BrowsableAttribute(false)]
+		public string FromMail
 		{
-			public NNTPSettings()
+			get { return fromMail; }
+			set {fromMail = value; }
+		}
+
+		protected string toMail;
+		[BrowsableAttribute(false)]
+		public string ToMail
+		{
+			get { return toMail; }
+			set {toMail = value; }
+		}
+
+		protected string fromServer;
+		[BrowsableAttribute(false)]
+		public string FromServer
+		{
+			get { return fromServer; }
+			set {fromServer = value; }
+		}
+
+		protected int intervalMinutes;
+		[BrowsableAttribute(false)]
+		public int IntervalMinutes
+		{
+			get { return intervalMinutes; }
+			set {intervalMinutes = value; }
+		}
+	#endregion
+
+		protected string errorOutputFilename;
+		[BrowsableAttribute(false)]
+		public string ErrorOutputFilename
+		{
+			get {return errorOutputFilename; }
+			set {errorOutputFilename = value; }
+		}
+
+		public NNTPSettings()
+		{
+			bindingAddresses = IPAddress.Any;
+			bindingPort = defaultPort;
+		}
+
+		/// <summary>
+		/// default NNTP port
+		/// </summary>
+		protected const int defaultPort = 119;
+
+		/// <summary>
+		/// addresses for binding
+		/// </summary>
+		protected IPAddress bindingAddresses;
+
+		[BrowsableAttribute(false)]
+		[DefaultValue("0.0.0.0")]
+		public string Bindings
+		{
+			get
 			{
-				bindingAddresses = IPAddress.Any;
-				bindingPort = defaultPort;
+				return bindingAddresses.ToString();
 			}
-
-			/// <summary>
-			/// default NNTP port
-			/// </summary>
-			protected const int defaultPort = 119;
-
-			/// <summary>
-			/// addresses for binding
-			/// </summary>
-			protected IPAddress bindingAddresses;
-
-			[BrowsableAttribute(false)]
-			[DefaultValue("0.0.0.0")]
-			public string Bindings
+			set
 			{
-				get
-				{
-					return bindingAddresses.ToString();
-				}
-				set
-				{
-					bindingAddresses = IPAddress.Parse(value);
-				}
+				bindingAddresses = IPAddress.Parse(value);
 			}
+		}
 
-			protected ushort bindingPort;
+		protected ushort bindingPort;
 
-			[Category("Connections")]
-			[DefaultValue(defaultPort)]
-			[Description("RSDN NNTP Server port")]
-			public ushort Port
+		[Category("Connections")]
+		[DefaultValue(defaultPort)]
+		[Description("RSDN NNTP Server port")]
+		public ushort Port
+		{
+			get
 			{
-				get
-				{
-					return bindingPort;
-				}
-				set
-				{
-					bindingPort = value;
-				}
+				return bindingPort;
 			}
-
-			[BrowsableAttribute(false)]
-			[XmlIgnore]
-			public IPEndPoint EndPoint
+			set
 			{
-				get
-				{
-					return new	IPEndPoint(bindingAddresses, bindingPort);
-				}
+				bindingPort = value;
 			}
-			public void Serialize(string filename)
-			{
-				Serialize(new FileStream(filename, FileMode.Create));
-			}
+		}
 
-			public void Serialize(Stream stream)
+		[BrowsableAttribute(false)]
+		[XmlIgnore]
+		public IPEndPoint EndPoint
+		{
+			get
 			{
-				XmlWriter fileWriter = new XmlTextWriter(stream, System.Text.Encoding.ASCII);
-				XmlSerializer serializer = new XmlSerializer(this.GetType());
-				serializer.Serialize(fileWriter, this);
-				fileWriter.Close();
+				return new	IPEndPoint(bindingAddresses, bindingPort);
 			}
+		}
+		public void Serialize(string filename)
+		{
+			Serialize(new FileStream(filename, FileMode.Create));
+		}
 
-			public static object Deseriazlize(string filename, Type type)
-			{
-				return Deseriazlize(new FileStream(filename, FileMode.Open), type);
-			}
+		public void Serialize(Stream stream)
+		{
+			XmlWriter fileWriter = new XmlTextWriter(stream, System.Text.Encoding.ASCII);
+			XmlSerializer serializer = new XmlSerializer(this.GetType());
+			serializer.Serialize(fileWriter, this);
+			fileWriter.Close();
+		}
 
-			public static object Deseriazlize(Stream stream, Type type)
-			{
-				XmlReader fileReader = new XmlTextReader(stream);
-				XmlSerializer serializer = new XmlSerializer(type);
-				object serverSettings = serializer.Deserialize(fileReader);
-				fileReader.Close();
+		public static object Deseriazlize(string filename, Type type)
+		{
+			return Deseriazlize(new FileStream(filename, FileMode.Open), type);
+		}
 
-				return serverSettings;
-			}
-		}	
-	}
+		public static object Deseriazlize(Stream stream, Type type)
+		{
+			XmlReader fileReader = new XmlTextReader(stream);
+			XmlSerializer serializer = new XmlSerializer(type);
+			object serverSettings = serializer.Deserialize(fileReader);
+			fileReader.Close();
+
+			return serverSettings;
+		}
+	}	
 }

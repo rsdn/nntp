@@ -18,7 +18,7 @@
                 DefaultHTMLPageLayout = "Grid"
                 DefaultTargetSchema = "IE50"
                 DelaySign = "false"
-                OutputType = "WinExe"
+                OutputType = "Exe"
                 RootNamespace = "derIgel.RsdnNntp"
                 StartupObject = ""
             >
@@ -46,7 +46,7 @@
                     BaseAddress = "285212672"
                     CheckForOverflowUnderflow = "false"
                     ConfigurationOverrideFile = ""
-                    DefineConstants = "TRACE"
+                    DefineConstants = "TRACE;SHOW"
                     DocumentationFile = ""
                     DebugSymbols = "false"
                     FileAlignment = "4096"
@@ -146,10 +146,6 @@
                     RelPath = "RSDNServer.resx"
                     DependentUpon = "RSDNServer.cs"
                     BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "what's new.txt"
-                    BuildAction = "Content"
                 />
             </Include>
         </Files>

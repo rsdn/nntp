@@ -130,8 +130,14 @@ namespace derIgel.RsdnNntp
 		private void ApplySettings(object sender, System.EventArgs e)
 		{
 			applyButton.Enabled = false;
-			((RsdnNntpSettings)propertyGrid.SelectedObject).
-				Serialize(ConfigurationSettings.AppSettings["service.Config"]);
+			// write config file
+			RsdnNntpSettings settings = (RsdnNntpSettings)propertyGrid.SelectedObject;
+			settings.Serialize(ConfigurationSettings.AppSettings["service.Config"]);
+			// change startup mode
+			((Notify)Owner).service.ChangeStartMode((settings.StartupMode == RsdnNntpSettings.StartupType.Auto) ?
+				"Automatic" : settings.StartupMode.ToString());
+			// refresh status
+			((Notify)Owner).RefreshStatus();
 		}
 
 		private void propertyGrid_PropertyValueChanged(object s, System.Windows.Forms.PropertyValueChangedEventArgs e)

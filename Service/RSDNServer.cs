@@ -34,7 +34,7 @@ namespace derIgel
 		static void Main()
 		{
 			System.ServiceProcess.ServiceBase[] ServicesToRun;
-	
+				
 			// More than one user Service may run within the same process. To add
 			// another service to this process, change the following line to
 			// create a second service object. For example,
@@ -93,6 +93,9 @@ namespace derIgel
 			}
 			catch (Exception e)
 			{
+				#if DEBUG || SHOW
+					System.Console.Error.WriteLine(Util.ExpandException(e));
+				#endif
 				EventLog.WriteEntry(Util.ExpandException(e), EventLogEntryType.Error);
 				nntpManager = null;
 				// start timer, which will stop service in 1 sec
@@ -112,6 +115,9 @@ namespace derIgel
 			}
 			catch (Exception e)
 			{
+				#if DEBUG || SHOW
+					System.Console.Error.WriteLine(Util.ExpandException(e));
+				#endif
 				EventLog.WriteEntry(e.Message, EventLogEntryType.Error);
 			}
 		}

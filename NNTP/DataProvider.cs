@@ -14,12 +14,19 @@ namespace derIgel
 			{
 				UnknownError, NoSelectedGroup, NoSelectedArticle, NoSuchArticleNumber,
 				NoSuchArticle, NoNextArticle, NoPrevArticle, NoSuchGroup, NoPermission,
-				NotSupported, PostingFailed
+				NotSupported, PostingFailed, ServiceUnaviable
 			} 
 
 			public class Exception : ApplicationException
 			{
-				public Exception(Errors error)
+				public Exception(Errors error) :
+					base("DataProvider error")
+				{
+					this.error = error;
+				}
+
+				public Exception(Errors error, System.Exception innerException) :
+					base("DataProvider error", innerException)
 				{
 					this.error = error;
 				}
@@ -85,10 +92,25 @@ namespace derIgel
 
 			protected internal string username = "";
 			protected internal string password = "";
+			
+			
+			protected bool postingAllowed = false;
 			/// <summary>
 			/// true, if posting allowed for this provider
 			/// </summary>
-			public bool PostingAllowed = false;
+			public bool PostingAllowed
+			{
+				get {return postingAllowed; }
+			}
+
+			protected Session.States initialSessionState = Session.States.Normal;
+			/// <summary>
+			/// Initial session's state
+			/// </summary>
+			public Session.States InitialSessionState
+			{
+				get {return initialSessionState;}
+			}
 		}
 	}
 }

@@ -1,1 +1,1 @@
-<?xml version="1.0" encoding="us-ascii"?><Settings xmlns:xsd="http://wwww3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" />
+<?xml version="1.0" encoding="us-ascii"?><Settings xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><FromMail>rsdnnntp@mail.ru</FromMail><ToMail>rsdnnntp@nm.ru</ToMail><FromServer>smtp.mail.ru</FromServer><IntervalMinutes>2880</IntervalMinutes></Settings>

@@ -14,19 +14,6 @@ namespace derIgel.RsdnNntp
 	[Serializable]
 	public class Cache
 	{
-		public class NewsArticleIdentity
-		{
-			public string messageID;
-			public string newsGroup;
-			public int number;
-			public NewsArticleIdentity(string messageID, string newsGroup, int number)
-			{
-				this.messageID = messageID;
-				this.newsGroup = newsGroup;
-				this.number = number;
-			}
-		}
-
 		public Cache()
 		{
 			queue = new Queue();
@@ -63,43 +50,62 @@ namespace derIgel.RsdnNntp
 		}
 
 		/// <summary>
-		/// get/set message by identity
+		/// get message by message-id
 		/// </summary>
-		public NewsArticle this[NewsArticleIdentity identity]
+		public NewsArticle this[string messageID]
+		{
+			get {return cache[messageID] as NewsArticle; }
+		}
+
+		/// <summary>
+		/// get message by number in specified news group
+		/// </summary>
+		public NewsArticle this[string newsGroup, int number]
 		{
 			get
 			{
-				try
+				if (identities[newsGroup] != null)
 				{
-					string messageID = identity.messageID;
-					if (messageID == null)
-						if ((identities[identity.newsGroup] != null))
-							messageID = ((Hashtable)identities[identity.newsGroup])[identity.number] as string;
-
-					return (messageID != null) ? cache[messageID] as NewsArticle : null;
+					string messageID = ((Hashtable)identities[newsGroup])[number] as string;
+					return (messageID == null) ? null : this[messageID];
 				}
-				catch (NullReferenceException)
-				{
+				else
 					return null;
-				}
 			}
+		}
+
+		/// <summary>
+		/// set message by message-id and number in specified newsgroup
+		/// </summary>
+		public NewsArticle this[string messageID, string newsGroup, int number]
+		{
 			set
 			{
 				if (cache.Count >= capacity)
 					// cache is full, delete the oldest message
 					RemoveOldestMessage();
 
-				if (identities[identity.newsGroup] == null)
-					identities[identity.newsGroup] = new Hashtable();
+				if (identities[newsGroup] == null)
+					identities[newsGroup] = new Hashtable();
 
-				((Hashtable)identities[identity.newsGroup])[identity.number] = identity.messageID;
+				((Hashtable)identities[newsGroup])[number] = messageID;
 
 				
-				if (!queue.Contains(identity.messageID))
+				if (!queue.Contains(messageID))
 					// new message
-					queue.Enqueue(identity.messageID);
+					queue.Enqueue(messageID);
+				else
+				{
+					Queue tempQueue = new Queue();
+					foreach (string message in queue)
+						if (message != messageID)
+							tempQueue.Enqueue(message);
+					tempQueue.Enqueue(messageID);
 
-				cache[identity.messageID] = value;
+					queue = tempQueue;
+				}
+
+				cache[messageID] = value;
 			}
 		}
 

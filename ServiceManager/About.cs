@@ -73,7 +73,7 @@ namespace derIgel.RsdnNntp
 			this.richTextAbout.Location = new System.Drawing.Point(72, 8);
 			this.richTextAbout.Name = "richTextAbout";
 			this.richTextAbout.ReadOnly = true;
-			this.richTextAbout.Size = new System.Drawing.Size(342, 80);
+			this.richTextAbout.Size = new System.Drawing.Size(316, 80);
 			this.richTextAbout.TabIndex = 0;
 			this.richTextAbout.TabStop = false;
 			this.richTextAbout.Text = "";
@@ -97,13 +97,13 @@ namespace derIgel.RsdnNntp
 			this.treeView.Location = new System.Drawing.Point(8, 104);
 			this.treeView.Name = "treeView";
 			this.treeView.SelectedImageIndex = -1;
-			this.treeView.Size = new System.Drawing.Size(406, 160);
+			this.treeView.Size = new System.Drawing.Size(380, 160);
 			this.treeView.TabIndex = 2;
 			// 
 			// About
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(426, 271);
+			this.ClientSize = new System.Drawing.Size(400, 271);
 			this.Controls.AddRange(new System.Windows.Forms.Control[] {
 																																	this.treeView,
 																																	this.pictureBox1,

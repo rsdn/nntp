@@ -16,12 +16,8 @@ namespace derIgel.RsdnNntp
 
 		public RsdnNntpSettings()
 		{
-			service = new Service();
-			ChangePath();
 		}
 
-		protected Service service;
-		
 		protected const string defaultMachine = ".";
 		protected string machine = defaultMachine;
 		[Browsable(false)]
@@ -29,11 +25,7 @@ namespace derIgel.RsdnNntp
 		public string Machine
 		{
 			get { return machine; }
-			set
-			{
-				machine = value;
-				ChangePath();
-			}
+			set	{ machine = value; }
 		}
 
 		protected const string defaultServiceName = "rsdnnntp";
@@ -43,12 +35,10 @@ namespace derIgel.RsdnNntp
 		public string ServiceName
 		{
 			get { return serviceName; }
-			set
-			{
-				serviceName = value;
-				ChangePath();
-			}
+			set {	serviceName = value; }
 		}
+
+		protected StartupType startupMode;
 
 		[Category("Others")]
 		[DefaultValue(StartupType.Auto)]
@@ -56,22 +46,8 @@ namespace derIgel.RsdnNntp
 		[XmlIgnore]
 		public StartupType StartupMode
 		{
-			get
-			{
-				service.InterrogateService();
-				return (StartupType)Enum.Parse(typeof(StartupType), service.StartMode);
-			}
-			set
-			{
-				service.ChangeStartMode((value == StartupType.Auto) ? "Automatic" : value.ToString());
-				ChangePath();
-			}
-		}
-
-		protected void ChangePath()
-		{
-			service.Path = new ManagementPath(string.Format(@"\\{0}\{1}:{2}.Name=""{3}""", Machine,
-				service.OriginatingNamespace, service.ManagementClassName, ServiceName));
+			get { return startupMode; }
+			set { startupMode = value; }
 		}
 	}
 }

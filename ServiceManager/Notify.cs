@@ -4,9 +4,10 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using Win32Util;
-using System.ServiceProcess;
 using System.Threading;
 using System.Configuration;
+using derIgel.ROOT.CIMV2;
+using System.Management;
 
 namespace derIgel.RsdnNntp
 {
@@ -20,9 +21,11 @@ namespace derIgel.RsdnNntp
 		protected Icon pausedIcon;
 		protected Icon stoppedIcon;
 
+		internal protected Service service = new Service();
+		protected ManagementPath serviceManagementPath;
+
 		private System.Windows.Forms.NotifyIcon notifyIcon;
 		private System.Windows.Forms.Timer timer;
-		private System.ServiceProcess.ServiceController serviceController;
 		private System.Windows.Forms.ContextMenu contextMenu;
 		private System.Windows.Forms.MenuItem menuOpen;
 		private System.Windows.Forms.MenuItem menuItem1;
@@ -54,8 +57,8 @@ namespace derIgel.RsdnNntp
 				serverSettings = new RsdnNntpSettings();
 			}
 
-			serviceController.MachineName = serverSettings.Machine;
-			serviceController.ServiceName = serverSettings.ServiceName;
+			serviceManagementPath = new ManagementPath(string.Format(@"\\{0}\root\CIMV2:Win32_Service.Name=""{1}""",
+				serverSettings.Machine,	serverSettings.ServiceName));
 			
 			controlPanel = new ControlPanel();
 			controlPanel.propertyGrid.SelectedObject = serverSettings;
@@ -97,15 +100,17 @@ namespace derIgel.RsdnNntp
 		[STAThread]
 		static void Main(string[] args)
 		{
-			Notify mainForm = new Notify();
+			Notify mainForm = null;
 			try
 			{
+				mainForm = new Notify();
 				Application.Run(mainForm);
 			}
-			catch (InvalidOperationException ioException)
+			catch (ManagementException exception)
 			{
-				mainForm.timer.Enabled = false;
-				MessageBox.Show(ioException.Message, "RSDN NNTP Manager",
+				if (mainForm != null)
+					mainForm.timer.Enabled = false;
+				MessageBox.Show(exception.Message, "RSDN NNTP Manager",
 					MessageBoxButtons.OK,	MessageBoxIcon.Error);
 				Application.Exit();
 			}
@@ -132,7 +137,6 @@ namespace derIgel.RsdnNntp
 			this.menuItem3 = new System.Windows.Forms.MenuItem();
 			this.menuExit = new System.Windows.Forms.MenuItem();
 			this.timer = new System.Windows.Forms.Timer(this.components);
-			this.serviceController = new System.ServiceProcess.ServiceController();
 			// 
 			// notifyIcon
 			// 
@@ -211,10 +215,6 @@ namespace derIgel.RsdnNntp
 			this.timer.Interval = ((int)(configurationAppSettings.GetValue("timer.Interval", typeof(int))));
 			this.timer.Tick += new System.EventHandler(this.RefreshStatus);
 			// 
-			// serviceController
-			// 
-			this.serviceController.ServiceName = "rsdnnntp";
-			// 
 			// Notify
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
@@ -227,7 +227,7 @@ namespace derIgel.RsdnNntp
 		}
 		#endregion
 
-		private void RefreshStatus()
+		internal protected void RefreshStatus()
 		{
 				RefreshStatus(this, EventArgs.Empty);
 		}
@@ -252,21 +252,25 @@ namespace derIgel.RsdnNntp
 		private void Open(object sender, System.EventArgs e)
 		{
 			menuOpen.Enabled = false;
-			controlPanel.ShowDialog();
-			menuOpen.Enabled = true;		
+			RefreshService();
+			((RsdnNntpSettings)controlPanel.propertyGrid.SelectedObject).StartupMode = 
+				(RsdnNntpSettings.StartupType)Enum.Parse(typeof(RsdnNntpSettings.StartupType), service.StartMode);
+			controlPanel.ShowDialog(this);
+			menuOpen.Enabled = true;
+			RefreshStatus();
 		}
 
 		private void Start(object sender, System.EventArgs e)
 		{
-			serviceController.Refresh();
-			switch (serviceController.Status)
+			RefreshService();
+			switch (service.State)
 			{
-				case ServiceControllerStatus.Paused	:
-				case	ServiceControllerStatus.PausePending	:
-					serviceController.Continue();
+				case "Pause Pending" :
+				case "Paused" :
+					service.ResumeService();
 					break;
 				default	:
-					serviceController.Start();
+					service.StartService();
 					break;
 			}
 			RefreshStatus();		
@@ -274,31 +278,36 @@ namespace derIgel.RsdnNntp
 
 		private void Pause(object sender, System.EventArgs e)
 		{
-			serviceController.Pause();
+			service.PauseService();
 			RefreshStatus();
 		}
 
 		private void Stop(object sender, System.EventArgs e)
 		{
-			serviceController.Stop();
+			service.StopService();
 			RefreshStatus();
+		}
+
+		internal protected void RefreshService()
+		{
+			service.Path = serviceManagementPath;
 		}
 
 		private void RefreshStatus(object sender, System.EventArgs e)
 		{
-			serviceController.Refresh();
-			switch (serviceController.Status)
+			RefreshService();	
+			switch (service.State)
 			{
-				case	ServiceControllerStatus.ContinuePending	:
-				case	ServiceControllerStatus.Running	:
-				case	ServiceControllerStatus.StartPending	:
+				case "Running" :
+				case "Continue Pending" :
+				case "Start Pending" :
 					notifyIcon.Icon = startedIcon;
 					menuStart.Enabled = false;
 					menuPause.Enabled = true;
 					menuStop.Enabled = true;
 					break;
-				case	ServiceControllerStatus.Paused	:
-				case	ServiceControllerStatus.PausePending	:
+				case "Pause Pending" :
+				case "Paused" :
 					notifyIcon.Icon = pausedIcon;
 					menuStart.Enabled = true;
 					menuStart.Text = "Continue";
@@ -306,11 +315,23 @@ namespace derIgel.RsdnNntp
 					menuStop.Enabled = true;
 					break;
 				default:
-					notifyIcon.Icon = stoppedIcon;
-					menuStart.Enabled = true;
-					menuStart.Text = "Start";
-					menuPause.Enabled = false;
-					menuStop.Enabled = false;
+				switch (service.StartMode)
+				{
+					case "Disabled" : 
+						notifyIcon.Icon = stoppedIcon;
+						menuStart.Text = "Start";
+						menuStart.Enabled = false;
+						menuPause.Enabled = false;
+						menuStop.Enabled = false;
+						break;
+					default:
+						notifyIcon.Icon = stoppedIcon;
+						menuStart.Enabled = true;
+						menuStart.Text = "Start";
+						menuPause.Enabled = false;
+						menuStop.Enabled = false;
+						break;
+				}
 					break;
 			}	
 		}

@@ -5,6 +5,8 @@ using derIgel.RsdnNntp;
 using System.Net.Sockets;
 using derIgel.Mail;
 using System.Threading;
+using System.Text;
+using System.IO;
 
 namespace ForumTest
 {

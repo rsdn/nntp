@@ -6,8 +6,7 @@ using System.Collections;
 using System.Threading;
 using System.Reflection;
 using derIgel.NNTP.Commands;
-using derIgel.Utils;
-//using derIgel.NNTP.Commands;
+using System.Text.RegularExpressions;
 
 namespace derIgel.NNTP
 {
@@ -16,6 +15,10 @@ namespace derIgel.NNTP
 	/// </summary>
 	public class Session : IDisposable
 	{
+
+		protected Statistics stat;
+		protected TextWriter errorOutput = System.Console.Error;
+
 		static Session()
 		{
 			commandsTypes = new Hashtable();
@@ -39,9 +42,13 @@ namespace derIgel.NNTP
 
 		}
 
-		public Session(Socket client, DataProvider dataProvider, WaitHandle exitEvent)
+		public Session(Socket client, DataProvider dataProvider, WaitHandle exitEvent, Statistics stat,
+			TextWriter errorOutput)
 		{
-			sessionState = States.Normal;
+			sessionState = dataProvider.InitialSessionState;
+
+			this.stat = stat;
+			this.errorOutput = errorOutput;
 
 			this.exitEvent = exitEvent;
 			commandBuffer = new byte[bufferSize];
@@ -111,16 +118,16 @@ namespace derIgel.NNTP
 					while (netStream.DataAvailable);
 
 					if (sessionState == States.PostWaiting)
-						delimeter = Util.CRLF + "." + Util.CRLF;
+						delimeter = derIgel.Utils.Util.CRLF + "." + derIgel.Utils.Util.CRLF;
 					else
-						delimeter = Util.CRLF;
+						delimeter = derIgel.Utils.Util.CRLF;
 					if (bufferString.IndexOf(delimeter) != -1)
 					{
 						// get command string till delimeter
 						commandString = bufferString.Substring(0, bufferString.IndexOf(delimeter));
 						
-						#if DEBUG
-							Console.Error.WriteLine(commandString);
+						#if DEBUG || SHOW
+							errorOutput.WriteLine(commandString);
 						#endif
 
 						bufferString = bufferString.Remove(0,
@@ -141,6 +148,8 @@ namespace derIgel.NNTP
 								default	:
 									// get first word in upper case delimeted by space or tab characters 
 									command = commandString.Split(new char[]{' ', '\t', '\r'}, 2)[0].ToUpper();
+
+									stat.AddStatistic(command);
 
 									Commands.Generic nntpCommand = commands[command] as Commands.Generic;
 									// check suppoting command
@@ -199,6 +208,9 @@ namespace derIgel.NNTP
 								case DataProvider.Errors.PostingFailed:
 									result = new Response(441);
 									break;
+								case DataProvider.Errors.ServiceUnaviable:
+									result = new Response(400);
+									break;
 								default:
 									result = new Response(503); //error
 									break;
@@ -206,20 +218,39 @@ namespace derIgel.NNTP
 						}
 						catch(Exception e)
 						{
-							#if DEBUG
-								System.Console.Error.WriteLine("\texception: " + Util.ExpandException(e));
+							#if DEBUG || SHOW
+								errorOutput.WriteLine("\texception: " + derIgel.Utils.Util.ExpandException(e));
 							#endif
 							result = new Response(503);
 						}
 
 						Answer(result);
 
-						#if DEBUG
-							Console.Error.Write(result.GetResponse());
-						#endif
+#if DEBUG || SHOW
+						string firstLine = result.GetResponse();
+						if ((firstLine.Length -
+									(firstLine.IndexOf(derIgel.Utils.Util.CRLF) + derIgel.Utils.Util.CRLF.Length)) > 0)
+						{
+							firstLine = firstLine.Remove(firstLine.IndexOf(derIgel.Utils.Util.CRLF),
+								firstLine.Length - firstLine.IndexOf(derIgel.Utils.Util.CRLF)) +
+								derIgel.Utils.Util.CRLF + "..." + derIgel.Utils.Util.CRLF;
+						}
+						errorOutput.Write(firstLine);
+#endif
 
-						if (result.Code == 205) //quit response
-							return;
+						if (result.Code >= 400)
+							stat.AddError(result.Code, commandString);
+
+						stat.CheckSend();
+
+						switch(result.Code)
+						{
+							case 205: // quit
+							case 400: // service disctontined
+							case 401: // service unaviable
+							case 402: // timeout
+								return;
+						}
 					}
 				}
 			}
