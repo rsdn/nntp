@@ -208,8 +208,10 @@ namespace Rsdn.Nntp
 			try
 			{
 				// response OK
-				Answer(new Response(dataProvider.PostingAllowed ? NntpResponse.Ok : NntpResponse.OkNoPosting,
-					null, manager.NamedServerID));
+				Answer(new Response(dataProvider.PostingAllowed ?
+					NntpResponse.Ok : NntpResponse.OkNoPosting, null,
+						string.Format("{0} ({1}; {2})",
+						manager.Name, Manager.ServerID, dataProvider.Identity)));
 
 				StringBuilder bufferString = new StringBuilder();
 				while (true)

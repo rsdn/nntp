@@ -373,16 +373,6 @@ namespace Rsdn.Nntp
 		/// Common server identification string
 		/// </summary>
 		public static readonly string ServerID = Manager.GetProductTitle(Assembly.GetExecutingAssembly());
-		/// <summary>
-		/// Named server isentification string
-		/// </summary>
-		public string NamedServerID
-		{
-			get
-			{
-				return string.Format("{0} ({1})", Name, ServerID);
-			}
-		}
 
 		/// <summary>
 		/// Get product's title from assembly (AssemblyProduct + AssemblyInformationalVersion)

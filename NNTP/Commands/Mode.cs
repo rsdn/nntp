@@ -33,8 +33,10 @@ namespace Rsdn.Nntp.Commands
 			Response result;
 			if (lastMatch.Groups["mode"].Value.ToUpper() == "READER")
 				// MODE READER
-				result = new Response(session.DataProvider.PostingAllowed ? NntpResponse.Ok : NntpResponse.OkNoPosting,
-					null, session.Manager.NamedServerID);
+				result = new Response(session.DataProvider.PostingAllowed ?
+					NntpResponse.Ok : NntpResponse.OkNoPosting, null,
+					string.Format("{0} ({1}; {2})",
+						session.Manager.Name, Manager.ServerID, session.DataProvider.Identity));
 			else
 				// MODE STREAM
 				result = new Response(NntpResponse.NotRecognized);
