@@ -71,6 +71,12 @@ namespace Rsdn.RsdnNntp
 
 		protected Uri serviceAddress;
 
+		[XmlIgnore]
+		public Uri ServiceUri
+		{
+			get { return serviceAddress; }
+		}
+
 		[Category("Connections")]
 		[DefaultValue(defaultServiceAddress)]
 		[Description("URL of RSDN Forum's Web Service")]

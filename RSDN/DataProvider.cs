@@ -483,7 +483,7 @@ namespace Rsdn.RsdnNntp
     				string htmlText = string.Format(htmlMessageTemplate, message.authorid, message.author,
     					message.gid, message.id, formatMessage.Format(message.message, true), userType,
 							formatMessage.Format(message.homePage, true), encoding.WebName,
-							Format.ReplaceTags(message.subject));
+							Format.ReplaceTags(message.subject), serverName);
     				htmlTextBody.Entities.Add(htmlText);
     				htmlTextBody.TransferEncoding = ContentTransferEncoding.Base64;
     				htmlTextBody.ContentType = string.Format("text/html; charset=\"{0}\"", encoding.WebName);
@@ -523,10 +523,10 @@ namespace Rsdn.RsdnNntp
     							htmlText = htmlText.Replace(match.Groups["url"].Value, "cid:" + imgContentID.ToString());
     						}
     						catch (Exception ex)
-						{
-							logger.Error(string.Format("Image {0} not found.",
-								match.Groups["url"].Value), ex);
-						}
+								{
+									logger.Error(string.Format("Image {0} not found.",
+										match.Groups["url"].Value), ex);
+								}
     						finally
     						{
     							if (response != null)
@@ -700,6 +700,13 @@ namespace Rsdn.RsdnNntp
 		/// </summary>
 		protected DataProviderSettings rsdnSettings;
 
+		/// <summary>
+		/// Server address used to generate site links.
+		/// Retrivied from web service address.
+		/// Only top level hosting supported.
+		/// </summary>
+		protected String serverName = "http://rsdn.ru";
+
     /// <summary>
     /// Configures data provider
     /// </summary>
@@ -714,6 +721,7 @@ namespace Rsdn.RsdnNntp
 				webService = rsdnSettings.EnableHttpCompression ?
 					new CompressService() : new Service();
 
+				serverName = rsdnSettings.ServiceUri.GetLeftPart(UriPartial.Authority);
     		webService.Url = rsdnSettings.Service;
 				// set proxy if necessary
 				switch (rsdnSettings.ProxyType)
