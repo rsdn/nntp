@@ -302,6 +302,9 @@ namespace Rsdn.RsdnNntp
     		if (auth.ok)
     		{
 					userInfo = webService.GetUserInfo(user, pass);
+					// Becasuse of server stores password's hash but not clear password
+					// set it to plaint text on client side 
+					userInfo.Password = pass;
 					// Put user information to cache for 1 hour.
 					authCache.Add(user+pass, userInfo, null, Cache.NoAbsoluteExpiration,
 						new TimeSpan(1, 0, 0), CacheItemPriority.AboveNormal, null);
