@@ -114,7 +114,7 @@ namespace derIgel.NNTP.Commands
 			else
 			{
 				articleList = new NewsArticle[1];
-				articleList[0] = session.DataProvider.GetArticle(NewsArticle.Content.Header);
+				articleList[0] = session.DataProvider.GetArticle(NewsArticle.Content.HeaderAndBody);
 			}
 			StringBuilder output = new StringBuilder();
 			foreach (NewsArticle article in articleList)
@@ -125,7 +125,7 @@ namespace derIgel.NNTP.Commands
 					article["Date"],
 					article["Message-ID"],
 					article["References"],
-					null, null, Util.CRLF);
+					article.GetBody().Length, null, Util.CRLF);
 			return new Response(224, Encoding.ASCII.GetBytes(output.ToString()));
 		}
 	}
