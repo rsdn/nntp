@@ -110,6 +110,11 @@
                     AssemblyName = "log4net-net-1.1"
                     HintPath = "..\libs\log4net-net-1.1.dll"
                 />
+                <Reference
+                    Name = "System.Web"
+                    AssemblyName = "System.Web"
+                    HintPath = "C:\WINNT\Microsoft.NET\Framework\v1.1.4322\System.Web.dll"
+                />
             </References>
         </Build>
         <Files>
@@ -204,6 +209,21 @@
                     RelPath = "Win32_NetworkAdapterConfiguration.resx"
                     DependentUpon = "Win32_NetworkAdapterConfiguration.CS"
                     BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Cache\CacheDataProvider.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Cache\CacheDataProviderSettings.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Cache\Container.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Commands\Article.cs"
