@@ -132,12 +132,14 @@ namespace Rsdn.RsdnNntp
 
 		protected override void OnPause()
 		{
-			nntpManager.Pause();
+			if (nntpManager != null)
+				nntpManager.Pause();
 		}
 
 		protected override void OnContinue()
 		{
-			nntpManager.Resume();
+			if (nntpManager != null)
+				nntpManager.Resume();
 		}
 
 		protected override void OnShutdown()
