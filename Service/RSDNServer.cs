@@ -84,10 +84,12 @@ namespace derIgel.RsdnNntp
 		{
 			try
 			{
-				Directory.SetCurrentDirectory(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
-				RsdnDataProviderSettings serverSettings = (RsdnDataProviderSettings)
-					RsdnDataProviderSettings.Deseriazlize(ConfigurationSettings.AppSettings["service.Config"],
-						typeof(RsdnDataProviderSettings));
+				Directory.SetCurrentDirectory(
+					Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+				DataProviderSettings serverSettings = (DataProviderSettings)
+					DataProviderSettings.Deseriazlize(
+						ConfigurationSettings.AppSettings["service.Config"],
+						typeof(DataProviderSettings));
 
 				nntpManager = new Manager(typeof(RsdnDataProvider),	serverSettings);
 				nntpManager.Start();

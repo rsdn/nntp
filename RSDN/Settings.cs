@@ -12,67 +12,42 @@ namespace derIgel.RsdnNntp
 	/// settings for application
 	/// </summary>
 	[XmlRoot("Settings")]
-	public class RsdnDataProviderSettings : NNTPSettings
+	public class DataProviderSettings : NNTPSettings
 	{
-		public RsdnDataProviderSettings()
+		public DataProviderSettings()
 		{
 			serviceAddress = new Uri(defaultServiceAddress);
 			encoding = System.Text.Encoding.UTF8;
 		}
 
+		protected WebProxy proxy;
+
+		[BrowsableAttribute(false)]
+		[XmlIgnore]
+		public WebProxy Proxy
+		{
+			get	{	return proxy;	}
+		}
+
+		protected ProxySettings proxySettings = new ProxySettings();
+
+		[Category("Connections")]
+		[Description("Web Proxy in format http://username:password@host.com:port.\n" +
+			 "Username, password, and port may be skipped.")]
+		public ProxySettings ProxyServer
+		{
+			get {return proxySettings;}
+			set
+			{
+				proxySettings = value;
+				proxy =
+					new WebProxy(proxySettings.ProxyUri, false, null,	proxySettings.Credentials);
+			}
+		}
+
+		protected const string defaultServiceAddress = "http://rsdn.ru/ws/forum.asmx";
+
 		protected Uri serviceAddress;
-		protected WebProxy proxyAddress;
-		protected System.Text.Encoding encoding;
-		
-		[Category("Connections")]
-		[DefaultValue("")]
-		[Description("Web Proxy for connection")]
-		public string Proxy
-		{
-			get
-			{
-				return (proxyAddress != null) ? proxyAddress.Address.ToString() : string.Empty;
-			}
-			set
-			{
-				if (value == string.Empty)
-					proxyAddress = null;
-				else
-					proxyAddress = new WebProxy(value);
-			}
-		}
-
-		protected NetworkCredential credential = new NetworkCredential();
-
-		[Category("Connections")]
-		[DefaultValue("")]
-		[Description("Username for web proxy authorization")]
-		public string proxyUsername
-		{
-			get
-			{
-				return credential.UserName;
-			}
-			set
-			{
-				credential.UserName = value;
-			}
-		}
-
-		[Category("Connections")]
-		[DefaultValue("")]
-		[Description("Password for web proxy authorization")]
-		public string proxyPassword
-		{
-			get
-			{
-				return credential.Password;
-			}
-			set
-			{
-				credential.Password = value;
-			}
-		}
 
 		[Category("Connections")]
 		[DefaultValue(defaultServiceAddress)]
@@ -99,6 +74,8 @@ namespace derIgel.RsdnNntp
 			set {cacheSize = value;}
 		}
 
+		protected System.Text.Encoding encoding;
+		
 		[Category("Others")]
 		[DefaultValue("utf-8")]
 		[Description("Output encoding,for example, utf-8 or windows-1251")]
@@ -127,19 +104,5 @@ namespace derIgel.RsdnNntp
 				return encoding;
 			}
 		}
-			
-		[BrowsableAttribute(false)]
-		[XmlIgnore]
-		public WebProxy GetProxy
-		{
-			get
-			{
-				if (proxyAddress != null)
-					proxyAddress.Credentials = credential;
-				return proxyAddress;
-			}
-		}
-
-		protected const string defaultServiceAddress = "http://rsdn.ru/ws/forum.asmx";
 	}
 }

@@ -33,37 +33,37 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_33466C8994BB4554906602531513FD15"
+        "MsmKey" = "8:_23FC38D9CF2841EF939A617CF4910C55"
         "OwnerKey" = "8:_A295B17FAF2A46728459EDDD4E09D8ED"
         "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
         }
         "Entry"
         {
-        "MsmKey" = "8:_33466C8994BB4554906602531513FD15"
+        "MsmKey" = "8:_23FC38D9CF2841EF939A617CF4910C55"
         "OwnerKey" = "8:_B389EFE1C7124CC5AF04813D17771C0A"
         "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
         }
         "Entry"
         {
-        "MsmKey" = "8:_33466C8994BB4554906602531513FD15"
+        "MsmKey" = "8:_23FC38D9CF2841EF939A617CF4910C55"
         "OwnerKey" = "8:_F9B48B50EAFE5C717635D452E49FEC0A"
         "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
         }
         "Entry"
         {
-        "MsmKey" = "8:_33466C8994BB4554906602531513FD15"
+        "MsmKey" = "8:_23FC38D9CF2841EF939A617CF4910C55"
         "OwnerKey" = "8:_B7AC9C7FB609EB5E7D8220DCE170FC93"
         "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
         }
         "Entry"
         {
-        "MsmKey" = "8:_33466C8994BB4554906602531513FD15"
+        "MsmKey" = "8:_23FC38D9CF2841EF939A617CF4910C55"
         "OwnerKey" = "8:_0C42E6EB01A133CC10FF43372AAAFFDD"
         "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
         }
         "Entry"
         {
-        "MsmKey" = "8:_33466C8994BB4554906602531513FD15"
+        "MsmKey" = "8:_23FC38D9CF2841EF939A617CF4910C55"
         "OwnerKey" = "8:_8AFFB29AF246716366319FA362E0F50F"
         "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
         }
@@ -257,7 +257,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:NNTP, Version=1.4.1077.26985, Culture=neutral"
+            "AssemblyAsmDisplayName" = "8:NNTP, Version=1.4.1080.25441, Culture=neutral"
                 "ScatterAssemblies"
                 {
                     "_0C42E6EB01A133CC10FF43372AAAFFDD"
@@ -328,7 +328,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:MIME, Version=0.6.1077.26984, Culture=neutral"
+            "AssemblyAsmDisplayName" = "8:MIME, Version=0.7.1080.25440, Culture=neutral"
                 "ScatterAssemblies"
                 {
                     "_8AFFB29AF246716366319FA362E0F50F"
@@ -359,7 +359,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:RsdnDataProvider, Version=1.4.1077.26986, Culture=neutral"
+            "AssemblyAsmDisplayName" = "8:RsdnDataProvider, Version=1.4.1080.25441, Culture=neutral"
                 "ScatterAssemblies"
                 {
                     "_B7AC9C7FB609EB5E7D8220DCE170FC93"
@@ -684,21 +684,21 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:RSDN NNTP Server"
-        "ProductCode" = "8:{A1D2D307-6B53-431B-93F1-A6EC1F5C45CC}"
-        "PackageCode" = "8:{243C3ECC-7FC1-4D26-81AC-7F30779E4B36}"
+        "ProductCode" = "8:{7FF5D1ED-FB7D-4828-980D-1F81765FEFEA}"
+        "PackageCode" = "8:{7AA6D13D-AAFC-4F72-9317-D36EAA2445F7}"
         "UpgradeCode" = "8:{7123A411-9564-4667-9C7C-C08988E1B0AC}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
-        "ProductVersion" = "8:1.4"
+        "ProductVersion" = "8:1.4.1"
         "Manufacturer" = "8:RSDN"
         "ARPHELPTELEPHONE" = "8:"
-        "ARPHELPLINK" = "8:http://www.rsdn.ru"
+        "ARPHELPLINK" = "8:http://rsdn.ru/forum/?group=desktop"
         "Title" = "8:RSDN NNTP Server"
         "Subject" = "8:"
         "ARPCONTACT" = "8:der Igel"
-        "Keywords" = "8:"
-        "ARPCOMMENTS" = "8:"
+        "Keywords" = "8:RSDN NNTP"
+        "ARPCOMMENTS" = "8:RSDN NNTP Server provides access to forums on http://www.rsdn.ru through NNTP protocol."
         "ARPURLINFOABOUT" = "8:http://www.rsdn.ru"
         "ARPPRODUCTICON" = "8:_A295B17FAF2A46728459EDDD4E09D8ED"
         "ARPIconIndex" = "3:32512"
@@ -711,7 +711,7 @@
         }
         "MergeModule"
         {
-            "{AC8774A4-3E09-11D3-8E14-00C04F6837D0}:_33466C8994BB4554906602531513FD15"
+            "{AC8774A4-3E09-11D3-8E14-00C04F6837D0}:_23FC38D9CF2841EF939A617CF4910C55"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"

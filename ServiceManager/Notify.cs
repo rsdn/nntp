@@ -251,13 +251,17 @@ namespace derIgel.RsdnNntp
 
 		private void Open(object sender, System.EventArgs e)
 		{
-			menuOpen.Enabled = false;
-			RefreshService();
-			((RsdnNntpSettings)controlPanel.propertyGrid.SelectedObject).StartupMode = 
-				(RsdnNntpSettings.StartupType)Enum.Parse(typeof(RsdnNntpSettings.StartupType), service.StartMode);
-			controlPanel.ShowDialog(this);
-			menuOpen.Enabled = true;
-			RefreshStatus();
+			if (!controlPanel.Visible)
+			{
+				menuOpen.Enabled = false;
+				RefreshService();
+				((RsdnNntpSettings)controlPanel.propertyGrid.SelectedObject).StartupMode = 
+					(RsdnNntpSettings.StartupType)Enum.Parse(typeof(RsdnNntpSettings.StartupType),
+					service.StartMode);
+				controlPanel.ShowDialog(this);
+				menuOpen.Enabled = true;
+				RefreshStatus();
+			}
 		}
 
 		private void Start(object sender, System.EventArgs e)

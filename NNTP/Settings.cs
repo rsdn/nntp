@@ -13,41 +13,6 @@ namespace derIgel.NNTP
 	[XmlRoot("Settings")]
 	public class NNTPSettings
 	{
-	#region Statistics
-
-		protected string fromMail;
-		[BrowsableAttribute(false)]
-		public string FromMail
-		{
-			get { return fromMail; }
-			set {fromMail = value; }
-		}
-
-		protected string toMail;
-		[BrowsableAttribute(false)]
-		public string ToMail
-		{
-			get { return toMail; }
-			set {toMail = value; }
-		}
-
-		protected string fromServer;
-		[BrowsableAttribute(false)]
-		public string FromServer
-		{
-			get { return fromServer; }
-			set {fromServer = value; }
-		}
-
-		protected int intervalMinutes;
-		[BrowsableAttribute(false)]
-		public int IntervalMinutes
-		{
-			get { return intervalMinutes; }
-			set {intervalMinutes = value; }
-		}
-	#endregion
-
 		protected string errorOutputFilename;
 		[BrowsableAttribute(false)]
 		public string ErrorOutputFilename

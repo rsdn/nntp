@@ -22,9 +22,9 @@ namespace ForumTest
 		{
 			try
 			{
-				RsdnDataProviderSettings serverSettings = (RsdnDataProviderSettings)
-					RsdnDataProviderSettings.Deseriazlize("config.xml",
-						typeof(RsdnDataProviderSettings));
+				DataProviderSettings serverSettings = (DataProviderSettings)
+					DataProviderSettings.Deseriazlize("config.xml",
+						typeof(DataProviderSettings));
 
 				Manager nntpManager = new Manager(typeof(RsdnDataProvider),	serverSettings);
 				nntpManager.Start();

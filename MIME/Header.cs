@@ -77,27 +77,28 @@ namespace derIgel.MIME
 		}
 
 		static readonly protected Regex extractEncodedParts =
-			new Regex(@"=\?(?<charset>\S+)\?(?<encoding>[qQbB])\?(?<value>[^\?\s]+)\?=");
+			new Regex(@"=\?(?<charset>\S+?)\?(?<encoding>[qQbB])\?(?<value>[^\?\s]+?)\?=");
 
 		public static string DecodeHeaderFieldValue(string encodedValue)
 		{
-			Match encodedMatch = extractEncodedParts.Match(encodedValue);
-			if (!encodedMatch.Success)
-        return encodedValue;
+			return extractEncodedParts.Replace(encodedValue, new MatchEvaluator(DecodeEncodedMatch));
+		}
 
+		protected static string DecodeEncodedMatch(Match encodedMatch)
+		{
+			string result = encodedMatch.Groups["value"].Value;
 			switch (encodedMatch.Groups["encoding"].Value.ToUpper())
 			{
 				//quoted-printable
 				case "Q" :
 					return Encoding.GetEncoding(encodedMatch.Groups["charset"].Value).GetString(
-						Util.FromQuotedPrintableString(encodedMatch.Groups["value"].Value));
-				// base64
+						Util.FromQuotedPrintableString(result));
+					// base64
 				case "B" :
 					return Encoding.GetEncoding(encodedMatch.Groups["charset"].Value).GetString(
-						Convert.FromBase64String(encodedMatch.Groups["value"].Value));
-				default :
-					return encodedMatch.Groups["value"].Value;
+						Convert.FromBase64String(result));
 			}
+			return result;
 		}
 	}
 }

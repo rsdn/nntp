@@ -255,7 +255,7 @@ namespace derIgel.RsdnNntp
 			if ((content == NewsArticle.Content.Header) ||
 				(content == NewsArticle.Content.HeaderAndBody))
 			{
-				newsMessage.From = string.Format("{0} <{1}>", message.author, null);
+				newsMessage.From = string.Format("\"{0}\" <{1}>", message.author, null);
 				newsMessage.Date = message.date;
 				newsMessage.Subject = message.subject;
 
@@ -343,6 +343,10 @@ namespace derIgel.RsdnNntp
 				StringBuilder plainText = new StringBuilder();
 				foreach (string text in message.Entities)
 					plainText.Append(text);
+				
+				// process wrong encoding
+				if (plainText.ToString().IndexOf("????") > 0)
+					throw new DataProviderException(DataProviderErrors.PostingFailed);
 
 				// tagline
 				plainText.Append("[tagline]Posted via ").Append(serverID).Append("[/tagline]");
@@ -417,11 +421,11 @@ namespace derIgel.RsdnNntp
 
 		public void Config(derIgel.NNTP.NNTPSettings settings)
 		{
-			RsdnDataProviderSettings rsdnSettings = settings as RsdnDataProviderSettings;
+			DataProviderSettings rsdnSettings = settings as DataProviderSettings;
 			if (rsdnSettings != null)
 			{
 				webService.Url = rsdnSettings.Service;
-				webService.Proxy = rsdnSettings.GetProxy;
+				webService.Proxy = rsdnSettings.Proxy;
 				encoding = rsdnSettings.GetEncoding;
 				cache.Capacity = rsdnSettings.CacheSize;
 			}

@@ -208,7 +208,7 @@ namespace derIgel.MIME
 		static readonly protected Regex headerField =
 			new Regex(@"(?m)^(?<fieldName>\S+)\s*:\s*(?<fieldBody>.*)\s*" + Util.CRLF);
 		static readonly protected Regex unfoldHeaderField =
-			new Regex(Util.CRLF + @"(?=\s)", RegexOptions.Compiled);
+			new Regex(Util.CRLF + @"\s", RegexOptions.Compiled);
 		static readonly protected Regex headerAndBody =
 			new Regex(string.Format(@"(?s)(?<header>.*?{0}){0}(?<body>.*)", Util.CRLF), RegexOptions.Compiled);
 

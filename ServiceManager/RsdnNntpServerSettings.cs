@@ -10,7 +10,7 @@ namespace derIgel.RsdnNntp
 	/// settings for application
 	/// </summary>
 	[XmlRoot("Settings")]
-	public class RsdnNntpSettings : RsdnDataProviderSettings
+	public class RsdnNntpSettings : DataProviderSettings
 	{
 		public enum StartupType {Auto, Manual, Disabled}
 
