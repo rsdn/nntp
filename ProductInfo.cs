@@ -23,7 +23,7 @@ using System.Runtime.CompilerServices;
 // by using the '*' as shown below:
 
 #if PERFORMANCE_COUNTERS
-	[assembly: AssemblyInformationalVersion("1.4.3 beta")]
+	[assembly: AssemblyInformationalVersion("1.4.4 beta")]
 #else
-	[assembly: AssemblyInformationalVersion("1.4.3m beta")]
+	[assembly: AssemblyInformationalVersion("1.4.4m beta")]
 #endif

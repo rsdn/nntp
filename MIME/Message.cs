@@ -182,7 +182,7 @@ namespace derIgel.MIME
 		}
 
 		static readonly protected Regex contentTypeParameter = 
-			new Regex(@"\s*;\s*(?<attribute>\S+)\s*=\s*(?<quote>"")?(?<value>[^\s""]+)(?(quote)"")(?<!;)");
+			new Regex(@"\s*;\s*(?<attribute>[^\s""=]+)\s*=\s*(?<quote>"")?(?<value>[^\s""]+)(?(quote)"")(?<!;)");
 		static readonly protected Regex contentTypeRegex =
 			new Regex(string.Format(@"^(?<type>\S+)\s*/\s*(?<subtype>[^;\s]+)(?<parameter>{0})*",
 			contentTypeParameter),	RegexOptions.Compiled);
@@ -218,7 +218,16 @@ namespace derIgel.MIME
 		}
 
 		protected string type;
+		public string ContentTypeType
+		{
+			get { return type; }
+		}
 		protected string subtype;
+		public string ContentTypeSubtype
+		{
+			get { return subtype; }
+		}
+
 		protected string multipartBoundary;
 
 		protected void MessageContentTypeHandler(string type, string subtype, NameValueCollection parameters)

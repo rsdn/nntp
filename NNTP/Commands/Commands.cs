@@ -95,7 +95,7 @@ namespace derIgel.NNTP.Commands
 		/// <returns>modified news article</returns>
 		protected NewsArticle ModifyArticle(NewsArticle article)
 		{
-			StringBuilder xref = new StringBuilder(Session.hostName);
+			StringBuilder xref = new StringBuilder(Session.hostname);
 			foreach (DictionaryEntry newsGroupNumber in article.MessageNumbers)
 				xref.Append(" ").Append(newsGroupNumber.Key).Append(":").Append(newsGroupNumber.Value);
 			article["Xref"] = xref.ToString();

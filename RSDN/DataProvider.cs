@@ -349,21 +349,22 @@ namespace derIgel.RsdnNntp
 		{
 			try
 			{
+				string postingText = GetPlainTextFromMessage(message);
+				if (postingText == "")
+					throw new DataProviderException(DataProviderErrors.PostingFailed);
+
 				int mid = 0;
 				if (message["References"] != null)
 					foreach (Match messageIDMatch in messageIdNumber.Matches(message["References"]))
 						mid = int.Parse(messageIDMatch.Groups["messageIdNumber"].Value);
 				string group = message["Newsgroups"].Split(new char[]{','}, 2)[0].Trim();
-				StringBuilder plainText = new StringBuilder();
-				foreach (string text in message.Entities)
-					plainText.Append(text);
 				
 				// tagline
-				plainText.Append("[tagline]Posted via ").Append(derIgel.NNTP.Commands.Generic.ServerID).Append("[/tagline]");
-
+				postingText += "[tagline]Posted via " + derIgel.NNTP.Commands.Generic.ServerID + "[/tagline]";
+				
 				post_result result =
 					webService.PostUnicodeMessage(username, password, mid, group, message.Subject,
-					leadingSpaces.Replace(plainText.ToString(), ""));
+					leadingSpaces.Replace(postingText, ""));
 				if (!result.ok)
 					ProcessErrorMessage(result.error);
 			}
@@ -471,5 +472,18 @@ namespace derIgel.RsdnNntp
 		}
 
 		protected bool plainText;
+
+		internal string GetPlainTextFromMessage(Message message)
+		{
+			StringBuilder text = new StringBuilder();
+			if ((message.ContentTypeType == "text") && (message.ContentTypeSubtype == "plain") ||
+				  (message.ContentTypeType == "multipart"))
+				foreach (object entity in message.Entities)
+					if (entity is Message)
+						text.Append(GetPlainTextFromMessage((Message)entity));
+					else
+						text.Append(entity);
+			return text.ToString();
+		}
 	}
 }

@@ -23,17 +23,20 @@ namespace derIgel.NNTP
 
 		protected TextWriter errorOutput = System.Console.Error;
 
-		public static readonly string hostName;
+		public static readonly string hostname;
+		public static readonly string fullHostname;
 
 		static Session()
 		{
 			try
 			{
-				hostName = Dns.GetHostName();
+				hostname = Dns.GetHostName();
+				fullHostname = Dns.Resolve(hostname).HostName;
 			}
 			catch (SocketException)
 			{
-				hostName = "";
+				hostname = "";
+				fullHostname = "";
 			}
 
 			commandsTypes = new Hashtable();
@@ -227,7 +230,7 @@ namespace derIgel.NNTP
 									
 									// add addtitional server headers
 									postingMessage["Sender"] = sender;
-										postingMessage["Path"] = hostName +
+										postingMessage["Path"] = fullHostname +
 											((postingMessage["Path"] != null) ? "!" + postingMessage["Path"] : null);
 									
 									dataProvider.PostMessage(postingMessage);

@@ -37,7 +37,7 @@ namespace derIgel.MIME
 		{
 			string result = value;
 			if (filters[name] != null)
-				foreach (FilterHandler handler in (ArrayList)filters[name])
+				foreach (FilterHandler handler in (IEnumerable)filters[name])
 					result = handler(name, result);
 
 			return result;
