@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Specialized;
+using System.Globalization;
 using System.Reflection;
 using System.IO;
 using System.Net;
@@ -621,7 +622,9 @@ namespace Rsdn.RsdnNntp
 				string group = message["Newsgroups"].Split(new char[]{','}, 2)[0].Trim();
     		
 				// process attachments
-				if (true)
+				if (true &&
+						(string.Compare(message.ContentTypeType, "multipart", true,
+							CultureInfo.InvariantCulture) == 0))
 				{
 					StringBuilder processedFiles = new StringBuilder();
 					foreach (Message entity in message.Entities)
