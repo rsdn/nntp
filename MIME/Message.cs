@@ -273,15 +273,22 @@ namespace Rsdn.Mime
 		}
 
 		/// <summary>
-		///  encoding for body
+		/// Encoding for body.
 		/// </summary>
 		protected Encoding encoding = Encoding.ASCII;
 		/// <summary>
-		/// Encoding for non-ascii header fields
+		/// Encoding for body.
+		/// </summary>
+		public Encoding Encoding
+		{
+			get {return encoding;}
+		}
+		/// <summary>
+		/// Encoding for non-ascii header fields.
 		/// </summary>
 		protected Encoding headerEncoding = Encoding.UTF8;
 		/// <summary>
-		/// Encoding for non-ascii header fields
+		/// Encoding for non-ascii header fields.
 		/// </summary>
 		public Encoding HeaderEncoding
 		{
@@ -290,19 +297,65 @@ namespace Rsdn.Mime
 		}
 
 		/// <summary>
-		/// Regular expression for extracting 'Content-Type' header parameters.
+		/// Regular expression to extract header primary value and it's parameters.
 		/// </summary>
-		static readonly protected Regex contentTypeParameter = 
-			new Regex(@"\s*;\s*(?<attribute>[^\s""=]+)\s*=\s*(?<quote>"")?(?<value>[^\s""]+)(?(quote)"")(?<!;)");
+		static readonly protected Regex headerSplitter = 
+			new Regex(@"^\s*(?<primary>[^\s;]+)(\s*;\s*(?<attribute>[^\s()<>@,;:\\""/\[\]\?=]+)\s*=\s*((?<value>[^\s()<>@,;:\\""/\[\]\?=]+)|""(?<value>[^""]+)""))*\s*$",
+			RegexOptions.Compiled);
+		
 		/// <summary>
-		/// Regular expression for extracting 'Content-Type' header parts.
+		/// Get parameters, specified for field.
 		/// </summary>
-		static readonly protected Regex contentTypeRegex =
-			new Regex(string.Format(@"^(?<type>\S+?)\s*/\s*(?<subtype>[^;\s]+)(?<parameter>{0})*",
-			contentTypeParameter),	RegexOptions.Compiled);
+		/// <param name="fieldContent">Field content.</param>
+		/// <returns>Map of parameter names & their values.</returns>
+		public NameValueCollection GetFieldParameters(string fieldContent)
+		{
+			Match headerMatch = headerSplitter.Match(fieldContent);
+			NameValueCollection parameters = new NameValueCollection();
+			for (int i = 0; i < headerMatch.Groups["attribute"].Captures.Count; i++)
+				parameters[headerMatch.Groups["attribute"].Captures[i].Value] =
+					headerMatch.Groups["value"].Captures[i].Value;
+			return parameters;
+		}
 
 		/// <summary>
-		/// Delegate for processing COntent-Type filter.
+		/// Get parameters, specified for field.
+		/// </summary>
+		/// <param name="fieldName">Header field name.</param>
+		/// <returns>Map of parameter names & their values.</returns>
+		public NameValueCollection GetHeaderFieldParameters(string fieldName)
+		{
+			return header[fieldName] == null ? null : GetFieldParameters(header[fieldName]);
+		}
+
+		/// <summary>
+		/// Get primary value of field (without parameters).
+		/// </summary>
+		/// <param name="fieldContent">Field content.</param>
+		/// <returns>Primary value.</returns>
+		public string GetFieldValue(string fieldContent)
+		{
+			return headerSplitter.Match(fieldContent).Groups["primary"].Value;
+		}
+
+		/// <summary>
+		/// Get primary value of field (without parameters).
+		/// </summary>
+		/// <param name="fieldName">Header field name.</param>
+		/// <returns>Primary value.</returns>
+		public string GetHeaderFieldValue(string fieldName)
+		{
+			return header[fieldName] == null ? null : GetFieldValue(header[fieldName]);
+		}
+		
+		/// <summary>
+		/// Regular expression to parse 'Content-Type' header.
+		/// </summary>
+		static readonly protected Regex contentTypeRegex =
+			new Regex(@"^(?<type>.+?)/(?<subtype>.+)$", RegexOptions.Compiled);
+
+		/// <summary>
+		/// Delegate for processing Content-Type filter.
 		/// </summary>
 		protected delegate void ContentTypeHandler(string type, string subtype,
 			NameValueCollection parameters);
@@ -320,15 +373,10 @@ namespace Rsdn.Mime
 		/// <returns>Filtered value.</returns>
 		protected string ContentTypeFilter(string headerField, string value)
 		{
-			Match contentTypeMatch = contentTypeRegex.Match(value);
+			Match contentTypeMatch = contentTypeRegex.Match(GetFieldValue(value));
 			if (!contentTypeMatch.Success)
-				throw new MimeFormattingException("Content-Type header field is bad formatted.");
-			NameValueCollection parameters = new NameValueCollection();
-			foreach (Capture parameter in contentTypeMatch.Groups["parameter"].Captures)
-			{
-				Match parameterMatch = contentTypeParameter.Match(parameter.Value);
-				parameters[parameterMatch.Groups["attribute"].Value] = parameterMatch.Groups["value"].Value;
-			}
+				throw new MimeFormattingException("Content-Type is bad formatted.");
+			NameValueCollection parameters = GetFieldParameters(value);
 
 			type = contentTypeMatch.Groups["type"].Value.ToLower();
 			subtype = contentTypeMatch.Groups["subtype"].Value.ToLower();
@@ -483,7 +531,7 @@ namespace Rsdn.Mime
 					switch (message.transferEncoding)
 					{
 						case ContentTransferEncoding.Base64 :
-              body = Convert.FromBase64String(headerAndBodyMatch.Groups["body"].Value);
+							body = Convert.FromBase64String(headerAndBodyMatch.Groups["body"].Value);
 							break;
 						case ContentTransferEncoding.QoutedPrintable :
 							body = Util.FromQuotedPrintableString(headerAndBodyMatch.Groups["body"].Value);

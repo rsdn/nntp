@@ -10,7 +10,7 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyDescription("Libary for processing MIME messages on .NET.")]
 [assembly: AssemblyProduct(".Net MIME Library")]
 [assembly: AssemblyCompany("Russian Software Developer Network")]
-[assembly: AssemblyCopyright("© 2002-2003 der Igel, the RSDN Group")]
+[assembly: AssemblyCopyright("© 2002-2005 der Igel, the RSDN Group")]
 
 //
 // Version information for an assembly consists of the following four values:
@@ -23,7 +23,7 @@ using System.Runtime.CompilerServices;
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
 
-[assembly: AssemblyVersion("0.12.*")]
+[assembly: AssemblyVersion("1.0.*")]
 
 //
 // In order to sign your assembly you must specify a key to use. Refer to the 
