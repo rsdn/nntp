@@ -63,7 +63,7 @@ namespace Rsdn.RsdnNntp
 			encoding = System.Text.Encoding.UTF8;
 		}
 
-		protected const string defaultServiceAddress = "http://rsdn.ru/ws/forum.asmx";
+		protected const string defaultServiceAddress = "http://rsdn.ru/ws/service.asmx";
 
 		protected Uri serviceAddress;
 

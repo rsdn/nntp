@@ -126,6 +126,10 @@
         <Files>
             <Include>
                 <File
+                    RelPath = "app.config"
+                    BuildAction = "None"
+                />
+                <File
                     RelPath = "AssemblyInfo.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -186,14 +190,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Web References\ru.rsdn\forum.disco"
-                    BuildAction = "None"
-                />
-                <File
-                    RelPath = "Web References\ru.rsdn\forum.wsdl"
-                    BuildAction = "None"
-                />
-                <File
                     RelPath = "Web References\ru.rsdn\Reference.map"
                     BuildAction = "None"
                     Generator = "MSDiscoCodeGenerator"
@@ -207,9 +203,17 @@
                     DesignTime = "True"
                     AutoGen = "True"
                 />
+                <File
+                    RelPath = "Web References\ru.rsdn\service.disco"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "Web References\ru.rsdn\service.wsdl"
+                    BuildAction = "None"
+                />
                 <Folder
                     RelPath = "Web References\ru.rsdn\"
-                    WebReferenceUrl = "http://rsdn.ru/ws/forum.asmx"
+                    WebReferenceUrl = "http://rsdn.ru/ws/service.asmx"
                     UrlBehavior = "Static"
                 />
                 <Folder

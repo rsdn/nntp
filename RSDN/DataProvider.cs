@@ -117,14 +117,14 @@ namespace Rsdn.RsdnNntp
 		/// </summary>
     public RsdnDataProvider()
     {
-    	webService = new Forum();
+    	webService = new Service();
     	encoding = System.Text.Encoding.UTF8;
     }
 
     /// <summary>
     /// RSDN forums' web-service proxy
     /// </summary>
-    protected Forum webService;
+    protected Service webService;
     protected string username = "";
     protected string password = "";
 
@@ -515,7 +515,7 @@ namespace Rsdn.RsdnNntp
 				postingText += Util.CRLF + "[tagline]Posted via " + Manager.ServerID + "[/tagline]";
     		
 				post_result result = 
-					webService.PostUnicodeMessage(username, password, mid, group, message.Subject, postingText);
+					webService.PostMessage(username, password, mid, group, message.Subject, postingText);
 
 				if (!result.ok)
 					throw new DataProviderException(DataProviderErrors.PostingFailed, result.error);
