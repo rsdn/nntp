@@ -8,9 +8,16 @@ using System.Threading;
 using System.Configuration;
 using derIgel.ROOT.CIMV2;
 using System.Management;
+using System.Reflection;
+using System.Reflection.Emit;
+using System.IO;
+using System.Xml.Serialization;
+using derIgel.NNTP;
 
 namespace derIgel.RsdnNntp
 {
+	public enum StartupType {Auto, Manual, Disabled}
+
 	/// <summary>
 	/// Summary description for Notify.
 	/// </summary>
@@ -38,6 +45,75 @@ namespace derIgel.RsdnNntp
 		private System.Windows.Forms.MenuItem menuItem3;
 		private System.ComponentModel.IContainer components;
 
+		public Type serviceSettingsType; 
+
+		static Notify()
+		{
+			Type settingsType = Activator.CreateInstanceFrom(
+				ConfigurationSettings.AppSettings["settings.Assembly"],
+				ConfigurationSettings.AppSettings["settings.Type"]).Unwrap().GetType();
+
+			AssemblyName assemblyName = new AssemblyName();
+			assemblyName.Name = "DynamicAssembly";
+
+			// Create descendant class from defined class
+			AssemblyBuilder dynamicAssembly = System.Threading.Thread.GetDomain().
+				DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.Save);
+					
+			TypeBuilder typeBuilder =	dynamicAssembly.DefineDynamicModule("DynamicModule", "DynamicAssembly.dll").
+				DefineType("ServiceDataProviderType", TypeAttributes.Class | TypeAttributes.Public,
+				settingsType);
+
+			// StartupMode
+			FieldBuilder startupField = typeBuilder.DefineField("startupMode", typeof(StartupType),
+				FieldAttributes.Private);
+
+			MethodBuilder getStartup = typeBuilder.DefineMethod("get_StartupMode", MethodAttributes.Public,
+				typeof(StartupType), null);
+			ILGenerator methodIL = getStartup.GetILGenerator();
+			methodIL.Emit(OpCodes.Ldarg_0);
+			methodIL.Emit(OpCodes.Ldfld, startupField);
+			methodIL.Emit(OpCodes.Ret);
+
+			MethodBuilder setStartup = typeBuilder.DefineMethod("set_StartupMode", MethodAttributes.Public,
+				null, new Type[]{typeof(StartupType)});
+			methodIL = setStartup.GetILGenerator();
+			methodIL.Emit(OpCodes.Ldarg_0);
+			methodIL.Emit(OpCodes.Ldarg_1);
+			methodIL.Emit(OpCodes.Stfld, startupField);
+			methodIL.Emit(OpCodes.Ret);
+
+			PropertyBuilder startupModeProperty = typeBuilder.DefineProperty("StartupMode",
+				PropertyAttributes.HasDefault, typeof(StartupType), null);
+			startupModeProperty.SetConstant(StartupType.Auto);
+			startupModeProperty.SetGetMethod(getStartup);
+			startupModeProperty.SetSetMethod(setStartup);
+			
+			// Attributes for StartupMode
+			startupModeProperty.SetCustomAttribute(new CustomAttributeBuilder(
+				typeof(XmlIgnoreAttribute).GetConstructor(Type.EmptyTypes), new object[0]));
+			startupModeProperty.SetCustomAttribute(new CustomAttributeBuilder(
+				typeof(CategoryAttribute).GetConstructor(new Type[]{typeof(string)}),
+					new object[]{"Service settings"}));
+			startupModeProperty.SetCustomAttribute(new CustomAttributeBuilder(
+				typeof(DescriptionAttribute).GetConstructor(new Type[]{typeof(string)}),
+				new object[]{"How server starts"}));
+
+			// Machine name field
+			FieldBuilder machine = typeBuilder.DefineField("Machine", typeof(System.String),
+				FieldAttributes.Public | FieldAttributes.HasDefault);
+			machine.SetConstant(".");
+
+			// Service Name field
+			FieldBuilder serviceName = typeBuilder.DefineField("ServiceName", typeof(System.String),
+				FieldAttributes.Public | FieldAttributes.HasDefault);
+			serviceName.SetConstant("rsdnnntp");
+				
+			typeBuilder.CreateType();
+				
+			dynamicAssembly.Save("DynamicAssembly.dll");
+		}
+
 		public Notify()
 		{
 			//
@@ -47,18 +123,21 @@ namespace derIgel.RsdnNntp
 
 			try
 			{
-				serverSettings =
-					(RsdnNntpSettings)RsdnNntpSettings.Deseriazlize(
-					ConfigurationSettings.AppSettings["service.Config"],
-					typeof(RsdnNntpSettings));
+				// get dynamic created type
+				serviceSettingsType = Activator.CreateInstanceFrom("DynamicAssembly.dll", "ServiceDataProviderType").
+					Unwrap().GetType();
+
+				serverSettings = NNTPSettings.Deseriazlize(
+					ConfigurationSettings.AppSettings["settings.ConfigFile"], serviceSettingsType);
 			}
 			catch (Exception)
 			{
-				serverSettings = new RsdnNntpSettings();
+				serverSettings = Activator.CreateInstance(serviceSettingsType);
 			}
 
 			serviceManagementPath = new ManagementPath(string.Format(@"\\{0}\root\CIMV2:Win32_Service.Name=""{1}""",
-				serverSettings.Machine,	serverSettings.ServiceName));
+				serverSettings.GetType().GetField("Machine").GetValue(serverSettings),
+				serverSettings.GetType().GetField("ServiceName").GetValue(serverSettings)));
 			
 			controlPanel = new ControlPanel();
 			controlPanel.propertyGrid.SelectedObject = serverSettings;
@@ -77,7 +156,7 @@ namespace derIgel.RsdnNntp
 		/// <summary>
 		/// Server setting
 		/// </summary>
-		protected RsdnNntpSettings serverSettings;
+		protected object serverSettings;
 
 		/// <summary>
 		/// Clean up any resources being used.
@@ -115,7 +194,7 @@ namespace derIgel.RsdnNntp
 				Application.Exit();
 			}
 		}
-		
+
 		#region Windows Form Designer generated code
 		/// <summary>
 		/// Required method for Designer support - do not modify
@@ -124,7 +203,6 @@ namespace derIgel.RsdnNntp
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			System.Configuration.AppSettingsReader configurationAppSettings = new System.Configuration.AppSettingsReader();
 			this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
 			this.contextMenu = new System.Windows.Forms.ContextMenu();
 			this.menuOpen = new System.Windows.Forms.MenuItem();
@@ -212,7 +290,7 @@ namespace derIgel.RsdnNntp
 			// 
 			// timer
 			// 
-			this.timer.Interval = ((int)(configurationAppSettings.GetValue("timer.Interval", typeof(int))));
+			this.timer.Interval = 500;
 			this.timer.Tick += new System.EventHandler(this.RefreshStatus);
 			// 
 			// Notify
@@ -255,9 +333,9 @@ namespace derIgel.RsdnNntp
 			{
 				menuOpen.Enabled = false;
 				RefreshService();
-				((RsdnNntpSettings)controlPanel.propertyGrid.SelectedObject).StartupMode = 
-					(RsdnNntpSettings.StartupType)Enum.Parse(typeof(RsdnNntpSettings.StartupType),
-					service.StartMode);
+				// Set StartupMode property in settins according current state of service
+				serviceSettingsType.GetProperty("StartupMode").SetValue(controlPanel.propertyGrid.SelectedObject,
+					Enum.Parse(typeof(StartupType), service.StartMode), null);
 				controlPanel.ShowDialog(this);
 				menuOpen.Enabled = true;
 				RefreshStatus();

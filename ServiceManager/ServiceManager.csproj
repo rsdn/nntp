@@ -98,11 +98,6 @@
                     HintPath = "C:\WINNT\Microsoft.NET\Framework\v1.0.3705\System.XML.dll"
                 />
                 <Reference
-                    Name = "RsdnDataProvider"
-                    Project = "{E2BA234B-F496-474F-BC39-DBF78ABB13A4}"
-                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
-                />
-                <Reference
                     Name = "System.Management"
                     AssemblyName = "System.Management"
                     HintPath = "C:\WINNT\Microsoft.NET\Framework\v1.0.3705\System.Management.dll"
@@ -131,6 +126,7 @@
                 />
                 <File
                     RelPath = "app.config"
+                    Link = "..\app.config"
                     BuildAction = "None"
                 />
                 <File
@@ -169,11 +165,6 @@
                 <File
                     RelPath = "ProductInfo.cs"
                     Link = "..\ProductInfo.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "RsdnNntpServerSettings.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

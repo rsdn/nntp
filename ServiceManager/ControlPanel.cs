@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using System.Configuration;
 using System.Xml;
 using System.Security;
+using derIgel.NNTP;
 
 namespace derIgel.RsdnNntp
 {
@@ -53,9 +54,10 @@ namespace derIgel.RsdnNntp
 			this.okButton = new System.Windows.Forms.Button();
 			this.cancelButton = new System.Windows.Forms.Button();
 			this.applyButton = new System.Windows.Forms.Button();
-			this.propertyGrid = new System.Windows.Forms.PropertyGrid();
 			this.alertImage = new System.Windows.Forms.PictureBox();
 			this.alertText = new System.Windows.Forms.Label();
+			this.propertyGrid = new System.Windows.Forms.PropertyGrid();
+			this.tabPage1 = new System.Windows.Forms.TabPage();
 			this.SuspendLayout();
 			// 
 			// okButton
@@ -87,23 +89,6 @@ namespace derIgel.RsdnNntp
 			this.applyButton.Text = "Apply";
 			this.applyButton.Click += new System.EventHandler(this.ApplySettings);
 			// 
-			// propertyGrid
-			// 
-			this.propertyGrid.Anchor = (((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-				| System.Windows.Forms.AnchorStyles.Left) 
-				| System.Windows.Forms.AnchorStyles.Right);
-			this.propertyGrid.CommandsBackColor = System.Drawing.SystemColors.Highlight;
-			this.propertyGrid.CommandsVisibleIfAvailable = true;
-			this.propertyGrid.LargeButtons = false;
-			this.propertyGrid.LineColor = System.Drawing.SystemColors.ScrollBar;
-			this.propertyGrid.Name = "propertyGrid";
-			this.propertyGrid.Size = new System.Drawing.Size(343, 291);
-			this.propertyGrid.TabIndex = 4;
-			this.propertyGrid.Text = "propertyGrid";
-			this.propertyGrid.ViewBackColor = System.Drawing.SystemColors.Window;
-			this.propertyGrid.ViewForeColor = System.Drawing.SystemColors.WindowText;
-			this.propertyGrid.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.propertyGrid_PropertyValueChanged);
-			// 
 			// alertImage
 			// 
 			this.alertImage.Anchor = (System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left);
@@ -127,6 +112,31 @@ namespace derIgel.RsdnNntp
 			this.alertText.Text = "Changes will take effect after you restart service.";
 			this.alertText.Visible = false;
 			// 
+			// propertyGrid
+			// 
+			this.propertyGrid.Anchor = (((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+				| System.Windows.Forms.AnchorStyles.Left) 
+				| System.Windows.Forms.AnchorStyles.Right);
+			this.propertyGrid.CommandsBackColor = System.Drawing.SystemColors.Highlight;
+			this.propertyGrid.CommandsVisibleIfAvailable = true;
+			this.propertyGrid.LargeButtons = false;
+			this.propertyGrid.LineColor = System.Drawing.SystemColors.ScrollBar;
+			this.propertyGrid.Name = "propertyGrid";
+			this.propertyGrid.Size = new System.Drawing.Size(343, 291);
+			this.propertyGrid.TabIndex = 4;
+			this.propertyGrid.Text = "propertyGrid";
+			this.propertyGrid.ViewBackColor = System.Drawing.SystemColors.Window;
+			this.propertyGrid.ViewForeColor = System.Drawing.SystemColors.WindowText;
+			this.propertyGrid.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.propertyGrid_PropertyValueChanged);
+			// 
+			// tabPage1
+			// 
+			this.tabPage1.Location = new System.Drawing.Point(4, 22);
+			this.tabPage1.Name = "tabPage1";
+			this.tabPage1.Size = new System.Drawing.Size(331, 322);
+			this.tabPage1.TabIndex = 2;
+			this.tabPage1.Text = "About";
+			// 
 			// ControlPanel
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
@@ -149,25 +159,28 @@ namespace derIgel.RsdnNntp
 		}
 		#endregion
 
-		internal System.Windows.Forms.PropertyGrid propertyGrid;
 
 		private System.Windows.Forms.Button okButton;
 		private System.Windows.Forms.Button cancelButton;
 		private System.Windows.Forms.PictureBox alertImage;
 		private System.Windows.Forms.Label alertText;
+		internal System.Windows.Forms.PropertyGrid propertyGrid;
+		private System.Windows.Forms.TabPage tabPage1;
 		private System.Windows.Forms.Button applyButton;
 
 		private void ApplySettings(object sender, System.EventArgs e)
 		{
-			RsdnNntpSettings settings = (RsdnNntpSettings)propertyGrid.SelectedObject;
+			object settings = propertyGrid.SelectedObject;
 			try 
 			{
 				applyButton.Enabled = false;
 				// write config file
-				settings.Serialize(ConfigurationSettings.AppSettings["service.Config"]);
+				((NNTPSettings)settings).Serialize(ConfigurationSettings.AppSettings["settings.ConfigFile"]);
 				// change startup mode
-				((Notify)Owner).service.ChangeStartMode((settings.StartupMode == RsdnNntpSettings.StartupType.Auto) ?
-					"Automatic" : settings.StartupMode.ToString());
+				StartupType selectedStartupMode = (StartupType)((Notify)Owner).serviceSettingsType.
+					GetProperty("StartupMode").GetValue(settings, null);
+				((Notify)Owner).service.ChangeStartMode((selectedStartupMode == StartupType.Auto) ?
+					"Automatic" : selectedStartupMode.ToString());
 				// refresh status
 				((Notify)Owner).RefreshStatus();
 			}
@@ -175,8 +188,8 @@ namespace derIgel.RsdnNntp
 			{
 				MessageBox.Show(this, "You don't have access rights for config.", "RSDN NNTP Manager",
 					MessageBoxButtons.OK,	MessageBoxIcon.Error);
-				propertyGrid.SelectedObject = settings = (RsdnNntpSettings)RsdnNntpSettings.Deseriazlize(
-					ConfigurationSettings.AppSettings["service.Config"], typeof(RsdnNntpSettings));
+				propertyGrid.SelectedObject = settings = NNTPSettings.Deseriazlize(
+					ConfigurationSettings.AppSettings["service.Config"], ((Notify)Owner).serviceSettingsType);
 				ShowAlert(false);
 			}
 		}
