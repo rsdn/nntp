@@ -117,13 +117,13 @@ namespace Rsdn.Nntp
 			answers[503] = "503 program fault - command not performed";
 		}
 
-		public Response(int code, string body, params object[] parameters)
+		public Response(int code, object body, params object[] parameters)
 		{
 			this.code = code;
 			this.parameters = parameters;
 			reponsesBody = body;
 		}
-		public Response(NntpResponse code, string body, params object[] parameters) :
+		public Response(NntpResponse code, object body, params object[] parameters) :
 			this((int)code, body, parameters)	{	}
 		public Response(int code) : this(code, null) {}
 		public Response(NntpResponse code) : this(code, null) {}
@@ -149,13 +149,14 @@ namespace Rsdn.Nntp
 		/// <param name="reponsesBody"></param>
 		/// <param name="parameters"></param>
 		/// <returns></returns>
-		public static string GetResponse(int code, string reponsesBody, params object[] parameters)
+		public static string GetResponse(int code, object reponsesBody, params object[] parameters)
 		{
 			try
 			{
 				StringBuilder result = new StringBuilder(Util.LineLength);
-				result.AppendFormat(answers[code] as string, parameters).Append(Util.CRLF)
-					.Append(ModifyTextResponse(reponsesBody));
+				result.AppendFormat(answers[code] as string, parameters).Append(Util.CRLF);
+				if (reponsesBody != null)
+					result.Append(ModifyTextResponse(reponsesBody.ToString()));
 				return result.ToString();
 			}
 			catch(FormatException e)
@@ -186,7 +187,7 @@ namespace Rsdn.Nntp
 		/// <summary>
 		/// options body of response (null if none)
 		/// </summary>
-		protected string reponsesBody;
+		protected object reponsesBody;
 
 		protected static readonly Regex EncodeNntpMessage =
 			new Regex(@"(?m)^\.", RegexOptions.Compiled);
