@@ -27,7 +27,7 @@ namespace Rsdn.Nntp
 			name = settings.name;
 		}
 
-		protected string name = Guid.NewGuid().ToString();
+		protected string name = "";
 		public string Name
 		{
 			get { return name; }
