@@ -327,6 +327,13 @@
             Создаёт экземпляр класса <b>TextFormatter</b>.
             </summary>
         </member>
+        <member name="M:Rsdn.Framework.Formatting.TextFormatter.#ctor(System.String)">
+            <summary>
+            Создаёт экземпляр класса <b>TextFormatter</b>
+            с указанным префиксом для картинок.
+            </summary>
+            <param name="imagePrefix">Префикс картинок.</param>
+        </member>
         <member name="F:Rsdn.Framework.Formatting.TextFormatter.codeFormatters">
             <summary>
             Ассоциативная таблица для раскраски кода.
@@ -401,6 +408,16 @@
         <member name="M:Rsdn.Framework.Formatting.TextFormatter.FormatURLs(System.Text.RegularExpressions.Match,System.String,System.String)">
             <summary>
             Format URLs to hyperlinks.
+            Used in both, explicitly &amp; implicitly specified links.
+            </summary>
+            <param name="urlMatch">Regex match with URL address.</param>
+            <param name="urlAdsress">URL address.</param>
+            <param name="urlName">URL name. May be or may be not different from URL address.</param>
+            <returns>Formatted link for specified URL.</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.TextFormatter.FormatRsdnURLs(System.Text.RegularExpressions.Match,System.String,System.String)">
+            <summary>
+            Format RSDN URLs to hyperlinks.
             Used in both, explicitly &amp; implicitly specified links.
             </summary>
             <param name="urlMatch">Regex match with URL address.</param>
