@@ -652,16 +652,6 @@ namespace Rsdn.RsdnNntp
     }
 
 		/// <summary>
-		/// Detect [tagline] tag
-		/// </summary>
-    protected static Regex removeTagline = new Regex(@"(?is)(?<!\[)\[tagline\].*?\[[\\/]tagline\]", RegexOptions.Compiled);
-		/// <summary>
-		/// Detect [moderator] tag
-		/// </summary>
-    protected static Regex moderatorTagline = new Regex(@"(?is)(?<!\[)\[moderator\].*?\[[\\/]moderator\]",
-    	RegexOptions.Compiled);
-
-		/// <summary>
 		/// Detect platform specific line breaks
 		/// </summary>
 		protected static Regex platformDependedBreak = new Regex(@"(?<!\r)\n");
@@ -674,7 +664,8 @@ namespace Rsdn.RsdnNntp
     	if (text == null)
     		return null;
     	else
-  		return platformDependedBreak.Replace(moderatorTagline.Replace(removeTagline.Replace(text, ""), ""), Util.CRLF);
+  		return platformDependedBreak.Replace(
+				TextFormatter.RemoveTaglineTag(TextFormatter.RemoveModeratorTag(text)), Util.CRLF);
     }
 
 		/// <summary>

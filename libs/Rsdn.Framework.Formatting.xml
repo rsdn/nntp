@@ -245,6 +245,11 @@
             Форматирование сообщение и расцветка кода.
             </summary>
         </member>
+        <member name="F:Rsdn.Framework.Formatting.TextFormatter.startCitation">
+            <summary>
+            Start of line citation.
+            </summary>
+        </member>
         <member name="M:Rsdn.Framework.Formatting.TextFormatter.#ctor">
             <summary>
             Создаёт экземпляр класса <b>TextFormatter</b>.
@@ -295,6 +300,11 @@
             Выражения для обработки текста.
             </summary>
         </member>
+        <member name="F:Rsdn.Framework.Formatting.TextFormatter.TaglineDetector">
+            <summary>
+            Detect [tagline] tag.
+            </summary>
+        </member>
         <member name="M:Rsdn.Framework.Formatting.TextFormatter.UrlReplacer(System.Text.RegularExpressions.Match)">
             <summary>
             Match evaluator for URL formatting
@@ -339,6 +349,11 @@
             Выражения для форматирования текста.
             </summary>
         </member>
+        <member name="F:Rsdn.Framework.Formatting.TextFormatter.ModeratorDetector">
+            <summary>
+            Detect [moderator] tag.
+            </summary>
+        </member>
         <member name="M:Rsdn.Framework.Formatting.TextFormatter.Format(System.String,System.Boolean)">
             <summary>
             Форматирование текста.
@@ -346,6 +361,20 @@
             <param name="txt">Исходный текст.</param>
             <param name="smile">Признак обработки смайликов.</param>
             <returns>Сформатированный текст.</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.TextFormatter.RemoveTaglineTag(System.String)">
+            <summary>
+            Remove [tagline] tag from text.
+            </summary>
+            <param name="text">Original text.</param>
+            <returns>Modified text.</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.TextFormatter.RemoveModeratorTag(System.String)">
+            <summary>
+            Remove [moderator] tag from text.
+            </summary>
+            <param name="text">Original text.</param>
+            <returns>Modified text.</returns>
         </member>
     </members>
 </doc>
