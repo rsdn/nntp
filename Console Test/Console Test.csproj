@@ -1,7 +1,7 @@
 <VisualStudioProject>
     <CSHARP
         ProjectType = "Local"
-        ProductVersion = "7.10.2292"
+        ProductVersion = "7.10.3077"
         SchemaVersion = "2.0"
         ProjectGuid = "{3512427B-A32E-4C8A-BF0A-7AF2DD1B3B54}"
     >
@@ -75,10 +75,9 @@
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
                 <Reference
-                    Name = "log4net-net-1.1"
-                    AssemblyName = "log4net-net-1.1"
-                    HintPath = "..\libs\log4net-net-1.1.dll"
-                    Private = "False"
+                    Name = "log4net"
+                    AssemblyName = "log4net"
+                    HintPath = "..\libs\log4net.dll"
                 />
             </References>
         </Build>

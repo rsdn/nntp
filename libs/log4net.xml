@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <doc>
     <assembly>
-        <name>log4net-net-1.1</name>
+        <name>log4net</name>
     </assembly>
     <members>
         <member name="T:log4net.Appender.ADONetAppender">
@@ -589,6 +589,13 @@
             Initializes a new instance of the <see cref="T:log4net.Appender.BufferingAppenderSkeleton"/> class.
             </summary>
         </member>
+        <member name="M:log4net.Appender.BufferingAppenderSkeleton.#ctor(System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:log4net.Appender.BufferingAppenderSkeleton"/> class.
+            </summary>
+            <param name="eventMustBeFixed">the events passed through this appender must be
+            fixed by the time that they arrive in the derived class'<c>SendBuffer</c> method.</param>
+        </member>
         <member name="M:log4net.Appender.BufferingAppenderSkeleton.ActivateOptions">
             <summary>
             Initialise the appender based on the options set
@@ -701,14 +708,18 @@
             be discarded. 
             </remarks>
         </member>
-        <member name="F:log4net.Appender.BufferingAppenderSkeleton.m_onlyFixPartialEventData">
+        <member name="F:log4net.Appender.BufferingAppenderSkeleton.m_fixFlags">
             <summary>
-            Flag to pass to FixVolatileData
+            Value indicating which fields in the event should be fixed
             </summary>
             <remarks>
-            By default this flag is set to false. i.e. all the
-            event data will be fixed.
+            By default all fields are fixed
             </remarks>
+        </member>
+        <member name="F:log4net.Appender.BufferingAppenderSkeleton.m_eventMustBeFixed">
+            <summary>
+            The events delivered to the subclass must be fixed.
+            </summary>
         </member>
         <member name="P:log4net.Appender.BufferingAppenderSkeleton.Lossy">
             <summary>
@@ -799,6 +810,11 @@
             </para>
             </remarks>
         </member>
+        <member name="P:log4net.Appender.BufferingAppenderSkeleton.Fix">
+            <summary>
+            Gets or sets a the fields that will be fixed in the event
+            </summary>
+        </member>
         <member name="M:log4net.Appender.ADONetAppender.#ctor">
             <summary> 
             Initializes a new instance of the <see cref="T:log4net.Appender.ADONetAppender"/> class.
@@ -824,7 +840,7 @@
             <summary>
             Adds a parameter to the command.
             </summary>
-            <param name="param">The parameter to add to the command.</param>
+            <param name="parameter">The parameter to add to the command.</param>
             <remarks>
             <para>
             Adds a parameter to the ordered list of command parameters.
@@ -856,7 +872,7 @@
             Text that can be passed to a <see cref="T:System.Data.IDbCommand"/>.
             </returns>
         </member>
-        <member name="M:log4net.Appender.ADONetAppender.InitialiseDatabaseConnection">
+        <member name="M:log4net.Appender.ADONetAppender.InitializeDatabaseConnection">
             <summary>
             Connects to the database.
             </summary>		
@@ -866,7 +882,7 @@
             Retrieves the class type of the ADO.NET provider.
             </summary>
         </member>
-        <member name="M:log4net.Appender.ADONetAppender.InitialiseDatabaseCommand">
+        <member name="M:log4net.Appender.ADONetAppender.InitializeDatabaseCommand">
             <summary>
             Prepares the database command and initialize the parameters.
             </summary>
@@ -1678,6 +1694,209 @@
             A collection of the appenders in this appender.
             </returns>
         </member>
+        <member name="T:log4net.Appender.ColoredConsoleAppender">
+            <summary>
+            Appends logging events to the console.
+            </summary>
+            <remarks>
+            <para>
+            ColoredConsoleAppender appends log events to the standard output stream
+            or the error output stream using a layout specified by the 
+            user. It also allows the color of a specific type of message to be set.
+            </para>
+            <para>
+            By default, all output is written to the console's standard output stream.
+            The <see cref="P:log4net.Appender.ColoredConsoleAppender.Target"/> property can be set to direct the output to the
+            error stream.
+            </para>
+            <para>
+            NOTE: This appender writes directly to the application's attached console
+            not to the <c>System.Console.Out</c> or <c>System.Console.Error</c> <c>TextWriter</c>.
+            The <c>System.Console.Out</c> and <c>System.Console.Error</c> streams can be
+            programatically redirected (for example NUnit does this to capture program ouput).
+            This appender will ignore these redirections because it needs to use Win32
+            API calls to colorise the output. To respect these redirections the <see cref="T:log4net.Appender.ConsoleAppender"/>
+            must be used.
+            </para>
+            <para>
+            When configuring the colored console appender, mapping should be
+            specified to map a logging level to a color. For example:
+            </para>
+            <code>
+            &lt;mapping&gt;
+            	&lt;level value="ERROR" /&gt;
+            	&lt;foreColor value="White" /&gt;
+            	&lt;backColor value="Red, HighIntensity" /&gt;
+            &lt;/mapping&gt;
+            &lt;mapping&gt;
+            	&lt;level value="DEBUG" /&gt;
+            	&lt;backColor value="Green" /&gt;
+            &lt;/mapping&gt;
+            </code>
+            <para>
+            The Level is the standard log4net logging level and ForeColor and BackColor can be any
+            combination of:
+            <list type="bullet">
+            <item><term>Blue</term><description>color is blue</description></item>
+            <item><term>Green</term><description>color is red</description></item>
+            <item><term>Red</term><description>color is green</description></item>
+            <item><term>White</term><description>color is white</description></item>
+            <item><term>Yellow</term><description>color is yellow</description></item>
+            <item><term>Purple</term><description>color is purple</description></item>
+            <item><term>Cyan</term><description>color is cyan</description></item>
+            <item><term>HighIntensity</term><description>color is intensified</description></item>
+            </list>
+            </para>
+            
+            </remarks>
+        </member>
+        <member name="F:log4net.Appender.ColoredConsoleAppender.CONSOLE_OUT">
+            <summary>
+            The <see cref="P:log4net.Appender.ColoredConsoleAppender.Target"/> to use when writing to the Console 
+            standard output stream.
+            </summary>
+        </member>
+        <member name="F:log4net.Appender.ColoredConsoleAppender.CONSOLE_ERR">
+            <summary>
+            The <see cref="P:log4net.Appender.ColoredConsoleAppender.Target"/> to use when writing to the Console 
+            standard error output stream.
+            </summary>
+        </member>
+        <member name="M:log4net.Appender.ColoredConsoleAppender.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:log4net.Appender.ColoredConsoleAppender"/> class.
+            </summary>
+            <remarks>
+            The instance of the <see cref="T:log4net.Appender.ColoredConsoleAppender"/> class is set up to write 
+            to the standard output stream.
+            </remarks>
+        </member>
+        <member name="M:log4net.Appender.ColoredConsoleAppender.#ctor(log4net.Layout.ILayout)">
+            <summary>
+            Initializes a new instance of the <see cref="T:log4net.Appender.ColoredConsoleAppender"/> class
+            with the specified layout.
+            </summary>
+            <param name="layout">the layout to use for this appender</param>
+            <remarks>
+            The instance of the <see cref="T:log4net.Appender.ColoredConsoleAppender"/> class is set up to write 
+            to the standard output stream.
+            </remarks>
+        </member>
+        <member name="M:log4net.Appender.ColoredConsoleAppender.#ctor(log4net.Layout.ILayout,System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:log4net.Appender.ColoredConsoleAppender"/> class
+            with the specified layout.
+            </summary>
+            <param name="layout">the layout to use for this appender</param>
+            <param name="writeToErrorStream">flag set to <c>true</c> to write to the console error stream</param>
+            <remarks>
+            When <paramref name="writeToErrorStream"/> is set to <c>true</c>, output is written to
+            the standard error output stream.  Otherwise, output is written to the standard
+            output stream.
+            </remarks>
+        </member>
+        <member name="M:log4net.Appender.ColoredConsoleAppender.AddMapping(log4net.Appender.ColoredConsoleAppender.ColoredConsoleAppenderLevelColorMapping)">
+            <summary>
+            Add a mapping of level to color - done by the config file
+            </summary>
+            <param name="mapping">The mapping to add</param>
+        </member>
+        <member name="M:log4net.Appender.ColoredConsoleAppender.Append(log4net.spi.LoggingEvent)">
+            <summary>
+            This method is called by the <see cref="M:log4net.Appender.AppenderSkeleton.DoAppend(log4net.spi.LoggingEvent)"/> method.
+            </summary>
+            <param name="loggingEvent">The event to log.</param>
+            <remarks>
+            <para>
+            Writes the event to the console.
+            </para>
+            <para>
+            The format of the output will depend on the appender's layout.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:log4net.Appender.ColoredConsoleAppender.Target">
+            <summary>
+            Target is the value of the console output stream.
+            This is either <c>"Console.Out"</c> or <c>"Console.Error"</c>.
+            </summary>
+            <value>
+            Target is the value of the console output stream.
+            This is either <c>"Console.Out"</c> or <c>"Console.Error"</c>.
+            </value>
+        </member>
+        <member name="P:log4net.Appender.ColoredConsoleAppender.RequiresLayout">
+            <summary>
+            This appender requires a <see cref="N:log4net.Layout"/> to be set.
+            </summary>
+            <value><c>true</c></value>
+        </member>
+        <member name="T:log4net.Appender.ColoredConsoleAppender.Colors">
+            <summary>
+            The enum of possible color values for use with the color mapping method
+            </summary>
+        </member>
+        <member name="F:log4net.Appender.ColoredConsoleAppender.Colors.Blue">
+            <summary>
+            color is blue
+            </summary>
+        </member>
+        <member name="F:log4net.Appender.ColoredConsoleAppender.Colors.Green">
+            <summary>
+            color is green
+            </summary>
+        </member>
+        <member name="F:log4net.Appender.ColoredConsoleAppender.Colors.Red">
+            <summary>
+            color is red
+            </summary>
+        </member>
+        <member name="F:log4net.Appender.ColoredConsoleAppender.Colors.White">
+            <summary>
+            color is white
+            </summary>
+        </member>
+        <member name="F:log4net.Appender.ColoredConsoleAppender.Colors.Yellow">
+            <summary>
+            color is yellow
+            </summary>
+        </member>
+        <member name="F:log4net.Appender.ColoredConsoleAppender.Colors.Purple">
+            <summary>
+            color is purple
+            </summary>
+        </member>
+        <member name="F:log4net.Appender.ColoredConsoleAppender.Colors.Cyan">
+            <summary>
+            color is cyan
+            </summary>
+        </member>
+        <member name="F:log4net.Appender.ColoredConsoleAppender.Colors.HighIntensity">
+            <summary>
+            color is inensified
+            </summary>
+        </member>
+        <member name="T:log4net.Appender.ColoredConsoleAppender.ColoredConsoleAppenderLevelColorMapping">
+            <summary>
+            A class to act as a mapping between the level that a logging call is made at and
+            the color it should be displayed as.
+            </summary>
+        </member>
+        <member name="P:log4net.Appender.ColoredConsoleAppender.ColoredConsoleAppenderLevelColorMapping.Level">
+            <summary>
+            The level to map to a color
+            </summary>
+        </member>
+        <member name="P:log4net.Appender.ColoredConsoleAppender.ColoredConsoleAppenderLevelColorMapping.ForeColor">
+            <summary>
+            The mapped foreground color for the specified level
+            </summary>
+        </member>
+        <member name="P:log4net.Appender.ColoredConsoleAppender.ColoredConsoleAppenderLevelColorMapping.BackColor">
+            <summary>
+            The mapped background color for the specified level
+            </summary>
+        </member>
         <member name="T:log4net.Appender.ConsoleAppender">
             <summary>
             Appends logging events to the console.
@@ -1689,7 +1908,16 @@
             user.
             </para>
             <para>
-            By default, all output is written to the standard output stream.
+            By default, all output is written to the console's standard output stream.
+            The <see cref="P:log4net.Appender.ConsoleAppender.Target"/> property can be set to direct the output to the
+            error stream.
+            </para>
+            <para>
+            NOTE: This appender writes each message to the <c>System.Console.Out</c> or 
+            <c>System.Console.Error</c> that is set at the time the event is appended.
+            Therefore it is possible to progamatically redirect the output of this appender 
+            (for example NUnit does this to capture program ouput). While this is the desired
+            behaviour of this appender it may have security implications in your application. 
             </para>
             </remarks>
         </member>
@@ -1811,6 +2039,9 @@
             set using the <c>EventLogEventID</c> property (<see cref="P:log4net.spi.LoggingEvent.Properties"/>)
             on the <see cref="T:log4net.spi.LoggingEvent"/>.
             </para>
+            <para>
+            There is a limit of 32K characters for an event log message
+            </para>
             </remarks>
         </member>
         <member name="M:log4net.Appender.EventLogAppender.#ctor">
@@ -1842,6 +2073,10 @@
             
             <para>If the event has an <c>EventID</c> property (see <see cref="P:log4net.spi.LoggingEvent.Properties"/>)
             set then this integer will be used as the event log event id.</para>
+            
+            <para>
+            There is a limit of 32K characters for an event log message
+            </para>
             </remarks>
         </member>
         <member name="M:log4net.Appender.EventLogAppender.GetEntryType(log4net.spi.Level)">
@@ -2396,11 +2631,13 @@
             The list of events that have been appended.
             </summary>
         </member>
-        <member name="F:log4net.Appender.MemoryAppender.m_onlyFixPartialEventData">
+        <member name="F:log4net.Appender.MemoryAppender.m_fixFlags">
             <summary>
-            Value indicating whether only part of the logging event 
-            data should be fixed.
+            Value indicating which fields in the event should be fixed
             </summary>
+            <remarks>
+            By default all fields are fixed
+            </remarks>
         </member>
         <member name="P:log4net.Appender.MemoryAppender.Events">
             <summary>
@@ -2428,6 +2665,11 @@
             See <see cref="M:log4net.spi.LoggingEvent.FixVolatileData(System.Boolean)"/> for more information.
             </para>
             </remarks>
+        </member>
+        <member name="P:log4net.Appender.MemoryAppender.Fix">
+            <summary>
+            Gets or sets a the fields that will be fixed in the event
+            </summary>
         </member>
         <member name="T:log4net.Appender.NetSendAppender">
             <summary>
@@ -2757,11 +2999,6 @@
         <member name="F:log4net.Appender.RemotingAppender.m_sinkObj">
             <summary>
             The local proxy (.NET remoting) for the remote logging sink.
-            </summary>
-        </member>
-        <member name="F:log4net.Appender.RemotingAppender.m_hostName">
-            <summary>
-            The name of the current machine logging the events.
             </summary>
         </member>
         <member name="P:log4net.Appender.RemotingAppender.Sink">
@@ -3357,11 +3594,6 @@
             </summary>
             <param name="events">The logging events to send.</param>
         </member>
-        <member name="F:log4net.Appender.SMTPAppender.m_hostName">
-            <summary>
-            The name of the current machine logging the events.
-            </summary>
-        </member>
         <member name="P:log4net.Appender.SMTPAppender.To">
             <summary>
             Gets or sets a semicolon-delimited list of recipient e-mail addresses.
@@ -3398,26 +3630,102 @@
         </member>
         <member name="P:log4net.Appender.SMTPAppender.LocationInfo">
             <summary>
-            Gets or sets a value indicating whether to include location 
-            information in the e-mail messages.
+            Obselete
             </summary>
-            <value><c>true</c> if location information will be included in
-            the e-mail messages, <c>false</c> otherwise.</value>
             <remarks>
-            <para>
-            By default, this property is is set to <c>false</c> which means 
-            that  there will be no effort to extract the location information 
-            related to the event. As a result, the layout that formats the 
-            events as they are sent out in an e-mail is likely to place the 
-            wrong location information (if present in the format).
-            </para>
-            <para>
-            Location information extraction is comparatively very slow and
-            should be avoided unless performance is not a concern.
-            </para>
+            Use the BufferingAppenderSkeleton Fix methods instead 
             </remarks>
         </member>
         <member name="P:log4net.Appender.SMTPAppender.RequiresLayout">
+            <summary>
+            This appender requires a <see cref="N:log4net.Layout"/> to be set.
+            </summary>
+            <value><c>true</c></value>
+        </member>
+        <member name="T:log4net.Appender.SmtpPickupDirAppender">
+            <summary>
+            Send an email when a specific logging event occurs, typically on errors 
+            or fatal errors. Rather than sending via smtp it writes a file into the
+            directory specified by <see cref="P:log4net.Appender.SmtpPickupDirAppender.PickupDir"/>. This allows services such
+            as the IIS SMTP agent to manage sending the messages.
+            </summary>
+            <remarks>
+            <para>
+            The configuration for this appender is identical to that of the <c>SMTPAppender</c>,
+            except that instead of specifying the <c>SMTPAppender.SMTPHost</c> you specify
+            <see cref="P:log4net.Appender.SmtpPickupDirAppender.PickupDir"/>.
+            </para>
+            <para>
+            The number of logging events delivered in this e-mail depend on
+            the value of <see cref="P:log4net.Appender.BufferingAppenderSkeleton.BufferSize"/> option. The
+            <see cref="T:log4net.Appender.SmtpPickupDirAppender"/> keeps only the last
+            <see cref="P:log4net.Appender.BufferingAppenderSkeleton.BufferSize"/> logging events in its 
+            cyclic buffer. This keeps memory requirements at a reasonable level while 
+            still delivering useful application context.
+            </para>
+            <para>
+            This appender sets the <c>hostname</c> property in the 
+            <see cref="P:log4net.spi.LoggingEvent.Properties"/> collection to the name of 
+            the machine on which the event is logged.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:log4net.Appender.SmtpPickupDirAppender.#ctor">
+            <summary>
+            </summary>
+        </member>
+        <member name="M:log4net.Appender.SmtpPickupDirAppender.SendBuffer(log4net.spi.LoggingEvent[])">
+            <summary>
+            Sends the contents of the cyclic buffer as an e-mail message.
+            </summary>
+            <param name="events">The logging events to send.</param>
+        </member>
+        <member name="M:log4net.Appender.SmtpPickupDirAppender.ConvertToFullPath(System.String)">
+            <summary>
+            Convert a path into a fully qualified path.
+            </summary>
+            <param name="path">The path to convert.</param>
+            <remarks>
+            <para>
+            Converts the path specified to a fully
+            qualified path. If the path is relative it is
+            taken as relative from the application base 
+            directory.
+            </para>
+            </remarks>
+            <returns>The fully qualified path.</returns>
+        </member>
+        <member name="P:log4net.Appender.SmtpPickupDirAppender.To">
+            <summary>
+            Gets or sets a semicolon-delimited list of recipient e-mail addresses.
+            </summary>
+            <value>
+            A semicolon-delimited list of e-mail addresses.
+            </value>
+        </member>
+        <member name="P:log4net.Appender.SmtpPickupDirAppender.From">
+            <summary>
+            Gets or sets the e-mail address of the sender.
+            </summary>
+            <value>
+            The e-mail address of the sender.
+            </value>
+        </member>
+        <member name="P:log4net.Appender.SmtpPickupDirAppender.Subject">
+            <summary>
+            Gets or sets the subject line of the e-mail message.
+            </summary>
+            <value>
+            The subject line of the e-mail message.
+            </value>
+        </member>
+        <member name="P:log4net.Appender.SmtpPickupDirAppender.PickupDir">
+            <summary>
+            Gets or sets the path to write the messages to. This should be the same
+            as that used by the agent sending the messages.
+            </summary>
+        </member>
+        <member name="P:log4net.Appender.SmtpPickupDirAppender.RequiresLayout">
             <summary>
             This appender requires a <see cref="N:log4net.Layout"/> to be set.
             </summary>
@@ -3510,45 +3818,54 @@
             UDP guarantees neither that messages arrive, nor that they arrive in the correct order.
             </para>
             <para>
+            This appender sets the <c>hostname</c> property in the 
+            <see cref="P:log4net.spi.LoggingEvent.Properties"/> collection to the name of 
+            the machine on which the event is logged.
+            </para>
+            <para>
             To view the logging results, a custom application can be developed that listens for logging 
             events.
             </para>
+            <para>
+            When decoding events send via this appender remember to use the same encoding
+            to decode the events as was used to send the events. See the <see cref="P:log4net.Appender.UdpAppender.Encoding"/>
+            property to specify the encoding to use.
+            </para>
             </remarks>
             <example>
-            This example shows how to log receive logging events that are sent to a multicast group 
-            on IP address 244.0.0.1 and port 8080 to the console : 
+            This example shows how to log receive logging events that are sent 
+            on IP address 244.0.0.1 and port 8080 to the console. The event is 
+            encoded in the packet as a unicode string and it is decoded as such. 
             <code lang="C#">
-            IPEndPoint remoteEndPoint;
-            IPAddress multicastAddress;
+            IPEndPoint remoteEndPoint = new IPEndPoint(IPAddress.Any, 0);
             UdpClient udpClient;
             byte[] buffer;
             string loggingEvent;
             
             try {
                 udpClient = new UdpClient(8080);
-                multicastAddress = IPAddress.Parse("224.0.0.1");
-                udpClient.JoinMulticastGroup(multicastAddress, 100);
                 
-                while(true) {
+                while(true) 
+                {
                     buffer = udpClient.Receive(ref remoteEndPoint);
                     loggingEvent = System.Text.Encoding.Unicode.GetString(buffer);
                     Console.WriteLine(loggingEvent);
                 }
-            } catch(Exception e) {
+            } 
+            catch(Exception e) 
+            {
                 Console.WriteLine(e.ToString());
             }
             </code>
             <code lang="Visual Basic">
             Dim remoteEndPoint as IPEndPoint
-            Dim multicastAddress as IPAddress
             Dim udpClient as UdpClient
             Dim buffer as Byte()
             Dim loggingEvent as String
             
             Try 
+                remoteEndPoint = new IPEndPoint(IPAddress.Any, 0)
                 udpClient = new UdpClient(8080)
-                multicastAddress = IPAddress.Parse("224.0.0.1")
-                udpClient.JoinMulticastGroup(multicastAddress, 100)
             
                 While True
                     buffer = udpClient.Receive(ByRef remoteEndPoint)
@@ -3561,12 +3878,10 @@
             </code>
             <para>
             An example configuration section to log information using this appender to the 
-            multicast group 224.0.0.1 on port 8080, while binding to the local port 8080 for
-            sending the UDP datagrams :
+            IP 224.0.0.1 on port 8080:
             </para>
             <code>
-            &lt;appender name="UdpMulticast" type="log4net.Appender.UdpAppender, log4net"&gt;
-                &lt;param name="LocalPort" value="8080" /&gt;
+            &lt;appender name="UdpAppender" type="log4net.Appender.UdpAppender, log4net"&gt;
                 &lt;param name="RemoteAddress" value="224.0.0.1" /&gt;
                 &lt;param name="RemotePort" value="8080" /&gt;
                 &lt;layout type="log4net.Layout.PatternLayout"&gt;
@@ -3661,6 +3976,11 @@
             <summary>
             The <see cref="T:System.Net.Sockets.UdpClient"/> instance that will be used for sending the 
             logging events.
+            </summary>
+        </member>
+        <member name="F:log4net.Appender.UdpAppender.m_encoding">
+            <summary>
+            The encoding to use for the packet.
             </summary>
         </member>
         <member name="P:log4net.Appender.UdpAppender.RemoteAddress">
@@ -3759,7 +4079,19 @@
             <remarks>
             The underlying <see cref="T:System.Net.Sockets.UdpClient"/> will bind to this port for sending messages.
             </remarks>
+            <remarks>
+            Setting the value to 0 (the default) will cause the udp client not to bind to
+            a local port.
+            </remarks>
             <exception cref="T:System.ArgumentOutOfRangeException">The value specified is less than <see cref="F:System.Net.IPEndPoint.MinPort"/> or greater than <see cref="F:System.Net.IPEndPoint.MaxPort"/>.</exception>
+        </member>
+        <member name="P:log4net.Appender.UdpAppender.Encoding">
+            <summary>
+            Gets or sets <see cref="P:log4net.Appender.UdpAppender.Encoding"/> used to write the packets.
+            </summary>
+            <value>
+            The <see cref="P:log4net.Appender.UdpAppender.Encoding"/> used to write the packets.
+            </value>
         </member>
         <member name="P:log4net.Appender.UdpAppender.Client">
             <summary>
@@ -3994,7 +4326,7 @@
         </member>
         <member name="M:log4net.Config.DOMConfigurator.#ctor">
             <summary>
-            Initializes a new instance of the <see cref="T:log4net.Config.DOMConfigurator"/> class.
+            Private constructor
             </summary>
         </member>
         <member name="M:log4net.Config.DOMConfigurator.Configure">
@@ -4482,7 +4814,7 @@
             Formats the specified date as a string.
             </summary>
             <param name="dateToFormat">The date to format.</param>
-            <param name="buf">The string builder to write to.</param>
+            <param name="buffer">The string builder to write to.</param>
             <returns>The string builder passed.</returns>
         </member>
         <member name="F:log4net.DateFormatter.AbsoluteTimeDateFormatter.ABS_TIME_DATE_FORMAT">
@@ -4511,7 +4843,7 @@
             reused if it is needed again during the same second.
             </remarks>
             <param name="dateToFormat">The date to render into a string.</param>
-            <param name="sbuf">The string builder to write to.</param>
+            <param name="buffer">The string builder to write to.</param>
         </member>
         <member name="M:log4net.DateFormatter.AbsoluteTimeDateFormatter.FormatDate(System.DateTime,System.Text.StringBuilder)">
             <summary>
@@ -4527,7 +4859,7 @@
             rather than FormatDate().</para>
             </remarks>
             <param name="dateToFormat">The date to render into a string.</param>
-            <param name="sbuf">The stringbuilder to write to.</param>
+            <param name="buffer">The stringbuilder to write to.</param>
             <returns>The stringbuilder passed.</returns>
         </member>
         <member name="F:log4net.DateFormatter.AbsoluteTimeDateFormatter.s_lastTimeToTheSecond">
@@ -4561,7 +4893,7 @@
             Formats a DateTime in the format "dd MMM YYYY HH:mm:ss" for example, "06 Nov 1994 15:49:37".
             </remarks>
             <param name="dateToFormat">The date to format.</param>
-            <param name="sbuf">The string builder to write to.</param>
+            <param name="buffer">The string builder to write to.</param>
         </member>
         <member name="F:log4net.DateFormatter.DateTimeDateFormatter.m_dateTimeFormatInfo">
             <summary>
@@ -4585,7 +4917,7 @@
             We will only be called at most once per second.
             </summary>
             <param name="dateToFormat">The date to format.</param>
-            <param name="sbuf">The string builder to write to.</param>
+            <param name="buffer">The string builder to write to.</param>
         </member>
         <member name="T:log4net.DateFormatter.SimpleDateFormatter">
             <summary>
@@ -4601,14 +4933,14 @@
             The format string must be compatible with the options
             that can be supplied to <see cref="M:System.DateTime.ToString"/>.
             </remarks>
-            <param name="formatString">The format string.</param>
+            <param name="format">The format string.</param>
         </member>
         <member name="M:log4net.DateFormatter.SimpleDateFormatter.FormatDate(System.DateTime,System.Text.StringBuilder)">
             <summary>
             Formats the date using <see cref="M:System.DateTime.ToString"/>.
             </summary>
             <param name="dateToFormat">The date to convert to a string.</param>
-            <param name="buf">The stringbuilder to write to.</param>
+            <param name="buffer">The stringbuilder to write to.</param>
             <returns>The stringbuilder passed.</returns>
         </member>
         <member name="F:log4net.DateFormatter.SimpleDateFormatter.m_formatString">
@@ -5532,7 +5864,7 @@
             <summary>
             Writes a string to the output.
             </summary>
-            <param name="str">The string data to write to the output.</param>
+            <param name="value">The string data to write to the output.</param>
         </member>
         <member name="M:log4net.helpers.QuietTextWriter.Flush">
             <summary>
@@ -6683,7 +7015,7 @@
             Initializes a new instance of the <see cref="T:log4net.helpers.PatternConverter"/> class 
             with the specified formatting info object.
             </summary>
-            <param name="fi">The formatting info object to use.</param>
+            <param name="formattingInfo">The formatting info object to use.</param>
         </member>
         <member name="M:log4net.helpers.PatternConverter.Convert(log4net.spi.LoggingEvent)">
             <summary>
@@ -6697,14 +7029,14 @@
             <summary>
             A template method for formatting in a converter specific way.
             </summary>
-            <param name="sbuf"><see cref="T:System.Text.StringBuilder"/> that will receive the formatted result.</param>
+            <param name="buffer"><see cref="T:System.Text.StringBuilder"/> that will receive the formatted result.</param>
             <param name="loggingEvent">The <see cref="T:log4net.spi.LoggingEvent"/> on which the pattern converter should be executed.</param>
         </member>
         <member name="M:log4net.helpers.PatternConverter.SpacePad(System.Text.StringBuilder,System.Int32)">
             <summary>
             Fast space padding method.
             </summary>
-            <param name="sbuf"><see cref="T:System.Text.StringBuilder"/> to which the spaces will be appended.</param>
+            <param name="buffer"><see cref="T:System.Text.StringBuilder"/> to which the spaces will be appended.</param>
             <param name="length">The number of spaces to be padded.</param>
         </member>
         <member name="P:log4net.helpers.PatternConverter.Next">
@@ -6847,7 +7179,7 @@
             Override the formatting behaviour to ignore the FormattingInfo
             because we have a literal instead.
             </summary>
-            <param name="sbuf">the builder to write to</param>
+            <param name="buffer">the builder to write to</param>
             <param name="loggingEvent">the event being logged</param>
         </member>
         <member name="M:log4net.helpers.PatternParser.LiteralPatternConverter.Convert(log4net.spi.LoggingEvent)">
@@ -7024,6 +7356,9 @@
             </summary>
             <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> that holds the serialized object data.</param>
             <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext"/> that contains contextual information about the source or destination.</param>
+            <remarks>
+            Because this class is sealed the serialization constructor is private.
+            </remarks>
         </member>
         <member name="M:log4net.helpers.PropertiesCollection.GetKeys">
             <summary>
@@ -7121,13 +7456,14 @@
             <param name="myAssembly">The <see cref="T:System.Reflection.Assembly"/> to get the file name for.</param>
             <returns>The file name of the assembly.</returns>
         </member>
-        <member name="M:log4net.helpers.SystemInfo.GetTypeFromString(System.Type,System.String,System.Boolean)">
+        <member name="M:log4net.helpers.SystemInfo.GetTypeFromString(System.Type,System.String,System.Boolean,System.Boolean)">
             <summary>
             Loads the type specified in the type string.
             </summary>
             <param name="relativeType">A sibling type to use to load the type.</param>
             <param name="typeName">The name of the type to load.</param>
             <param name="throwOnError">Flag set to <c>true</c> to throw an exception if the type cannot be loaded.</param>
+            <param name="ignoreCase"><c>true</c> to ignore the case of the type name; otherwise, <c>false</c></param>
             <remarks>
             <para>
             If the type name is fully qualified, i.e. if contains an assembly name in 
@@ -7141,12 +7477,13 @@
             </remarks>
             <returns>The type loaded or <c>null</c> if it could not be loaded.</returns>
         </member>
-        <member name="M:log4net.helpers.SystemInfo.GetTypeFromString(System.String,System.Boolean)">
+        <member name="M:log4net.helpers.SystemInfo.GetTypeFromString(System.String,System.Boolean,System.Boolean)">
             <summary>
             Loads the type specified in the type string.
             </summary>
             <param name="typeName">The name of the type to load.</param>
             <param name="throwOnError">Flag set to <c>true</c> to throw an exception if the type cannot be loaded.</param>
+            <param name="ignoreCase"><c>true</c> to ignore the case of the type name; otherwise, <c>false</c></param>
             <remarks>
             <para>
             If the type name is fully qualified, i.e. if contains an assembly name in 
@@ -7160,13 +7497,14 @@
             </remarks>
             <returns>The type loaded or <c>null</c> if it could not be loaded.</returns>		
         </member>
-        <member name="M:log4net.helpers.SystemInfo.GetTypeFromString(System.Reflection.Assembly,System.String,System.Boolean)">
+        <member name="M:log4net.helpers.SystemInfo.GetTypeFromString(System.Reflection.Assembly,System.String,System.Boolean,System.Boolean)">
             <summary>
             Loads the type specified in the type string.
             </summary>
             <param name="relativeAssembly">An assembly to load the type from.</param>
             <param name="typeName">The name of the type to load.</param>
             <param name="throwOnError">Flag set to <c>true</c> to throw an exception if the type cannot be loaded.</param>
+            <param name="ignoreCase"><c>true</c> to ignore the case of the type name; otherwise, <c>false</c></param>
             <remarks>
             <para>
             If the type name is fully qualified, i.e. if contains an assembly name in 
@@ -7180,6 +7518,12 @@
             </remarks>
             <returns>The type loaded or <c>null</c> if it could not be loaded.</returns>
         </member>
+        <member name="M:log4net.helpers.SystemInfo.NewGuid">
+            <summary>
+            Generate a new guid
+            </summary>
+            <returns>A new Guid</returns>
+        </member>
         <member name="F:log4net.helpers.SystemInfo.EmptyTypes">
             <summary>
             Gets an empty array of types.
@@ -7188,6 +7532,16 @@
             The <c>Type.EmptyTypes</c> field is not available on
             the .NET Compact Framework 1.0.
             </remarks>
+        </member>
+        <member name="F:log4net.helpers.SystemInfo.s_hostName">
+            <summary>
+            Cache the host name for the current machine
+            </summary>
+        </member>
+        <member name="F:log4net.helpers.SystemInfo.s_appFriendlyName">
+            <summary>
+            Cache the application friendly name
+            </summary>
         </member>
         <member name="P:log4net.helpers.SystemInfo.NewLine">
             <summary>
@@ -7239,6 +7593,32 @@
             </para>
             </remarks>
         </member>
+        <member name="P:log4net.helpers.SystemInfo.HostName">
+            <summary>
+            Get the host name or machine name for the current machine
+            </summary>
+            <value>
+            The host name (<see cref="M:System.Net.Dns.GetHostName"/>) or
+            the machine name (<c>Environment.MachineName</c>) for
+            the current machine, or if neither of these are available
+            then <c>NOT AVAILABLE</c> is returned.
+            </value>
+        </member>
+        <member name="P:log4net.helpers.SystemInfo.ApplicationFriendlyName">
+            <summary>
+            Get this application's friendly name
+            </summary>
+            <value>
+            The friendly name of this application as a string
+            </value>
+            <remarks>
+            <para>
+            If available the name of the application is retrieved from
+            the <c>AppDomain</c> using <c>AppDomain.CurrentDomain.FriendlyName</c>.
+            </para>
+            <para>Otherwise the file name of the entry assembly is used.</para>
+            </remarks>
+        </member>
         <member name="T:log4net.helpers.Transform">
             <summary>
             Utility class for transforming strings.
@@ -7252,33 +7632,27 @@
             Uses a private access modifier to prevent instantiation of this class.
             </remarks>
         </member>
-        <member name="M:log4net.helpers.Transform.EscapeXMLTags(System.String)">
+        <member name="M:log4net.helpers.Transform.WriteEscapedXmlString(System.Xml.XmlWriter,System.String)">
             <summary>
-            Escapes XML characters in a string.
+            Write a string to an XmlWriter
             </summary>
-            <param name="input">String that may contain XML tag characters.</param>
-            <returns>Escaped string.</returns>
+            <param name="writer">the writer to write to</param>
+            <param name="text">the string to write</param>
             <remarks>
-            This method takes a string which may contain XML tags (ie, &lt;b&gt;, &lt;table&gt;,
-            etc) and converts the '&lt;' and '&gt;' characters to their XML escape
-            sequences.
+            The test is escaped either using XML escape entities
+            or using CDATA sections.
             </remarks>
         </member>
-        <member name="M:log4net.helpers.Transform.AppendEscapingCDATA(System.Text.StringBuilder,System.String)">
+        <member name="M:log4net.helpers.Transform.CountSubstrings(System.String,System.String)">
             <summary>
-            Ensures that embedded CDEnd strings (]]&gt;) are handled properly tag text.
+            Count the number of times that the substring occurs in the text
             </summary>
-            <param name="buf">Buffer holding the XML data to this point.  The
-            initial CDStart (&lt;![CDATA[) and final CDEnd (]]&gt;) of the CDATA
-            section are the responsibility of the calling method.</param>
-            <param name="str">The string that is inserted into an existing CDATA section within the buffer.</param>
-        </member>
-        <member name="M:log4net.helpers.Transform.EscapeInCDATA(System.String)">
-            <summary>
-            Escapes a string by placing it in a CDATA section.
-            </summary>
-            <param name="str">The string that needs to be escaped.</param>
-            <returns>A string which is a CDATA section containing the argument string.</returns>
+            <param name="text">the text to search</param>
+            <param name="substring">the substring to find</param>
+            <returns>the nunmber of times the substring occurs in the text</returns>
+            <remarks>
+            The substring is assumed to be non repeating within itself.
+            </remarks>
         </member>
         <member name="T:log4net.Layout.ExceptionLayout">
             <summary>
@@ -7613,6 +7987,13 @@
                     <description>Effect</description>
                 </listheader>
                 <item>
+                    <term>a</term>
+                    <description>
+            			Used to output the frienly name of the AppDomain where the 
+            			logging event was generated. 
+                    </description>
+                </item>
+                <item>
                     <term>c</term>
                     <description>
                         <para>
@@ -7817,7 +8198,8 @@
             		<term>u</term>
             		<description>
             			<para>
-            			Used to output the user name for the currently active user.
+            			Used to output the user name for the currently active user
+            			(Principal.Identity.Name).
             			</para>
             			<para>
             			<b>WARNING</b> Generating caller information is
@@ -8179,18 +8561,22 @@
             LoggingEvents. Thus, it returns <c>true</c>.
             </summary>
         </member>
-        <member name="T:log4net.Layout.XMLLayout">
+        <member name="T:log4net.Layout.XmlLayout">
             <summary>
-            Layout that formats the log events as XML elements
+            Layout that formats the log events as XML elements.
             </summary>
             <remarks>
-            The output of the XMLLayout consists of a series of log4net:event
-            elements. It does not output a complete well-formed XML file. 
-            The output is designed to be included as an <em>external entity</em>
+            <para>
+            The output of the <see cref="T:log4net.Layout.XmlLayout"/> consists of a series of 
+            log4net:event elements. It does not output a complete well-formed XML 
+            file. The output is designed to be included as an <em>external entity</em>
             in a separate file to form a correct XML file.
-            <para>For example, if <code>abc</code> is the name of the file where
-            the XMLLayout output goes, then a well-formed XML file would be:</para>
-            
+            </para>
+            <para>
+            For example, if <code>abc</code> is the name of the file where
+            the <see cref="T:log4net.Layout.XmlLayout"/> output goes, then a well-formed XML file would 
+            be:
+            </para>
             <code>
             &lt;?xml version="1.0" ?&gt;
             
@@ -8200,57 +8586,62 @@
                 &amp;data;
             &lt;/log4net:events&gt;
             </code>
-            
-            <para>This approach enforces the independence of the XMLLayout and the
-            appender where it is embedded.</para>
-            
-            <para>The <code>version</code> attribute helps components to correctly
-            interpret output generated by XMLLayout. The value of this
-            attribute should be "1.2" for release 1.2 and later.</para>
-            
+            <para>
+            This approach enforces the independence of the <see cref="T:log4net.Layout.XmlLayout"/> 
+            and the appender where it is embedded.
+            </para>
+            <para>
+            The <code>version</code> attribute helps components to correctly
+            interpret output generated by <see cref="T:log4net.Layout.XmlLayout"/>. The value of 
+            this attribute should be "1.2" for release 1.2 and later.
+            </para>
             <para>
             Alternatively the <c>Header</c> and <c>Footer</c> properties can be
             configured to output the correct XML header, open tag and close tag.
             </para>
             </remarks>
         </member>
-        <member name="F:log4net.Layout.XMLLayout.BUF_SIZE">
+        <member name="T:log4net.Layout.XmlLayoutBase">
             <summary>
-            Initial buffer size
-            </summary>
-        </member>
-        <member name="F:log4net.Layout.XMLLayout.MAX_CAPACITY">
-            <summary>
-            Maximum buffer size before it is recycled
-            </summary>
-        </member>
-        <member name="F:log4net.Layout.XMLLayout.m_sbuf">
-            <summary>
-            output buffer appended to when Format() is invoked
-            </summary>
-        </member>
-        <member name="F:log4net.Layout.XMLLayout.m_locationInfo">
-            <summary>
-            Flat to indicate if LocationInfo should be included in
-            the XML events
-            </summary>
-        </member>
-        <member name="M:log4net.Layout.XMLLayout.#ctor">
-            <summary>
-            Constructs an XMLLayout
-            </summary>
-        </member>
-        <member name="M:log4net.Layout.XMLLayout.#ctor(System.Boolean)">
-            <summary>
-            Constructs an XMLLayout.
+            Layout that formats the log events as XML elements.
             </summary>
             <remarks>
             <para>
-            The <b>LocationInfo</b> option takes a boolean value. By
-            default, it is set to false which means there will be no location
-            information output by this layout. If the the option is set to
-            true, then the file name and line number of the statement
-            at the origin of the log statement will be output. 
+            This is an abstract class that must be subclassed by an implementation 
+            to conform to a specific schema.
+            </para>
+            <para>
+            Deriving classes must implement the <see cref="M:log4net.Layout.XmlLayoutBase.FormatXml(System.Xml.XmlWriter,log4net.spi.LoggingEvent)"/> method.
+            </para>
+            </remarks>
+        </member>
+        <member name="F:log4net.Layout.XmlLayoutBase.BufferSize">
+            <summary>
+            Initial buffer size.
+            </summary>
+        </member>
+        <member name="F:log4net.Layout.XmlLayoutBase.MaximumCapacity">
+            <summary>
+            Maximum buffer size before it is recycled.
+            </summary>
+        </member>
+        <member name="M:log4net.Layout.XmlLayoutBase.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:log4net.Layout.XmlLayoutBase"/> class
+            with no location info.
+            </summary>
+        </member>
+        <member name="M:log4net.Layout.XmlLayoutBase.#ctor(System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:log4net.Layout.XmlLayoutBase"/> class.
+            </summary>
+            <remarks>
+            <para>
+            The <paramref name="locationInfo"/> parameter determines whether 
+            location information will be output by the layout. If 
+            <paramref name="locationInfo"/> is set to <c>true</c>, then the 
+            file name and line number of the statement at the origin of the log 
+            statement will be output. 
             </para>
             <para>
             If you are embedding this layout within an SMTPAppender
@@ -8259,25 +8650,80 @@
             </para>
             </remarks>
         </member>
-        <member name="M:log4net.Layout.XMLLayout.ActivateOptions">
+        <member name="M:log4net.Layout.XmlLayoutBase.ActivateOptions">
             <summary>
             Does not do anything as options become effective immediately.
             </summary>
         </member>
-        <member name="M:log4net.Layout.XMLLayout.Format(log4net.spi.LoggingEvent)">
+        <member name="M:log4net.Layout.XmlLayoutBase.Format(log4net.spi.LoggingEvent)">
             <summary>
             Produces a formatted string.
             </summary>
-            <param name="loggingEvent">the event being logged</param>
-            <returns>the formatted string</returns>
+            <param name="loggingEvent">The event being logged.</param>
+            <returns>The formatted string.</returns>
         </member>
-        <member name="P:log4net.Layout.XMLLayout.LocationInfo">
+        <member name="M:log4net.Layout.XmlLayoutBase.FormatXml(System.Xml.XmlWriter,log4net.spi.LoggingEvent)">
             <summary>
-            Set to true to include LocationInfo in the XML events
+            Does the actual writing of the XML.
+            </summary>
+            <param name="writer">The writer to use to output the event to.</param>
+            <param name="loggingEvent">The event to write.</param>
+        </member>
+        <member name="F:log4net.Layout.XmlLayoutBase.m_sbuf">
+            <summary>
+            Output buffer appended to when <see cref="M:log4net.Layout.XmlLayoutBase.Format(log4net.spi.LoggingEvent)"/> 
+            is invoked.
+            </summary>
+        </member>
+        <member name="F:log4net.Layout.XmlLayoutBase.m_locationInfo">
+            <summary>
+            Flag to indicate if location information should be included in
+            the XML events.
+            </summary>
+        </member>
+        <member name="P:log4net.Layout.XmlLayoutBase.LocationInfo">
+            <summary>
+            Gets a value indicating whether to include location information in 
+            the XML events.
             </summary>
             <value>
-            Include LocationInfo in the XML events
+            <c>true</c> if location information should be included in the XML 
+            events; otherwise, <c>false</c>.
             </value>
+            <remarks>
+            <para>
+            If <see cref="P:log4net.Layout.XmlLayoutBase.LocationInfo"/> is set to <c>true</c>, then the file 
+            name and line number of the statement at the origin of the log 
+            statement will be output. 
+            </para>
+            <para>
+            If you are embedding this layout within an SMTPAppender
+            then make sure to set the <b>LocationInfo</b> option of that 
+            appender as well.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:log4net.Layout.XmlLayoutBase.ContentType">
+            <summary>
+            Gets the content type output by this layout. 
+            </summary>
+            <value>As this is the XML layout, the value is always "text/xml".</value>
+        </member>
+        <member name="P:log4net.Layout.XmlLayoutBase.IgnoresException">
+            <summary>
+            The XMLLayout does handle the exception contained within
+            LoggingEvents. Thus, it returns <c>false</c>.
+            </summary>
+        </member>
+        <member name="M:log4net.Layout.XmlLayout.#ctor">
+            <summary>
+            Constructs an XmlLayout
+            </summary>
+        </member>
+        <member name="M:log4net.Layout.XmlLayout.#ctor(System.Boolean)">
+            <summary>
+            Constructs an XmlLayout.
+            </summary>
             <remarks>
             <para>
             The <b>LocationInfo</b> option takes a boolean value. By
@@ -8293,18 +8739,85 @@
             </para>
             </remarks>
         </member>
-        <member name="P:log4net.Layout.XMLLayout.ContentType">
+        <member name="M:log4net.Layout.XmlLayout.ActivateOptions">
             <summary>
-            Returns the content type output by this layout. 
-            As this is the XML layout this returns "text/xml".
+            Builds a cache of the element names
             </summary>
-            <returns>the content type</returns>
         </member>
-        <member name="P:log4net.Layout.XMLLayout.IgnoresException">
+        <member name="M:log4net.Layout.XmlLayout.FormatXml(System.Xml.XmlWriter,log4net.spi.LoggingEvent)">
             <summary>
-            The XMLLayout does handle the exception contained within
-            LoggingEvents. Thus, it returns <c>false</c>.
+            Does the actual writing of the XML.
             </summary>
+            <param name="writer">The writer to use to output the event to.</param>
+            <param name="loggingEvent">The event to write.</param>
+        </member>
+        <member name="F:log4net.Layout.XmlLayout.m_prefix">
+            <summary>
+            The prefix to use for all generated element names
+            </summary>
+        </member>
+        <member name="P:log4net.Layout.XmlLayout.Prefix">
+            <summary>
+            The prefix to use for all element names
+            </summary>
+            <remarks>
+            <para>
+            The default prefix is <b>log4net</b>. Set this property
+            to change the prefix. If the prefix is set to an empty string
+            then no prefix will be written.
+            </para>
+            </remarks>
+        </member>
+        <member name="T:log4net.Layout.XmlLayoutSchemaLog4j">
+            <summary>
+            Layout that formats the log events as XML elements compatible with the log4j schema
+            </summary>
+            <remarks>
+            <para>
+            Formats the log events acording to the http://jakarta.apache.org/log4j schema.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:log4net.Layout.XmlLayoutSchemaLog4j.#ctor">
+            <summary>
+            Constructs an XMLLayoutSchemaLog4j
+            </summary>
+        </member>
+        <member name="M:log4net.Layout.XmlLayoutSchemaLog4j.#ctor(System.Boolean)">
+            <summary>
+            Constructs an XMLLayoutSchemaLog4j.
+            </summary>
+            <remarks>
+            <para>
+            The <b>LocationInfo</b> option takes a boolean value. By
+            default, it is set to false which means there will be no location
+            information output by this layout. If the the option is set to
+            true, then the file name and line number of the statement
+            at the origin of the log statement will be output. 
+            </para>
+            <para>
+            If you are embedding this layout within an SMTPAppender
+            then make sure to set the <b>LocationInfo</b> option of that 
+            appender as well.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:log4net.Layout.XmlLayoutSchemaLog4j.FormatXml(System.Xml.XmlWriter,log4net.spi.LoggingEvent)">
+            <summary>
+            Actualy do the writing of the xml
+            </summary>
+            <param name="writer">the writer to use</param>
+            <param name="loggingEvent">the event to write</param>
+        </member>
+        <member name="P:log4net.Layout.XmlLayoutSchemaLog4j.Version">
+            <summary>
+            The version of the log4j schema to use.
+            </summary>
+            <remarks>
+            <para>
+            Only version 1.2 of the log4j schema is supported.
+            </para>
+            </remarks>
         </member>
         <member name="T:log4net.ObjectRenderer.DefaultRenderer">
             <summary>
@@ -8575,8 +9088,8 @@
             <summary>
             Register an <see cref="T:log4net.ObjectRenderer.IObjectRenderer"/> for <paramref name="typeToRender"/>. 
             </summary>
-            <param name="typeToRender">the type that will be rendered by <paramref name="objectRenderer"/></param>
-            <param name="objectRenderer">the renderer for <paramref name="typeToRender"/></param>
+            <param name="typeToRender">the type that will be rendered by <paramref name="renderer"/></param>
+            <param name="renderer">the renderer for <paramref name="typeToRender"/></param>
         </member>
         <member name="P:log4net.ObjectRenderer.RendererMap.DefaultRenderer">
             <summary>
@@ -9041,7 +9554,7 @@
         </member>
         <member name="T:log4net.Plugin.RemoteLoggingServerPlugin">
             <summary>
-            Publishes an instance of  <see cref="T:log4net.Appender.RemotingAppender.IRemoteLoggingSink"/> 
+            Publishes an instance of <see cref="T:log4net.Appender.RemotingAppender.IRemoteLoggingSink"/> 
             on the specified URI.
             </summary>
         </member>
@@ -9199,7 +9712,7 @@
             <summary>
             This generic form is intended to be used by wrappers.
             </summary>
-            <param name="callerFqcn">The wrapper class' fully qualified class name.</param>
+            <param name="callerFullName">The wrapper class' fully qualified class name.</param>
             <param name="level">The level of the message to be logged.</param>
             <param name="message">The message object to log.</param>
             <param name="t">the exception to log, including its stack trace. Pass <c>null</c> to not log an exception.</param>
@@ -9310,7 +9823,7 @@
             <summary>
             This generic form is intended to be used by wrappers.
             </summary>
-            <param name="callerFqcn">The wrapper class' fully qualified class name.</param>
+            <param name="callerFullName">The wrapper class' fully qualified class name.</param>
             <param name="level">The level of the message to be logged.</param>
             <param name="message">The message object to log.</param>
             <param name="t">The exception to log, including its stack trace.</param>
@@ -9375,7 +9888,7 @@
             <summary>
             Creates a new logging event and logs the event without further checks.
             </summary>
-            <param name="fqcn">The wrapper class' fully qualified class name.</param>
+            <param name="callerFullName">The wrapper class' fully qualified class name.</param>
             <param name="level">The level of the message to be logged.</param>
             <param name="message">The message object to log.</param>
             <param name="t">The exception to log, including its stack trace.</param>
@@ -9393,7 +9906,7 @@
             Delivers the logging event to the attached appenders.
             </remarks>
         </member>
-        <member name="F:log4net.Repository.Hierarchy.Logger.FQCN">
+        <member name="F:log4net.Repository.Hierarchy.Logger.ThisClassFullName">
             <summary>
             The fully qualified name of the Logger class.
             </summary>
@@ -9628,7 +10141,7 @@
             string argument and return a value that can be used to
             set the property.
             </remarks>
-            <param name="elem">The parameter element.</param>
+            <param name="element">The parameter element.</param>
             <param name="target">The object to set the parameter on.</param>
         </member>
         <member name="M:log4net.Repository.Hierarchy.DOMHierarchyConfigurator.ConvertStringTo(System.Type,System.String)">
@@ -9636,9 +10149,9 @@
             Converts a string value to a target type.
             </summary>
             <param name="type">The type of object to convert the string to.</param>
-            <param name="str">The string value to use as the value of the object.</param>
+            <param name="value">The string value to use as the value of the object.</param>
             <returns>
-            An object of type <paramref name="type"/> with value <paramref name="str"/> or 
+            An object of type <paramref name="type"/> with value <paramref name="value"/> or 
             <c>null</c> when the conversion could not be performed.
             </returns>
         </member>
@@ -9646,7 +10159,7 @@
             <summary>
             Creates an object as specified in XML.
             </summary>
-            <param name="elem">The XML element that contains the definition of the object.</param>
+            <param name="element">The XML element that contains the definition of the object.</param>
             <param name="defaultTargetType">The object type to use if not explicitly specified.</param>
             <param name="typeConstraint">The type that the returned object must be or must inherit from.</param>
             <returns>The object or <c>null</c></returns>
@@ -11025,8 +11538,8 @@
             <summary>
             Instantiate a level object.
             </summary>
-            <param name="level"></param>
-            <param name="levelStr"></param>
+            <param name="level">integer value for this level, higher values represent more severe levels</param>
+            <param name="levelName">the string name of this level</param>
         </member>
         <member name="M:log4net.spi.Level.ToString">
             <summary>
@@ -11622,7 +12135,7 @@
             <summary>
             Instantiate location information based on the current thread
             </summary>
-            <param name="fqnOfCallingClass"></param>
+            <param name="fullNameOfCallingClass">the fully name of the calling class (not assembly qualified)</param>
         </member>
         <member name="M:log4net.spi.LocationInfo.#ctor(System.String,System.String,System.String,System.String)">
             <summary>
@@ -12195,9 +12708,19 @@
             like DOMAIN\username
             </summary>
         </member>
+        <member name="F:log4net.spi.LoggingEventData.Identity">
+            <summary>
+            String representation of the current thread's principal identity.
+            </summary>
+        </member>
         <member name="F:log4net.spi.LoggingEventData.ExceptionString">
             <summary>
             The string representation of the exception
+            </summary>
+        </member>
+        <member name="F:log4net.spi.LoggingEventData.Domain">
+            <summary>
+            String representation of the AppDomain.
             </summary>
         </member>
         <member name="F:log4net.spi.LoggingEventData.Properties">
@@ -12208,6 +12731,93 @@
             A logger or an appender may attach additional
             properties to specific events. These properties
             have a string key and an object value.
+            </remarks>
+        </member>
+        <member name="T:log4net.spi.FixFlags">
+            <summary>
+            Flags passed to the <see cref="P:log4net.spi.LoggingEvent.Fix"/> property
+            </summary>
+        </member>
+        <member name="F:log4net.spi.FixFlags.Mdc">
+            <summary>
+            Fix the MDC
+            </summary>
+        </member>
+        <member name="F:log4net.spi.FixFlags.Ndc">
+            <summary>
+            Fix the NDC
+            </summary>
+        </member>
+        <member name="F:log4net.spi.FixFlags.Message">
+            <summary>
+            Fix the rendered message
+            </summary>
+        </member>
+        <member name="F:log4net.spi.FixFlags.ThreadName">
+            <summary>
+            Fix the thread name
+            </summary>
+        </member>
+        <member name="F:log4net.spi.FixFlags.LocationInfo">
+            <summary>
+            Fix the callers location information
+            </summary>
+            <remarks>
+            CAUTION: Very slow to generate
+            </remarks>
+        </member>
+        <member name="F:log4net.spi.FixFlags.UserName">
+            <summary>
+            Fix the callers windows user name
+            </summary>
+            <remarks>
+            CAUTION: Slow to generate
+            </remarks>
+        </member>
+        <member name="F:log4net.spi.FixFlags.Domain">
+            <summary>
+            Fix the domain friendly name
+            </summary>
+        </member>
+        <member name="F:log4net.spi.FixFlags.Identity">
+            <summary>
+            Fix the callers principal name
+            </summary>
+            <remarks>
+            CAUTION: May be slow to generate
+            </remarks>
+        </member>
+        <member name="F:log4net.spi.FixFlags.Exception">
+            <summary>
+            Fix the exception text
+            </summary>
+        </member>
+        <member name="F:log4net.spi.FixFlags.None">
+            <summary>
+            No fields fixed
+            </summary>
+        </member>
+        <member name="F:log4net.spi.FixFlags.All">
+            <summary>
+            All fields fixed
+            </summary>
+        </member>
+        <member name="F:log4net.spi.FixFlags.Partial">
+            <summary>
+            Partial fields fixed
+            </summary>
+            <remarks>
+            <para>
+            This set of partial fields gives good performance. The following fields are fixed:
+            </para>
+            <list type="bullet">
+            <item><description><see cref="F:log4net.spi.FixFlags.Mdc"/></description></item>
+            <item><description><see cref="F:log4net.spi.FixFlags.Ndc"/></description></item>
+            <item><description><see cref="F:log4net.spi.FixFlags.Message"/></description></item>
+            <item><description><see cref="F:log4net.spi.FixFlags.ThreadName"/></description></item>
+            <item><description><see cref="F:log4net.spi.FixFlags.Exception"/></description></item>
+            <item><description><see cref="F:log4net.spi.FixFlags.Domain"/></description></item>
+            </list>
             </remarks>
         </member>
         <member name="T:log4net.spi.LoggingEvent">
@@ -12231,17 +12841,32 @@
             is essential to maintaining data consistency.</para>
             </remarks>
         </member>
+        <member name="F:log4net.spi.LoggingEvent.HostNameProperty">
+            <summary>
+            The key into the <see cref="P:log4net.spi.LoggingEvent.Properties"/> map for the host name value.
+            </summary>
+        </member>
+        <member name="F:log4net.spi.LoggingEvent.IdentityProperty">
+            <summary>
+            The key into the <see cref="P:log4net.spi.LoggingEvent.Properties"/> map for the host name value.
+            </summary>
+        </member>
+        <member name="F:log4net.spi.LoggingEvent.UserNameProperty">
+            <summary>
+            The key into the <see cref="P:log4net.spi.LoggingEvent.Properties"/> map for the host name value.
+            </summary>
+        </member>
         <member name="M:log4net.spi.LoggingEvent.#ctor(System.String,log4net.Repository.ILoggerRepository,System.String,log4net.spi.Level,System.Object,System.Exception)">
             <summary>
             Initializes a new instance of the <see cref="T:log4net.spi.LoggingEvent"/> class
             from the supplied parameters.
             </summary>
-            <param name="fqnOfLoggerClass">Fully qualified classname of the logger.</param>
+            <param name="fullNameOfLoggerClass">Fully qualified classname of the logger.</param>
             <param name="repository">The repository this event is logged in.</param>
             <param name="loggerName">The name of the logger of this event.</param>
             <param name="level">The level of this event.</param>
             <param name="message">The message of this event.</param>
-            <param name="throwable">The throwable of this event.</param>
+            <param name="exception">The exception for this event.</param>
             <remarks>
             <para>
             Except <see cref="P:log4net.spi.LoggingEvent.TimeStamp"/>, <see cref="P:log4net.spi.LoggingEvent.Level"/> and <see cref="P:log4net.spi.LoggingEvent.LoggerName"/>, 
@@ -12381,6 +13006,17 @@
             </para>
             </remarks>
         </member>
+        <member name="M:log4net.spi.LoggingEvent.FixVolatileData(log4net.spi.FixFlags)">
+            <summary>
+            Fix the fields specified by the <see cref="T:log4net.spi.FixFlags"/> parameter
+            </summary>
+            <param name="flags">the fields to fix</param>
+            <remarks>
+            Only fields specified in the <paramref name="flags"/> will be fixed.
+            Fields will not be fixed if they have previously been fixed.
+            It is not possible to 'unfix' a field.
+            </remarks>
+        </member>
         <member name="M:log4net.spi.LoggingEvent.CacheMappedContext">
             <summary>
             Creates a cached copy of the <see cref="T:log4net.MDC"/>.
@@ -12426,6 +13062,15 @@
             </summary>
             <remarks>
             This is not serialised.
+            </remarks>
+        </member>
+        <member name="F:log4net.spi.LoggingEvent.m_fixFlags">
+            <summary>
+            The fix state for this event
+            </summary>
+            <remarks>
+            These flags indicate which fields have been fixed.
+            Not serialised.
             </remarks>
         </member>
         <member name="P:log4net.spi.LoggingEvent.StartTime">
@@ -12481,6 +13126,29 @@
             The text of the <see cref="T:log4net.NDC"/>.
             </value>
         </member>
+        <member name="P:log4net.spi.LoggingEvent.MappedContext">
+            <summary>
+            Get the MDC dictionary.
+            </summary>
+        </member>
+        <member name="P:log4net.spi.LoggingEvent.MessageObject">
+            <summary>
+            Gets the message object used to initialise this event.
+            </summary>
+            <value>
+            The message object used to initialise this event.
+            </value>
+            <remarks>
+            Gets the message object used to initialise this event.
+            Note that this event may not have a valid message object.
+            If the event is serialised the message object will not 
+            be transferred. To get the text of the message the
+            <see cref="P:log4net.spi.LoggingEvent.RenderedMessage"/> property must be used 
+            not this property.
+            If there is no defined message object for this event then
+            null will be returned.
+            </remarks>
+        </member>
         <member name="P:log4net.spi.LoggingEvent.RenderedMessage">
             <summary>
             Gets the message, rendered through the <see cref="P:log4net.Repository.ILoggerRepository.RendererMap"/>.
@@ -12506,14 +13174,18 @@
         </member>
         <member name="P:log4net.spi.LoggingEvent.UserName">
             <summary>
-            Gets the identity of the current user.
+            Gets the name of the current user.
             </summary>
             <value>
-            The identity of the current user, or <c>NOT AVAILABLE</c> when the 
-            underlying runtime has no support for retrieving the identity of the 
+            The name of the current user, or <c>NOT AVAILABLE</c> when the 
+            underlying runtime has no support for retrieving the name of the 
             current user.
             </value>
             <remarks>
+            <para>
+            Calls <c>WindowsIdentity.GetCurrent().Name</c> to get the name of
+            the current windows user.
+            </para>
             <para>
             To improve performance, we could cache the string representation of 
             the name, and reuse that as long as the identity stayed constant.  
@@ -12528,16 +13200,35 @@
             <para>
             Timing for these operations:
             </para>
-            <para>
+            <code>
             00:00:00.2031250 sec, 10000 loops, WindowsIdentity.GetCurrent()
             00:00:08.0468750 sec, 10000 loops, WindowsIdentity.GetCurrent().Name
-            </para>
+            </code>
             <para>
             This means we could speed things up almost 40 times by caching the 
             value of the <c>WindowsIdentity.GetCurrent().Name</c> property, since 
             this takes (8.04-0.20) = 7.84375 seconds.
             </para>
             </remarks>
+        </member>
+        <member name="P:log4net.spi.LoggingEvent.Identity">
+            <summary>
+            Gets the identity of the current thread principal.
+            </summary>
+            <value>
+            The string name of the identity of the current thread principal.
+            </value>
+            <remarks>
+            <para>
+            Calls <c>System.Threading.Thread.CurrentPrincipal.Identity.Name</c> to get
+            the name of the current thread principal.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:log4net.spi.LoggingEvent.Domain">
+            <summary>
+            Gets the AppDomain friendly name.
+            </summary>
         </member>
         <member name="P:log4net.spi.LoggingEvent.Properties">
             <summary>
@@ -12550,6 +13241,20 @@
             A logger or an appender may attach additional
             properties to specific events. These properties
             have a string key and an object value.
+            </remarks>
+        </member>
+        <member name="P:log4net.spi.LoggingEvent.Fix">
+            <summary>
+            The fixed fields in this event
+            </summary>
+            <value>
+            The set of fields that are fixed in this event
+            </value>
+            <remarks>
+            <para>
+            Fields will not be fixed if they have previously been fixed.
+            It is not possible to 'unfix' a field.
+            </para>
             </remarks>
         </member>
         <member name="T:log4net.spi.LogImpl">
