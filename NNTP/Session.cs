@@ -278,7 +278,7 @@ namespace Rsdn.Nntp
 								case States.TransferWaiting :
 
 									posting = true;
-									Message postingMessage = Message.Parse(commandString, true, true);
+									Message postingMessage = Message.Parse(commandString, true, true, new Regex("(?i)Subject"));
 								
 									// add addtitional server headers
 									if (sender != null)

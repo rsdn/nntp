@@ -445,13 +445,11 @@ namespace Rsdn.Mime
 		/// </summary>
 		/// <param name="text">Input string</param>
 		/// <param name="checkMime">If true - check presence of MIME-Version header.</param>
-		/// <param name="checkAscii">Check using only ASCII symbols.</param>
+		/// <param name="checkAscii">Check using only ASCII symbols in header.</param>
+		/// <param name="itemsToCheck">Regex expression to detect header's items to check for non-ascii symbols.</param>
 		/// <returns>MIME message object</returns>
-		static public Message Parse(string text, bool checkMime, bool checkAscii)
+		static public Message Parse(string text, bool checkMime, bool checkAscii, Regex itemsToCheck)
 		{
-			if (checkAscii && nonAsciiCharacter.IsMatch(text))
-				throw new MimeFormattingException("Only ASCII symbols allowed!");
-
 			// if need check Mime version - do not use default headers
 			Message message = new Message(false);
 			Match headerAndBodyMatch = headerAndBody.Match(text);
@@ -460,8 +458,12 @@ namespace Rsdn.Mime
 
 			foreach (Match headerFieldMatch in
 				headerField.Matches(Header.Unfold(headerAndBodyMatch.Groups["header"].Value)))
-						message[headerFieldMatch.Groups["fieldName"].Value] =
-							headerFieldMatch.Groups["fieldBody"].Value;
+				if (checkAscii && itemsToCheck.IsMatch(headerFieldMatch.Groups["fieldName"].Value) &&
+					nonAsciiCharacter.IsMatch(headerFieldMatch.Groups["fieldBody"].Value))
+					throw new MimeFormattingException("Only ASCII symbols allowed!");
+				else
+					message[headerFieldMatch.Groups["fieldName"].Value] =
+						headerFieldMatch.Groups["fieldBody"].Value;
 
 			if (checkMime && message["MIME-Version"] == null)
 				throw new MimeFormattingException("It's not MIME message!");
@@ -471,10 +473,10 @@ namespace Rsdn.Mime
 				case "multipart" :
 					Regex multipartExtractor =
 						new Regex(string.Format(@"(?s)--{0}{1}(?<entityBody>.*?)(?=--{0}({1}|--))",
-						Regex.Escape(message.multipartBoundary), Util.CRLF));
+							Regex.Escape(message.multipartBoundary), Util.CRLF));
 					foreach (Match multipartMatch in multipartExtractor.Matches(
 						headerAndBodyMatch.Groups["body"].Value))
-							message.entities.Add(Message.Parse(multipartMatch.Groups["entityBody"].Value, false, checkAscii));
+							message.entities.Add(Message.Parse(multipartMatch.Groups["entityBody"].Value, false, checkAscii, itemsToCheck));
 					break;
 				default:
 					byte[] body;
@@ -541,7 +543,7 @@ namespace Rsdn.Mime
 				}
 			}
 			if (multipart)
-				builder.AppendFormat("{0}--{1}--", Util.CRLF, multipartBoundary);
+				builder.Append(Util.CRLF).AppendFormat("--{1}--", multipartBoundary);
 
 			return builder.ToString();
 		}
