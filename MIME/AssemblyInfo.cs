@@ -11,7 +11,7 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct(".Net MIME Library")]
-[assembly: AssemblyCopyright("© 2002-2003 der Igel")]
+[assembly: AssemblyCopyright("© 2002-2003 der Igel, RSDN Group")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]		
 

@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 //
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("RSDN NNTP Server")]
-[assembly: AssemblyCopyright("© 2002-2003 der Igel")]
+[assembly: AssemblyCopyright("© 2002-2003 der Igel, RSDN Group")]
 [assembly: AssemblyTrademark("")]
 
 //
@@ -22,4 +22,4 @@ using System.Runtime.CompilerServices;
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
 
-[assembly: AssemblyInformationalVersion("1.4.6 beta")]
+[assembly: AssemblyInformationalVersion("1.4.6")]
