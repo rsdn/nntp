@@ -20,15 +20,79 @@ namespace derIgel.NNTP
 	{
 #if PERFORMANCE_COUNTERS
 		/// <summary>
-		/// sessions' perfomance counter
+		/// RSDN NNTP Server performance counters' category
 		/// </summary>
-		PerformanceCounter sessionsCounter;
+		public const string ServerCategoryName = "RSDN NNTP Server";
 		/// <summary>
-		/// global sessions' perfomance counter
+		/// Summarized instance name for counters 
 		/// </summary>
-		PerformanceCounter globalSessionsCounter;
+		public const string GlobalInstanceName = "_All";
+		
+		/// Connections performance counter
+		protected const string connectionsCounterName = "Current Connections";
+		protected static PerformanceCounter globalConnectionsCounter;
+		protected PerformanceCounter connectionsCounter;
+		/// Max Connections performance counter
+		protected const string maxConnectionsCounterName = "Maximum Connections";
+		protected static PerformanceCounter globalMaxConnectionsCounter;
+		protected PerformanceCounter maxConnectionsCounter;
+		/// Bytes Received per sec
+		protected const string bytesReceivedCounterName = "Bytes Received / sec";
+		protected internal static PerformanceCounter globalBytesReceivedCounter;
+		protected internal PerformanceCounter bytesReceivedCounter;
+		/// Bytes Sent per sec
+		protected const string bytesSentCounterName = "Bytes Sent / sec";
+		protected internal static PerformanceCounter globalBytesSentCounter;
+		protected internal PerformanceCounter bytesSentCounter;
+		/// Bytes Total per sec
+		protected const string bytesTotalCounterName = "Bytes Total / sec";
+		protected internal static PerformanceCounter globalBytesTotalCounter;
+		protected internal PerformanceCounter bytesTotalCounter;
 #endif
-    	
+
+		static Manager()
+		{
+#if PERFORMANCE_COUNTERS
+			// create performance counters' category if necessary
+			if (!PerformanceCounterCategory.Exists(ServerCategoryName ))
+			{
+				CounterCreationDataCollection perfomanceCountersCollection = new CounterCreationDataCollection();
+				// connections
+				CounterCreationData connectionsCounterData = new CounterCreationData(connectionsCounterName,
+					"Number of client's connections",	PerformanceCounterType.NumberOfItems32);
+				perfomanceCountersCollection.Add(connectionsCounterData);
+				CounterCreationData maxConnectionsCounterData = new CounterCreationData(maxConnectionsCounterName,
+					"Maximum number of client's connections",	PerformanceCounterType.NumberOfItems32);
+				perfomanceCountersCollection.Add(maxConnectionsCounterData);
+				// bytes
+				CounterCreationData bytesReceivedCounterData = new CounterCreationData(bytesReceivedCounterName,
+					"Received bytes rate",	PerformanceCounterType.RateOfCountsPerSecond32);
+				perfomanceCountersCollection.Add(bytesReceivedCounterData);
+				CounterCreationData bytesSentCounterData = new CounterCreationData(bytesSentCounterName,
+					"Sent bytes rate",	PerformanceCounterType.RateOfCountsPerSecond32);
+				perfomanceCountersCollection.Add(bytesSentCounterData);
+				CounterCreationData bytesTotalCounterData = new CounterCreationData(bytesTotalCounterName,
+					"Total bytes rate",	PerformanceCounterType.RateOfCountsPerSecond32);
+				perfomanceCountersCollection.Add(bytesTotalCounterData);
+				PerformanceCounterCategory.Create(ServerCategoryName , "", perfomanceCountersCollection);
+			}
+
+			/// create global performance counters
+			// connections
+			globalConnectionsCounter = new PerformanceCounter(ServerCategoryName, connectionsCounterName,
+				GlobalInstanceName, false);
+			globalMaxConnectionsCounter = new PerformanceCounter(ServerCategoryName, maxConnectionsCounterName,
+				GlobalInstanceName, false);
+			// bytes
+			globalBytesReceivedCounter = new PerformanceCounter(ServerCategoryName, bytesReceivedCounterName,
+				GlobalInstanceName, false);
+			globalBytesSentCounter = new PerformanceCounter(ServerCategoryName, bytesSentCounterName,
+				GlobalInstanceName, false);
+			globalBytesTotalCounter = new PerformanceCounter(ServerCategoryName, bytesTotalCounterName,
+				GlobalInstanceName, false);
+#endif
+		}
+
 		/// <summary>
 		/// NNTP Connection Manager constructor
 		/// </summary>
@@ -43,17 +107,6 @@ namespace derIgel.NNTP
 			stopEvent = new ManualResetEvent(false);
 			sessions = new ArrayList();
 
-#if PERFORMANCE_COUNTERS
-			// create perfomance counters' category if necessary
-			string PerfomanceCategoryName = "RSDN NNTP Server Manager";
-			CounterCreationDataCollection perfomanceCountersCollection = new CounterCreationDataCollection();
-			CounterCreationData sessionsCounterData = new CounterCreationData("Sessions",
-				"Count of client's sessions",	PerformanceCounterType.NumberOfItems32);
-			perfomanceCountersCollection.Add(sessionsCounterData);
-			if (!PerformanceCounterCategory.Exists(PerfomanceCategoryName))
-				PerformanceCounterCategory.Create(PerfomanceCategoryName, "", perfomanceCountersCollection);
-#endif
-
 			listeners = new Socket[settings.Bindings.Length];
 			for (int i = 0; i < settings.Bindings.Length; i++)
 			{
@@ -63,11 +116,19 @@ namespace derIgel.NNTP
 			}
 
 #if PERFORMANCE_COUNTERS
-			// create perfomance counters
-			sessionsCounter = new PerformanceCounter(PerfomanceCategoryName,
-				sessionsCounterData.CounterName, settings.Name, false);
-			globalSessionsCounter = new PerformanceCounter(PerfomanceCategoryName,
-				sessionsCounterData.CounterName, "All", false);
+			/// create performance counters
+			// connections
+			connectionsCounter = new PerformanceCounter(ServerCategoryName, connectionsCounterName,
+				settings.Name, false);
+			maxConnectionsCounter = new PerformanceCounter(ServerCategoryName, maxConnectionsCounterName,
+				settings.Name, false);
+			// bytes
+			bytesReceivedCounter = new PerformanceCounter(ServerCategoryName, bytesReceivedCounterName,
+				settings.Name, false);
+			bytesSentCounter = new PerformanceCounter(ServerCategoryName, bytesSentCounterName,
+				settings.Name, false);
+			bytesTotalCounter = new PerformanceCounter(ServerCategoryName, bytesTotalCounterName,
+				settings.Name, false);
 #endif
 
 			Start();
@@ -125,8 +186,14 @@ namespace derIgel.NNTP
 						sessions.Add(session);
 						ThreadPool.QueueUserWorkItem(new WaitCallback(session.Process), this);
 #if PERFORMANCE_COUNTERS
-						sessionsCounter.Increment();
-						globalSessionsCounter.Increment();
+						connectionsCounter.Increment();
+						globalConnectionsCounter.Increment();
+						if (connectionsCounter.RawValue > maxConnectionsCounter.RawValue)
+						{
+							globalMaxConnectionsCounter.
+								IncrementBy(connectionsCounter.RawValue - maxConnectionsCounter.RawValue);
+							maxConnectionsCounter.RawValue = connectionsCounter.RawValue;
+						}
 #endif
 					}
 				}
@@ -179,8 +246,8 @@ namespace derIgel.NNTP
 		{
 			sessions.Remove(obj);
 #if PERFORMANCE_COUNTERS
-			sessionsCounter.Decrement();
-			globalSessionsCounter.Decrement();
+			connectionsCounter.Decrement();
+			globalConnectionsCounter.Decrement();
 #endif
 		}
 
@@ -201,6 +268,12 @@ namespace derIgel.NNTP
 			// listener socket do not need shutdown
 			foreach (Socket listener in listeners)
 				listener.Close();			
+#if PERFORMANCE_COUNTERS
+			globalMaxConnectionsCounter.IncrementBy(-maxConnectionsCounter.RawValue);
+			// enough remove only one counter with specified instance?
+			connectionsCounter.RemoveInstance();
+			maxConnectionsCounter.RemoveInstance();
+#endif
 		}
 
 		/// <summary>

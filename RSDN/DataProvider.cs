@@ -360,7 +360,7 @@ namespace derIgel.RsdnNntp
 				string group = message["Newsgroups"].Split(new char[]{','}, 2)[0].Trim();
 				
 				// tagline
-				postingText += "[tagline]Posted via " + Manager.ServerID + "[/tagline]";
+				postingText += Util.CRLF + "[tagline]Posted via " + Manager.ServerID + "[/tagline]";
 				
 				post_result result =
 					webService.PostUnicodeMessage(username, password, mid, group, message.Subject,

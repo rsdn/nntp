@@ -28,7 +28,10 @@ namespace derIgel.NNTP
 
 		static Session()
 		{
+			// tracing
 			tracing = new TraceSwitch("Show", "RSDN NNTP Manager Tracing");
+
+			// DNS
 			try
 			{
 				hostname = Dns.GetHostName();
@@ -61,7 +64,7 @@ namespace derIgel.NNTP
 
 		}
 
-#if PERFORMANCE_COUNTERS
+#if PERFORMANCE_COUNTERS_OLD
 		/// <summary>
 		/// perfomance counter for requests
 		/// </summary>
@@ -88,6 +91,11 @@ namespace derIgel.NNTP
 		PerformanceCounter globalArticlesCounter;
 #endif
 
+		/// <summary>
+		/// Manager (parent) object
+		/// </summary>
+		protected Manager manager;
+
 		public Session(Socket client, IDataProvider dataProvider, WaitHandle exitEvent)
 		{
 			sessionState = dataProvider.InitialSessionState;
@@ -104,7 +112,7 @@ namespace derIgel.NNTP
 				commands[entry.Key] = 
 					Activator.CreateInstance((Type)entry.Value, new Object[]{this});
 
-#if PERFORMANCE_COUNTERS
+#if PERFORMANCE_COUNTERS_OLD
 			// create perfomance counters' category if necessary
 			string PerfomanceCategoryName = "RSDN NNTP Server Sessions";
 			CounterCreationDataCollection perfomanceCountersCollection = new CounterCreationDataCollection();
@@ -156,13 +164,20 @@ namespace derIgel.NNTP
 		{
 			byte[] bytes = response.GetResponse();
 			netStream.Write(bytes, 0, bytes.Length);
+#if PERFORMANCE_COUNTERS
+			manager.bytesSentCounter.IncrementBy(bytes.Length);
+			Manager.globalBytesSentCounter.IncrementBy(bytes.Length);
+			manager.bytesTotalCounter.IncrementBy(bytes.Length);
+			Manager.globalBytesTotalCounter.IncrementBy(bytes.Length);
+#endif
 		}
 
 		/// <summary>
 		/// Process client
 		/// </summary>
-		public void Process(Object manager)
+		public void Process(Object obj)
 		{
+			manager = (Manager)obj;
 			string delimeter;
 			Response result = null;
 			try
@@ -192,7 +207,15 @@ namespace derIgel.NNTP
 						}
 						int receivedBytes = netStream.EndRead(asyncResult);
 						if (receivedBytes  > 0)
+						{
 							bufferString.Append(Util.BytesToString(commandBuffer, receivedBytes));
+#if PERFORMANCE_COUNTERS
+							manager.bytesReceivedCounter.IncrementBy(receivedBytes);
+							Manager.globalBytesReceivedCounter.IncrementBy(receivedBytes);
+							manager.bytesTotalCounter.IncrementBy(receivedBytes);
+							Manager.globalBytesTotalCounter.IncrementBy(receivedBytes);
+#endif
+						}
 						else
 							return;
 					}
@@ -239,7 +262,7 @@ namespace derIgel.NNTP
 									// get first word in upper case delimeted by space or tab characters 
 									command = commandString.Split(new char[]{' ', '\t', '\r'}, 2)[0].ToUpper();
 
-#if PERFORMANCE_COUNTERS
+#if PERFORMANCE_COUNTERS_OLD
 									requestsCounter.Increment();
 									globalRequestsCounter.Increment();
 #endif
@@ -331,7 +354,7 @@ namespace derIgel.NNTP
 						if (result.Code >= 400)
 							// result code indicates error
 						{
-#if PERFORMANCE_COUNTERS
+#if PERFORMANCE_COUNTERS_OLD
 							badRequestsCounter.Increment();
 							globalBadRequestsCounter.Increment();
 #endif
@@ -343,7 +366,7 @@ namespace derIgel.NNTP
 							case NntpResponse.ArticleHeadRetrivied :
 							case NntpResponse.ArticleBodyRetrivied :
 							case NntpResponse.ArticleNothingRetrivied :
-#if PERFORMANCE_COUNTERS
+#if PERFORMANCE_COUNTERS_OLD
 								articlesCounter.Increment();
 								globalArticlesCounter.Increment();
 #endif
@@ -427,6 +450,7 @@ namespace derIgel.NNTP
 		/// </summary>
 		public void Dispose()
 		{
+			manager = null;
 			netStream.Close();
 			if (client.Connected)
 			{

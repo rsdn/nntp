@@ -4,6 +4,7 @@ using System.Xml;
 using System.Xml.Serialization;
 using System.ComponentModel;
 using System.IO;
+using System.Collections;
 
 namespace derIgel.NNTP
 {
@@ -25,14 +26,20 @@ namespace derIgel.NNTP
 			name = settings.name;
 		}
 
-		protected string name = "";
+		protected string name = Guid.NewGuid().ToString();
 		public string Name
 		{
 			get { return name; }
-			set { name = value; }
+			set
+			{
+				if (value == null || value == "")
+					throw new ArgumentException("Name can't be empty");
+				name = value;
+			}
 		}
 
-		protected Type dataProviderType;
+		protected Type dataProviderType = typeof(object);
+		protected Type dataProviderSettingsType = typeof(object);
 		[XmlIgnore]
 		[Browsable(false)]
 		public Type DataProviderType
@@ -41,21 +48,37 @@ namespace derIgel.NNTP
 			set
 			{
 				if (value.GetInterface(typeof(IDataProvider).FullName) == null)
-					throw new Exception("DataProviderType must realize IDataProvider interface");
+					throw new ArgumentException("DataProviderType must realize IDataProvider interface.");
 				dataProviderType = value;
-//				DataProviderSettings = Activator.CreateInstance(
-//					((IDataProvider)Activator.CreateInstance(dataProviderType)).GetConfigType());
+				dataProviderSettingsType = ((IDataProvider)Activator.CreateInstance(dataProviderType)).GetConfigType();
+				if (!dataProviderType.IsInstanceOfType(dataProviderSettings))
+					dataProviderSettings = Activator.CreateInstance(dataProviderSettingsType);
 			}
 		}
 
 		[Browsable(false)]
 		public string DataProviderTypeName
 		{
-			get { return (DataProviderType != null) ? DataProviderType.AssemblyQualifiedName : ""; }
+			get { return DataProviderType.AssemblyQualifiedName; }
 			set { DataProviderType = Type.GetType(value, true); }
 		}
 
-		public object DataProviderSettings;
+		protected object dataProviderSettings;
+		[Browsable(false)]
+		public object DataProviderSettings
+		{
+			get { return dataProviderSettings; }
+			set
+			{
+				if (!dataProviderSettingsType.IsInstanceOfType(value))
+					throw new ArgumentException("DataProviderSettings is not instance of " + dataProviderType.ToString() +
+						" class.");
+				dataProviderSettings = value;
+			}
+		}
+
+		[XmlAnyElement()]
+		public XmlElement RawSettings;
 
 		protected ServerEndPoint[] bindings;
 		public ServerEndPoint[] Bindings
@@ -71,7 +94,8 @@ namespace derIgel.NNTP
 
 		public void Serialize(Stream stream)
 		{
-			XmlWriter fileWriter = new XmlTextWriter(stream, System.Text.Encoding.UTF8);
+			XmlTextWriter fileWriter = new XmlTextWriter(stream, System.Text.Encoding.UTF8);
+			fileWriter.Formatting = Formatting.Indented;
 			XmlSerializer serializer = new XmlSerializer(this.GetType(), null,
 				new Type[]{(DataProviderSettings != null) ? DataProviderSettings.GetType() : typeof(object)},
 				new XmlRootAttribute("Settings"), null);
@@ -81,37 +105,26 @@ namespace derIgel.NNTP
 
 		public static NNTPSettings Deseriazlize(string filename)
 		{
-			return Deseriazlize(new FileStream(filename, FileMode.Open, FileAccess.Read));
-		}
+			XmlReader fileReader = new XmlTextReader(filename);
 
-		public static NNTPSettings Deseriazlize(Stream stream)
-		{
-			XmlReader fileReader = new XmlTextReader(stream);
-			XmlSerializer serializer = new XmlSerializer(typeof(NNTPSettings), new XmlRootAttribute("Settings"));
+			ArrayList dataProviderTypes = new ArrayList();
+			// collect all data provider's types
+			while (fileReader.Read())
+			{
+				if (fileReader.NodeType == XmlNodeType.Element && fileReader.Name == "DataProviderTypeName")
+					dataProviderTypes.Add(((IDataProvider)Activator.CreateInstance(
+						Type.GetType(fileReader.ReadString(), true))).GetConfigType());
+			}
+			fileReader.Close();
+
+			XmlSerializer serializer = new XmlSerializer(typeof(NNTPSettings), null,
+				(Type[])dataProviderTypes.ToArray(typeof(Type)), new XmlRootAttribute("Settings"), null);
+			
+			fileReader = new XmlTextReader(filename);
 
 			NNTPSettings serverSettings = (NNTPSettings)serializer.Deserialize(fileReader);
 
 			fileReader.Close();
-
-			if (serverSettings.DataProviderSettings is System.Xml.XmlNode[])
-			{
-				XmlDocument doc = new XmlDocument();
-				XmlNode settingsNode = doc.AppendChild(doc.CreateElement("DataProviderSettings"));
-				foreach (XmlNode node in (System.Xml.XmlNode[])serverSettings.DataProviderSettings)
-				{
-					XmlNode importedNode = doc.ImportNode(node, true);
-					if (importedNode is XmlElement)
-						settingsNode.AppendChild(importedNode);
-					else
-						if (importedNode is XmlAttribute)
-						settingsNode.Attributes.Append((XmlAttribute)importedNode);
-				}
-				Type type = ((IDataProvider)Activator.CreateInstance(serverSettings.dataProviderType)).GetConfigType();
-				XmlSerializer settingsSerializer = new XmlSerializer(type, new XmlRootAttribute("DataProviderSettings"));
-				XmlNodeReader xmlReader = new XmlNodeReader(settingsNode);
-				serverSettings.DataProviderSettings = settingsSerializer.Deserialize(xmlReader);
-				xmlReader.Close();
-			}
 
 			return serverSettings;
 		}

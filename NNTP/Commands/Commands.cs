@@ -42,6 +42,13 @@ namespace derIgel.NNTP.Commands
 	/// </summary>
 	public abstract class Generic
 	{
+#if PERFORMANCE_COUNTERS
+		/// <summary>
+		/// RSDN NNTP Command performance counters' category
+		/// </summary>
+		public const string CommandCategoryName = "RSDN NNTP Command";
+#endif
+
 		public Generic(Session session)
 		{
 			syntaxisChecker = null;
@@ -558,7 +565,7 @@ namespace derIgel.NNTP.Commands
 	public class AuthInfo : Generic
 	{
 		protected static Regex AuthInfoSyntaxisChecker = 
-			new	Regex(@"(?in)^AUTHINFO[ \t]+(?<mode>USER|PASS)[ \t]+(?<param>\w+)[ \t]*$",
+			new	Regex(@"(?in)^AUTHINFO[ \t]+(?<mode>USER|PASS)[ \t]+(?<param>\S+)[ \t]*$",
 								RegexOptions.Compiled);
 
 		public AuthInfo(Session session) : base(session)

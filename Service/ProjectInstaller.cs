@@ -3,6 +3,8 @@ using System.Collections;
 using System.ComponentModel;
 using System.Configuration.Install;
 using System.IO;
+using System.Diagnostics;
+using derIgel.NNTP;
 
 namespace derIgel.RsdnNntp
 {
@@ -15,6 +17,7 @@ namespace derIgel.RsdnNntp
 		private System.ServiceProcess.ServiceInstaller serviceInstaller;
 		private System.ServiceProcess.ServiceProcessInstaller serviceProcessInstaller;
 		/// <summary>
+		/// 
 		/// Required designer variable.
 		/// </summary>
 		private System.ComponentModel.Container components = null;
@@ -74,8 +77,11 @@ namespace derIgel.RsdnNntp
 			string installdir = Path.GetDirectoryName(Context.Parameters["assemblypath"]);
 			// remove cache file
 			File.Delete(Path.Combine(installdir, "RsdnDataProvider.cache"));
-			// remove dynamic assembly's file
-			File.Delete(Path.Combine(installdir, "DynamicAssembly.dll"));
+			// remove log file
+			File.Delete(Path.Combine(installdir, "rsdnnntp.log"));
+			// remove performance counters
+			if (PerformanceCounterCategory.Exists(Manager.ServerCategoryName))
+				PerformanceCounterCategory.Delete(Manager.ServerCategoryName);
 		}
 	}
 }
