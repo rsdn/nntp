@@ -332,6 +332,13 @@ namespace Rsdn.RsdnNntp
 		/// <returns></returns>
 		public virtual auth_info RsdnAuthentificate(string user, string pass, IPAddress ip)
 		{
+			if (Utils.InvalidXmlCharacters.IsMatch(user))
+				throw new DataProviderException(DataProviderErrors.NoPermission,
+					"Username contains not allowed symbols.");
+			if (Utils.InvalidXmlCharacters.IsMatch(pass))
+				throw new DataProviderException(DataProviderErrors.NoPermission,
+					"Password contains not allowed symbols.");
+				
 			return webService.Authentication(user, pass);
 		}
 
