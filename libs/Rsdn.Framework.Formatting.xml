@@ -135,6 +135,11 @@
             <param name="applicationPath">Application path to generate links.</param>
             <returns>Text, with modified links.</returns>
         </member>
+        <member name="F:Rsdn.Framework.Formatting.Format.RsdnDomainName">
+            <summary>
+            Top level RSDN domain name
+            </summary>
+        </member>
         <member name="T:Rsdn.Framework.Formatting.Format.Date">
             <summary>
             Инкапсулирует функции форматирования даты.
@@ -407,7 +412,7 @@
             <summary>
             Возвращает ссылку на MSDN.
             </summary>
-            <param name="str">Название функции или искомый текст.</param>
+            <param name="keyword">Название функции или искомый текст.</param>
             <returns>Ссылка.</returns>
         </member>
         <member name="F:Rsdn.Framework.Formatting.TextFormatter.rxMsdn">
@@ -444,6 +449,18 @@
             <summary>
             Detect [moderator] tag.
             </summary>
+        </member>
+        <member name="F:Rsdn.Framework.Formatting.TextFormatter.rsdnLinkDetector">
+            <summary>
+            Detect RSDN links - [#] tag.
+            </summary>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.TextFormatter.ProcessRsdnLink(System.Text.RegularExpressions.Match)">
+            <summary>
+            Process RSDN link tag
+            </summary>
+            <param name="name">Regexp match with RSDN link tag</param>
+            <returns>Formatted link value</returns>
         </member>
         <member name="F:Rsdn.Framework.Formatting.TextFormatter.TrimArray">
             <summary>
