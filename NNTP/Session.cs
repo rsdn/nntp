@@ -281,7 +281,7 @@ namespace derIgel.NNTP
 									break;
 							}
 						}
-						catch (derIgel.MIME.MimeFormattingException mimeException)
+						catch (derIgel.MIME.MimeFormattingException)
 						{
 							result = new Response(NntpResponse.PostingFailed);
 						}

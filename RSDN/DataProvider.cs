@@ -269,17 +269,17 @@ namespace derIgel.RsdnNntp
 			if ((content == NewsArticle.Content.Body) ||
 				(content == NewsArticle.Content.HeaderAndBody))
 			{
-				Message plainTextBody = new Message();
+				Message plainTextBody = new Message(false);
 				plainTextBody.Entities.Add(PrepareText(message.message));
 				plainTextBody.TransferEncoding = ContentTransferEncoding.Base64;
 				plainTextBody.ContentType = string.Format("text/plain; charset=\"{0}\"", encoding.BodyName);
 
+				Message htmlTextBody = new Message(false);
 				string htmlText = string.Format(htmlMessageTemplate, message.authorid, message.author,
 					message.gid, message.id,
 					(message.message != null) ? formatMessage.PrepareText(message.message, true) : null,
 					message.userType,
 					(message.homePage != null) ? formatMessage.PrepareText(message.homePage, true) : null);
-				Message htmlTextBody = new Message();
 				htmlTextBody.Entities.Add(htmlText);
 				htmlTextBody.TransferEncoding = ContentTransferEncoding.Base64;
 				htmlTextBody.ContentType = string.Format("text/html; charset=\"{0}\"", encoding.BodyName);

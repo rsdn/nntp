@@ -18,7 +18,9 @@ namespace derIgel.MIME
 	[Serializable]
 	public class Message : IBody
 	{
-		public Message()
+		public Message() : this(true)	{	}
+
+		public Message(bool useDefaultHeaders)
 		{
 			// initialize entities array
 			entities = new ArrayList();
@@ -33,8 +35,11 @@ namespace derIgel.MIME
 			ContentTypeEvent += new ContentTypeHandler(MessageContentTypeHandler);
 
 			// default fields
-			this["MIME-Version"] = "1.0";
-			this["Content-type"] = "text/plain; charset=us-ascii";
+			if (useDefaultHeaders)
+			{
+				this["MIME-Version"] = "1.0";
+				this["Content-type"] = "text/plain; charset=us-ascii";
+			}
 		}
 
 		protected ArrayList entities;
@@ -251,28 +256,35 @@ namespace derIgel.MIME
 
 		static public Message Parse(string text)
 		{
-			Message message = new Message();
+			return Parse(text, true);
+		}
+
+		static public Message Parse(string text, bool checkMime)
+		{
+			// if need check Mime version - do not use default headers
+			Message message = new Message(!checkMime);
 			Match headerAndBodyMatch = headerAndBody.Match(text);
 			if (!headerAndBodyMatch.Success)
 				throw new MimeFormattingException("MIME message is bad formatted.");
 
-			// remove MIME-Version header, to check it from parsed message
-			message["MIME-Version"] = null;
-
 			foreach (Match headerFieldMatch in
-				headerField.Matches(unfoldHeaderField.Replace(headerAndBodyMatch.Groups["header"].Value, string.Empty)))
-				message[headerFieldMatch.Groups["fieldName"].Value]  = headerFieldMatch.Groups["fieldBody"].Value;
+				headerField.Matches(unfoldHeaderField.Replace(headerAndBodyMatch.Groups["header"].Value,
+					string.Empty)))
+						message[headerFieldMatch.Groups["fieldName"].Value] =
+							headerFieldMatch.Groups["fieldBody"].Value;
 
-			if (message["MIME-Version"] == null)
+			if (checkMime && message["MIME-Version"] == null)
 				throw new MimeFormattingException("It's not MIME message!");
 
 			switch (message.type)
 			{
 				case "multipart" :
-					Regex multipartExtractor = new Regex(string.Format(@"(?s)--{0}{1}(?<entityBody>.*?)(?=--{0}({1}|--))",
+					Regex multipartExtractor =
+						new Regex(string.Format(@"(?s)--{0}{1}(?<entityBody>.*?)(?=--{0}({1}|--))",
 						Regex.Escape(message.multipartBoundary), Util.CRLF));
-					foreach (Match multipartMatch in multipartExtractor.Matches(headerAndBodyMatch.Groups["body"].Value))
-						message.entities.Add(Message.Parse(multipartMatch.Groups["entityBody"].Value));
+					foreach (Match multipartMatch in multipartExtractor.Matches(
+						headerAndBodyMatch.Groups["body"].Value))
+							message.entities.Add(Message.Parse(multipartMatch.Groups["entityBody"].Value, false));
 					break;
 				default:
 					byte[] body;
