@@ -646,7 +646,7 @@ namespace Rsdn.RsdnNntp
     			"  The timeout period elapsed prior to completion of the operation or the server is not responding." :
     			throw new DataProviderException(DataProviderErrors.ServiceUnaviable);
     		default:
-    			throw new DataProviderException(DataProviderErrors.UnknownError);
+    			throw new DataProviderException(message);
     	}
     }
 
