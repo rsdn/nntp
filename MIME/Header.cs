@@ -106,19 +106,24 @@ namespace Rsdn.Mime
 		/// Text encoding for Non-ASCII characters
 		/// </summary>
 		protected Encoding encoding;
+
 		/// <summary>
 		/// MIME Encoding for Non-ASCII characters
 		/// </summary>
 		protected ContentTransferEncoding mimeEncoding;
+
 		/// <summary>
 		/// Regular expressions for mime header folding
 		/// </summary>
 		protected static readonly Regex headerFolding =
 			new Regex(@"(?>(.{1," + Util.LineLength + @"})([ \t]|$))(?=[ \t]*\S)", RegexOptions.Compiled);
+
 		/// <summary>
 		/// regular expression for replacing non-ascii symbols
 		/// </summary>
-		protected static readonly Regex nonAsciiReplace = new Regex(@"([^\x00-\x7F]+\s*)+(?<!\s)", RegexOptions.Compiled);
+		protected static readonly Regex nonAsciiReplace =
+			new Regex(@"(?<quote>"")?\s*((?(quote).*?)[^\x00-\x7F]+\s*)+?(?(quote)"")(?<!\s)",
+				RegexOptions.Compiled);
 
 		/// <summary>
 		/// Get MIME encoded header item (if don't fit in ASCII symbols) with specific text and MIME encodings
