@@ -11,7 +11,6 @@ namespace derIgel.RsdnNntp
 	/// <summary>
 	/// settings for application
 	/// </summary>
-	[XmlRoot("Settings")]
 	public class DataProviderSettings : NNTPSettings
 	{
 		public DataProviderSettings()

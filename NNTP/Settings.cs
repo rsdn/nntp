@@ -10,7 +10,6 @@ namespace derIgel.NNTP
 	/// <summary>
 	/// Summary description for NNTPSettings.
 	/// </summary>
-	[XmlRoot("Settings")]
 	public class NNTPSettings
 	{
 		protected string errorOutputFilename;
@@ -85,7 +84,7 @@ namespace derIgel.NNTP
 		public void Serialize(Stream stream)
 		{
 			XmlWriter fileWriter = new XmlTextWriter(stream, System.Text.Encoding.UTF8);
-			XmlSerializer serializer = new XmlSerializer(this.GetType());
+			XmlSerializer serializer = new XmlSerializer(this.GetType(), new XmlRootAttribute("Settings"));
 			serializer.Serialize(fileWriter, this);
 			fileWriter.Close();
 		}
@@ -98,7 +97,7 @@ namespace derIgel.NNTP
 		public static object Deseriazlize(Stream stream, Type type)
 		{
 			XmlReader fileReader = new XmlTextReader(stream);
-			XmlSerializer serializer = new XmlSerializer(type);
+			XmlSerializer serializer = new XmlSerializer(type, new XmlRootAttribute("Settings"));
 			object serverSettings = serializer.Deserialize(fileReader);
 			fileReader.Close();
 

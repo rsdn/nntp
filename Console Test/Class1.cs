@@ -1,11 +1,12 @@
 using System;
 using System.Diagnostics;
 using derIgel.NNTP;
-using derIgel.RsdnNntp;
 using System.Net.Sockets;
 using System.Threading;
 using System.Text;
 using System.IO;
+using System.Reflection;
+using System.Configuration;
 
 namespace ForumTest
 {
@@ -22,11 +23,18 @@ namespace ForumTest
 		{
 			try
 			{
-				DataProviderSettings serverSettings = (DataProviderSettings)
-					DataProviderSettings.Deseriazlize("config.xml",
-						typeof(DataProviderSettings));
+				Type settingsType = Activator.CreateInstanceFrom(
+					ConfigurationSettings.AppSettings["settings.Assembly"],
+					ConfigurationSettings.AppSettings["settings.Type"]).Unwrap().GetType();
 
-				Manager nntpManager = new Manager(typeof(RsdnDataProvider),	serverSettings);
+				Type dataProviderType = Activator.CreateInstanceFrom(
+					ConfigurationSettings.AppSettings["dataProvider.Assembly"],
+					ConfigurationSettings.AppSettings["dataProvider.Type"]).Unwrap().GetType();
+
+				object serverSettings = NNTPSettings.Deseriazlize(
+					ConfigurationSettings.AppSettings["settings.ConfigFile"], settingsType);
+
+				Manager nntpManager = new Manager(dataProviderType,	(NNTPSettings)serverSettings);
 				nntpManager.Start();
 
 				System.Console.ReadLine();

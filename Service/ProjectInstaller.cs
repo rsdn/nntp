@@ -71,9 +71,11 @@ namespace derIgel.RsdnNntp
 		{
 			base.Uninstall(savedState);
 
-			// remove cache file
 			string installdir = Path.GetDirectoryName(Context.Parameters["assemblypath"]);
+			// remove cache file
 			File.Delete(Path.Combine(installdir, "RsdnDataProvider.cache"));
+			// remove dynamic assembly's file
+			File.Delete(Path.Combine(installdir, "DynamicAssembly.dll"));
 		}
 	}
 }

@@ -68,11 +68,6 @@
                     HintPath = "C:\WINNT\Microsoft.NET\Framework\v1.0.3705\System.dll"
                 />
                 <Reference
-                    Name = "RsdnDataProvider"
-                    Project = "{E2BA234B-F496-474F-BC39-DBF78ABB13A4}"
-                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
-                />
-                <Reference
                     Name = "MIME"
                     Project = "{3246EAC3-12D9-4396-A36F-C10DB122873D}"
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
@@ -81,6 +76,11 @@
         </Build>
         <Files>
             <Include>
+                <File
+                    RelPath = "app.config"
+                    Link = "..\app.config"
+                    BuildAction = "None"
+                />
                 <File
                     RelPath = "Class1.cs"
                     SubType = "Code"

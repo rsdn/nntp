@@ -5,7 +5,6 @@ using System.Data;
 using System.Diagnostics;
 using System.ServiceProcess;
 using derIgel.NNTP;
-using derIgel.RsdnNntp;
 using System.Threading;
 using System.Net.Sockets;
 using System.Reflection;
@@ -86,12 +85,19 @@ namespace derIgel.RsdnNntp
 			{
 				Directory.SetCurrentDirectory(
 					Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
-				DataProviderSettings serverSettings = (DataProviderSettings)
-					DataProviderSettings.Deseriazlize(
-						ConfigurationSettings.AppSettings["service.Config"],
-						typeof(DataProviderSettings));
 
-				nntpManager = new Manager(typeof(RsdnDataProvider),	serverSettings);
+				Type settingsType = Activator.CreateInstanceFrom(
+					ConfigurationSettings.AppSettings["settings.Assembly"],
+					ConfigurationSettings.AppSettings["settings.Type"]).Unwrap().GetType();
+
+				Type dataProviderType = Activator.CreateInstanceFrom(
+					ConfigurationSettings.AppSettings["dataProvider.Assembly"],
+					ConfigurationSettings.AppSettings["dataProvider.Type"]).Unwrap().GetType();
+
+				object serverSettings = NNTPSettings.Deseriazlize(
+					ConfigurationSettings.AppSettings["settings.ConfigFile"], settingsType);
+
+				nntpManager = new Manager(dataProviderType,	(NNTPSettings)serverSettings);
 				nntpManager.Start();
 			}
 			catch (Exception e)
