@@ -1,0 +1,4 @@
+version 1.1 
+* Date/time stamp for news articles is fixed.
++ News articles are returned in mime/alternative format (text & html together).
++ Cache is added.

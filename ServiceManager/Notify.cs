@@ -5,8 +5,10 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using Win32Util;
 using System.ServiceProcess;
+using System.Threading;
+using System.Configuration;
 
-namespace RSDN
+namespace derIgel.RsdnNntp
 {
 	/// <summary>
 	/// Summary description for Notify.
@@ -40,7 +42,23 @@ namespace RSDN
 			//
 			InitializeComponent();
 
+			try
+			{
+				serverSettings =
+					(RsdnNntpSettings)RsdnNntpSettings.Deseriazlize(
+					ConfigurationSettings.AppSettings["service.Config"],
+					typeof(RsdnNntpSettings));
+			}
+			catch (Exception)
+			{
+				serverSettings = new RsdnNntpSettings();
+			}
+
+			serviceController.MachineName = serverSettings.Machine;
+			serviceController.ServiceName = serverSettings.ServiceName;
+			
 			controlPanel = new ControlPanel();
+			controlPanel.propertyGrid.SelectedObject = serverSettings;
 
 			startedIcon	= new System.Drawing.Icon(this.GetType(), "Started.ico");
 			pausedIcon	= new System.Drawing.Icon(this.GetType(), "Paused.ico");
@@ -50,7 +68,13 @@ namespace RSDN
 			win32Window.MakeToolWindow();
 
 			RefreshStatus();
+			timer.Enabled = true;
 		}
+
+		/// <summary>
+		/// Server setting
+		/// </summary>
+		protected RsdnNntpSettings serverSettings;
 
 		/// <summary>
 		/// Clean up any resources being used.
@@ -73,12 +97,16 @@ namespace RSDN
 		[STAThread]
 		static void Main(string[] args)
 		{
+			Notify mainForm = new Notify();
 			try
 			{
-				Application.Run(new Notify());
+				Application.Run(mainForm);
 			}
-			catch (InvalidOperationException)
+			catch (InvalidOperationException ioException)
 			{
+				mainForm.timer.Enabled = false;
+				MessageBox.Show(ioException.Message, "RSDN NNTP Manager",
+					MessageBoxButtons.OK,	MessageBoxIcon.Error);
 				Application.Exit();
 			}
 		}
@@ -100,11 +128,11 @@ namespace RSDN
 			this.menuPause = new System.Windows.Forms.MenuItem();
 			this.menuStop = new System.Windows.Forms.MenuItem();
 			this.menuItem5 = new System.Windows.Forms.MenuItem();
+			this.menuAbout = new System.Windows.Forms.MenuItem();
+			this.menuItem3 = new System.Windows.Forms.MenuItem();
 			this.menuExit = new System.Windows.Forms.MenuItem();
 			this.timer = new System.Windows.Forms.Timer(this.components);
 			this.serviceController = new System.ServiceProcess.ServiceController();
-			this.menuAbout = new System.Windows.Forms.MenuItem();
-			this.menuItem3 = new System.Windows.Forms.MenuItem();
 			// 
 			// notifyIcon
 			// 
@@ -161,23 +189,6 @@ namespace RSDN
 			this.menuItem5.Index = 5;
 			this.menuItem5.Text = "-";
 			// 
-			// menuExit
-			// 
-			this.menuExit.Index = 8;
-			this.menuExit.Text = "Exit";
-			this.menuExit.Click += new System.EventHandler(this.Exit);
-			// 
-			// timer
-			// 
-			this.timer.Enabled = true;
-			this.timer.Interval = ((int)(configurationAppSettings.GetValue("timer.Interval", typeof(int))));
-			this.timer.Tick += new System.EventHandler(this.RefreshStatus);
-			// 
-			// serviceController
-			// 
-			this.serviceController.MachineName = ((string)(configurationAppSettings.GetValue("serviceController.MachineName", typeof(string))));
-			this.serviceController.ServiceName = ((string)(configurationAppSettings.GetValue("serviceController.ServiceName", typeof(string))));
-			// 
 			// menuAbout
 			// 
 			this.menuAbout.Index = 6;
@@ -188,6 +199,21 @@ namespace RSDN
 			// 
 			this.menuItem3.Index = 7;
 			this.menuItem3.Text = "-";
+			// 
+			// menuExit
+			// 
+			this.menuExit.Index = 8;
+			this.menuExit.Text = "Exit";
+			this.menuExit.Click += new System.EventHandler(this.Exit);
+			// 
+			// timer
+			// 
+			this.timer.Interval = ((int)(configurationAppSettings.GetValue("timer.Interval", typeof(int))));
+			this.timer.Tick += new System.EventHandler(this.RefreshStatus);
+			// 
+			// serviceController
+			// 
+			this.serviceController.ServiceName = "rsdnnntp";
 			// 
 			// Notify
 			// 
@@ -260,44 +286,33 @@ namespace RSDN
 
 		private void RefreshStatus(object sender, System.EventArgs e)
 		{
-			try
+			serviceController.Refresh();
+			switch (serviceController.Status)
 			{
-				serviceController.Refresh();
-				switch (serviceController.Status)
-				{
-					case	ServiceControllerStatus.ContinuePending	:
-					case	ServiceControllerStatus.Running	:
-					case	ServiceControllerStatus.StartPending	:
-						notifyIcon.Icon = startedIcon;
-						menuStart.Enabled = false;
-						menuPause.Enabled = true;
-						menuStop.Enabled = true;
-						break;
-					case	ServiceControllerStatus.Paused	:
-					case	ServiceControllerStatus.PausePending	:
-						notifyIcon.Icon = pausedIcon;
-						menuStart.Enabled = true;
-						menuStart.Text = "Continue";
-						menuPause.Enabled = false;
-						menuStop.Enabled = true;
-						break;
-					default:
-						notifyIcon.Icon = stoppedIcon;
-						menuStart.Enabled = true;
-						menuStart.Text = "Start";
-						menuPause.Enabled = false;
-						menuStop.Enabled = false;
-						break;
-				}	
-			}
-			catch (InvalidOperationException io)
-			{
-				timer.Enabled = false;
-				// no such service
-				MessageBox.Show(io.Message, "RSDN NNTP Manager",
-					MessageBoxButtons.OK,	MessageBoxIcon.Exclamation);
-				throw;
-			}		
+				case	ServiceControllerStatus.ContinuePending	:
+				case	ServiceControllerStatus.Running	:
+				case	ServiceControllerStatus.StartPending	:
+					notifyIcon.Icon = startedIcon;
+					menuStart.Enabled = false;
+					menuPause.Enabled = true;
+					menuStop.Enabled = true;
+					break;
+				case	ServiceControllerStatus.Paused	:
+				case	ServiceControllerStatus.PausePending	:
+					notifyIcon.Icon = pausedIcon;
+					menuStart.Enabled = true;
+					menuStart.Text = "Continue";
+					menuPause.Enabled = false;
+					menuStop.Enabled = true;
+					break;
+				default:
+					notifyIcon.Icon = stoppedIcon;
+					menuStart.Enabled = true;
+					menuStart.Text = "Start";
+					menuPause.Enabled = false;
+					menuStop.Enabled = false;
+					break;
+			}	
 		}
 	}
 }

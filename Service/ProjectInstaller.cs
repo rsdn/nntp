@@ -45,6 +45,7 @@ namespace RSDN
 			// 
 			this.serviceInstaller.DisplayName = "RSDN NNTP Server";
 			this.serviceInstaller.ServiceName = "rsdnnntp";
+			this.serviceInstaller.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
 			// 
 			// ProjectInstaller
 			// 

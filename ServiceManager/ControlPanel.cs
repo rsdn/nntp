@@ -5,9 +5,8 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using System.Configuration;
 using System.Xml;
-using derIgel.NNTP;
 
-namespace RSDN
+namespace derIgel.RsdnNntp
 {
 	/// <summary>
 	/// Summary description for ControlPanel.
@@ -25,20 +24,6 @@ namespace RSDN
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
-
-			try
-			{
-				serverSettings =
-					(RsdnNntpSettings)RsdnNntpSettings.Deseriazlize(
-						ConfigurationSettings.AppSettings["service.Config"],
-						typeof(RsdnNntpSettings));
-			}
-			catch (Exception)
-			{
-				serverSettings = new RsdnNntpSettings();
-			}
-			
-			propertyGrid.SelectedObject = serverSettings;
 		}
 
 		/// <summary>
@@ -74,7 +59,7 @@ namespace RSDN
 			// 
 			this.okButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
 			this.okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-			this.okButton.Location = new System.Drawing.Point(33, 248);
+			this.okButton.Location = new System.Drawing.Point(33, 311);
 			this.okButton.Name = "okButton";
 			this.okButton.TabIndex = 1;
 			this.okButton.Text = "OK";
@@ -84,7 +69,7 @@ namespace RSDN
 			// 
 			this.cancelButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
 			this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.cancelButton.Location = new System.Drawing.Point(137, 248);
+			this.cancelButton.Location = new System.Drawing.Point(137, 311);
 			this.cancelButton.Name = "cancelButton";
 			this.cancelButton.TabIndex = 2;
 			this.cancelButton.Text = "Cancel";
@@ -93,7 +78,7 @@ namespace RSDN
 			// 
 			this.applyButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
 			this.applyButton.Enabled = false;
-			this.applyButton.Location = new System.Drawing.Point(233, 248);
+			this.applyButton.Location = new System.Drawing.Point(233, 311);
 			this.applyButton.Name = "applyButton";
 			this.applyButton.TabIndex = 3;
 			this.applyButton.Text = "Apply";
@@ -105,10 +90,11 @@ namespace RSDN
 				| System.Windows.Forms.AnchorStyles.Left) 
 				| System.Windows.Forms.AnchorStyles.Right);
 			this.propertyGrid.CommandsBackColor = System.Drawing.SystemColors.Highlight;
+			this.propertyGrid.CommandsVisibleIfAvailable = true;
 			this.propertyGrid.LargeButtons = false;
 			this.propertyGrid.LineColor = System.Drawing.SystemColors.ScrollBar;
 			this.propertyGrid.Name = "propertyGrid";
-			this.propertyGrid.Size = new System.Drawing.Size(343, 240);
+			this.propertyGrid.Size = new System.Drawing.Size(343, 303);
 			this.propertyGrid.TabIndex = 4;
 			this.propertyGrid.Text = "propertyGrid";
 			this.propertyGrid.ViewBackColor = System.Drawing.SystemColors.Window;
@@ -118,7 +104,7 @@ namespace RSDN
 			// ControlPanel
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(343, 273);
+			this.ClientSize = new System.Drawing.Size(343, 336);
 			this.Controls.AddRange(new System.Windows.Forms.Control[] {
 																																	this.propertyGrid,
 																																	this.applyButton,
@@ -135,17 +121,17 @@ namespace RSDN
 		}
 		#endregion
 
-		private System.Windows.Forms.PropertyGrid propertyGrid;
+		internal System.Windows.Forms.PropertyGrid propertyGrid;
+
 		private System.Windows.Forms.Button okButton;
 		private System.Windows.Forms.Button cancelButton;
 		private System.Windows.Forms.Button applyButton;
 
-		protected RsdnNntpSettings serverSettings;
-
 		private void ApplySettings(object sender, System.EventArgs e)
 		{
-			serverSettings.Serialize(ConfigurationSettings.AppSettings["service.Config"]);
 			applyButton.Enabled = false;
+			((RsdnNntpSettings)propertyGrid.SelectedObject).
+				Serialize(ConfigurationSettings.AppSettings["service.Config"]);
 		}
 
 		private void propertyGrid_PropertyValueChanged(object s, System.Windows.Forms.PropertyValueChangedEventArgs e)

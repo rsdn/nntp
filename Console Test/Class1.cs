@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using derIgel.NNTP;
+using derIgel.RsdnNntp;
 using System.Net.Sockets;
 using derIgel.Mail;
 using System.Threading;
@@ -20,8 +21,8 @@ namespace ForumTest
 		{
 			try
 			{
-				RsdnNntpSettings serverSettings = (RsdnNntpSettings)
-					RsdnNntpSettings.Deseriazlize("config.xml", typeof(RsdnNntpSettings));
+				RsdnDataProviderSettings serverSettings = (RsdnDataProviderSettings)
+					RsdnDataProviderSettings.Deseriazlize("config.xml", typeof(RsdnDataProviderSettings));
 
 				Manager nntpManager = new Manager(typeof(RsdnDataProvider),	serverSettings);
 				nntpManager.Start();

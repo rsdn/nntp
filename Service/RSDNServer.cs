@@ -5,6 +5,7 @@ using System.Data;
 using System.Diagnostics;
 using System.ServiceProcess;
 using derIgel.NNTP;
+using derIgel.RsdnNntp;
 using System.Threading;
 using System.Net.Sockets;
 using System.Reflection;
@@ -83,9 +84,9 @@ namespace derIgel
 			try
 			{
 				Directory.SetCurrentDirectory(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
-				RsdnNntpSettings serverSettings = (RsdnNntpSettings)
-					RsdnNntpSettings.Deseriazlize(ConfigurationSettings.AppSettings["service.Config"],
-						typeof(RsdnNntpSettings));
+				RsdnDataProviderSettings serverSettings = (RsdnDataProviderSettings)
+					RsdnDataProviderSettings.Deseriazlize(ConfigurationSettings.AppSettings["service.Config"],
+						typeof(RsdnDataProviderSettings));
 
 				nntpManager = new Manager(typeof(RsdnDataProvider),	serverSettings);
 				nntpManager.Start();

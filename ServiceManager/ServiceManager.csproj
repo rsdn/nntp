@@ -19,7 +19,7 @@
                 DefaultTargetSchema = "IE50"
                 DelaySign = "false"
                 OutputType = "WinExe"
-                RootNamespace = "RSDN"
+                RootNamespace = "derIgel.RsdnNntp"
                 StartupObject = ""
             >
                 <Config
@@ -96,11 +96,6 @@
                     HintPath = "C:\WINNT\Microsoft.NET\Framework\v1.0.3705\System.Design.dll"
                 />
                 <Reference
-                    Name = "RsdnNntpSettings"
-                    Project = "{A78C361E-209D-40B2-BE70-FE5FBD5AD178}"
-                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
-                />
-                <Reference
                     Name = "NNTP"
                     Project = "{7C6A20CA-E859-41F5-8B2E-7411A63E8343}"
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
@@ -109,6 +104,16 @@
                     Name = "System.XML"
                     AssemblyName = "System.Xml"
                     HintPath = "C:\WINNT\Microsoft.NET\Framework\v1.0.3705\System.XML.dll"
+                />
+                <Reference
+                    Name = "RsdnDataProvider"
+                    Project = "{E2BA234B-F496-474F-BC39-DBF78ABB13A4}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
+                <Reference
+                    Name = "System.Management"
+                    AssemblyName = "System.Management"
+                    HintPath = "C:\WINNT\Microsoft.NET\Framework\v1.0.3705\System.Management.dll"
                 />
             </References>
         </Build>
@@ -166,11 +171,26 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "RsdnNntpServerSettings.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Started.ico"
                     BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "Stopped.ico"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Win32_Service.CS"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Win32_Service.resx"
+                    DependentUpon = "Win32_Service.CS"
                     BuildAction = "EmbeddedResource"
                 />
                 <File

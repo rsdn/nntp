@@ -4,8 +4,9 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Serialization.Formatters;
 using System.Runtime.Serialization;
 using System.IO;
+using derIgel.NNTP;
 
-namespace derIgel.NNTP
+namespace derIgel.RsdnNntp
 {
 	/// <summary>
 	/// Summary description for Cache.

@@ -32,6 +32,7 @@ namespace derIgel
 			protected IPAddress bindingAddresses;
 
 			[BrowsableAttribute(false)]
+			[DefaultValue("0.0.0.0")]
 			public string Bindings
 			{
 				get
