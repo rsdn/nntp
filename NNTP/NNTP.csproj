@@ -276,6 +276,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Commands\Listgroup.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Commands\Mode.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
