@@ -1,5 +1,3 @@
-// $Id$
-
 using System;
 using System.Diagnostics;
 using System.Configuration;

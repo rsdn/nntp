@@ -1,4 +1,3 @@
-// $Id$
 using System;
 using System.Net;
 using System.ComponentModel;

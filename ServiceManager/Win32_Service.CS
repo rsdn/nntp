@@ -1,5 +1,4 @@
-﻿// $Id: Win32_Service.CS,v 1.3 2003/02/28 15:01:00 derigel Exp $
-namespace Rsdn.WMI.ROOT.CIMV2 
+﻿namespace Rsdn.WMI.ROOT.CIMV2 
 {
     using System;
     using System.ComponentModel;

@@ -1,5 +1,4 @@
-﻿// $Id$
-namespace Rsdn.WMI.ROOT.CIMV2 
+﻿namespace Rsdn.WMI.ROOT.CIMV2 
 {
     using System;
     using System.ComponentModel;

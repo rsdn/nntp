@@ -1,4 +1,3 @@
-// $Id$
 using System;
 using System.Text.RegularExpressions;
 using System.Net.Sockets;

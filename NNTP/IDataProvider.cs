@@ -1,4 +1,3 @@
-// $Id$
 using System;
 
 using Rsdn.Mime;

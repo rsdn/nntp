@@ -1,4 +1,3 @@
-// $Id$
 using System;
 using System.Net.Sockets;
 using System.IO;
