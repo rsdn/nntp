@@ -423,6 +423,12 @@ namespace Rsdn.RsdnNntp
 		protected static Regex leadingSpaces = new Regex(@"(?m)^[\t ]+", RegexOptions.Compiled);
 
 		/// <summary>
+		/// refular expression for detecting Re: & Re[number]: prefixes in subject at the start of the line
+		/// </summary>
+		protected static Regex reDetecter =
+			new Regex(@"^((Re\[(?<num>\d+)\]|Re(?<num>.{0,0})):\s*)+", RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+
+		/// <summary>
 		/// Post MIME message through data provider
 		/// </summary>
 		/// <param name="message"></param>
@@ -434,18 +440,42 @@ namespace Rsdn.RsdnNntp
 				if (postingText == "")
 					throw new DataProviderException(DataProviderErrors.PostingFailed);
 
+				// get message ID
 				int mid = 0;
 				if (message["References"] != null)
 					foreach (Match messageIDMatch in messageIdNumber.Matches(message["References"]))
 						mid = int.Parse(messageIDMatch.Groups["messageIdNumber"].Value);
+				// get posting news group
 				string group = message["Newsgroups"].Split(new char[]{','}, 2)[0].Trim();
 				
 				// tagline
 				postingText += Util.CRLF + "[tagline]Posted via " + Manager.ServerID + "[/tagline]";
 				
-				post_result result =
-					webService.PostUnicodeMessage(username, password, mid, group, message.Subject,
-					leadingSpaces.Replace(postingText, ""));
+				// by default use original subject
+				string subject = message.Subject;
+
+				// check & modify subject if necessary (prevent 'Re: Re[2]' problem)
+				Match match = reDetecter.Match(message.Subject);
+				if (match.Success)
+				{
+					int answersCount = 0;
+					foreach(Capture capture in match.Groups["num"].Captures)
+						if (capture.Value == "")
+							answersCount ++;
+						else
+							answersCount += int.Parse(capture.Value);
+					
+					if (answersCount > 1)
+						subject = string.Format("Re[{0}]: ", answersCount);
+					else
+						subject = "Re: ";
+					subject += reDetecter.Replace(message.Subject, "");
+				}
+
+				post_result result = 
+					webService.PostUnicodeMessage(username, password, mid, group, subject,
+						leadingSpaces.Replace(postingText, ""));
+
 				if (!result.ok)
 					ProcessErrorMessage(result.error);
 			}
