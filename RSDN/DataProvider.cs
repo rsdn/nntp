@@ -427,7 +427,7 @@ namespace Rsdn.RsdnNntp
 		/// refular expression for detecting Re: & Re[number]: prefixes in subject at the start of the line
 		/// </summary>
 		protected static Regex reDetecter =
-			new Regex(@"^((Re\[(?<num>\d+)\]|Re(?<num>.{0,0})):\s*)+", RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+			new Regex(@"(?i)^((Re\[(?<num>\d+)\]|Re(?<num>.{0,0})):\s*)+", RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
 		/// <summary>
 		/// Post MIME message through data provider
