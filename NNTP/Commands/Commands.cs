@@ -87,71 +87,6 @@ namespace Rsdn.Nntp.Commands
 	}
 
 	/// <summary>
-	/// LIST, LIST NEWGROUPS, & LIST OVERVIEW.FMT client's commands
-	/// </summary>
-	[NntpCommand("LIST")]
-	public class List : Generic
-	{
-		public static readonly StringCollection headerItems = new StringCollection();
-
-		protected static Regex ListSyntaxisChecker =
-			new	Regex(@"(?in)^LIST([ \t]+((?<wideFormat>NEWSGROUPS)|(?<overview>OVERVIEW\.FMT)))?[ \t]*$",
-			RegexOptions.Compiled);
-
-		static List()
-		{
-			headerItems.Add("subject");
-			headerItems.Add("from");
-			headerItems.Add("date");
-			headerItems.Add("message-id");
-			headerItems.Add("references");
-			headerItems.Add("bytes");
-			headerItems.Add("lines");
-			headerItems.Add("xref");
-		}
-
-		/// <summary>
-		/// Create command handler.
-		/// </summary>
-		/// <param name="session">Parent NNTP session.</param>
-		public List(Session session) : base(session)
-		{
-			allowedStates = Session.States.Normal;
-			syntaxisChecker = ListSyntaxisChecker;
-		}
-
-		/// <summary>
-		/// Process command.
-		/// </summary>
-		/// <returns>Server's NNTP response</returns>
-		protected override Response ProcessCommand()
-		{
-			StringBuilder textResponse = new StringBuilder();
-			if (lastMatch.Groups["overview"].Success)
-				// overview format
-				foreach (string headerItem in headerItems)
-					textResponse.Append(headerItem).Append(Util.CRLF);
-			else
-			{
-				NewsGroup[] groupList = session.DataProvider.GetGroupList(new DateTime(), null);
-
-				if (lastMatch.Groups["wideFormat"].Success)
-					// wide format
-					foreach (NewsGroup group in groupList)
-						textResponse.AppendFormat("{0} {1}{2}",
-							group.Name, group.Description, Util.CRLF);
-				else
-					// standart format
-					foreach (NewsGroup group in groupList)
-						textResponse.AppendFormat("{0} {1} {2} {3}{4}",
-							group.Name, group.LastArticleNumber, group.FirstArticleNumber,
-							group.PostingAllowed ? 'y' : 'n', Util.CRLF);
-			}
-			return new Response(NntpResponse.ListOfGroups, textResponse.ToString());
-		}
-	}
-
-	/// <summary>
 	/// NEWGROUPS client command
 	/// </summary>
 	[NntpCommand("NEWGROUPS")]
@@ -200,7 +135,7 @@ namespace Rsdn.Nntp.Commands
 						lastMatch.Groups["distributions"].Value.
 						Split(new char[]{','});
 			
-				NewsGroup[] groupList = session.DataProvider.GetGroupList(date, distributions);
+				NewsGroup[] groupList = session.DataProvider.GetGroupList(date, null);
 				StringBuilder textResponse = new StringBuilder();
 				foreach (NewsGroup group in groupList)
 					textResponse.AppendFormat("{0} {1} {2} {3}{4}",

@@ -278,7 +278,13 @@ namespace Rsdn.RsdnNntp
     	return articleList[articleList.Length - 1];
     }
 
-    public NewsGroup[] GetGroupList(DateTime startDate, string[] distributions)
+		/// <summary>
+		/// Get news groups's descriptions.
+		/// </summary>
+		/// <param name="startDate">Start date.</param>
+		/// <param name="pattern">Match patter for groups' names. Null if none.</param>
+		/// <returns></returns>
+    public NewsGroup[] GetGroupList(DateTime startDate, string pattern)
     {
     	// minimum date, supported by web service, is unknown...
     	// So take midnight of 30 december 1899
@@ -297,12 +303,18 @@ namespace Rsdn.RsdnNntp
     	{
     		ProcessException(exception);
     	}	
-    	NewsGroup[] listOfGroups = new NewsGroup[groupList.groups.Length];
-    	for (int i = 0; i < groupList.groups.Length; i++)
-    		listOfGroups[i] = new NewsGroup(groupList.groups[i].name, groupList.groups[i].first,
-    			groupList.groups[i].last, groupList.groups[i].last - groupList.groups[i].first + 1,
-    			true);
-    	return listOfGroups;
+
+			Regex checker = null;
+			if (pattern != null)
+				checker = new Regex(pattern);
+
+			ArrayList listOfGroups = new ArrayList(groupList.groups.Length);
+    	foreach (group currentGroup in groupList.groups)
+				if ((checker == null) || (checker.IsMatch(currentGroup.name)))
+					listOfGroups.Add(new NewsGroup(currentGroup.name, currentGroup.first, currentGroup.last,
+						currentGroup.last - currentGroup.first + 1, true));
+
+    	return (NewsGroup[])listOfGroups.ToArray(typeof(NewsGroup));
     }
 
     public NewsArticle[] GetArticleList(string[] newsgroups, System.DateTime date,

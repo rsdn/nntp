@@ -78,12 +78,12 @@ namespace Rsdn.Nntp
 		NewsGroup GetGroup(string groupName);
 
 		/// <summary>
-		/// Get list of news groups' description.
+		/// Get list of news groups' descriptions.
 		/// </summary>
 		/// <param name="startDate">Start date.</param>
-		/// <param name="distributions">Distribution parameter.</param>
-		/// <returns></returns>
-		NewsGroup[] GetGroupList(DateTime startDate, string[] distributions);
+		/// <param name="pattern">News group's name match pattern.</param>
+		/// <returns>List of news groups' descriptions.</returns>
+		NewsGroup[] GetGroupList(DateTime startDate, string pattern);
 
 		/// <summary>
 		/// Authentificate user.

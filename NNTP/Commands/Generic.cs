@@ -112,6 +112,33 @@ namespace Rsdn.Nntp.Commands
 			article["X-Server"] = string.Join("; ", new string[]{Manager.ServerID, nntpID, session.DataProvider.Identity});
 			return article;
 		}
+
+		/// <summary>
+		/// Trasnform WILDMAT Unix pattern format to regex pattern string.
+		/// ATTENTION! Realized not fully.
+		/// </summary>
+		/// <param name="pattern"></param>
+		/// <returns></returns>
+		protected string TransformWildmat(string pattern)
+		{
+			if (pattern == null)
+				throw new ArgumentNullException("pattern");
+
+			string regexPattern = pattern;
+			
+			// Temporary remove '?' characters
+			regexPattern = Regex.Replace(regexPattern, @"(?<!\\)\?", "<<quest>>");
+			// Temporary remove '*' characters
+			regexPattern = Regex.Replace(regexPattern, @"(?<!\\)\*", "<<star>>");
+			// Escape non allowed characters
+			regexPattern = Regex.Escape(regexPattern);
+			// Process '?' characters
+			regexPattern = regexPattern.Replace("<<quest>>", ".?");
+			// Process '*' characters
+			regexPattern = regexPattern.Replace("<<star>>", ".*");
+
+			return regexPattern;
+		}
 	}
 
 }
