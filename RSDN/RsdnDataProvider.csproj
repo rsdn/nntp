@@ -4,9 +4,6 @@
         ProductVersion = "7.0.9466"
         SchemaVersion = "1.0"
         ProjectGuid = "{E2BA234B-F496-474F-BC39-DBF78ABB13A4}"
-        SccProjectName = '"$/Forum", ADAAAAAA'
-        SccLocalPath = ".."
-        SccProvider = "MSSCCI:Microsoft Visual SourceSafe"
     >
         <Build>
             <Settings
