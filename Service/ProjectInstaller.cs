@@ -51,7 +51,7 @@ namespace Rsdn.RsdnNntp
 			this.serviceInstaller.DisplayName = "RSDN NNTP Server";
 			this.serviceInstaller.ServiceName = "rsdnnntp";
 			this.serviceInstaller.ServicesDependedOn = new string[] {
-																																"+TDI"};
+																																"Tcpip"};
 			this.serviceInstaller.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
 			// 
 			// ProjectInstaller
