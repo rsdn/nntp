@@ -523,6 +523,16 @@
             <param name="smile">Признак обработки смайликов.</param>
             <returns>Сформатированный текст.</returns>
         </member>
+        <member name="M:Rsdn.Framework.Formatting.TextFormatter.Format(System.String,System.Boolean,System.Boolean)">
+            <summary>
+            Форматирование текста.
+            <b>НЕПОТОКОБЕЗОПАСНЫЙ!</b>
+            </summary>
+            <param name="txt">Исходный текст.</param>
+            <param name="smile">Признак обработки смайликов.</param>
+            <param name="doNotReplaceTags">Не заменять служебные символы HTML.</param>
+            <returns>Сформатированный текст.</returns>
+        </member>
         <member name="M:Rsdn.Framework.Formatting.TextFormatter.RemoveTaglineTag(System.String)">
             <summary>
             Remove [tagline] tag from text.
