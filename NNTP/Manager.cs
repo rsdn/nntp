@@ -16,7 +16,7 @@ namespace derIgel
 		/// <summary>
 		/// NNTP Connection Manager 
 		/// </summary>
-		public class Manager
+		public class Manager : IDisposable
 		{
 			protected TextWriter errorOutput = System.Console.Error;
 
@@ -64,16 +64,15 @@ namespace derIgel
 				if (settings.ErrorOutputFilename != null)
 					errorOutput = new StreamWriter(settings.ErrorOutputFilename, false, System.Text.Encoding.ASCII);
 
-				stopEvent = new ManualResetEvent(true);
 				pauseEvent = new ManualResetEvent(false);
+				stopEvent = new ManualResetEvent(false);
 				sessions = new ArrayList();
 
 				listener = new Socket(settings.EndPoint.AddressFamily, SocketType.Stream,
 					ProtocolType.Tcp);
 				listener.Bind(settings.EndPoint);
 				listener.Listen(listenConnections);
-				listener.BeginAccept(new AsyncCallback(AcceptClient), null);
-
+				Start();
 			}
 
 			/// <summary>
@@ -87,6 +86,7 @@ namespace derIgel
 			public void Start()
 			{
 				stopEvent.Reset();
+				listener.BeginAccept(new AsyncCallback(AcceptClient), null);
 			}
 
 			
@@ -101,7 +101,7 @@ namespace derIgel
 					{
 						listener.BeginAccept(new AsyncCallback(AcceptClient), null);
 						Socket socket = listener.EndAccept(ar);
-						switch (WaitHandle.WaitAny(new WaitHandle[] {stopEvent, pauseEvent}, 0, false))
+						switch (WaitHandle.WaitAny(new WaitHandle[] {pauseEvent}, 0, false))
 						{
 							case	WaitHandle.WaitTimeout	:
 								DataProvider dataProvider = Activator.CreateInstance(dataProviderType,
@@ -112,10 +112,8 @@ namespace derIgel
 								sessions.Add(session);
 								ThreadPool.QueueUserWorkItem(new WaitCallback(session.Process));
 								break;
-							case 1	:
+							case 0	:
 								Response.Answer(401, socket);
-								goto default;
-							default	:
 								socket.Shutdown(SocketShutdown.Both);
 								socket.Close();
 								break;
@@ -140,13 +138,13 @@ namespace derIgel
 			/// </summary>
 			protected Type dataProviderType;
 			/// <summary>
-			/// signalled when need to stop
-			/// </summary>
-			protected ManualResetEvent stopEvent;
-			/// <summary>
 			/// signalled when need to pause
 			/// </summary>
 			protected ManualResetEvent pauseEvent;
+			/// <summary>
+			/// signalled when need to stop
+			/// </summary>
+			protected ManualResetEvent stopEvent;
 
 			public void Pause()
 			{
@@ -162,6 +160,7 @@ namespace derIgel
 			public void Stop()
 			{
 				errorOutput.Flush();
+				Close();
 				stopEvent.Set();
 				while (sessions.Count > 0)
 					Thread.Sleep(sessionsCheckInterval);
@@ -180,6 +179,17 @@ namespace derIgel
 			/// NNTP server settings
 			/// </summary>
 			protected NNTPSettings settings;
+
+			public void Close()
+			{
+				Dispose();
+			}
+
+			public void Dispose()
+			{
+				// listener socket do not need shutdown
+				listener.Close();			
+			}
 		}
 	}
 }

@@ -2,12 +2,13 @@ using System;
 using System.Text.RegularExpressions;
 using System.Net.Sockets;
 using derIgel.NNTP;
+using System.Text;
 
 [assembly:derIgel.NNTP.Commands.NNTPCommand("")]
 
 namespace derIgel.NNTP.Commands
 {
-		[AttributeUsage(AttributeTargets.Class | AttributeTargets.Assembly, Inherited = true,
+		[AttributeUsage(AttributeTargets.Class | AttributeTargets.Assembly, Inherited = false,
 				AllowMultiple = true)]
 		public class NNTPCommandAttribute : Attribute
 		{
@@ -83,7 +84,8 @@ namespace derIgel.NNTP.Commands
 		public class Xover : Generic
 		{
 			protected static Regex XoverSyntaxisChecker =
-				new Regex(@"(?in)^XOVER([ \t]+(?<startNumber>\d+)([ \t]*(?<dash>-)[ \t]*(?<endNumber>\d+)?)?)?[ \t]*$",
+				new Regex(@"(?in)^XOVER([ \t]+(?<startNumber>\d+)" + 
+									@"([ \t]*(?<dash>-)[ \t]*(?<endNumber>\d+)?)?)?[ \t]*$",
 									RegexOptions.Compiled);
 
 			public Xover(Session session) : base(session)
@@ -112,17 +114,17 @@ namespace derIgel.NNTP.Commands
 					articleList = new NewsArticle[1];
 					articleList[0] = session.dataProvider.GetArticle(NewsArticle.Content.Header);
 				}
-				string output = string.Empty;
+				StringBuilder output = new StringBuilder();
 				foreach (NewsArticle article in articleList)
-					output += string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\r\n",
+					output.AppendFormat("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}{8}",
 						article.Number,
 						article.EncodedHeader("Subject"),
 						article.EncodedHeader("From"),
 						article["Date"],
 						article["Message-ID"],
 						article["References"],
-						null, null, null);
-				return new Response(224, null, output);
+						null, null, derIgel.Utils.Util.CRLF);
+				return new Response(224, Encoding.ASCII.GetBytes(output.ToString()));
 			}
 		}
 
@@ -136,7 +138,8 @@ namespace derIgel.NNTP.Commands
 		public class ArticleHeadBodyStat : Generic
 		{
 			protected static Regex ArticleHeadBodyStatSyntaxisChecker =
-				new Regex(@"(?in)^(?<command>ARTICLE|HEAD|BODY|STAT)([ \t]+((?<messageID>\<\S+\>)|(?<messageNumber>\d+)))?[ \t]*$",
+				new Regex(@"(?in)^(?<command>ARTICLE|HEAD|BODY|STAT)" + 
+									@"([ \t]+((?<messageID>\<\S+\>)|(?<messageNumber>\d+)))?[ \t]*$",
 									RegexOptions.Compiled);
 
 			public ArticleHeadBodyStat(Session session) : base(session)	
@@ -187,9 +190,8 @@ namespace derIgel.NNTP.Commands
 				else
 					article = session.dataProvider.GetArticle(NewsArticle.Content.HeaderAndBody);
 				
-				return new Response(responseCode,
-					new string[]{article.Number.ToString(), article["Message-ID"]},
-					article.ToString());
+				return new Response(responseCode, article.GetBody(),
+					article.Number, article["Message-ID"]);
 			}
 		}
 
@@ -199,7 +201,8 @@ namespace derIgel.NNTP.Commands
 		[NNTPCommand("NEXT")]
 		public class Next : Generic
 		{
-			protected static Regex NextSyntaxisChecker= new Regex(@"(?in)^NEXT[ \t]*$", RegexOptions.Compiled);
+			protected static Regex NextSyntaxisChecker =
+				new Regex(@"(?in)^NEXT[ \t]*$",	RegexOptions.Compiled);
 
 			public Next(Session session) : base(session)
 			{
@@ -210,8 +213,7 @@ namespace derIgel.NNTP.Commands
 			protected override Response ProcessCommand()
 			{
 				NewsArticle article = session.dataProvider.GetNextArticle();
-				return new Response(223, new string[]{article.Number.ToString(),
-																								article["Message-ID"]});
+				return new Response(223, null, article.Number, article["Message-ID"]);
 			}
 		}
 	
@@ -221,7 +223,8 @@ namespace derIgel.NNTP.Commands
 		[NNTPCommand("LAST")]
 		public class Last : Generic
 		{
-			protected static Regex LastSyntaxisChecker = new Regex(@"(?in)^LAST[ \t]*$", RegexOptions.Compiled);
+			protected static Regex LastSyntaxisChecker =
+				new Regex(@"(?in)^LAST[ \t]*$", RegexOptions.Compiled);
 
 			public Last(Session session) : base(session)
 			{
@@ -232,8 +235,7 @@ namespace derIgel.NNTP.Commands
 			protected override Response ProcessCommand()
 			{
 				NewsArticle article = session.dataProvider.GetPrevArticle();
-				return new Response(223, new string[]{article.Number.ToString(),
-																								article["Message-ID"]});
+				return new Response(223, null, article.Number, article["Message-ID"]);
 			}
 		}
 
@@ -243,8 +245,8 @@ namespace derIgel.NNTP.Commands
 		[NNTPCommand("GROUP")]
 		public class Group : Generic
 		{
-			protected static Regex GroupSyntaxisChecker = new Regex(@"(?in)^GROUP[ \t]+(?<groupName>\S+)[ \t]*$",
-				RegexOptions.Compiled);
+			protected static Regex GroupSyntaxisChecker =
+				new Regex(@"(?in)^GROUP[ \t]+(?<groupName>\S+)[ \t]*$",	RegexOptions.Compiled);
 
 			public Group(Session session) : base(session)
 			{
@@ -256,10 +258,8 @@ namespace derIgel.NNTP.Commands
 			{
 				string groupName = lastMatch.Groups["groupName"].Value;
 				NewsGroup group = session.dataProvider.GetGroup(groupName);
-				return new Response(211, new string[]{group.EtimatedArticles.ToString(),
-																								group.FirstArticleNumber.ToString(),
-																								group.LastArticleNumber.ToString(),
-																								groupName});
+				return new Response(211, null, group.EtimatedArticles, group.FirstArticleNumber,
+					group.LastArticleNumber, groupName);
 			}
 		}
 
@@ -269,7 +269,8 @@ namespace derIgel.NNTP.Commands
 		[NNTPCommand("LIST")]
 		public class List : Generic
 		{
-			protected static Regex ListSyntaxisChecker = new	Regex(@"(?in)^LIST[ \t]*$", RegexOptions.Compiled);
+			protected static Regex ListSyntaxisChecker =
+				new	Regex(@"(?in)^LIST[ \t]*$", RegexOptions.Compiled);
 
 			public List(Session session) : base(session)
 			{
@@ -280,12 +281,12 @@ namespace derIgel.NNTP.Commands
 			protected override Response ProcessCommand()
 			{
 				NewsGroup[] groupList = session.dataProvider.GetGroupList(new DateTime(), null);
-				string textResponse = string.Empty;
+				StringBuilder textResponse = new StringBuilder();
 				foreach (NewsGroup group in groupList)
-					textResponse += string.Format("{0} {1} {2} {3}" + derIgel.Utils.Util.CRLF,
+					textResponse.AppendFormat("{0} {1} {2} {3}{4}",
 						group.Name, group.LastArticleNumber, group.FirstArticleNumber,
-						group.PostingAllowed ? 'y' : 'n');
-				return new Response(215, null, textResponse);
+						group.PostingAllowed ? 'y' : 'n', derIgel.Utils.Util.CRLF);
+				return new Response(215, Encoding.ASCII.GetBytes(textResponse.ToString()));
 			}
 		}
 
@@ -296,7 +297,9 @@ namespace derIgel.NNTP.Commands
 		public class NewGroups : Generic
 		{
 			protected static Regex NewGroupsSyntaxisChecker =
-				new	Regex(@"(?in)^NEWGROUPS[ \t]+(?<date>\d{6}[ \t]+\d{6})([ \t]+(?<timezone>GMT))?([ \t]+<(?<distributions>\w+(.\w+)*(,\w+(.\w+)*)*)>)?[ \t]*$",
+				new	Regex(@"(?in)^NEWGROUPS[ \t]+(?<date>\d{6}[ \t]+\d{6})" +
+									@"([ \t]+(?<timezone>GMT))?([ \t]+" +
+									@"<(?<distributions>\w+(.\w+)*(,\w+(.\w+)*)*)>)?[ \t]*$",
 									RegexOptions.Compiled);
 
 			public NewGroups(Session session) : base(session)
@@ -326,12 +329,12 @@ namespace derIgel.NNTP.Commands
 							Split(new char[]{','});
 				
 					NewsGroup[] groupList = session.dataProvider.GetGroupList(date, distributions);
-					string textResponse = string.Empty;
+					StringBuilder textResponse = new StringBuilder();
 					foreach (NewsGroup group in groupList)
-						textResponse += string.Format("{0} {1} {2} {3}" + derIgel.Utils.Util.CRLF,
+						textResponse.AppendFormat("{0} {1} {2} {3}{4}",
 							group.Name, group.LastArticleNumber, group.FirstArticleNumber,
-							group.PostingAllowed ? 'y' : 'n');
-					return new Response(231, null, textResponse);
+							group.PostingAllowed ? 'y' : 'n', derIgel.Utils.Util.CRLF);
+					return new Response(231, Encoding.ASCII.GetBytes(textResponse.ToString()));
 				}
 				catch (ArgumentOutOfRangeException)
 				{
@@ -347,7 +350,9 @@ namespace derIgel.NNTP.Commands
 		public class NewNews : Generic
 		{
 			protected static Regex NewNewsSyntaxisChecker =
-				new	Regex(@"(?in)^NEWNEWS[ \t]+(?<newsgroups>\w+(.\w+)*(,\w+(.\w+)*)*)[ \t]+(?<date>\d{6}[ \t]+\d{6})([ \t]+(?<timezone>GMT))?([ \t]+<(?<distributions>\w+(.\w+)*(,\w+(.\w+)*)*)>)?[ \t]*$",
+				new	Regex(@"(?in)^NEWNEWS[ \t]+(?<newsgroups>\w+(.\w+)*(,\w+(.\w+)*)*)[ \t]+" + 
+									@"(?<date>\d{6}[ \t]+\d{6})([ \t]+(?<timezone>GMT))?([ \t]+" + 
+									@"<(?<distributions>\w+(.\w+)*(,\w+(.\w+)*)*)>)?[ \t]*$",
 									RegexOptions.Compiled);
 
 			public NewNews(Session session) : base(session)
@@ -382,11 +387,13 @@ namespace derIgel.NNTP.Commands
 							lastMatch.Groups["distributions"].Value.
 							Split(new char[]{','});
 				
-					NewsArticle[] articleList = session.dataProvider.GetArticleList(newsgroups, date, distributions);
-					string textResponse = string.Empty;
+					NewsArticle[] articleList =
+						session.dataProvider.GetArticleList(newsgroups, date, distributions);
+					StringBuilder textResponse = new StringBuilder();
 					foreach (NewsArticle article in articleList)
-						textResponse += string.Format("{0}" + derIgel.Utils.Util.CRLF, article["Message-ID"]);
-					return new Response(230, null, textResponse);
+						textResponse.AppendFormat("{0}{1}", article["Message-ID"],
+							derIgel.Utils.Util.CRLF);
+					return new Response(230, Encoding.ASCII.GetBytes(textResponse.ToString()));
 				}
 				catch (ArgumentOutOfRangeException)
 				{
@@ -401,7 +408,8 @@ namespace derIgel.NNTP.Commands
 		[NNTPCommand("POST")]
 		public class Post : Generic
 		{
-			protected static Regex PostSyntaxisChecker = new	Regex(@"(?in)^POST[ \t]*$", RegexOptions.Compiled);
+			protected static Regex PostSyntaxisChecker =
+				new Regex(@"(?in)^POST[ \t]*$", RegexOptions.Compiled);
 
 			public Post(Session session) : base(session)
 			{
@@ -422,7 +430,8 @@ namespace derIgel.NNTP.Commands
 		[NNTPCommand("QUIT")]
 		public class Quit : Generic
 		{
-			protected static Regex QuitSyntaxisChecker = new Regex(@"(?in)^QUIT[ \t]*$", RegexOptions.Compiled);
+			protected static Regex QuitSyntaxisChecker =
+				new Regex(@"(?in)^QUIT[ \t]*$", RegexOptions.Compiled);
 
 			public Quit(Session session) : base(session)
 			{
@@ -441,7 +450,8 @@ namespace derIgel.NNTP.Commands
 		[NNTPCommand("SLAVE")]
 		public class Slave : Generic
 		{
-			protected static Regex SlaveSyntaxisChecker = new	Regex(@"(?in)^SLAVE[ \t]*$", RegexOptions.Compiled);
+			protected static Regex SlaveSyntaxisChecker =
+				new	Regex(@"(?in)^SLAVE[ \t]*$", RegexOptions.Compiled);
 
 			public Slave(Session session) : base(session)
 			{
@@ -460,8 +470,8 @@ namespace derIgel.NNTP.Commands
 		[NNTPCommand("MODE")]
 		public class Mode : Generic
 		{
-			protected static Regex ModeSyntaxisChecker = new	Regex(@"(?in)^MODE[ \t]+(?<mode>READER|STREAM)[ \t]*$",
-				RegexOptions.Compiled);
+			protected static Regex ModeSyntaxisChecker =
+				new Regex(@"(?in)^MODE[ \t]+(?<mode>READER|STREAM)[ \t]*$",	RegexOptions.Compiled);
 
 			public Mode(Session session) : base(session)
 			{
@@ -523,7 +533,8 @@ namespace derIgel.NNTP.Commands
 							break;
 						case Session.States.MoreAuthRequired	:
 							session.dataProvider.password	=	lastMatch.Groups["param"].Value;
-							if (session.dataProvider.Authentificate(session.dataProvider.username, session.dataProvider.password))
+							if (session.dataProvider.Authentificate(session.dataProvider.username,
+								session.dataProvider.password))
 							{
 								session.sessionState = Session.States.Normal;
 								result = new Response(281);
@@ -545,7 +556,8 @@ namespace derIgel.NNTP.Commands
 		[NNTPCommand("HELP")]
 		public class Help : Generic
 		{
-			protected static Regex HelpSyntaxisChecker = new	Regex(@"(?in)^HELP[ \t]*$", RegexOptions.Compiled);
+			protected static Regex HelpSyntaxisChecker =
+				new Regex(@"(?in)^HELP[ \t]*$", RegexOptions.Compiled);
 
 			public Help(Session session) : base(session)
 			{
@@ -554,10 +566,12 @@ namespace derIgel.NNTP.Commands
 
 			protected override Response ProcessCommand()
 			{
-				string supportCommands = "RSDN NNTP Sever support follow commands:" + derIgel.Utils.Util.CRLF;
+				StringBuilder supportCommands = new StringBuilder();
+				supportCommands.Append("RSDN NNTP Sever support follow commands:").
+					Append(derIgel.Utils.Util.CRLF);
 				foreach (string command in session.commands.Keys)
-					supportCommands += '\t' + command + derIgel.Utils.Util.CRLF;
-				return new Response(100, null, supportCommands);
+					supportCommands.AppendFormat("\t{0}{1}", command,derIgel.Utils.Util.CRLF);
+				return new Response(100, Encoding.ASCII.GetBytes(supportCommands.ToString()));
 			}
 		}
 }

@@ -83,11 +83,11 @@ namespace derIgel
 				return true;
 			}
 
-			public abstract void PostMessage(string text);
+			public abstract void PostMessage(byte[] message);
 
 			public virtual void PostMessage(NewsArticle article)
 			{
-				PostMessage(article.ToString());
+				PostMessage(article.GetBody());
 			}
 
 			protected internal string username = "";

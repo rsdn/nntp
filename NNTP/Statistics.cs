@@ -99,7 +99,7 @@ namespace derIgel.NNTP
 		{
 			SoapFormatter formatter = new SoapFormatter();
 			formatter.AssemblyFormat = FormatterAssemblyStyle.Simple;
-			Stream stream = new FileStream(filename, FileMode.Create, FileAccess.Write, FileShare.None);
+			Stream stream = new FileStream(filename, FileMode.Create, FileAccess.Write,	FileShare.None);
 			formatter.Serialize(stream, this);
 			stream.Close();
 		}

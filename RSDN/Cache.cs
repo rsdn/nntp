@@ -5,6 +5,7 @@ using System.Runtime.Serialization.Formatters;
 using System.Runtime.Serialization;
 using System.IO;
 using derIgel.NNTP;
+using System.Runtime.CompilerServices;
 
 namespace derIgel.RsdnNntp
 {
@@ -54,6 +55,7 @@ namespace derIgel.RsdnNntp
 		/// </summary>
 		public NewsArticle this[string messageID]
 		{
+			[MethodImpl(MethodImplOptions.Synchronized)]
 			get {return cache[messageID] as NewsArticle; }
 		}
 
@@ -62,6 +64,7 @@ namespace derIgel.RsdnNntp
 		/// </summary>
 		public NewsArticle this[string newsGroup, int number]
 		{
+			[MethodImpl(MethodImplOptions.Synchronized)]
 			get
 			{
 				if (identities[newsGroup] != null)
@@ -79,6 +82,7 @@ namespace derIgel.RsdnNntp
 		/// </summary>
 		public NewsArticle this[string messageID, string newsGroup, int number]
 		{
+			[MethodImpl(MethodImplOptions.Synchronized)]
 			set
 			{
 				if (cache.Count >= capacity)

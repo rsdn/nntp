@@ -18,7 +18,7 @@
                 DefaultHTMLPageLayout = "Grid"
                 DefaultTargetSchema = "IE50"
                 DelaySign = "false"
-                OutputType = "Exe"
+                OutputType = "WinExe"
                 RootNamespace = "derIgel.RsdnNntp"
                 StartupObject = ""
             >

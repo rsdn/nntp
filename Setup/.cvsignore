@@ -1,0 +1,4 @@
+*.vspscc
+*.scc
+\Debug
+\Release

@@ -154,6 +154,54 @@ namespace derIgel.RsdnNntp.ru.rsdn {
         }
         
         /// <remarks/>
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GetArticleByID", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public article GetArticleByID(int mid, string login, string psw) {
+            object[] results = this.Invoke("GetArticleByID", new object[] {
+                        mid,
+                        login,
+                        psw});
+            return ((article)(results[0]));
+        }
+        
+        /// <remarks/>
+        public System.IAsyncResult BeginGetArticleByID(int mid, string login, string psw, System.AsyncCallback callback, object asyncState) {
+            return this.BeginInvoke("GetArticleByID", new object[] {
+                        mid,
+                        login,
+                        psw}, callback, asyncState);
+        }
+        
+        /// <remarks/>
+        public article EndGetArticleByID(System.IAsyncResult asyncResult) {
+            object[] results = this.EndInvoke(asyncResult);
+            return ((article)(results[0]));
+        }
+        
+        /// <remarks/>
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GetFormattedArticleByID", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public article GetFormattedArticleByID(int mid, string login, string psw) {
+            object[] results = this.Invoke("GetFormattedArticleByID", new object[] {
+                        mid,
+                        login,
+                        psw});
+            return ((article)(results[0]));
+        }
+        
+        /// <remarks/>
+        public System.IAsyncResult BeginGetFormattedArticleByID(int mid, string login, string psw, System.AsyncCallback callback, object asyncState) {
+            return this.BeginInvoke("GetFormattedArticleByID", new object[] {
+                        mid,
+                        login,
+                        psw}, callback, asyncState);
+        }
+        
+        /// <remarks/>
+        public article EndGetFormattedArticleByID(System.IAsyncResult asyncResult) {
+            object[] results = this.EndInvoke(asyncResult);
+            return ((article)(results[0]));
+        }
+        
+        /// <remarks/>
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/ArticleList", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         public article_list ArticleList(string group, int first, int last, string login, string psw) {
             object[] results = this.Invoke("ArticleList", new object[] {
@@ -249,6 +297,36 @@ namespace derIgel.RsdnNntp.ru.rsdn {
         
         /// <remarks/>
         public post_result EndPostMIMEMessage(System.IAsyncResult asyncResult) {
+            object[] results = this.EndInvoke(asyncResult);
+            return ((post_result)(results[0]));
+        }
+        
+        /// <remarks/>
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/PostUnicodeMessage", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public post_result PostUnicodeMessage(string login, string psw, int mid, string group, string subject, string message) {
+            object[] results = this.Invoke("PostUnicodeMessage", new object[] {
+                        login,
+                        psw,
+                        mid,
+                        group,
+                        subject,
+                        message});
+            return ((post_result)(results[0]));
+        }
+        
+        /// <remarks/>
+        public System.IAsyncResult BeginPostUnicodeMessage(string login, string psw, int mid, string group, string subject, string message, System.AsyncCallback callback, object asyncState) {
+            return this.BeginInvoke("PostUnicodeMessage", new object[] {
+                        login,
+                        psw,
+                        mid,
+                        group,
+                        subject,
+                        message}, callback, asyncState);
+        }
+        
+        /// <remarks/>
+        public post_result EndPostUnicodeMessage(System.IAsyncResult asyncResult) {
             object[] results = this.EndInvoke(asyncResult);
             return ((post_result)(results[0]));
         }
@@ -384,6 +462,15 @@ namespace derIgel.RsdnNntp.ru.rsdn {
         
         /// <remarks/>
         public string fmtmessage;
+        
+        /// <remarks/>
+        public string userType;
+        
+        /// <remarks/>
+        public string homePage;
+        
+        /// <remarks/>
+        public string group;
     }
     
     /// <remarks/>

@@ -102,6 +102,9 @@
           <s:element minOccurs="0" maxOccurs="1" name="subject" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="message" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="fmtmessage" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="userType" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="homePage" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="group" type="s:string" />
         </s:sequence>
       </s:complexType>
       <s:element name="GetFormattedArticle">
@@ -118,6 +121,38 @@
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="0" maxOccurs="1" name="GetFormattedArticleResult" type="s0:article" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetArticleByID">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="mid" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="login" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="psw" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetArticleByIDResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetArticleByIDResult" type="s0:article" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetFormattedArticleByID">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="mid" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="login" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="psw" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetFormattedArticleByIDResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetFormattedArticleByIDResult" type="s0:article" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -224,6 +259,25 @@
           <s:element minOccurs="1" maxOccurs="1" name="ok" type="s:boolean" />
         </s:sequence>
       </s:complexType>
+      <s:element name="PostUnicodeMessage">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="login" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="psw" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="mid" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="group" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="subject" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="message" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="PostUnicodeMessageResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="PostUnicodeMessageResult" type="s0:post_result" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
       <s:element name="group_list" nillable="true" type="s0:group_list" />
       <s:element name="group" type="s0:group" />
       <s:element name="article" nillable="true" type="s0:article" />
@@ -263,6 +317,18 @@
   <message name="GetFormattedArticleSoapOut">
     <part name="parameters" element="s0:GetFormattedArticleResponse" />
   </message>
+  <message name="GetArticleByIDSoapIn">
+    <part name="parameters" element="s0:GetArticleByID" />
+  </message>
+  <message name="GetArticleByIDSoapOut">
+    <part name="parameters" element="s0:GetArticleByIDResponse" />
+  </message>
+  <message name="GetFormattedArticleByIDSoapIn">
+    <part name="parameters" element="s0:GetFormattedArticleByID" />
+  </message>
+  <message name="GetFormattedArticleByIDSoapOut">
+    <part name="parameters" element="s0:GetFormattedArticleByIDResponse" />
+  </message>
   <message name="ArticleListSoapIn">
     <part name="parameters" element="s0:ArticleList" />
   </message>
@@ -286,6 +352,12 @@
   </message>
   <message name="PostMIMEMessageSoapOut">
     <part name="parameters" element="s0:PostMIMEMessageResponse" />
+  </message>
+  <message name="PostUnicodeMessageSoapIn">
+    <part name="parameters" element="s0:PostUnicodeMessage" />
+  </message>
+  <message name="PostUnicodeMessageSoapOut">
+    <part name="parameters" element="s0:PostUnicodeMessageResponse" />
   </message>
   <message name="GroupListHttpGetIn">
     <part name="login" type="s:string" />
@@ -328,6 +400,22 @@
   <message name="GetFormattedArticleHttpGetOut">
     <part name="Body" element="s0:article" />
   </message>
+  <message name="GetArticleByIDHttpGetIn">
+    <part name="mid" type="s:string" />
+    <part name="login" type="s:string" />
+    <part name="psw" type="s:string" />
+  </message>
+  <message name="GetArticleByIDHttpGetOut">
+    <part name="Body" element="s0:article" />
+  </message>
+  <message name="GetFormattedArticleByIDHttpGetIn">
+    <part name="mid" type="s:string" />
+    <part name="login" type="s:string" />
+    <part name="psw" type="s:string" />
+  </message>
+  <message name="GetFormattedArticleByIDHttpGetOut">
+    <part name="Body" element="s0:article" />
+  </message>
   <message name="ArticleListHttpGetIn">
     <part name="group" type="s:string" />
     <part name="first" type="s:string" />
@@ -360,6 +448,17 @@
     <part name="message" type="s:string" />
   </message>
   <message name="PostMIMEMessageHttpGetOut">
+    <part name="Body" element="s0:post_result" />
+  </message>
+  <message name="PostUnicodeMessageHttpGetIn">
+    <part name="login" type="s:string" />
+    <part name="psw" type="s:string" />
+    <part name="mid" type="s:string" />
+    <part name="group" type="s:string" />
+    <part name="subject" type="s:string" />
+    <part name="message" type="s:string" />
+  </message>
+  <message name="PostUnicodeMessageHttpGetOut">
     <part name="Body" element="s0:post_result" />
   </message>
   <message name="GroupListHttpPostIn">
@@ -403,6 +502,22 @@
   <message name="GetFormattedArticleHttpPostOut">
     <part name="Body" element="s0:article" />
   </message>
+  <message name="GetArticleByIDHttpPostIn">
+    <part name="mid" type="s:string" />
+    <part name="login" type="s:string" />
+    <part name="psw" type="s:string" />
+  </message>
+  <message name="GetArticleByIDHttpPostOut">
+    <part name="Body" element="s0:article" />
+  </message>
+  <message name="GetFormattedArticleByIDHttpPostIn">
+    <part name="mid" type="s:string" />
+    <part name="login" type="s:string" />
+    <part name="psw" type="s:string" />
+  </message>
+  <message name="GetFormattedArticleByIDHttpPostOut">
+    <part name="Body" element="s0:article" />
+  </message>
   <message name="ArticleListHttpPostIn">
     <part name="group" type="s:string" />
     <part name="first" type="s:string" />
@@ -437,6 +552,17 @@
   <message name="PostMIMEMessageHttpPostOut">
     <part name="Body" element="s0:post_result" />
   </message>
+  <message name="PostUnicodeMessageHttpPostIn">
+    <part name="login" type="s:string" />
+    <part name="psw" type="s:string" />
+    <part name="mid" type="s:string" />
+    <part name="group" type="s:string" />
+    <part name="subject" type="s:string" />
+    <part name="message" type="s:string" />
+  </message>
+  <message name="PostUnicodeMessageHttpPostOut">
+    <part name="Body" element="s0:post_result" />
+  </message>
   <portType name="ForumSoap">
     <operation name="GroupList">
       <documentation>Obsolete.</documentation>
@@ -463,6 +589,16 @@
       <input message="s0:GetFormattedArticleSoapIn" />
       <output message="s0:GetFormattedArticleSoapOut" />
     </operation>
+    <operation name="GetArticleByID">
+      <documentation>Returns information about the article by message ID.</documentation>
+      <input message="s0:GetArticleByIDSoapIn" />
+      <output message="s0:GetArticleByIDSoapOut" />
+    </operation>
+    <operation name="GetFormattedArticleByID">
+      <documentation>Returns formated article by message ID.</documentation>
+      <input message="s0:GetFormattedArticleByIDSoapIn" />
+      <output message="s0:GetFormattedArticleByIDSoapOut" />
+    </operation>
     <operation name="ArticleList">
       <documentation>Returns a list of articles.</documentation>
       <input message="s0:ArticleListSoapIn" />
@@ -482,6 +618,11 @@
       <documentation>Accepts MIME formatted message postings.</documentation>
       <input message="s0:PostMIMEMessageSoapIn" />
       <output message="s0:PostMIMEMessageSoapOut" />
+    </operation>
+    <operation name="PostUnicodeMessage">
+      <documentation>Accepts Unicode formatted message postings.</documentation>
+      <input message="s0:PostUnicodeMessageSoapIn" />
+      <output message="s0:PostUnicodeMessageSoapOut" />
     </operation>
   </portType>
   <portType name="ForumHttpGet">
@@ -510,6 +651,16 @@
       <input message="s0:GetFormattedArticleHttpGetIn" />
       <output message="s0:GetFormattedArticleHttpGetOut" />
     </operation>
+    <operation name="GetArticleByID">
+      <documentation>Returns information about the article by message ID.</documentation>
+      <input message="s0:GetArticleByIDHttpGetIn" />
+      <output message="s0:GetArticleByIDHttpGetOut" />
+    </operation>
+    <operation name="GetFormattedArticleByID">
+      <documentation>Returns formated article by message ID.</documentation>
+      <input message="s0:GetFormattedArticleByIDHttpGetIn" />
+      <output message="s0:GetFormattedArticleByIDHttpGetOut" />
+    </operation>
     <operation name="ArticleList">
       <documentation>Returns a list of articles.</documentation>
       <input message="s0:ArticleListHttpGetIn" />
@@ -529,6 +680,11 @@
       <documentation>Accepts MIME formatted message postings.</documentation>
       <input message="s0:PostMIMEMessageHttpGetIn" />
       <output message="s0:PostMIMEMessageHttpGetOut" />
+    </operation>
+    <operation name="PostUnicodeMessage">
+      <documentation>Accepts Unicode formatted message postings.</documentation>
+      <input message="s0:PostUnicodeMessageHttpGetIn" />
+      <output message="s0:PostUnicodeMessageHttpGetOut" />
     </operation>
   </portType>
   <portType name="ForumHttpPost">
@@ -557,6 +713,16 @@
       <input message="s0:GetFormattedArticleHttpPostIn" />
       <output message="s0:GetFormattedArticleHttpPostOut" />
     </operation>
+    <operation name="GetArticleByID">
+      <documentation>Returns information about the article by message ID.</documentation>
+      <input message="s0:GetArticleByIDHttpPostIn" />
+      <output message="s0:GetArticleByIDHttpPostOut" />
+    </operation>
+    <operation name="GetFormattedArticleByID">
+      <documentation>Returns formated article by message ID.</documentation>
+      <input message="s0:GetFormattedArticleByIDHttpPostIn" />
+      <output message="s0:GetFormattedArticleByIDHttpPostOut" />
+    </operation>
     <operation name="ArticleList">
       <documentation>Returns a list of articles.</documentation>
       <input message="s0:ArticleListHttpPostIn" />
@@ -576,6 +742,11 @@
       <documentation>Accepts MIME formatted message postings.</documentation>
       <input message="s0:PostMIMEMessageHttpPostIn" />
       <output message="s0:PostMIMEMessageHttpPostOut" />
+    </operation>
+    <operation name="PostUnicodeMessage">
+      <documentation>Accepts Unicode formatted message postings.</documentation>
+      <input message="s0:PostUnicodeMessageHttpPostIn" />
+      <output message="s0:PostUnicodeMessageHttpPostOut" />
     </operation>
   </portType>
   <binding name="ForumSoap" type="s0:ForumSoap">
@@ -625,6 +796,24 @@
         <soap:body use="literal" />
       </output>
     </operation>
+    <operation name="GetArticleByID">
+      <soap:operation soapAction="http://tempuri.org/GetArticleByID" style="document" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+    <operation name="GetFormattedArticleByID">
+      <soap:operation soapAction="http://tempuri.org/GetFormattedArticleByID" style="document" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
     <operation name="ArticleList">
       <soap:operation soapAction="http://tempuri.org/ArticleList" style="document" />
       <input>
@@ -654,6 +843,15 @@
     </operation>
     <operation name="PostMIMEMessage">
       <soap:operation soapAction="http://tempuri.org/PostMIMEMessage" style="document" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+    <operation name="PostUnicodeMessage">
+      <soap:operation soapAction="http://tempuri.org/PostUnicodeMessage" style="document" />
       <input>
         <soap:body use="literal" />
       </input>
@@ -709,6 +907,24 @@
         <mime:mimeXml part="Body" />
       </output>
     </operation>
+    <operation name="GetArticleByID">
+      <http:operation location="/GetArticleByID" />
+      <input>
+        <http:urlEncoded />
+      </input>
+      <output>
+        <mime:mimeXml part="Body" />
+      </output>
+    </operation>
+    <operation name="GetFormattedArticleByID">
+      <http:operation location="/GetFormattedArticleByID" />
+      <input>
+        <http:urlEncoded />
+      </input>
+      <output>
+        <mime:mimeXml part="Body" />
+      </output>
+    </operation>
     <operation name="ArticleList">
       <http:operation location="/ArticleList" />
       <input>
@@ -738,6 +954,15 @@
     </operation>
     <operation name="PostMIMEMessage">
       <http:operation location="/PostMIMEMessage" />
+      <input>
+        <http:urlEncoded />
+      </input>
+      <output>
+        <mime:mimeXml part="Body" />
+      </output>
+    </operation>
+    <operation name="PostUnicodeMessage">
+      <http:operation location="/PostUnicodeMessage" />
       <input>
         <http:urlEncoded />
       </input>
@@ -793,6 +1018,24 @@
         <mime:mimeXml part="Body" />
       </output>
     </operation>
+    <operation name="GetArticleByID">
+      <http:operation location="/GetArticleByID" />
+      <input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </input>
+      <output>
+        <mime:mimeXml part="Body" />
+      </output>
+    </operation>
+    <operation name="GetFormattedArticleByID">
+      <http:operation location="/GetFormattedArticleByID" />
+      <input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </input>
+      <output>
+        <mime:mimeXml part="Body" />
+      </output>
+    </operation>
     <operation name="ArticleList">
       <http:operation location="/ArticleList" />
       <input>
@@ -822,6 +1065,15 @@
     </operation>
     <operation name="PostMIMEMessage">
       <http:operation location="/PostMIMEMessage" />
+      <input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </input>
+      <output>
+        <mime:mimeXml part="Body" />
+      </output>
+    </operation>
+    <operation name="PostUnicodeMessage">
+      <http:operation location="/PostUnicodeMessage" />
       <input>
         <mime:content type="application/x-www-form-urlencoded" />
       </input>

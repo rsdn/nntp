@@ -120,17 +120,17 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "NNTPSettings.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Response.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Session.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Settings.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

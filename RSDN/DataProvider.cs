@@ -64,6 +64,8 @@ namespace derIgel.RsdnNntp
 			try
 			{
 				requestedGroup = webService.GroupInfo(groupName, username, password);
+				if (requestedGroup.error != null)
+					ProcessErrorMessage(requestedGroup.error);
 			}		
 			catch (System.Exception exception)
 			{
@@ -82,12 +84,9 @@ namespace derIgel.RsdnNntp
 				throw new Exception(Errors.NoSelectedGroup);
 
 			NewsArticle newsMessage = null;
-			// synchronized access to cache
+			// access to cache
 			if (cache.Capacity > 0)
-				lock(cache)
-				{
-					newsMessage = cache[currentGroup, articleNumber];
-				}
+				newsMessage = cache[currentGroup, articleNumber];
 
 			if (newsMessage == null)
 			{
@@ -96,34 +95,55 @@ namespace derIgel.RsdnNntp
 				{
 					message = webService.GetFormattedArticle(currentGroup, articleNumber,
 						username,	password);
+					if (message.error != null)
+						ProcessErrorMessage(message.error);
 				}
 				catch (System.Exception exception)
 				{
 					ProcessException(exception);
 				}	
 
-				if (message.error != null)
-					ProcessErrorMessage(message.error);
-
 				currentArticle = articleNumber;
 				newsMessage = ToNNTPArticle(message, currentGroup, content);
-				// synchronized access to cache
+				// access to cache
 				if (cache.Capacity > 0)
-					lock(cache)
-					{
-						cache[newsMessage.MessageID, currentGroup, articleNumber] =
-							newsMessage;
-					}					
+					cache[newsMessage.MessageID, currentGroup, articleNumber] =	newsMessage;
 			}
 
 			return newsMessage;
 		}
 
+		static protected readonly Regex messageIdNumber =
+			new Regex(@"<(?<messageIdNumber>\d+)@\S+>", RegexOptions.Compiled);
 		public override NewsArticle GetArticle(string messageID, NewsArticle.Content content)
 		{
-			// web service doesn't support this feature
-			throw new Exception(Errors.NotSupported);
+			NewsArticle newsMessage = null;
+			// access to cache
+			if (cache.Capacity > 0)
+				newsMessage = cache[messageID];
 
+			if (newsMessage == null)
+			{
+				article message = null;
+				try
+				{
+					int mID = int.Parse(messageIdNumber.Match(messageID).Groups["messageIdNumber"].Value);
+					message = webService.GetFormattedArticleByID(mID , username,	password);
+					if (message.error != null)
+						ProcessErrorMessage(message.error);
+				}
+				catch (System.Exception exception)
+				{
+					ProcessException(exception);
+				}	
+
+				newsMessage = ToNNTPArticle(message, message.group, content);
+				// access to cache
+				if (cache.Capacity > 0)
+					cache[newsMessage.MessageID, currentGroup, newsMessage.Number] =	newsMessage;
+			}
+
+			return newsMessage;
 		}
 
 		public override NewsArticle GetNextArticle()
@@ -175,6 +195,8 @@ namespace derIgel.RsdnNntp
 			try
 			{
 				groupList = webService.GetGroupList(username, password, startDate);
+				if (groupList.error != null)
+					ProcessErrorMessage(groupList.error);
 			}				
 			catch (System.Exception exception)
 			{
@@ -200,6 +222,8 @@ namespace derIgel.RsdnNntp
 			try
 			{
 				auth = webService.Authentication(user, pass);
+				if (!auth.ok)
+					throw new Exception(Errors.PostingFailed);
 			}
 			catch (System.Exception exception)
 			{
@@ -230,7 +254,7 @@ namespace derIgel.RsdnNntp
 				(content == NewsArticle.Content.HeaderAndBody))
 			{
 				string htmlText = string.Format(htmlMessageTemplate, message.authorid, message.author,
-					message.gid, message.id, message.fmtmessage);
+					message.gid, message.id, message.fmtmessage, message.userType, message.homePage);
 				Message htmlTextBody = new Message();
 				htmlTextBody.Bodies.Add(/*encoding.GetString(outputStream.GetBuffer())*/htmlText);
 				htmlTextBody.Encoding = encoding;
@@ -263,6 +287,8 @@ namespace derIgel.RsdnNntp
 				articleList = webService.ArticleList(currentGroup,
 					(startNumber == -1) ? currentGroupArticleStartNumber : startNumber,
 					(endNumber == -1) ? currentGroupArticleEndNumber : endNumber, username, password);
+				if (articleList.error != null)
+					ProcessErrorMessage(articleList.error);
 			}
 			catch (System.Exception exception)
 			{
@@ -287,13 +313,14 @@ namespace derIgel.RsdnNntp
 		/// </summary>
 		protected int currentGroupArticleEndNumber = -1;
 
-		public override void PostMessage(string text)
+		public override void PostMessage(byte[] message)
 		{
 			try
 			{
-				post_result result = webService.PostMIMEMessage(username, password, text);
+				post_result result = webService.PostMIMEMessage(username, password,
+					Encoding.GetEncoding("iso-8859-1").GetString(message));
 				if (!result.ok)
-					throw new Exception(Errors.PostingFailed);
+					ProcessErrorMessage(result.error);
 			}
 			catch (System.Exception exception)
 			{
@@ -331,12 +358,15 @@ namespace derIgel.RsdnNntp
 		{
 			switch (message)
 			{
-				case "1 Incorrect group name":
+				case "1 Incorrect group name" :
 					throw new Exception(Errors.NoSuchGroup);
-				case "2 Incorrect login name or password":
+				case "2 Incorrect login name or password" :
 					throw new Exception(Errors.NoPermission);
-				case "3 Article not found.":
+				case "3 Article not found." :
 					throw new Exception(Errors.NoSuchArticle);
+				case "Timeout expired." +
+					"  The timeout period elapsed prior to completion of the operation or the server is not responding." :
+					throw new Exception(Errors.ServiceUnaviable);
 				default:
 					throw new DataProvider.Exception(DataProvider.Errors.UnknownError);
 			}

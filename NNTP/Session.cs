@@ -74,8 +74,8 @@ namespace derIgel.NNTP
 
 		protected void Answer(Response response)
 		{
-			byte[] bytes = Encoding.ASCII.GetBytes(response.GetResponse());
-			netStream.Write(bytes, 0, bytes.GetLength(0));
+			byte[] bytes = response.GetResponse();
+			netStream.Write(bytes, 0, bytes.Length);
 		}
 
 		/// <summary>
@@ -83,6 +83,9 @@ namespace derIgel.NNTP
 		/// </summary>
 		public void Process(Object state)
 		{
+			// 8-bit encoder
+			Encoding latinEncoding = Encoding.GetEncoding("iso-8859-1");
+
 			string delimeter;
 			Response result = null;
 			try
@@ -90,7 +93,7 @@ namespace derIgel.NNTP
 				// response OK
 				Answer(dataProvider.PostingAllowed ? 200 : 201);
 
-				string bufferString = string.Empty;
+				StringBuilder bufferString = new StringBuilder();
 				while (true)
 				{
 					do
@@ -111,7 +114,7 @@ namespace derIgel.NNTP
 						}
 						int receivedBytes = netStream.EndRead(asyncResult);
 						if (receivedBytes  > 0)
-							bufferString += Encoding.ASCII.GetString(commandBuffer, 0, receivedBytes);
+							bufferString.Append(latinEncoding.GetString(commandBuffer, 0, receivedBytes));
 						else
 							return;
 					}
@@ -121,27 +124,24 @@ namespace derIgel.NNTP
 						delimeter = derIgel.Utils.Util.CRLF + "." + derIgel.Utils.Util.CRLF;
 					else
 						delimeter = derIgel.Utils.Util.CRLF;
-					if (bufferString.IndexOf(delimeter) != -1)
+
+					if (bufferString.ToString().IndexOf(delimeter) != -1)
 					{
 						// get command string till delimeter
-						commandString = bufferString.Substring(0, bufferString.IndexOf(delimeter));
+						commandString = bufferString.ToString().Substring(0, bufferString.ToString().IndexOf(delimeter));
 						
 						#if DEBUG || SHOW
 							errorOutput.WriteLine(commandString);
 						#endif
 
-						bufferString = bufferString.Remove(0,
-							bufferString.IndexOf(delimeter) + delimeter.Length);
+						bufferString.Remove(0, bufferString.ToString().IndexOf(delimeter) + delimeter.Length);
 					
-						if ((bufferString != string.Empty) && (bufferString.Trim() == string.Empty))
-							bufferString = string.Empty;
-
 						try
 						{
 							switch (sessionState)
 							{
 								case States.PostWaiting	:
-									dataProvider.PostMessage(commandString);
+									dataProvider.PostMessage(latinEncoding.GetBytes(commandString));
 									sessionState = States.Normal;
 									result = new Response(240);
 									break;
@@ -227,14 +227,14 @@ namespace derIgel.NNTP
 						Answer(result);
 
 #if DEBUG || SHOW
-						string firstLine = result.GetResponse();
-						if ((firstLine.Length -
+						string firstLine = latinEncoding.GetString(result.GetResponse());
+						/*if ((firstLine.Length -
 									(firstLine.IndexOf(derIgel.Utils.Util.CRLF) + derIgel.Utils.Util.CRLF.Length)) > 0)
 						{
 							firstLine = firstLine.Remove(firstLine.IndexOf(derIgel.Utils.Util.CRLF),
 								firstLine.Length - firstLine.IndexOf(derIgel.Utils.Util.CRLF)) +
 								derIgel.Utils.Util.CRLF + "..." + derIgel.Utils.Util.CRLF;
-						}
+						}*/
 						errorOutput.Write(firstLine);
 #endif
 
@@ -260,7 +260,7 @@ namespace derIgel.NNTP
 			}
 			finally
 			{
-				Close();
+				Dispose();
 			}
 		}
 
@@ -275,7 +275,7 @@ namespace derIgel.NNTP
 		/// <summary>
 		/// size of commandBuffer
 		/// </summary>
-		protected const int bufferSize = 512;
+		protected const int bufferSize = 1024;
 		/// <summary>
 		/// buffer for command string bytes
 		/// </summary>
@@ -312,25 +312,24 @@ namespace derIgel.NNTP
 		/// </summary>
 		protected int currentArticle = -1;
 
-		/// <summary>
-		/// close connection
-		/// </summary>
-		public void Close()
-		{
-			Dispose();
-		}
-
 		protected internal DataProvider dataProvider;
 		/// <summary>
 		/// connection timeout interval in milliseconds (3 min)
 		/// </summary>
 		protected const int connectionTimeout = 180000;
 
+		/// <summary>
+		/// free management resources
+		/// </summary>
 		public void Dispose()
 		{
 			netStream.Close();
-			client.Shutdown(SocketShutdown.Both);
-			client.Close();		
+			if (client.Connected)
+			{
+				client.Shutdown(SocketShutdown.Both);
+				client.Close();
+			}
+			
 			if (Disposed != null)
 				Disposed(this, EventArgs.Empty);
 		}

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace derIgel.NNTP
 {
@@ -59,15 +60,14 @@ namespace derIgel.NNTP
 			answers[503] = "503 program fault - command not performed";
 		}
 
-		public Response(int code, string[] parameters, string text)
+		public Response(int code, byte[] body, params object[] parameters)
 		{
 			this.code = code;
 			this.parameters = parameters;
-			bodyResponse = text;
+			bodyResponse = body;
 		}
-		public Response(int code, string[] parameters) : this(code, parameters, null) {}
-		public Response(int code) : this(code, null, null) {}
-		public Response() : this(500, null, null) {} //default error code 500 - not recognized command
+		public Response(int code) : this(code, null) {}
+		public Response() : this(500) {} //default - error code 500 (not recognized command)
 
 		/// <summary>
 		/// Associative arrays of NNTP server answers
@@ -80,18 +80,19 @@ namespace derIgel.NNTP
 		/// <summary>
 		/// response parameters
 		/// </summary>
-		protected string[] parameters;
+		protected object[] parameters;
 
-		public static string GetResponse(int code, string[] parameters, string bodyResponse)
+		public static byte[] GetResponse(int code, byte[] bodyResponse, params object[] parameters)
 		{
-			string content = answers[code] as string;
 			try
 			{
-				content += derIgel.Utils.Util.CRLF;
-				if (parameters != null)
-					content = string.Format(content, parameters);
-				if (bodyResponse != null)
-					content += ModifyTextResponse(bodyResponse) + "." + derIgel.Utils.Util.CRLF;
+				byte[] modifiedBody = ModifyTextResponse(bodyResponse);
+				string answer = string.Format(answers[code] as string + derIgel.Utils.Util.CRLF, parameters);
+				int answerBytes = Encoding.ASCII.GetByteCount(answer);
+				byte[] result = new byte[answerBytes + modifiedBody.Length];
+				Encoding.ASCII.GetBytes(answer).CopyTo(result, 0);
+				modifiedBody.CopyTo(result, answerBytes);
+				return (result);
 			}
 			catch(FormatException e)
 			{
@@ -101,33 +102,64 @@ namespace derIgel.NNTP
 			{
 				throw new ParamsException("No such response code", e);
 			}
-			return content;
 		}
 
 		public static void Answer(int code, Socket socket)
 		{
-			socket.Send(Encoding.ASCII.GetBytes(GetResponse(code, null, null)));
+			socket.Send(GetResponse(code, null));
 		}
 
-		public string GetResponse()
+		public byte[] GetResponse()
 		{
-			return GetResponse(code, parameters, bodyResponse);
+			return GetResponse(code, bodyResponse, parameters);
 		}
 
 		/// <summary>
-		/// textual response (only after status response may be)
+		/// body of response (only after status response may be)
 		/// </summary>
-		protected string bodyResponse;
+		protected byte[] bodyResponse;
+
+		protected static readonly Regex EncodeNNTPMessage =
+			new Regex(@"(?m)^\.", RegexOptions.Compiled);
 
 		/// <summary>
 		/// Modiffy textual response as double first dot
 		/// </summary>
-		public static string ModifyTextResponse(string text)
+		public static byte[] ModifyTextResponse(byte[] response)
 		{
-			text.Replace(derIgel.Utils.Util.CRLF + ".", derIgel.Utils.Util.CRLF+ "..");
-			if ((text != string.Empty) && !text.EndsWith(derIgel.Utils.Util.CRLF))
-				text += derIgel.Utils.Util.CRLF;
-			return text;
+			if (response != null)
+			{
+				// 8 bit encoding
+				Encoding latinEncoding = Encoding.GetEncoding("iso-8859-1");
+				StringBuilder textRepresentation = new StringBuilder(
+					// double start points
+					EncodeNNTPMessage.Replace(latinEncoding.GetString(response), ".."));
+				textRepresentation.Append(derIgel.Utils.Util.CRLF).Append(".").
+					Append(derIgel.Utils.Util.CRLF);
+				return latinEncoding.GetBytes(textRepresentation.ToString());
+			}
+			else
+				return new byte[0];
+		}
+
+		protected static readonly Regex DecodeNNTPMessage =
+			new Regex(@"(?m)^\.\.", RegexOptions.Compiled);
+
+		/// <summary>
+		/// Modiffy textual response with removing double first dot
+		/// </summary>
+		public static byte[] DemodifyTextResponse(byte[] response)
+		{
+			if (response != null)
+			{
+				// 8 bit encoding
+				Encoding latinEncoding = Encoding.GetEncoding("iso-8859-1");
+				StringBuilder textRepresentation = new StringBuilder(
+					DecodeNNTPMessage.Replace(latinEncoding.GetString(response), "."));
+				return latinEncoding.GetBytes(textRepresentation.ToString());
+			}
+			else
+				return new byte[0];
 		}
 
 		public int Code

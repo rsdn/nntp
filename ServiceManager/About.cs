@@ -15,6 +15,7 @@ namespace derIgel.RsdnNntp
 		private System.Windows.Forms.PictureBox pictureBox1;
 		private System.Windows.Forms.RichTextBox richTextAbout;
 		private System.Windows.Forms.TreeView treeView;
+		private System.Windows.Forms.Label titleLabel;
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
@@ -30,6 +31,12 @@ namespace derIgel.RsdnNntp
 			richTextAbout.LoadFile(
 				Assembly.GetExecutingAssembly().GetManifestResourceStream("derIgel.RsdnNntp.About.rtf"),
 				RichTextBoxStreamType.RichText);
+
+			AssemblyInformationalVersionAttribute productVersion = (AssemblyInformationalVersionAttribute)
+				Attribute.GetCustomAttribute(Assembly.GetExecutingAssembly(),
+					typeof(AssemblyInformationalVersionAttribute));
+
+			titleLabel.Text += productVersion.InformationalVersion;
 
 			AddAssembly(Assembly.GetExecutingAssembly());
 			AddAssembly(Assembly.Load("RsdnNntpServer"));
@@ -61,6 +68,7 @@ namespace derIgel.RsdnNntp
 			this.richTextAbout = new System.Windows.Forms.RichTextBox();
 			this.pictureBox1 = new System.Windows.Forms.PictureBox();
 			this.treeView = new System.Windows.Forms.TreeView();
+			this.titleLabel = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
 			// richTextAbout
@@ -70,10 +78,10 @@ namespace derIgel.RsdnNntp
 			this.richTextAbout.BackColor = System.Drawing.SystemColors.Control;
 			this.richTextAbout.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.richTextAbout.Cursor = System.Windows.Forms.Cursors.Default;
-			this.richTextAbout.Location = new System.Drawing.Point(72, 8);
+			this.richTextAbout.Location = new System.Drawing.Point(72, 48);
 			this.richTextAbout.Name = "richTextAbout";
 			this.richTextAbout.ReadOnly = true;
-			this.richTextAbout.Size = new System.Drawing.Size(316, 80);
+			this.richTextAbout.Size = new System.Drawing.Size(252, 80);
 			this.richTextAbout.TabIndex = 0;
 			this.richTextAbout.TabStop = false;
 			this.richTextAbout.Text = "";
@@ -82,7 +90,7 @@ namespace derIgel.RsdnNntp
 			// pictureBox1
 			// 
 			this.pictureBox1.Image = ((System.Drawing.Bitmap)(resources.GetObject("pictureBox1.Image")));
-			this.pictureBox1.Location = new System.Drawing.Point(8, 24);
+			this.pictureBox1.Location = new System.Drawing.Point(8, 32);
 			this.pictureBox1.Name = "pictureBox1";
 			this.pictureBox1.Size = new System.Drawing.Size(48, 48);
 			this.pictureBox1.TabIndex = 1;
@@ -94,17 +102,29 @@ namespace derIgel.RsdnNntp
 				| System.Windows.Forms.AnchorStyles.Left) 
 				| System.Windows.Forms.AnchorStyles.Right);
 			this.treeView.ImageIndex = -1;
-			this.treeView.Location = new System.Drawing.Point(8, 104);
+			this.treeView.Location = new System.Drawing.Point(8, 136);
 			this.treeView.Name = "treeView";
 			this.treeView.SelectedImageIndex = -1;
-			this.treeView.Size = new System.Drawing.Size(380, 160);
+			this.treeView.Size = new System.Drawing.Size(316, 192);
 			this.treeView.TabIndex = 2;
+			// 
+			// titleLabel
+			// 
+			this.titleLabel.AutoSize = true;
+			this.titleLabel.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+			this.titleLabel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.titleLabel.Location = new System.Drawing.Point(72, 16);
+			this.titleLabel.Name = "titleLabel";
+			this.titleLabel.Size = new System.Drawing.Size(157, 14);
+			this.titleLabel.TabIndex = 3;
+			this.titleLabel.Text = "RSDN NNTP Server ver. ";
 			// 
 			// About
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(400, 271);
+			this.ClientSize = new System.Drawing.Size(336, 341);
 			this.Controls.AddRange(new System.Windows.Forms.Control[] {
+																																	this.titleLabel,
 																																	this.treeView,
 																																	this.pictureBox1,
 																																	this.richTextAbout});

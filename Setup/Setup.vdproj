@@ -93,32 +93,32 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_C995AC7060E2469794D3581F4AF0054E"
+        "MsmKey" = "8:_F618385039594D9F893E3AD659FAF4F6"
         "OwnerKey" = "8:_A295B17FAF2A46728459EDDD4E09D8ED"
         "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
         }
         "Entry"
         {
-        "MsmKey" = "8:_C995AC7060E2469794D3581F4AF0054E"
+        "MsmKey" = "8:_F618385039594D9F893E3AD659FAF4F6"
+        "OwnerKey" = "8:_B389EFE1C7124CC5AF04813D17771C0A"
+        "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F618385039594D9F893E3AD659FAF4F6"
         "OwnerKey" = "8:_47C23DF6AAB91E78E119AC5FD9CB9F73"
         "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
         }
         "Entry"
         {
-        "MsmKey" = "8:_C995AC7060E2469794D3581F4AF0054E"
+        "MsmKey" = "8:_F618385039594D9F893E3AD659FAF4F6"
         "OwnerKey" = "8:_4B7D2FC1EE27E2D6FDACA174D835E279"
         "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
         }
         "Entry"
         {
-        "MsmKey" = "8:_C995AC7060E2469794D3581F4AF0054E"
+        "MsmKey" = "8:_F618385039594D9F893E3AD659FAF4F6"
         "OwnerKey" = "8:_6A50C438D5E5C0395BF36DF07E1854FA"
-        "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_C995AC7060E2469794D3581F4AF0054E"
-        "OwnerKey" = "8:_B389EFE1C7124CC5AF04813D17771C0A"
         "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
         }
     }
@@ -253,7 +253,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:RsdnDataProvider, Version=1.2.1056.27638, Culture=neutral"
+            "AssemblyAsmDisplayName" = "8:RsdnDataProvider, Version=1.3.1066.31300, Culture=neutral"
                 "ScatterAssemblies"
                 {
                     "_47C23DF6AAB91E78E119AC5FD9CB9F73"
@@ -284,7 +284,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:NNTP, Version=1.2.1056.27638, Culture=neutral"
+            "AssemblyAsmDisplayName" = "8:NNTP, Version=1.3.1066.31299, Culture=neutral"
                 "ScatterAssemblies"
                 {
                     "_4B7D2FC1EE27E2D6FDACA174D835E279"
@@ -315,7 +315,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:Mail, Version=1.2.1056.27637, Culture=neutral"
+            "AssemblyAsmDisplayName" = "8:Mail, Version=1.3.1066.31299, Culture=neutral"
                 "ScatterAssemblies"
                 {
                     "_6A50C438D5E5C0395BF36DF07E1854FA"
@@ -629,13 +629,13 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:RSDN NNTP Server"
-        "ProductCode" = "8:{25379336-FCC1-4FD8-873F-0846653E696A}"
-        "PackageCode" = "8:{48C4CBE5-7289-490E-A01C-843F5024BB40}"
+        "ProductCode" = "8:{6CCD5D96-D305-4DD6-B499-542146EFB893}"
+        "PackageCode" = "8:{3C2924F2-0EC8-4301-812E-F3A9ACFF0D9B}"
         "UpgradeCode" = "8:{7123A411-9564-4667-9C7C-C08988E1B0AC}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
-        "ProductVersion" = "8:1.2"
+        "ProductVersion" = "8:1.3"
         "Manufacturer" = "8:RSDN"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.rsdn.ru"
@@ -656,7 +656,7 @@
         }
         "MergeModule"
         {
-            "{AC8774A4-3E09-11D3-8E14-00C04F6837D0}:_C995AC7060E2469794D3581F4AF0054E"
+            "{AC8774A4-3E09-11D3-8E14-00C04F6837D0}:_F618385039594D9F893E3AD659FAF4F6"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
