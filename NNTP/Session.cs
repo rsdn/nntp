@@ -21,8 +21,8 @@ namespace derIgel.NNTP
 	public class Session : IDisposable
 	{
 
-		public static readonly string hostname;
-		public static readonly string fullHostname;
+		public static readonly string Hostname;
+		public static readonly string FullHostname;
 
 		protected static readonly TraceSwitch tracing;
 
@@ -34,13 +34,13 @@ namespace derIgel.NNTP
 			// DNS
 			try
 			{
-				hostname = Dns.GetHostName();
-				fullHostname = Dns.Resolve(hostname).HostName;
+				Hostname = Dns.GetHostName();
+				FullHostname = Dns.Resolve(Hostname).HostName;
 			}
 			catch (SocketException)
 			{
-				hostname = "";
-				fullHostname = "";
+				Hostname = "";
+				FullHostname = "";
 			}
 
 			commandsTypes = new Hashtable();
@@ -254,8 +254,9 @@ namespace derIgel.NNTP
 									
 									// add addtitional server headers
 									postingMessage["Sender"] = sender;
-									postingMessage["Path"] = fullHostname +
-										((postingMessage["Path"] != null) ? "!" + postingMessage["Path"] : null);
+									if (postingMessage["Path"] == null)
+										postingMessage["Path"] = "not-for-mail";
+									postingMessage["Path"] = FullHostname + "!" + postingMessage["Path"];
 									
 									dataProvider.PostMessage(postingMessage);
 									result = new Response(NntpResponse.PostedOk);

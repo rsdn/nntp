@@ -261,6 +261,7 @@ namespace derIgel.RsdnNntp
 			if ((content == NewsArticle.Content.Header) ||
 				(content == NewsArticle.Content.HeaderAndBody))
 			{
+				newsMessage["Path"] = Session.FullHostname + "!not-for-mail";
 				if (message.author != "")
 					newsMessage.From = string.Format("\"{0}\" <{1}>", message.author, "forum@rsdn.ru");
 				newsMessage.Date = message.date;
