@@ -263,6 +263,7 @@ namespace derIgel.RsdnNntp
 				if (message.pid != string.Empty)
 					newsMessage["References"] = "<" + message.pid + message.postfix + ">";
 				newsMessage["Newsgroups"] = newsgroup;
+				newsMessage["Xref"] = string.Format("{0} {1}:{2}", Dns.GetHostName(), newsgroup, message.num);
 				newsMessage["X-Server"] = serverID;
 			}
 
