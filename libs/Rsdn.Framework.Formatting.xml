@@ -492,9 +492,15 @@
             Массив символов для отсечения ведущих и концевых пробельных строк сообщений.
             </summary>
         </member>
+        <member name="F:Rsdn.Framework.Formatting.TextFormatter.smile">
+            <summary>
+            Use smile formatting in text transforming
+            </summary>
+        </member>
         <member name="M:Rsdn.Framework.Formatting.TextFormatter.Format(System.String,System.Boolean)">
             <summary>
             Форматирование текста.
+            <b>НЕПОТОКОБЕЗОПАСНЫЙ!</b>
             </summary>
             <param name="txt">Исходный текст.</param>
             <param name="smile">Признак обработки смайликов.</param>
