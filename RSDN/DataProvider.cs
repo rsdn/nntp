@@ -382,9 +382,8 @@ namespace Rsdn.RsdnNntp
     		{
     			references = referenceCache.GetReferences(int.Parse(message.id));
     		}
-    		// get parent from root (don't include itself)
-				// limit deep of references to 23
-    		for (int i = references.Length - 1; i > 0 && i > references.Length - 1 - referencesDeep; i--)
+    		// get message's parents with limitation of depth
+    		for (int i = Math.Min(references.Length - 1, referencesDeep); i > 0; i--)
     			referencesString.AppendFormat("<{0}{1}> ", references[i], message.postfix);
     		if (referencesString.Length > 0)
     			newsMessage["References"] = referencesString.ToString();
