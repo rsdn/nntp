@@ -30,9 +30,10 @@ namespace derIgel.NNTP
 			if (service == null)
 				return null;
 			
-			if (service.ShowDialog(new TypeEditorForm(value as string)) == DialogResult.OK)
+			TypeEditorForm editorForm = new TypeEditorForm(value as Type, typeof(IDataProvider));
+			if (service.ShowDialog(editorForm) == DialogResult.OK)
 			{
-				return value;
+				return editorForm.SelectedType;
 			}
 			else
 				return value;

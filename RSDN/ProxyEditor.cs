@@ -2,6 +2,7 @@ using System;
 using System.Drawing.Design;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
+using System.Net;
 
 namespace derIgel.RsdnNntp
 {
@@ -30,9 +31,10 @@ namespace derIgel.RsdnNntp
 			if (service == null)
 				return null;
 			
-			if (service.ShowDialog(new ProxyEditorForm()) == DialogResult.OK)
+			ProxyEditorForm proxyEditor = new ProxyEditorForm(value as WebProxy);
+			if (service.ShowDialog(proxyEditor) == DialogResult.OK)
 			{
-				return value;
+				return proxyEditor.Proxy;
 			}
 			else
 				return value;
