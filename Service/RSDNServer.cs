@@ -86,13 +86,11 @@ namespace derIgel.RsdnNntp
 				Directory.SetCurrentDirectory(
 					Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
 
-				Type settingsType = Activator.CreateInstanceFrom(
-					ConfigurationSettings.AppSettings["settings.Assembly"],
-					ConfigurationSettings.AppSettings["settings.Type"]).Unwrap().GetType();
+				Type settingsType = Assembly.LoadFrom(ConfigurationSettings.AppSettings["settings.Assembly"]).
+					GetType(ConfigurationSettings.AppSettings["settings.Type"], true);
 
-				Type dataProviderType = Activator.CreateInstanceFrom(
-					ConfigurationSettings.AppSettings["dataProvider.Assembly"],
-					ConfigurationSettings.AppSettings["dataProvider.Type"]).Unwrap().GetType();
+				Type dataProviderType = Assembly.LoadFrom(ConfigurationSettings.AppSettings["dataProvider.Assembly"])
+					.GetType(ConfigurationSettings.AppSettings["dataProvider.Type"], true);
 
 				object serverSettings = NNTPSettings.Deseriazlize(
 					ConfigurationSettings.AppSettings["settings.ConfigFile"], settingsType);
