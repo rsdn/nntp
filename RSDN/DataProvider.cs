@@ -515,7 +515,7 @@ namespace Rsdn.RsdnNntp
 			{
 				string postingText = GetPlainTextFromMessage(message);
 				if (postingText == "")
-					throw new DataProviderException(DataProviderErrors.PostingFailed);
+					throw new DataProviderException(DataProviderErrors.PostingFailed, "Empty message.");
 
 				// get message ID
 				int mid = 0;
