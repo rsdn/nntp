@@ -43,75 +43,6 @@ namespace derIgel.RsdnNntp
 		private System.Windows.Forms.MenuItem menuItem3;
 		private System.ComponentModel.IContainer components;
 
-		public Type serviceSettingsType; 
-
-//		static Notify()
-//		{
-//			Type settingsType = ((IDataProvider)Activator.CreateInstanceFrom(
-//				ConfigurationSettings.AppSettings["dataProvider.Assembly"],
-//				ConfigurationSettings.AppSettings["dataProvider.Type"]).Unwrap()).GetConfigType();
-//
-//			AssemblyName assemblyName = new AssemblyName();
-//			assemblyName.Name = "DynamicAssembly";
-//
-//			// Create descendant class from defined class
-//			AssemblyBuilder dynamicAssembly = System.Threading.Thread.GetDomain().
-//				DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.Save);
-//					
-//			TypeBuilder typeBuilder =	dynamicAssembly.DefineDynamicModule("DynamicModule", "DynamicAssembly.dll").
-//				DefineType("ServiceDataProviderType", TypeAttributes.Class | TypeAttributes.Public,
-//				settingsType);
-//
-//			// StartupMode
-//			FieldBuilder startupField = typeBuilder.DefineField("startupMode", typeof(StartupType),
-//				FieldAttributes.Private);
-//
-//			MethodBuilder getStartup = typeBuilder.DefineMethod("get_StartupMode", MethodAttributes.Public,
-//				typeof(StartupType), null);
-//			ILGenerator methodIL = getStartup.GetILGenerator();
-//			methodIL.Emit(OpCodes.Ldarg_0);
-//			methodIL.Emit(OpCodes.Ldfld, startupField);
-//			methodIL.Emit(OpCodes.Ret);
-//
-//			MethodBuilder setStartup = typeBuilder.DefineMethod("set_StartupMode", MethodAttributes.Public,
-//				null, new Type[]{typeof(StartupType)});
-//			methodIL = setStartup.GetILGenerator();
-//			methodIL.Emit(OpCodes.Ldarg_0);
-//			methodIL.Emit(OpCodes.Ldarg_1);
-//			methodIL.Emit(OpCodes.Stfld, startupField);
-//			methodIL.Emit(OpCodes.Ret);
-//
-//			PropertyBuilder startupModeProperty = typeBuilder.DefineProperty("StartupMode",
-//				PropertyAttributes.HasDefault, typeof(StartupType), null);
-//			startupModeProperty.SetConstant(StartupType.Auto);
-//			startupModeProperty.SetGetMethod(getStartup);
-//			startupModeProperty.SetSetMethod(setStartup);
-//			
-//			// Attributes for StartupMode
-//			startupModeProperty.SetCustomAttribute(new CustomAttributeBuilder(
-//				typeof(XmlIgnoreAttribute).GetConstructor(Type.EmptyTypes), new object[0]));
-//			startupModeProperty.SetCustomAttribute(new CustomAttributeBuilder(
-//				typeof(CategoryAttribute).GetConstructor(new Type[]{typeof(string)}),
-//				new object[]{"Service settings"}));
-//			startupModeProperty.SetCustomAttribute(new CustomAttributeBuilder(
-//				typeof(DescriptionAttribute).GetConstructor(new Type[]{typeof(string)}),
-//				new object[]{"How server starts"}));
-//
-//			// Machine name field
-//			FieldBuilder machine = typeBuilder.DefineField("Machine", typeof(System.String),
-//				FieldAttributes.Public | FieldAttributes.HasDefault);
-//			machine.SetConstant(".");
-//
-//			// Service Name field
-//			FieldBuilder serviceName = typeBuilder.DefineField("ServiceName", typeof(System.String),
-//				FieldAttributes.Public | FieldAttributes.HasDefault);
-//			serviceName.SetConstant("rsdnnntp");
-//				
-//			typeBuilder.CreateType();
-//				
-//			dynamicAssembly.Save("DynamicAssembly.dll");
-//		}
-
 		public Notify()
 		{
 			//
@@ -172,20 +103,7 @@ namespace derIgel.RsdnNntp
 		[STAThread]
 		static void Main(string[] args)
 		{
-			Notify mainForm = null;
-			try
-			{
-				mainForm = new Notify();
-				Application.Run(mainForm);
-			}
-			catch (ManagementException exception)
-			{
-				if (mainForm != null)
-					mainForm.timer.Enabled = false;
-				MessageBox.Show(exception.Message, "RSDN NNTP Manager",
-					MessageBoxButtons.OK,	MessageBoxIcon.Error);
-				Application.Exit();
-			}
+			Application.Run(new Notify());
 		}
 
 		#region Windows Form Designer generated code
@@ -325,10 +243,17 @@ namespace derIgel.RsdnNntp
 			if (!controlPanel.Visible)
 			{
 				menuOpen.Enabled = false;
-				RefreshService();
-				// Set StartupMode property in settins according current state of service
-				controlPanel.Settings.StartupMode = 
-					(StartupType)Enum.Parse(typeof(StartupType), service.StartMode);
+				try
+				{
+					RefreshService();
+					// Set StartupMode property in settins according current state of service
+					controlPanel.Settings.StartupMode = 
+						(StartupType)Enum.Parse(typeof(StartupType), service.StartMode);
+				}
+				catch (ManagementException)
+				{
+					controlPanel.Settings.StartupMode = StartupType.Disabled;
+				}
 				controlPanel.ShowDialog(this);
 				menuOpen.Enabled = true;
 				RefreshStatus();
@@ -371,45 +296,57 @@ namespace derIgel.RsdnNntp
 
 		private void RefreshStatus(object sender, System.EventArgs e)
 		{
-			RefreshService();	
-			switch (service.State)
+			try
 			{
-				case "Running" :
-				case "Continue Pending" :
-				case "Start Pending" :
-					notifyIcon.Icon = startedIcon;
-					menuStart.Enabled = false;
-					menuPause.Enabled = true;
-					menuStop.Enabled = true;
-					break;
-				case "Pause Pending" :
-				case "Paused" :
-					notifyIcon.Icon = pausedIcon;
-					menuStart.Enabled = true;
-					menuStart.Text = "Continue";
-					menuPause.Enabled = false;
-					menuStop.Enabled = true;
-					break;
-				default:
-				switch (service.StartMode)
+				RefreshService();	
+				switch (service.State)
 				{
-					case "Disabled" : 
-						notifyIcon.Icon = stoppedIcon;
-						menuStart.Text = "Start";
+					case "Running" :
+					case "Continue Pending" :
+					case "Start Pending" :
+						notifyIcon.Icon = startedIcon;
 						menuStart.Enabled = false;
+						menuPause.Enabled = true;
+						menuStop.Enabled = true;
+						break;
+					case "Pause Pending" :
+					case "Paused" :
+						notifyIcon.Icon = pausedIcon;
+						menuStart.Enabled = true;
+						menuStart.Text = "Continue";
 						menuPause.Enabled = false;
-						menuStop.Enabled = false;
+						menuStop.Enabled = true;
 						break;
 					default:
-						notifyIcon.Icon = stoppedIcon;
-						menuStart.Enabled = true;
-						menuStart.Text = "Start";
-						menuPause.Enabled = false;
-						menuStop.Enabled = false;
+					switch (service.StartMode)
+					{
+						case "Disabled" : 
+							notifyIcon.Icon = stoppedIcon;
+							menuStart.Text = "Start";
+							menuStart.Enabled = false;
+							menuPause.Enabled = false;
+							menuStop.Enabled = false;
+							break;
+						default:
+							notifyIcon.Icon = stoppedIcon;
+							menuStart.Enabled = true;
+							menuStart.Text = "Start";
+							menuPause.Enabled = false;
+							menuStop.Enabled = false;
+							break;
+					}
 						break;
-				}
-					break;
-			}	
+				}	
+			}
+			catch (ManagementException)
+			// something wrong with service manager
+			{
+				notifyIcon.Icon = stoppedIcon;
+				menuStart.Text = "Start";
+				menuStart.Enabled = false;
+				menuPause.Enabled = false;
+				menuStop.Enabled = false;
+			}
 		}
 	}
 }

@@ -47,8 +47,9 @@ namespace derIgel.NNTP
 			get { return dataProviderType; }
 			set
 			{
-				if (value.GetInterface(typeof(IDataProvider).FullName) == null)
-					throw new ArgumentException("DataProviderType must realize IDataProvider interface.");
+				if (!typeof(IDataProvider).IsAssignableFrom(value))
+					throw new ArgumentException("DataProviderType must realize IDataProvider interface.",
+						"DataProviderType");
 				dataProviderType = value;
 				dataProviderSettingsType = ((IDataProvider)Activator.CreateInstance(dataProviderType)).GetConfigType();
 				if (!dataProviderType.IsInstanceOfType(dataProviderSettings))
@@ -56,14 +57,14 @@ namespace derIgel.NNTP
 			}
 		}
 
-		[Browsable(false)]
+		//[Browsable(false)]
 		public string DataProviderTypeName
 		{
 			get { return DataProviderType.AssemblyQualifiedName; }
 			set { DataProviderType = Type.GetType(value, true); }
 		}
 
-		protected object dataProviderSettings;
+		protected object dataProviderSettings = new object();
 		[Browsable(false)]
 		public object DataProviderSettings
 		{
@@ -105,22 +106,23 @@ namespace derIgel.NNTP
 
 		public static NNTPSettings Deseriazlize(string filename)
 		{
-			XmlReader fileReader = new XmlTextReader(filename);
+			/// Collect all data provider's types
 
 			ArrayList dataProviderTypes = new ArrayList();
-			// collect all data provider's types
-			while (fileReader.Read())
-			{
-				if (fileReader.NodeType == XmlNodeType.Element && fileReader.Name == "DataProviderTypeName")
-					dataProviderTypes.Add(((IDataProvider)Activator.CreateInstance(
-						Type.GetType(fileReader.ReadString(), true))).GetConfigType());
-			}
-			fileReader.Close();
+			
+			XmlDocument doc = new XmlDocument();
+			doc.Load(filename);
 
+			foreach (XmlNode dataProviderTypeNode in doc.DocumentElement.
+									SelectNodes("//Settings/DataProviderTypeName"))
+				dataProviderTypes.Add(((IDataProvider)Activator.CreateInstance(
+					Type.GetType(dataProviderTypeNode.InnerText, true))).GetConfigType());
+			
+			/// Deserialize settings with known types of data provider's config objects
 			XmlSerializer serializer = new XmlSerializer(typeof(NNTPSettings), null,
 				(Type[])dataProviderTypes.ToArray(typeof(Type)), new XmlRootAttribute("Settings"), null);
 			
-			fileReader = new XmlTextReader(filename);
+			XmlReader fileReader = new XmlTextReader(filename);
 
 			NNTPSettings serverSettings = (NNTPSettings)serializer.Deserialize(fileReader);
 

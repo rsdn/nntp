@@ -7,6 +7,7 @@ using System.Configuration;
 using System.Xml;
 using System.Security;
 using derIgel.NNTP;
+using System.Management;
 
 namespace derIgel.RsdnNntp
 {
@@ -260,15 +261,15 @@ namespace derIgel.RsdnNntp
 				Settings = new Settings(NNTPSettings.Deseriazlize(ConfigurationSettings.AppSettings["service.Config"]));
 				ShowAlert(false);
 			}
-			catch (Exception ex)
-			{
-				System.Console.WriteLine(ex.ToString());
-			}
+			catch (ManagementException) { }
 		}
 
 		private void propertyGrid_PropertyValueChanged(object s,
 			System.Windows.Forms.PropertyValueChangedEventArgs e)
 		{
+			// if data procider changed
+			if (e.ChangedItem.PropertyDescriptor.Name == "DataProviderTypeName")
+				dataProviderPropertyGrid.SelectedObject = settings.DataProviderSettings;
 			applyButton.Enabled = true;
 			ShowAlert(true);
 		}

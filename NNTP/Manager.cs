@@ -98,9 +98,9 @@ namespace derIgel.NNTP
 		/// </summary>
 		public Manager(NNTPSettings settings)
 		{
-			if (Array.BinarySearch(settings.DataProviderType.GetInterfaces(), typeof(IDataProvider)) < 0)
-				throw new ArgumentException("dataProviderType is not implemented DataProvider interface.",
-					"dataProviderType");
+			if (!typeof(IDataProvider).IsAssignableFrom(settings.DataProviderType))
+				throw new ArgumentException("DataProviderType in settings object is not implemented DataProvider interface.",
+					"settings");
 
 			this.settings = settings;
 				

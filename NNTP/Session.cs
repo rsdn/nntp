@@ -337,7 +337,11 @@ namespace derIgel.NNTP
 						}
 						catch(Exception e)
 						{
-							Trace.WriteLineIf(tracing.TraceError, "exception!\n" + e.ToString(), client.RemoteEndPoint.ToString());
+							// not good....
+							Trace.WriteLineIf(tracing.TraceError,
+								string.Format("selected group '{0}', last request '{1}'\nError: {2}",
+								dataProvider.CurrentGroup, commandString, e.ToString()),
+								client.RemoteEndPoint.ToString());
 							result = new Response(NntpResponse.ProgramFault);
 						}
 
