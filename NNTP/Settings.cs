@@ -41,7 +41,8 @@ namespace derIgel.NNTP
 		protected Type dataProviderType = typeof(object);
 		protected Type dataProviderSettingsType = typeof(object);
 		[XmlIgnore]
-		[Browsable(false)]
+		//[Browsable(false)]
+		[EditorAttribute(typeof(TypeEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public Type DataProviderType
 		{
 			get { return dataProviderType; }

@@ -99,7 +99,7 @@ namespace derIgel.RsdnNntp
 		[Browsable(false)]
 		public Uri ProxyUri
 		{
-			get {return (host != null) ? CreateUri(protocol, host, port, username) : null;}
+			get {return (host != null) ? CreateUri(protocol, host, port, username + "@" + password) : null;}
 		}
 
 		protected string protocol = Uri.UriSchemeHttp;
@@ -151,6 +151,7 @@ namespace derIgel.RsdnNntp
 
 		protected string password;
 		[Description("Password")]
+		[EditorAttribute(typeof(PasswordEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public string Password
 		{
 			get	{	return password; }
@@ -159,7 +160,8 @@ namespace derIgel.RsdnNntp
 
 		public override string ToString()
 		{
-			return (ProxyUri != null) ? ProxyUri.GetLeftPart(UriPartial.Authority) : null;
+			return (ProxyUri != null) ? ProxyUri.GetLeftPart(UriPartial.Authority) :
+				null;
 		}
 
 		[XmlIgnore]

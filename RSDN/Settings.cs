@@ -21,11 +21,13 @@ namespace derIgel.RsdnNntp
 
 		protected WebProxy proxy;
 
-		[BrowsableAttribute(false)]
+		//[BrowsableAttribute(false)]
 		[XmlIgnore]
+		[EditorAttribute(typeof(ProxyEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public WebProxy Proxy
 		{
 			get	{	return proxy;	}
+			set { proxy = value; }
 		}
 
 		protected ProxySettings proxySettings = new ProxySettings();
