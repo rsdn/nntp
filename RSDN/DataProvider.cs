@@ -10,6 +10,8 @@ using System.Runtime.Serialization.Formatters;
 using System.Runtime.Serialization;
 using System.Diagnostics;
 using System.Collections;
+using System.Web;
+using System.Web.Caching;
 
 using log4net;
 using Rsdn.Framework.Formatting;
@@ -29,13 +31,14 @@ namespace Rsdn.RsdnNntp
 		/// <summary>
 		/// Authentificate cache
 		/// </summary>
-		protected static ArrayList authCache = new ArrayList();
+		protected static Cache authCache = HttpRuntime.Cache;
 
     /// <summary>
     /// Cache of refeneces of messages
     /// </summary>
-    protected static ReferenceCache referenceCache = new ReferenceCache(); 
-    /// <summary>
+		protected static ReferenceCache referenceCache = new ReferenceCache(); 
+
+		/// <summary>
     /// Filename of references cache
     /// </summary>
     protected static string referencesCacheFilename = 
@@ -285,43 +288,67 @@ namespace Rsdn.RsdnNntp
 
     public override bool Authentificate(string user, string pass)
     {
-			// if in cache - auth ok
-			if (authCache.Contains(user.GetHashCode()))
+			try
 			{
-				username = user;
-				password = pass;
-				return true;
-			}
+				// if in cache - auth ok
+				UserInfo userInfo = authCache[user+pass] as UserInfo;
+				if (userInfo != null)
+				{
+					SetUserInfo(userInfo);
+					return true;
+				}
 
-    	auth_info auth = null;
-    	try
-    	{
-    		auth = webService.Authentication(user, pass);
+    		auth_info auth = webService.Authentication(user, pass);
     		if (auth.ok)
     		{
-    			username = user;
-    			password = pass;
-					authCache.Add(user.GetHashCode());
+					userInfo = webService.GetUserInfo(user, pass);
+					// Put user information to cache for 1 hour.
+					authCache.Add(user+pass, userInfo, null, Cache.NoAbsoluteExpiration,
+						new TimeSpan(1, 0, 0), CacheItemPriority.AboveNormal, null);
+					SetUserInfo(userInfo);
     		}
     		else
     		{
     			username = "";
     			password = "";
     		}
-    	}
+				return auth.ok;
+			}
     	catch (System.Exception exception)
     	{
     		ProcessException(exception);
+				return false;
     	}
-    	return auth.ok;
     }
+
+		/// <summary>
+		/// Set data provider's parameters from UserInfo object.
+		/// </summary>
+		/// <param name="userInfo"></param>
+		protected void SetUserInfo(UserInfo userInfo)
+		{
+			username = userInfo.Name;
+			password = userInfo.Password;
+			if( (rsdnSettings != null) && (rsdnSettings.Formatting == FormattingStyle.UserSettings))
+				switch (userInfo.MessageFormat)
+				{
+					case MessageFormat.Text :
+						style = FormattingStyle.PlainText;
+						break;
+					case MessageFormat.Html :
+					case MessageFormat.TextHtml :
+						style = FormattingStyle.Html;
+						break;
+				}
+		}
 
     /// <summary>
     /// RSDN tags processor
     /// </summary>
     protected static readonly TextFormatter formatMessage = new TextFormatter();
     /// <summary>
-    /// Result MIME messages' format
+    /// Result MIME messages' format.
+    /// Default Html.
     /// </summary>
     protected FormattingStyle style = FormattingStyle.Html;
     /// <summary>
@@ -549,9 +576,25 @@ namespace Rsdn.RsdnNntp
     		// problems with connection?
     		throw new DataProviderException(DataProviderErrors.ServiceUnaviable, exception);
 
-    	// if not handeled - throw forward
-    	throw exception;
-    }
+			switch (exception.Message)
+			{
+				case "1 Incorrect group name." :
+					throw new DataProviderException(DataProviderErrors.NoSuchGroup);
+				case "2 Incorrect login name or password" :
+				{
+					if (authCache[username+password] != null)
+						authCache.Remove(username+password);
+					throw new DataProviderException(DataProviderErrors.NoPermission);
+				}
+				case "3 Article not found." :
+					throw new DataProviderException(DataProviderErrors.NoSuchArticle);
+				case "Timeout expired." +
+				"  The timeout period elapsed prior to completion of the operation or the server is not responding." :
+					throw new DataProviderException(DataProviderErrors.ServiceUnaviable);
+				default:
+					throw exception;
+			}
+		}
 
     /// <summary>
     /// Parse error messages from web-service
@@ -559,23 +602,7 @@ namespace Rsdn.RsdnNntp
 		/// <param name="message">Erorr message</param>
     protected void ProcessErrorMessage(string message)
     {
-    	switch (message)
-    	{
-    		case "1 Incorrect group name." :
-    			throw new DataProviderException(DataProviderErrors.NoSuchGroup);
-				case "2 Incorrect login name or password" :
-				{
-					authCache.Remove(username.GetHashCode());
-					throw new DataProviderException(DataProviderErrors.NoPermission);
-				}
-    		case "3 Article not found." :
-    			throw new DataProviderException(DataProviderErrors.NoSuchArticle);
-    		case "Timeout expired." +
-    			"  The timeout period elapsed prior to completion of the operation or the server is not responding." :
-    			throw new DataProviderException(DataProviderErrors.ServiceUnaviable);
-    		default:
-    			throw new DataProviderException(message);
-    	}
+			ProcessException(new DataProviderException(message));
     }
 
     /// <summary>
@@ -600,6 +627,11 @@ namespace Rsdn.RsdnNntp
     	}
     }
 
+		/// <summary>
+		/// RSDN Data Provider's settings
+		/// </summary>
+		protected DataProviderSettings rsdnSettings;
+
     /// <summary>
     /// Configures data provider
     /// </summary>
@@ -608,7 +640,7 @@ namespace Rsdn.RsdnNntp
     {
 			base.Config(settings);
 
-    	DataProviderSettings rsdnSettings = settings as DataProviderSettings;
+    	rsdnSettings = settings as DataProviderSettings;
     	if (rsdnSettings != null)
     	{
 			// To fix authorization proxy bug use special middle chain
@@ -628,7 +660,8 @@ namespace Rsdn.RsdnNntp
 						break;
 				}
     		encoding = rsdnSettings.GetEncoding;
-    		style = rsdnSettings.Formatting;
+    		if (rsdnSettings.Formatting != FormattingStyle.UserSettings)
+					style = rsdnSettings.Formatting;
     	}
     }
 

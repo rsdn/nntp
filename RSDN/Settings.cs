@@ -16,6 +16,10 @@ namespace Rsdn.RsdnNntp
 	public enum FormattingStyle
 	{
 		/// <summary>
+		/// Get preffered style from user settings at RSDN.RU
+		/// </summary>
+		UserSettings,
+		/// <summary>
 		/// Only plain text.
 		/// </summary>
 		PlainText,
@@ -165,10 +169,11 @@ namespace Rsdn.RsdnNntp
 			}
 		}
 
-		protected FormattingStyle formatting = FormattingStyle.Html;
+		protected FormattingStyle formatting = FormattingStyle.UserSettings;
 
 		[Category("Others")]
-		[DefaultValue(FormattingStyle.Html)]
+		[DefaultValue(FormattingStyle.UserSettings)]
+		[Description("Format of messages. UserSettings is taken from user settings at RSDN.RU")]
 		public FormattingStyle Formatting
 		{
 			get { return formatting; }
