@@ -197,17 +197,21 @@ namespace Rsdn.RsdnNntp
     public override NewsArticle GetNonCachedArticle(string messageID, NewsArticle.Content content)
     {
     	article message = null;
-    	try
-    	{
-    		int mID = int.Parse(messageIdNumber.Match(messageID).Groups["messageIdNumber"].Value);
-    		message = webService.GetArticleByID(mID , username,	password);
-    		if (message.error != null)
-    			ProcessErrorMessage(message.error);
-    	}
-    	catch (System.Exception exception)
-    	{
-    		ProcessException(exception);
-    	}	
+		try
+		{
+			int mID = int.Parse(messageIdNumber.Match(messageID).Groups["messageIdNumber"].Value);
+			message = webService.GetArticleByID(mID , username,	password);
+			if (message.error != null)
+				ProcessErrorMessage(message.error);
+		}
+		catch (FormatException)
+		{
+			throw new DataProviderException(DataProviderErrors.NoSuchArticle);
+		}
+		catch (System.Exception exception)
+		{
+			ProcessException(exception);
+		}	
 
     	NewsArticle newsMessage = ToNNTPArticle(message, message.group, content);
 
