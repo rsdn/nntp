@@ -107,6 +107,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "BindingsConverter.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Errors.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -154,6 +159,11 @@
                 />
                 <File
                     RelPath = "Settings.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TypeClassConverter.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

@@ -5,6 +5,7 @@ using System.Xml.Serialization;
 using System.ComponentModel;
 using System.IO;
 using System.Collections;
+using System.Diagnostics;
 
 namespace derIgel.NNTP
 {
@@ -41,7 +42,7 @@ namespace derIgel.NNTP
 		protected Type dataProviderType = typeof(object);
 		protected Type dataProviderSettingsType = typeof(object);
 		[XmlIgnore]
-		//[Browsable(false)]
+		[TypeConverter(typeof(TypeClassConverter))]
 		[EditorAttribute(typeof(TypeEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public Type DataProviderType
 		{
@@ -58,10 +59,10 @@ namespace derIgel.NNTP
 			}
 		}
 
-		//[Browsable(false)]
+		[Browsable(false)]
 		public string DataProviderTypeName
 		{
-			get { return DataProviderType.AssemblyQualifiedName; }
+			get { return dataProviderType.AssemblyQualifiedName; }
 			set { DataProviderType = Type.GetType(value, true); }
 		}
 
@@ -83,6 +84,7 @@ namespace derIgel.NNTP
 		public XmlElement RawSettings;
 
 		protected ServerEndPoint[] bindings;
+		[TypeConverter(typeof(BindingsConverter))]
 		public ServerEndPoint[] Bindings
 		{
 			get { return bindings; }
