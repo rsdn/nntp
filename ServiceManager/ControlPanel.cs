@@ -104,7 +104,7 @@ namespace RSDN
 			this.propertyGrid.Anchor = (((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
 				| System.Windows.Forms.AnchorStyles.Left) 
 				| System.Windows.Forms.AnchorStyles.Right);
-			this.propertyGrid.CommandsVisibleIfAvailable = true;
+			this.propertyGrid.CommandsBackColor = System.Drawing.SystemColors.Highlight;
 			this.propertyGrid.LargeButtons = false;
 			this.propertyGrid.LineColor = System.Drawing.SystemColors.ScrollBar;
 			this.propertyGrid.Name = "propertyGrid";

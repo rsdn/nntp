@@ -91,6 +91,11 @@
                     Project = "{A78C361E-209D-40B2-BE70-FE5FBD5AD178}"
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
+                <Reference
+                    Name = "Mail"
+                    Project = "{3246EAC3-12D9-4396-A36F-C10DB122873D}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
             </References>
         </Build>
         <Files>

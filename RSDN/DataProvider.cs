@@ -4,6 +4,7 @@ using System.Reflection;
 using System.IO;
 using derIgel.NNTP;
 using System.Net;
+using derIgel.Mail;
 
 namespace derIgel
 {
@@ -175,29 +176,44 @@ namespace derIgel
 
 			protected NewsArticle ToNNTPArticle(article message, string newsgroup, NewsArticle.Content content)
 			{
-				System.Collections.Hashtable header = null;
-				string body = null;
+				NewsArticle newsMessage = new NewsArticle("<" + message.id + message.postfix + ">",
+					message.num);
+				newsMessage.Encoding = encoding;
 
 				if ((content == NewsArticle.Content.Header) ||
 					(content == NewsArticle.Content.HeaderAndBody))
 				{
-					header = System.Collections.Specialized.CollectionsUtil.CreateCaseInsensitiveHashtable();
-					header["From"] = string.Format("{0} <{1}>", message.author, null);
-					header["Date"] = message.date.ToString("r");
-					header["Subject"] = message.subject;
+					newsMessage["From"] = string.Format("{0} <{1}>", message.author, null);
+					newsMessage["Date"] = message.date.ToUniversalTime().ToString("r");
+					newsMessage["Subject"] = message.subject;
 
 					if (message.pid != string.Empty)
-						header["References"] = "<" + message.pid + message.postfix + ">";
-					header["Newsgroups"] = newsgroup;
+						newsMessage["References"] = "<" + message.pid + message.postfix + ">";
+					newsMessage["Newsgroups"] = newsgroup;
 				}
 
 				if ((content == NewsArticle.Content.Body) ||
 					(content == NewsArticle.Content.HeaderAndBody))
-					body = string.Format(htmlMessageTemplate, message.authorid, message.author,
-						message.gid, message.id, message.fmtmessage);
+				{
+					Message htmlTextBody = new Message();
+					htmlTextBody.Bodies.Add(string.Format(htmlMessageTemplate, message.authorid, message.author,
+						message.gid, message.id, message.fmtmessage));
+					htmlTextBody.Encoding = encoding;
+					htmlTextBody.BodyEncoding = Message.BodyEncodingEnum.Base64;
+					htmlTextBody.ContentType = "text/html";
+
+					Message plainTextBody = new Message();
+					plainTextBody.Bodies.Add(message.message);
+					plainTextBody.Encoding = encoding;
+					plainTextBody.BodyEncoding = Message.BodyEncodingEnum.Base64;
+					plainTextBody.ContentType = "text/plain";
+
+					newsMessage.Bodies.Add(plainTextBody);
+					newsMessage.Bodies.Add(htmlTextBody);
+					newsMessage.ContentType = "multipart/alternative";
+				}
 		
-				return new NewsArticle("<" + message.id + message.postfix + ">",
-					message.num, header, body, encoding);
+				return newsMessage;
 			}
 
 			public override NNTP.NewsArticle[] GetArticleList(int startNumber, int endNumber,

@@ -13,9 +13,11 @@ Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup", "Setup\Setup.vdproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RsdnNntpSettings", "RSDN.NNTPServerSettings\RsdnNntpSettings.csproj", "{A78C361E-209D-40B2-BE70-FE5FBD5AD178}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mail", "Mail\Mail.csproj", "{3246EAC3-12D9-4396-A36F-C10DB122873D}"
+EndProject
 Global
 	GlobalSection(SourceCodeControl) = preSolution
-		SccNumberOfProjects = 8
+		SccNumberOfProjects = 9
 		SccProjectName0 = \u0022$/Forum\u0022,\u0020ADAAAAAA
 		SccLocalPath0 = .
 		SccProvider0 = MSSCCI:Microsoft\u0020Visual\u0020SourceSafe
@@ -49,6 +51,10 @@ Global
 		SccLocalPath7 = .
 		CanCheckoutShared = false
 		SccProjectFilePathRelativizedFromConnection7 = Console\u0020Test\\
+		SccProjectUniqueName8 = Mail\\Mail.csproj
+		SccLocalPath8 = .
+		CanCheckoutShared = false
+		SccProjectFilePathRelativizedFromConnection8 = Mail\\
 	EndGlobalSection
 	GlobalSection(SolutionConfiguration) = preSolution
 		ConfigName.0 = ControlTest
@@ -153,6 +159,14 @@ Global
 		{A78C361E-209D-40B2-BE70-FE5FBD5AD178}.Release.Build.0 = Release|.NET
 		{A78C361E-209D-40B2-BE70-FE5FBD5AD178}.Setup.ActiveCfg = Release|.NET
 		{A78C361E-209D-40B2-BE70-FE5FBD5AD178}.Setup.Build.0 = Release|.NET
+		{3246EAC3-12D9-4396-A36F-C10DB122873D}.ControlTest.ActiveCfg = Release|.NET
+		{3246EAC3-12D9-4396-A36F-C10DB122873D}.ControlTest.Build.0 = Release|.NET
+		{3246EAC3-12D9-4396-A36F-C10DB122873D}.Debug.ActiveCfg = Debug|.NET
+		{3246EAC3-12D9-4396-A36F-C10DB122873D}.Debug.Build.0 = Debug|.NET
+		{3246EAC3-12D9-4396-A36F-C10DB122873D}.Release.ActiveCfg = Release|.NET
+		{3246EAC3-12D9-4396-A36F-C10DB122873D}.Release.Build.0 = Release|.NET
+		{3246EAC3-12D9-4396-A36F-C10DB122873D}.Setup.ActiveCfg = Release|.NET
+		{3246EAC3-12D9-4396-A36F-C10DB122873D}.Setup.Build.0 = Release|.NET
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

@@ -46,7 +46,7 @@ namespace derIgel
 
 			protected ushort bindingPort;
 
-			[Category("Local connection")]
+			[Category("Connections")]
 			[DefaultValue(defaultPort)]
 			[Description("RSDN NNTP Server port")]
 			public ushort Port
