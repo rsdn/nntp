@@ -380,6 +380,7 @@ namespace Rsdn.RsdnNntp
     		new string[]{newsgroup}, new int[]{message.num}, content);
     	newsMessage.HeaderEncoding = encoding;
 
+
     	if ((content == NewsArticle.Content.Header) ||
     		(content == NewsArticle.Content.HeaderAndBody))
     	{
@@ -390,6 +391,7 @@ namespace Rsdn.RsdnNntp
     		newsMessage.Subject = message.subject;
     		if ((message.authorid != null) && (int.Parse(message.authorid) != 0))
     			newsMessage["X-UserID"] = message.authorid;
+				newsMessage["X-MessageID"] = message.id;
     		
     		// build refences
     		StringBuilder referencesString = new StringBuilder();
@@ -413,10 +415,10 @@ namespace Rsdn.RsdnNntp
     			case FormattingStyle.PlainText :
 						StringBuilder plainMessage = new StringBuilder(PrepareText(message.message));
 						// for plain-text messages add some additional useful links
-						plainMessage.Append(Util.CRLF).Append(Util.CRLF).
-							Append("[purl]").Append(Util.CRLF).
-							AppendFormat("URL сообщения на сайте http://rsdn.ru/forum/?mid={0}", message.id).Append(Util.CRLF).
-							Append("[/purl]").Append(Util.CRLF);
+//						plainMessage.Append(Util.CRLF).Append(Util.CRLF).
+//							Append("[purl]").Append(Util.CRLF).
+//							AppendFormat("URL сообщения на сайте http://rsdn.ru/forum/?mid={0}", message.id).Append(Util.CRLF).
+//							Append("[/purl]").Append(Util.CRLF);
     				newsMessage.Entities.Add(plainMessage.ToString());
     				newsMessage.TransferEncoding = ContentTransferEncoding.Base64;
     				newsMessage.ContentType = string.Format("text/plain; charset=\"{0}\"", encoding.WebName);
