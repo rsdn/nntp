@@ -107,7 +107,13 @@ namespace Rsdn.RsdnNntp.Common
     	}		
     }
 
+		/// <summary>
+		/// Authentificated user name.
+		/// </summary>
 		protected string username = "";
+		/// <summary>
+		/// Authentificated user password.
+		/// </summary>
 		protected string password = "";
 
 		/// <summary>
@@ -118,8 +124,18 @@ namespace Rsdn.RsdnNntp.Common
     	encoding = System.Text.Encoding.UTF8;
     }
 
+		/// <summary>
+		/// Get group by it's name.
+		/// </summary>
+		/// <param name="groupName">Group name.</param>
+		/// <returns>Specified group.</returns>
 		public abstract IGroup InternalGetGroup(string groupName);
 
+		/// <summary>
+		/// Get group by it's name.
+		/// </summary>
+		/// <param name="groupName">Group name.</param>
+		/// <returns>Specified group.</returns>
     public override NewsGroup GetGroup(string groupName)
     {
 			IGroup requestedGroup = InternalGetGroup(groupName);
@@ -143,18 +159,29 @@ namespace Rsdn.RsdnNntp.Common
 				return message;
     	}
     }
-
+		
+		/// <summary>
+		/// Get message by group name and number in it.
+		/// </summary>
+		/// <param name="articleNumber">Message number.</param>
+		/// <param name="groupName">Group name.</param>
+		/// <returns>Article.</returns>
 		protected abstract IArticle GetArticle(int articleNumber, string groupName);
 
+		/// <summary>
+		/// Get article by message ID.
+		/// </summary>
+		/// <param name="messageID">Message ID.</param>
+		/// <returns>Article.</returns>
 		protected abstract IArticle GetArticle(int messageID);
 
 		/// <summary>
-		/// Get article by article number in specified group
+		/// Get article by message ID by it's number in specified group.
 		/// </summary>
-		/// <param name="articleNumber"></param>
-		/// <param name="groupName"></param>
-		/// <param name="content"></param>
-		/// <returns></returns>
+		/// <param name="articleNumber">Message number.</param>
+		/// <param name="groupName">Group name.</param>
+		/// <param name="content">Necessary content of message.</param>
+		/// <returns>Article.</returns>
     public override NewsArticle GetNonCachedArticle(int articleNumber, string groupName,
 			NewsArticle.Content content)
     {
@@ -169,7 +196,13 @@ namespace Rsdn.RsdnNntp.Common
     static protected readonly Regex messageIdNumber =
     	new Regex(@"<(?<messageIdNumber>\d+)@news.rsdn.ru>", RegexOptions.Compiled);
 
-    public override NewsArticle GetNonCachedArticle(string messageID, NewsArticle.Content content)
+		/// <summary>
+		/// Get article without lookup in cache by message id.
+		/// </summary>
+		/// <param name="messageID">Message ID.</param>
+		/// <param name="content">Necessary content of message.</param>
+		/// <returns>Article.</returns>
+		public override NewsArticle GetNonCachedArticle(string messageID, NewsArticle.Content content)
     {
 			try
 			{
@@ -183,6 +216,13 @@ namespace Rsdn.RsdnNntp.Common
 			}
     }
 
+		/// <summary>
+		/// Get next article IDs.
+		/// Only article number &amp; MessageID required.
+		/// </summary>
+		/// <param name="messageNumber">Current message number.</param>
+		/// <param name="groupName">Current news group.</param>
+		/// <returns>Next article's IDs.</returns>
     public override NewsArticle GetNextArticle(int messageNumber, string groupName)
     {
     	NewsArticle[] articleList = GetArticleList(messageNumber + 1, int.MaxValue,
@@ -194,6 +234,13 @@ namespace Rsdn.RsdnNntp.Common
     	return articleList[0];
     }
 
+		/// <summary>
+		/// Get previous article IDs.
+		/// Only article number &amp; MessageID required.
+		/// </summary>
+		/// <param name="messageNumber">Current message number.</param>
+		/// <param name="groupName">Current news group.</param>
+		/// <returns>Previous article's IDs.</returns>
     public override NewsArticle GetPrevArticle(int messageNumber, string groupName)
     {
     	NewsArticle[] articleList = GetArticleList(currentGroupArticleStartNumber,
@@ -205,6 +252,11 @@ namespace Rsdn.RsdnNntp.Common
     	return articleList[articleList.Length - 1];
     }
 
+		/// <summary>
+		/// Get list of groups created after specified date.
+		/// </summary>
+		/// <param name="startTime">Start time.</param>
+		/// <returns>List of groups.</returns>
 		protected abstract IGroup[] GetGroupList(DateTime startTime);
 
 		/// <summary>
@@ -240,6 +292,12 @@ namespace Rsdn.RsdnNntp.Common
     	return (NewsGroup[])listOfGroups.ToArray(typeof(NewsGroup));
     }
 
+		/// <summary>
+		/// Get list of articles by array of group names and start date from which retrieve messages.
+		/// </summary>
+		/// <param name="groups">Group names.</param>
+		/// <param name="startTime">Start time.</param>
+		/// <returns>List of articles.</returns>
 		protected abstract IArticle[] GetArticleList(string[] groups, DateTime startTime);
 
 		/// <summary>
@@ -318,8 +376,18 @@ namespace Rsdn.RsdnNntp.Common
     	}
     }
 
+		/// <summary>
+		/// Get user info by it's id without lookup to cache.
+		/// </summary>
+		/// <param name="id">User ID.</param>
+		/// <returns>User info.</returns>
 		abstract protected IUserInfo GetUserInfoByID(int id);
 
+		/// <summary>
+		/// Get user info by it's id with lookup to cache.
+		/// </summary>
+		/// <param name="id">User ID.</param>
+		/// <returns>User info.</returns>
 		protected IUserInfo GetUserInfo(int id)
 		{
 			IUserInfo userInfo = cache.Get("userId$" + id) as IUserInfo;
@@ -357,6 +425,9 @@ namespace Rsdn.RsdnNntp.Common
 		/// </summary>
 		protected const int referencesDeep = 7;
 
+		/// <summary>
+		/// Proxy used to retrieve external resources.
+		/// </summary>
 		protected abstract IWebProxy Proxy { get; }
 
     /// <summary>
@@ -370,8 +441,6 @@ namespace Rsdn.RsdnNntp.Common
     protected NewsArticle ToNNTPArticle(IArticle message, string newsgroup,
 			NewsArticle.Content content)
     {
-
-			//TODO: webproxy!
 			NntpTextFormatter formatMessage =
 				new NntpTextFormatter(serverName, Proxy, style);
 
@@ -483,9 +552,25 @@ namespace Rsdn.RsdnNntp.Common
     	return newsMessage;
     }
 
+		/// <summary>
+		/// Get list of articles by group name, start and end number of messages in it.
+		/// </summary>
+		/// <param name="groupName">Group name.</param>
+		/// <param name="startNumber">Start message number.</param>
+		/// <param name="endNumber">End message number.</param>
+		/// <returns>List of articles.</returns>
 		protected abstract IArticle[] GetArticleList(string groupName, int startNumber, int endNumber);
 
-    public override NewsArticle[] GetArticleList(int startNumber, int endNumber, string groupName, NewsArticle.Content content)
+		/// <summary>
+		/// Get list of articles by group name, start and end number of messages in it.
+		/// Retrieve only specified content of messages.
+		/// </summary>
+		/// <param name="groupName">Group name.</param>
+		/// <param name="startNumber">Start message number.</param>
+		/// <param name="endNumber">End message number.</param>
+		/// <param name="content">Necessary content of articles.</param>
+		/// <returns>List of articles.</returns>
+		public override NewsArticle[] GetArticleList(int startNumber, int endNumber, string groupName, NewsArticle.Content content)
     {
 			IArticle[] articles = GetArticleList(groupName, startNumber, endNumber);
     	NewsArticle[] newsArticles = new NewsArticle[articles.Length];
@@ -501,8 +586,22 @@ namespace Rsdn.RsdnNntp.Common
     /// </summary>
     protected int currentGroupArticleStartNumber = -1;
 
+		/// <summary>
+		/// Post file to user's storage.
+		/// </summary>
+		/// <param name="filename">Filename.</param>
+		/// <param name="mimeType">Content type of file.</param>
+		/// <param name="content">Binary content of file.</param>
+		/// <returns>Posted file name on the server.</returns>
 		protected abstract string PostFile(string filename, string mimeType, byte[] content);
 
+		/// <summary>
+		/// Post message.
+		/// </summary>
+		/// <param name="mid">Parent message id, if it's reply.</param>
+		/// <param name="group">Group name to which post message.</param>
+		/// <param name="subject">Message's subject.</param>
+		/// <param name="message">Message's content.</param>
 		protected abstract void PostMessage(int mid, string group, string subject, string message);
 
     /// <summary>
@@ -630,7 +729,7 @@ namespace Rsdn.RsdnNntp.Common
 		protected DataProviderSettings rsdnSettings;
 
 		/// <summary>
-		/// Server address (scheme & host name) used to generate site links.
+		/// Server address (scheme &amp; host name) used to generate site links.
 		/// Retrivied from web service address.
 		/// Only top level hosting supported.
 		/// </summary>

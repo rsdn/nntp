@@ -13,10 +13,18 @@ namespace Rsdn.RsdnNntp
 		Hashtable identityTree = new Hashtable();
 		Hashtable identityList = new Hashtable();
 
+		/// <summary>
+		/// Cache, to store message's references.
+		/// </summary>
 		public ReferenceCache()
 		{
 		}
 
+		/// <summary>
+		/// Add message's reference to cache.
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="parentId"></param>
 		public void AddReference(int id, int parentId)
 		{
 			// add to tree
@@ -25,6 +33,10 @@ namespace Rsdn.RsdnNntp
 			BuildIdentityList(id);
 		}
 
+		/// <summary>
+		/// Remove message's references from cache.
+		/// </summary>
+		/// <param name="id"></param>
 		public void RemoveReference(int id)
 		{
 			// don't have this identity
@@ -50,11 +62,20 @@ namespace Rsdn.RsdnNntp
 				BuildIdentityList(changedIdentity);
 		}
 
+		/// <summary>
+		/// Get message's references.
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
 		public int[] GetReferences(int id)
 		{
 			return (identityList[id] != null) ?	(int[])identityList[id] : new int[0];
 		}
 
+		/// <summary>
+		/// Build/Rebuild message's references tree.
+		/// </summary>
+		/// <param name="id"></param>
 		protected void BuildIdentityList(int id)
 		{
 			ArrayList identities = new ArrayList();

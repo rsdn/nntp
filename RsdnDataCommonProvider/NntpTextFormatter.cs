@@ -21,10 +21,27 @@ namespace Rsdn.RsdnNntp
 		private static ILog logger =
 			log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+		/// <summary>
+		/// Server name used in formatting messages.
+		/// </summary>
 		protected string servername;
+
+		/// <summary>
+		/// Message's formatting style.
+		/// </summary>
 		protected FormattingStyle formattingStyle;
+
+		/// <summary>
+		/// Web Proxy used to retrieve external resources.
+		/// </summary>
 		protected IWebProxy proxy;
 
+		/// <summary>
+		/// Message text formatter used to format nntp messages.
+		/// </summary>
+		/// <param name="servername">Server name.</param>
+		/// <param name="proxy">Proxy to retrieve extrenal resources.</param>
+		/// <param name="formattingStyle">Neccessary format of messages.</param>
   	public NntpTextFormatter(string servername, IWebProxy proxy, FormattingStyle formattingStyle)
   	{
 			this.servername = servername;
@@ -32,22 +49,37 @@ namespace Rsdn.RsdnNntp
 			this.proxy = proxy;
   	}
 
+		/// <summary>
+		/// Name of server used to format messages.
+		/// </summary>
   	public override string CanonicalRsdnHostName
   	{
   		get { return servername; }
   	}
 
   	NameValueCollection processedImagesIDs = new NameValueCollection();
-		protected ArrayList processedImages = new ArrayList();
+		ArrayList processedImages = new ArrayList();
+		/// <summary>
+		/// Array of processed during message formatting inline images.
+		/// </summary>
+		/// <returns></returns>
   	public Message[] GetProcessedImages()
   	{
 			return (Message[])processedImages.ToArray(typeof(Message));
   	}
+		/// <summary>
+		/// Number of processed inline images.
+		/// </summary>
 		public int ProcessedImagesCount
 		{
 			get { return processedImages.Count; }
 		}
 
+		/// <summary>
+		/// Process image specified through [img] tag.
+		/// </summary>
+		/// <param name="image"></param>
+		/// <returns></returns>
   	protected override string ProcessImages(Match image)
   	{
 			if (formattingStyle == FormattingStyle.HtmlInlineImages)

@@ -47,11 +47,17 @@ namespace Rsdn.RsdnNntp
 			encoding = System.Text.Encoding.UTF8;
 		}
 
+		/// <summary>
+		/// Output encoding for messages.
+		/// </summary>
 		protected System.Text.Encoding encoding;
 		
+		/// <summary>
+		/// Output encoding for messages.
+		/// </summary>
 		[Category("Others")]
 		[DefaultValue("utf-8")]
-		[Description("Output encoding,for example, utf-8 or windows-1251")]
+		[Description("Output encoding, for example, utf-8 or windows-1251")]
 		public string Encoding
 		{
 			get
@@ -68,6 +74,9 @@ namespace Rsdn.RsdnNntp
 			}
 		}
 
+		/// <summary>
+		/// Output encoding for messages.
+		/// </summary>
 		[BrowsableAttribute(false)]
 		[XmlIgnore]
 		public System.Text.Encoding GetEncoding
@@ -78,11 +87,17 @@ namespace Rsdn.RsdnNntp
 			}
 		}
 
+		/// <summary>
+		/// Output format of messages (Text, Html &amp; etc).
+		/// </summary>
 		protected FormattingStyle formatting = FormattingStyle.UserSettings;
 
+		/// <summary>
+		/// Output format of messages (Text, Html &amp; etc).
+		/// </summary>
 		[Category("Others")]
 		[DefaultValue(FormattingStyle.UserSettings)]
-		[Description("Format of messages. UserSettings is taken from user settings at RSDN.RU")]
+		[Description("Output format of messages. UserSettings is taken from user settings at RSDN.RU")]
 		public FormattingStyle Formatting
 		{
 			get { return formatting; }
