@@ -1,7 +1,8 @@
 using System;
 using System.Net;
+using Rsdn.RsdnNntp.RsdnService;
 
-namespace Rsdn.RsdnNntp.RsdnService
+namespace Rsdn.RsdnNntp.Public.RsdnService
 {
 	/// <summary>
 	/// Summary description for CompressiRsdnService.

@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using System.Net;
 
-namespace Rsdn.RsdnNntp
+namespace Rsdn.RsdnNntp.Public
 {
 	/// <summary>
 	/// Summary description for ProxyEditor.

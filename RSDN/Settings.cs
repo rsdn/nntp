@@ -7,51 +7,10 @@ using System.Net;
 
 using Rsdn.Nntp;
 using Rsdn.Nntp.Cache;
+using Rsdn.RsdnNntp.Public;
 
-namespace Rsdn.RsdnNntp
+namespace Rsdn.RsdnNntp.Public
 {
-	/// <summary>
-	/// MIME message formatting style
-	/// </summary>
-	public enum FormattingStyle
-	{
-		/// <summary>
-		/// Get preffered style from user settings at RSDN.RU
-		/// </summary>
-		UserSettings,
-		/// <summary>
-		/// Only plain text.
-		/// </summary>
-		PlainText,
-		/// <summary>
-		/// HTML and plain text.
-		/// </summary>
-		Html,
-		/// <summary>
-		/// HTML with inline images and plain text.
-		/// </summary>
-		HtmlInlineImages
-	}
-
-	/// <summary>
-	/// Type of proxy to use.
-	/// </summary>
-	public enum ProxyType
-	{
-		/// <summary>
-		/// Don't use proxy.
-		/// </summary>
-		None,
-		/// <summary>
-		/// Use defaut proxy (from IE settings).
-		/// </summary>
-		Default,
-		/// <summary>
-		/// Use explicit specified proxy.
-		/// </summary>
-		Explicit
-	}
-
 	/// <summary>
 	/// Settings for RSDN Data Provider
 	/// </summary>
@@ -128,7 +87,7 @@ namespace Rsdn.RsdnNntp
 		/// </summary>
 		[Category("Connections")]
 		[Description("Web Proxy in format http://username:password@host.com:port\n" +
-			 "Username, password, and port may be skipped.")]
+			"Username, password, and port may be skipped.")]
 		[XmlIgnore]
 		[TypeConverter(typeof(ProxyConverter))]
 		[EditorAttribute(typeof(ProxyEditor), typeof(System.Drawing.Design.UITypeEditor))]
@@ -146,7 +105,7 @@ namespace Rsdn.RsdnNntp
 		}
 
 		protected System.Text.Encoding encoding;
-		
+	
 		[Category("Others")]
 		[DefaultValue("utf-8")]
 		[Description("Output encoding,for example, utf-8 or windows-1251")]
@@ -176,17 +135,6 @@ namespace Rsdn.RsdnNntp
 			}
 		}
 
-		protected FormattingStyle formatting = FormattingStyle.UserSettings;
-
-		[Category("Others")]
-		[DefaultValue(FormattingStyle.UserSettings)]
-		[Description("Format of messages. UserSettings is taken from user settings at RSDN.RU")]
-		public FormattingStyle Formatting
-		{
-			get { return formatting; }
-			set { formatting = value; }
-		}
-
 		protected bool enableHttpCompression = false;
 
 		[Category("Connections")]
@@ -194,7 +142,7 @@ namespace Rsdn.RsdnNntp
 		[Description("Allow HTTP 1.1 compression")]
 		public bool EnableHttpCompression
 		{
-		  get { return enableHttpCompression; }
+			get { return enableHttpCompression; }
 			set { enableHttpCompression = true; }
 		}
 
@@ -274,5 +222,24 @@ namespace Rsdn.RsdnNntp
 		}
 
 		#endregion
+	}
+
+	/// <summary>
+	/// Type of proxy to use.
+	/// </summary>
+	public enum ProxyType
+	{
+		/// <summary>
+		/// Don't use proxy.
+		/// </summary>
+		None,
+		/// <summary>
+		/// Use defaut proxy (from IE settings).
+		/// </summary>
+		Default,
+		/// <summary>
+		/// Use explicit specified proxy.
+		/// </summary>
+		Explicit
 	}
 }

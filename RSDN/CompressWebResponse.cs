@@ -6,7 +6,7 @@ using ICSharpCode.SharpZipLib.GZip;
 using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 using ICSharpCode.SharpZipLib.Zip.Compression;
 
-namespace Rsdn.RsdnNntp.RsdnService
+namespace Rsdn.RsdnNntp.Public.RsdnService
 {
 	/// <summary>
 	/// Summary description for CompressWebResponse.

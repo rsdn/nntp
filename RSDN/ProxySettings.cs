@@ -8,7 +8,7 @@ using System.Text;
 using System.Security.Cryptography;
 using System.IO;
 
-namespace Rsdn.RsdnNntp
+namespace Rsdn.RsdnNntp.Public
 {
 	/// <summary>
 	/// Helper class for XML Serializatiob of WebProxy class

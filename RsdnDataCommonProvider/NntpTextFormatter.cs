@@ -5,7 +5,6 @@ using System.IO;
 using System.Net;
 using System.Text.RegularExpressions;
 using log4net;
-using Rsdn.Framework.Common;
 using Rsdn.Framework.Formatting;
 using Rsdn.Mime;
 

@@ -27,6 +27,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Console Test", "Console Tes
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RsdnDataCommonProvider", "RsdnDataCommonProvider\RsdnDataCommonProvider.csproj", "{A6ACE0D8-88D2-4306-AFB6-7A3EDD509D28}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
@@ -59,6 +63,10 @@ Global
 		{3512427B-A32E-4C8A-BF0A-7AF2DD1B3B54}.Debug.Build.0 = Debug|.NET
 		{3512427B-A32E-4C8A-BF0A-7AF2DD1B3B54}.Release.ActiveCfg = Release|.NET
 		{3512427B-A32E-4C8A-BF0A-7AF2DD1B3B54}.Release.Build.0 = Release|.NET
+		{A6ACE0D8-88D2-4306-AFB6-7A3EDD509D28}.Debug.ActiveCfg = Debug|.NET
+		{A6ACE0D8-88D2-4306-AFB6-7A3EDD509D28}.Debug.Build.0 = Debug|.NET
+		{A6ACE0D8-88D2-4306-AFB6-7A3EDD509D28}.Release.ActiveCfg = Release|.NET
+		{A6ACE0D8-88D2-4306-AFB6-7A3EDD509D28}.Release.Build.0 = Release|.NET
 	EndGlobalSection
 	GlobalSection(SolutionItems) = postSolution
 		ProductInfo.cs = ProductInfo.cs

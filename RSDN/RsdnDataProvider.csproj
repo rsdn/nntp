@@ -9,7 +9,7 @@
             <Settings
                 ApplicationIcon = ""
                 AssemblyKeyContainerName = ""
-                AssemblyName = "RsdnDataProvider"
+                AssemblyName = "RsdnDataPublicProvider"
                 AssemblyOriginatorKeyFile = ""
                 DefaultClientScript = "JScript"
                 DefaultHTMLPageLayout = "Grid"
@@ -18,7 +18,7 @@
                 OutputType = "Library"
                 PreBuildEvent = ""
                 PostBuildEvent = 'xcopy /D /Y *.dll "$(SolutionDir)$(OutDir)"'
-                RootNamespace = "Rsdn.RsdnNntp"
+                RootNamespace = "Rsdn.RsdnNntp.Public"
                 RunPostBuildEvent = "OnBuildSuccess"
                 StartupObject = ""
             >
@@ -136,10 +136,20 @@
                     AssemblyName = "ICSharpCode.SharpZipLib"
                     HintPath = "..\libs\ICSharpCode.SharpZipLib.dll"
                 />
+                <Reference
+                    Name = "RsdnDataCommonProvider"
+                    Project = "{A6ACE0D8-88D2-4306-AFB6-7A3EDD509D28}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
             </References>
         </Build>
         <Files>
             <Include>
+                <File
+                    RelPath = "Article.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
                 <File
                     RelPath = "AssemblyInfo.cs"
                     SubType = "Code"
@@ -161,11 +171,7 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Header.htm"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "NntpTextFormatter.cs"
+                    RelPath = "Group.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -201,12 +207,12 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "ReferenceCache.cs"
+                    RelPath = "Settings.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Settings.cs"
+                    RelPath = "UserInfo.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

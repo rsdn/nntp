@@ -4,7 +4,7 @@ using System.Windows.Forms;
 using System.Windows.Forms.Design;
 using System.Net;
 
-namespace Rsdn.RsdnNntp
+namespace Rsdn.RsdnNntp.Public
 {
 	/// <summary>
 	/// 
@@ -13,9 +13,6 @@ namespace Rsdn.RsdnNntp
 	{
 		public ProxyEditor()
 		{
-			// 
-			// TODO: Add constructor logic here
-			//
 		}
 
 		public override UITypeEditorEditStyle GetEditStyle(System.ComponentModel.ITypeDescriptorContext context)

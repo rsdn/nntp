@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Settings xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <Name>RSDN.RU</Name>
-  <DataProviderTypeName>Rsdn.RsdnNntp.RsdnDataProvider, RsdnDataProvider</DataProviderTypeName>
+  <DataProviderTypeName>Rsdn.RsdnNntp.Public.RsdnDataPublicProvider, RsdnDataPublicProvider</DataProviderTypeName>
   <DataProviderSettings xsi:type="DataProviderSettings">
     <proxySettings />
     <Encoding>windows-1251</Encoding>
