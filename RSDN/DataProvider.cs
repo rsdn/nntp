@@ -488,6 +488,8 @@ namespace Rsdn.RsdnNntp
     						try
     						{
     							WebRequest req = WebRequest.Create(match.Groups["url"].Value);
+							// set proxy setting the same as for web service
+							req.Proxy = webService.Proxy;
     							response = req.GetResponse();
     							Message imgPart = new Message(false);
     							imgPart.ContentType = response.ContentType;
@@ -503,7 +505,11 @@ namespace Rsdn.RsdnNntp
     							newsMessage.Entities.Add(imgPart);
     							htmlText = htmlText.Replace(match.Groups["url"].Value, "cid:" + imgContentID.ToString());
     						}
-    						catch (Exception) {}
+    						catch (Exception ex)
+						{
+							logger.Error(string.Format("Image {0} not found.",
+								match.Groups["url"].Value), ex);
+						}
     						finally
     						{
     							if (response != null)
