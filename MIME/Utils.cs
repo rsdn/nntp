@@ -144,7 +144,7 @@ namespace Rsdn.Mime
 		}
 
 		static protected readonly Regex quotedPrintableDecodedSymbol =
-			new Regex(@"[^\x09\x20\x21-\x3c\x3e-\x7e]", RegexOptions.Compiled);
+			new Regex(@"[^\x21-\x3c\x3e-\x7e]", RegexOptions.Compiled);
 
 		/// <summary>
 		/// Regular expression for breaking 'quoted-rintable' strings in lines

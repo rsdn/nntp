@@ -59,8 +59,16 @@ namespace Rsdn.Mime
 		// text & mime encoding to pass in non-ascii replacer
 		protected Encoding encoding;
 		protected ContentTransferEncoding mimeEncoding;
+		/// <summary>
+		/// Regular expressions for mime header folding
+		/// </summary>
+		protected static readonly Regex headerFolding =
+			new Regex(@"(?>(.{1," + Util.LineLength + @"})([ \t]|$))(?=[ \t]*\S)", RegexOptions.Compiled);
+		/// <summary>
+		/// regular expression for replacing non-ascii symbols
+		/// </summary>
+		protected static readonly Regex nonAsciiReplace = new Regex(@"([^\x00-\xFF]+\s*)+(?<!\s)", RegexOptions.Compiled);
 
-		static protected readonly Regex nonAsciiReplace = new Regex(@"([^\x00-\xFF]+\s*)+(?<!\s)", RegexOptions.Compiled);
 		/// <summary>
 		/// Get MIME encoded header item (if don't fit in ASCII symbols) with specific text & MIME encodings
 		/// </summary>
@@ -75,7 +83,8 @@ namespace Rsdn.Mime
 				this.encoding = encoding;
 				this.mimeEncoding = mimeEncoding;
 
-				return nonAsciiReplace.Replace(this[name], new MatchEvaluator(NonAsciiReplacer));
+				return headerFolding.Replace(nonAsciiReplace.Replace(this[name], new MatchEvaluator(NonAsciiReplacer)),
+					string.Format("$1{0}$2", Util.CRLF));
 			}
 		}
 
@@ -111,13 +120,26 @@ namespace Rsdn.Mime
 			return Encode(encoding, ContentTransferEncoding.QoutedPrintable);
 		}
 			
-		static readonly protected Regex extractEncodedParts =
+		/// <summary>
+		/// Regular expression for detect encoded parts
+		/// </summary>
+		protected static readonly Regex extractEncodedParts =
 			new Regex(@"=\?(?<charset>\S+?)\?(?<encoding>[qQbB])\?(?<value>[^\?\s]+?)\?=");
-
+		/// <summary>
+		/// Regular expressions for removing non-sign spaces between encoded parts
+		/// </summary>
+		protected static readonly Regex spaceBetweenEncodedParts =
+			new Regex(@"(?<=\?=)[ \t]+(?==\?)", RegexOptions.Compiled);
+		/// <summary>
+		/// Decode mime encoded parts
+		/// </summary>
+		/// <param name="encodedValue"></param>
+		/// <returns></returns>
 		public static string DecodeHeaderFieldValue(string encodedValue)
 		{
 			return (encodedValue == null) ? null :
-				extractEncodedParts.Replace(encodedValue, new MatchEvaluator(DecodeEncodedMatch));
+				extractEncodedParts.Replace(spaceBetweenEncodedParts.Replace(encodedValue, ""),
+					new MatchEvaluator(DecodeEncodedMatch));
 		}
 
 		protected static string DecodeEncodedMatch(Match encodedMatch)
@@ -141,6 +163,21 @@ namespace Rsdn.Mime
 		{
 			// encode header without MIME encoding
 			return Encode(Encoding.Unicode, ContentTransferEncoding.Unknown);
+		}
+
+		/// <summary>
+		/// Regular expression for unfolding header bodies
+		/// </summary>
+		static readonly protected Regex unfoldHeaderField =
+			new Regex(Util.CRLF + @"(?=[ \t])", RegexOptions.Compiled);
+		/// <summary>
+		/// Unfold header
+		/// </summary>
+		/// <param name="text"></param>
+		/// <returns></returns>
+		public static string Unfold(string text)
+		{
+			return unfoldHeaderField.Replace(text, "");
 		}
 	}
 }

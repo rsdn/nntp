@@ -252,8 +252,6 @@ namespace Rsdn.Mime
 
 		static readonly protected Regex headerField =
 			new Regex(@"(?m)^(?<fieldName>\S+)\s*:\s*(?<fieldBody>.*)\s*" + Util.CRLF);
-		static readonly protected Regex unfoldHeaderField =
-			new Regex(Util.CRLF + @"\s", RegexOptions.Compiled);
 		static readonly protected Regex headerAndBody =
 			new Regex(string.Format(@"(?s)(?<header>.*?{0}){0}(?<body>.*)", Util.CRLF), RegexOptions.Compiled);
 
@@ -276,8 +274,7 @@ namespace Rsdn.Mime
 				throw new MimeFormattingException("MIME message is bad formatted.");
 
 			foreach (Match headerFieldMatch in
-				headerField.Matches(unfoldHeaderField.Replace(headerAndBodyMatch.Groups["header"].Value,
-					string.Empty)))
+				headerField.Matches(Header.Unfold(headerAndBodyMatch.Groups["header"].Value)))
 						message[headerFieldMatch.Groups["fieldName"].Value] =
 							headerFieldMatch.Groups["fieldBody"].Value;
 
