@@ -2,107 +2,15 @@ using System;
 using System.Text.RegularExpressions;
 using System.Net.Sockets;
 using System.Text;
-using System.Reflection;
-using System.Collections;
+
 using System.Collections.Specialized;
 using System.Net;
 
 using Rsdn.Mime;
 using Rsdn.Nntp;
 
-[assembly:Rsdn.Nntp.Commands.NntpCommandsAssembly()]
-
 namespace Rsdn.Nntp.Commands
 {
-	// See RFC  977 'Network News Transport Protocol'
-	// See RFC 2980 'Common NNTP Extensions'
-	
-	/// <summary>
-	/// Generic NNTP client command
-	/// </summary>
-	public abstract class Generic
-	{
-#if PERFORMANCE_COUNTERS
-		/// <summary>
-		/// RSDN NNTP Command performance counters' category
-		/// </summary>
-		public const string CommandCategoryName = "RSDN NNTP Command";
-#endif
-
-		/// <summary>
-		/// Create command handler for specific session.
-		/// </summary>
-		/// <param name="session">Parent NNTP session.</param>
-		public Generic(Session session)
-		{
-			syntaxisChecker = null;
-			this.session = session;
-		}
-
-		/// <summary>
-		/// Process client command
-		/// </summary>
-		public Response Process()
-		{
-			lastMatch = syntaxisChecker.Match(session.commandString);
-			if (lastMatch.Success)
-				return ProcessCommand();
-			else
-				return new Response(NntpResponse.SyntaxisError); // syntaxis error
-		}
-
-		protected abstract Response ProcessCommand();
-
-		protected Regex syntaxisChecker;
-		/// <summary>
-		/// parent NNTP Session
-		/// </summary>
-		protected Session session;
-		protected Match lastMatch;
-		protected Session.States allowedStates;
-		protected Session.States prohibitedStates;
-
-		/// <summary>
-		/// Check if command is allowed in specified state.
-		/// </summary>
-		/// <param name="state">Necessary state.</param>
-		/// <returns>True if allowed.</returns>
-		public bool IsAllowed(Session.States state)
-		{
-			// not prohibited 
-			if ((prohibitedStates & state) == 0)
-				// if any states explixity allowed
-				if ((allowedStates ^ Session.States.None) != 0)
-					return (allowedStates & state) != 0;
-				else
-					// else implicity allowed
-					return true;
-
-			return false;
-		}
-
-		/// <summary>
-		/// Identification string for this assembly.
-		/// </summary>
-		protected static readonly string nntpID = Assembly.GetExecutingAssembly().GetName().Name + " " +
-			Assembly.GetExecutingAssembly().GetName().Version;
-
-		/// <summary>
-		/// add dditional headers specified by server
-		/// </summary>
-		/// <param name="article">news article</param>
-		/// <returns>modified news article</returns>
-		protected NewsArticle ModifyArticle(NewsArticle article)
-		{
-			StringBuilder xref = new StringBuilder(Session.Hostname);
-			foreach (DictionaryEntry newsGroupNumber in article.MessageNumbers)
-				xref.Append(" ").Append(newsGroupNumber.Key).Append(":").Append(newsGroupNumber.Value);
-			article["Xref"] = xref.ToString();
-			article["X-Server"] = string.Join("; ", new string[]{Manager.ServerID, nntpID, session.DataProvider.Identity});
-			return article;
-		}
-	}
-
 	/// <summary>
 	/// XOVER client command
 	/// </summary>
@@ -162,87 +70,6 @@ namespace Rsdn.Nntp.Commands
 				output.Append(Util.CRLF);
 			}
 			return new Response(NntpResponse.Overview, output.ToString());
-		}
-	}
-
-	/// <summary>
-	/// Common class for ARTICLE, HEAD, BODY, STAT client commands
-	/// </summary>
-	[NntpCommand("ARTICLE")]
-	[NntpCommand("HEAD")]
-	[NntpCommand("BODY")]
-	[NntpCommand("STAT")]
-	public class ArticleHeadBodyStat : Generic
-	{
-		/// <summary>
-		/// Coomand syntaxis checker's regular expression
-		/// </summary>
-		protected static Regex ArticleHeadBodyStatSyntaxisChecker =
-			new Regex(@"(?in)^(?<command>ARTICLE|HEAD|BODY|STAT)" + 
-								@"([ \t]+((?<messageID>\<\S+\>)|(?<messageNumber>\d+)))?[ \t]*$",
-								RegexOptions.Compiled);
-
-		/// <summary>
-		/// Create command handler.
-		/// </summary>
-		/// <param name="session">Parent NNTP session.</param>
-		public ArticleHeadBodyStat(Session session) : base(session)	
-		{
-			allowedStates = Session.States.Normal;
-			syntaxisChecker = ArticleHeadBodyStatSyntaxisChecker;
-		}
-
-		/// <summary>
-		/// Process commands.
-		/// </summary>
-		/// <returns>Server's NNTP response</returns>
-		protected override Response ProcessCommand()
-		{
-			NntpResponse responseCode;
-			NewsArticle.Content content;
-			switch (lastMatch.Groups["command"].Value.ToUpper())
-			{
-				case "ARTICLE" :
-					content = NewsArticle.Content.HeaderAndBody;
-					responseCode = NntpResponse.ArticleHeadBodyRetrivied;
-					break;
-				case "HEAD"	:
-					content = NewsArticle.Content.Header;
-					responseCode = NntpResponse.ArticleHeadRetrivied;
-					break;
-				case "BODY"	:
-					content = NewsArticle.Content.Body;
-					responseCode = NntpResponse.ArticleBodyRetrivied;
-					break;
-				case "STAT"	:
-					content = NewsArticle.Content.None;
-					responseCode = NntpResponse.ArticleNothingRetrivied;
-					break;
-				default:
-					content = NewsArticle.Content.None;
-					responseCode = NntpResponse.ProgramFault;
-					break;
-			}
-
-			NewsArticle article;
-			if (lastMatch.Groups["messageID"].Success)
-			{
-				article = session.DataProvider.GetArticle(
-					lastMatch.Groups["messageID"].Value, content);
-			}
-			else
-				if (lastMatch.Groups["messageNumber"].Success)
-				article = session.DataProvider.GetArticle(
-					Convert.ToInt32(lastMatch.Groups["messageNumber"].Value),
-					content);
-			else
-				article = session.DataProvider.GetArticle(NewsArticle.Content.HeaderAndBody);
-			
-			ModifyArticle(article);
-			return new Response(responseCode, article.GetBody(),
-				// article retirived by messageID don't change "internal current pointer", so we may don't have current group
-				lastMatch.Groups["messageID"].Success ? null : article.MessageNumbers[session.DataProvider.CurrentGroup],
-				article["Message-ID"]);
 		}
 	}
 
