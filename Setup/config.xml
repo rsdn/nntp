@@ -4,6 +4,7 @@
   <DataProviderTypeName>Rsdn.RsdnNntp.RsdnDataProvider, RsdnDataProvider</DataProviderTypeName>
   <DataProviderSettings xsi:type="DataProviderSettings">
     <proxySettings />
+    <Encoding>windows-1251</Encoding>
   </DataProviderSettings>
   <Bindings>
     <ServerEndPoint>
