@@ -305,9 +305,14 @@
             Detect [tagline] tag.
             </summary>
         </member>
-        <member name="F:Rsdn.Framework.Formatting.TextFormatter.ArticleDetector">
+        <member name="F:Rsdn.Framework.Formatting.TextFormatter.PurlDetector">
             <summary>
-            Detect [article] tag.
+            Detect [purl] tag.
+            </summary>
+        </member>
+        <member name="F:Rsdn.Framework.Formatting.TextFormatter.PurlRegex">
+            <summary>
+            Regex for [purl] tag.
             </summary>
         </member>
         <member name="M:Rsdn.Framework.Formatting.TextFormatter.UrlReplacer(System.Text.RegularExpressions.Match)">
@@ -379,9 +384,9 @@
             <param name="text">Original text.</param>
             <returns>Modified text.</returns>
         </member>
-        <member name="M:Rsdn.Framework.Formatting.TextFormatter.RemoveArticleTag(System.String)">
+        <member name="M:Rsdn.Framework.Formatting.TextFormatter.RemovePurlTag(System.String)">
             <summary>
-            Remove [article] tag from text.
+            Remove [purl] tag from text.
             </summary>
             <param name="text">Original text.</param>
             <returns>Modified text.</returns>
