@@ -22,12 +22,6 @@ namespace Rsdn.Nntp.Cache
 		/// </summary>
 		protected static System.Web.Caching.Cache cache = HttpRuntime.Cache;
 
-		static CacheDataProvider()
-		{
-			cache.Add("keepCache", true, null, System.Web.Caching.Cache.NoAbsoluteExpiration, System.Web.Caching.Cache.NoSlidingExpiration,
-				CacheItemPriority.NotRemovable, null);
-		}
-
 		/// <summary>
 		/// Check if current content of article is suitable for need content.
 		/// </summary>
@@ -81,15 +75,15 @@ namespace Rsdn.Nntp.Cache
 		/// Put the message in cache.
 		/// </summary>
 		/// <param name="article">Article.</param>
-		protected void PutInCache(NewsArticle article, NewsArticle.Content content)
+		protected void PutInCache(NewsArticle article)
 		{
-			Container comtainer = new Container(article, content);
-			cache.Add(article.MessageID, comtainer, null,
-				DateTime.Now.Add(settings.AbsoluteExpiration), settings.SlidingExpiration, CacheItemPriority.AboveNormal, null);
-			CacheDependency dependecy = new CacheDependency(null, new string[]{article.MessageID, "keepCache"});
+			cache.Add(article.MessageID, article, null, DateTime.Now.Add(settings.AbsoluteExpiration),
+				settings.SlidingExpiration, CacheItemPriority.AboveNormal, null);
+			CacheDependency dependecy =
+				new CacheDependency(null, new string[]{article.MessageID, "keepCache"});
 			foreach (DictionaryEntry entry in article.MessageNumbers)
 			{
-				cache.Insert(entry.Key.ToString() + entry.Value.ToString(), comtainer, dependecy);
+				cache.Insert(entry.Key.ToString() + entry.Value.ToString(), article, dependecy);
 			}
 		}
 
@@ -108,19 +102,14 @@ namespace Rsdn.Nntp.Cache
 			if (settings.Cache != CacheType.None)
 			{
 				// check message in cache
-				Container container = cache[originalMessageID] as Container;
-				if ((container != null) && CheckContentSuitable(content, container.Content))
-				{
-					// found
-					article = container.Article;
-				}
-				else
+				article = cache[originalMessageID] as NewsArticle;
+				if ((article == null) || !CheckContentSuitable(content, article.Contents))
 				// There is no suitable message in cache.
 				{
 					article = GetNonCachedArticle(originalMessageID, content);
 
 					// Put the message in the cache.
-					PutInCache(article, content);
+					PutInCache(article);
 				}
 			}
 			else
@@ -137,19 +126,14 @@ namespace Rsdn.Nntp.Cache
 			if (settings.Cache != CacheType.None)
 			{
 				// check message in cache
-				Container container = cache[groupName + articleNumber.ToString()] as Container;
-				if ((container != null) && CheckContentSuitable(content, container.Content))
-				{
-					// found
-					article = container.Article;
-				}
-				else
+				article = cache[groupName + articleNumber.ToString()] as NewsArticle;
+				if ((article == null) || !CheckContentSuitable(content, article.Contents))
 					// There is no suitable message in cache.
 				{
 					article = GetNonCachedArticle(articleNumber, groupName, content);
 
 					// Put the message in the cache.
-					PutInCache(article, content);
+					PutInCache(article);
 				}
 			}
 			else
@@ -167,6 +151,10 @@ namespace Rsdn.Nntp.Cache
 			return typeof(CacheDataProviderSettings);
 		}
 
+		/// <summary>
+		/// Configure data provider.
+		/// </summary>
+		/// <param name="settings"></param>
 		public virtual void Config(object settings)
 		{
 			if (settings is CacheDataProviderSettings)
@@ -208,18 +196,7 @@ namespace Rsdn.Nntp.Cache
 
 		#region IDisposable Members
 
-		public virtual void Dispose()
-		{
-			cache.Remove("keepCache");
-
-			// save the cache
-			foreach (DictionaryEntry entry in cache)
-			{
-				object key = entry.Key;
-				object value = entry.Value;
-			}
-
-		}
+		public abstract void Dispose();
 
 		#endregion
 

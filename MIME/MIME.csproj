@@ -1,7 +1,7 @@
 <VisualStudioProject>
     <CSHARP
         ProjectType = "Local"
-        ProductVersion = "7.10.2292"
+        ProductVersion = "7.10.3077"
         SchemaVersion = "2.0"
         ProjectGuid = "{3246EAC3-12D9-4396-A36F-C10DB122873D}"
     >
@@ -107,4 +107,3 @@
         </Files>
     </CSHARP>
 </VisualStudioProject>
-

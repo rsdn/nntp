@@ -17,10 +17,6 @@ namespace Rsdn.Nntp.Cache
 		/// Only in memory cache
 		/// </summary>
 		Memory,
-		/// <summary>
-		/// Permanent cache
-		/// </summary>
-		Persistent
 	}
 
 	/// <summary>

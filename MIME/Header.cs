@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.Serialization;
 using System.Collections.Specialized;
 using System.Text;
 using System.Collections;
@@ -28,6 +29,13 @@ namespace Rsdn.Mime
 		public Header() : base()
 		{
 			filters = CollectionsUtil.CreateCaseInsensitiveHashtable();
+		}
+		   
+		/// <summary>
+		/// Constructor for deserializing of the object
+		/// </summary>
+		protected Header(SerializationInfo info, StreamingContext context) : base(info, context)
+		{
 		}
 
 		/// <summary>

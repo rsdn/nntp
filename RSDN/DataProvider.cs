@@ -41,12 +41,6 @@ namespace Rsdn.RsdnNntp
     protected static string referencesCacheFilename = 
     	Assembly.GetExecutingAssembly().GetName().Name + ".references.cache";
 
-    /// <summary>
-    /// Filename of messages cache
-    /// </summary>
-    protected static string cacheFilename =
-    	Assembly.GetExecutingAssembly().GetName().Name + ".cache";
-
 		/// <summary>
 		/// Logger 
 		/// </summary>
@@ -58,17 +52,6 @@ namespace Rsdn.RsdnNntp
     /// </summary>
     static RsdnDataProvider()
     {
-    	// load messages cache
-//    	try
-//    	{
-//    		if (File.Exists(cacheFilename))
-//    			cache = (Cache)Deserialize(cacheFilename);
-//    	}
-//    	catch (Exception e)
-//    	{
-//    		logger.Error("Messages cache corrupted", e);
-//    	}
-
     	// load references cache
     	try
     	{
@@ -86,14 +69,9 @@ namespace Rsdn.RsdnNntp
     /// </summary>
     public override void Dispose()
     {
-//    	// save message cache
-//    	lock (cache)
-//    		Serialize(cache, cacheFilename);
     	// save references cache
     	lock (referenceCache)
     		Serialize(referenceCache, referencesCacheFilename);
-
-			base.Dispose();
     }
 
     /// <summary>
@@ -182,7 +160,8 @@ namespace Rsdn.RsdnNntp
 		/// <param name="groupName"></param>
 		/// <param name="content"></param>
 		/// <returns></returns>
-    public override NewsArticle GetNonCachedArticle(int articleNumber, string groupName, NewsArticle.Content content)
+    public override NewsArticle GetNonCachedArticle(int articleNumber, string groupName,
+			NewsArticle.Content content)
     {
     	article message = null;
     	try
@@ -358,10 +337,11 @@ namespace Rsdn.RsdnNntp
     /// <param name="newsgroup"></param>
     /// <param name="content"></param>
     /// <returns></returns>
-    protected NewsArticle ToNNTPArticle(article message, string newsgroup, NewsArticle.Content content)
+    protected NewsArticle ToNNTPArticle(article message, string newsgroup,
+			NewsArticle.Content content)
     {
     	NewsArticle newsMessage = new NewsArticle("<" + message.id + message.postfix + ">",
-    		new string[]{newsgroup}, new int[]{message.num});
+    		new string[]{newsgroup}, new int[]{message.num}, content);
     	newsMessage.HeaderEncoding = encoding;
 
     	if ((content == NewsArticle.Content.Header) ||

@@ -14,7 +14,7 @@ namespace Rsdn.Nntp
 	[Serializable]
 	public class NewsArticle : Message
 	{
-		public NewsArticle(string messageID, string[] newsGroups, int[] messageNumbers)
+		public NewsArticle(string messageID, string[] newsGroups, int[] messageNumbers, Content content)
 		{
 			if (newsGroups.Length != messageNumbers.Length)
 				throw new ArgumentException("Size of newsGroups and messageNumbers parameters must be the same.");
@@ -30,6 +30,7 @@ namespace Rsdn.Nntp
 			}
 			
 			this["Newsgroups"] = newsGroupsHeader.ToString();
+			Contents = content;
 		}
 
 		protected	Hashtable messageNumbers;
@@ -48,6 +49,6 @@ namespace Rsdn.Nntp
 		/// <summary>
 		/// type of content of article
 		/// </summary>
-		protected Content content = Content.None;
+		public Content Contents = Content.None;
 	}
 }
