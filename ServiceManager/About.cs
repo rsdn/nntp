@@ -35,9 +35,9 @@ namespace derIgel.RsdnNntp
 
 			titleLabel.Text = derIgel.NNTP.Manager.GetProductTitle(Assembly.GetExecutingAssembly());
 
-			AddAssembly(Assembly.GetExecutingAssembly());
-			AddAssembly(Assembly.Load("RsdnNntpServer"));
-			AddAssembly(Assembly.LoadFrom(ConfigurationSettings.AppSettings["dataProvider.Assembly"]));
+			Assembly.Load("RsdnNntpServer");
+			foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+				AddAssembly(assembly);
 		}
 
 		/// <summary>
@@ -79,7 +79,7 @@ namespace derIgel.RsdnNntp
 			this.richTextAbout.Location = new System.Drawing.Point(72, 48);
 			this.richTextAbout.Name = "richTextAbout";
 			this.richTextAbout.ReadOnly = true;
-			this.richTextAbout.Size = new System.Drawing.Size(252, 80);
+			this.richTextAbout.Size = new System.Drawing.Size(388, 80);
 			this.richTextAbout.TabIndex = 0;
 			this.richTextAbout.TabStop = false;
 			this.richTextAbout.Text = "";
@@ -99,11 +99,12 @@ namespace derIgel.RsdnNntp
 			this.treeView.Anchor = (((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
 				| System.Windows.Forms.AnchorStyles.Left) 
 				| System.Windows.Forms.AnchorStyles.Right);
+			this.treeView.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.treeView.ImageIndex = -1;
 			this.treeView.Location = new System.Drawing.Point(8, 136);
 			this.treeView.Name = "treeView";
 			this.treeView.SelectedImageIndex = -1;
-			this.treeView.Size = new System.Drawing.Size(316, 192);
+			this.treeView.Size = new System.Drawing.Size(452, 192);
 			this.treeView.TabIndex = 2;
 			// 
 			// titleLabel
@@ -121,7 +122,7 @@ namespace derIgel.RsdnNntp
 			// About
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(336, 341);
+			this.ClientSize = new System.Drawing.Size(472, 341);
 			this.Controls.AddRange(new System.Windows.Forms.Control[] {
 																																	this.titleLabel,
 																																	this.treeView,

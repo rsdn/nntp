@@ -313,7 +313,7 @@ namespace derIgel.NNTP
 						catch(Exception e)
 						{
 							#if DEBUG || SHOW
-								errorOutput.WriteLine("\texception: " + e.ToString());
+								errorOutput.WriteLine("\texception: {0}" + e);
 							#endif
 							result = new Response(NntpResponse.ProgramFault);
 						}

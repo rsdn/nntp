@@ -74,7 +74,7 @@ namespace derIgel.RsdnNntp
 			this.okButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
 			this.okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
 			this.okButton.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.okButton.Location = new System.Drawing.Point(133, 451);
+			this.okButton.Location = new System.Drawing.Point(133, 449);
 			this.okButton.Name = "okButton";
 			this.okButton.TabIndex = 1;
 			this.okButton.Text = "OK";
@@ -85,7 +85,7 @@ namespace derIgel.RsdnNntp
 			this.cancelButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
 			this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.cancelButton.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.cancelButton.Location = new System.Drawing.Point(237, 451);
+			this.cancelButton.Location = new System.Drawing.Point(237, 449);
 			this.cancelButton.Name = "cancelButton";
 			this.cancelButton.TabIndex = 2;
 			this.cancelButton.Text = "Cancel";
@@ -95,7 +95,7 @@ namespace derIgel.RsdnNntp
 			this.applyButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
 			this.applyButton.Enabled = false;
 			this.applyButton.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.applyButton.Location = new System.Drawing.Point(333, 451);
+			this.applyButton.Location = new System.Drawing.Point(333, 449);
 			this.applyButton.Name = "applyButton";
 			this.applyButton.TabIndex = 3;
 			this.applyButton.Text = "Apply";
@@ -130,6 +130,7 @@ namespace derIgel.RsdnNntp
 			this.serverPropertyGrid.CommandsBackColor = System.Drawing.SystemColors.Highlight;
 			this.serverPropertyGrid.CommandsVisibleIfAvailable = true;
 			this.serverPropertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.serverPropertyGrid.HelpVisible = false;
 			this.serverPropertyGrid.LargeButtons = false;
 			this.serverPropertyGrid.LineColor = System.Drawing.SystemColors.ScrollBar;
 			this.serverPropertyGrid.Name = "serverPropertyGrid";
@@ -189,7 +190,6 @@ namespace derIgel.RsdnNntp
 			// 
 			this.dataProviderPropertyGrid.CommandsVisibleIfAvailable = true;
 			this.dataProviderPropertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.dataProviderPropertyGrid.HelpVisible = false;
 			this.dataProviderPropertyGrid.LargeButtons = false;
 			this.dataProviderPropertyGrid.LineColor = System.Drawing.SystemColors.ScrollBar;
 			this.dataProviderPropertyGrid.Name = "dataProviderPropertyGrid";
@@ -200,6 +200,7 @@ namespace derIgel.RsdnNntp
 			this.dataProviderPropertyGrid.ToolbarVisible = false;
 			this.dataProviderPropertyGrid.ViewBackColor = System.Drawing.SystemColors.Window;
 			this.dataProviderPropertyGrid.ViewForeColor = System.Drawing.SystemColors.WindowText;
+			this.dataProviderPropertyGrid.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.propertyGrid_PropertyValueChanged);
 			// 
 			// ControlPanel
 			// 

@@ -274,24 +274,34 @@ namespace derIgel.RsdnNntp
 			if ((content == NewsArticle.Content.Body) ||
 				(content == NewsArticle.Content.HeaderAndBody))
 			{
-				Message plainTextBody = new Message(false);
-				plainTextBody.Entities.Add(PrepareText(message.message));
-				plainTextBody.TransferEncoding = ContentTransferEncoding.Base64;
-				plainTextBody.ContentType = string.Format("text/plain; charset=\"{0}\"", encoding.BodyName);
+				
+				if (plainText)
+				{
+					newsMessage.Entities.Add(PrepareText(message.message));
+					newsMessage.TransferEncoding = ContentTransferEncoding.Base64;
+					newsMessage.ContentType = string.Format("text/plain; charset=\"{0}\"", encoding.BodyName);
+				}
+				else
+				{
+					Message plainTextBody = new Message(false);
+					plainTextBody.Entities.Add(PrepareText(message.message));
+					plainTextBody.TransferEncoding = ContentTransferEncoding.Base64;
+					plainTextBody.ContentType = string.Format("text/plain; charset=\"{0}\"", encoding.BodyName);
 
-				Message htmlTextBody = new Message(false);
-				string htmlText = string.Format(htmlMessageTemplate, message.authorid, message.author,
-					message.gid, message.id,
-					(message.message != null) ? formatMessage.PrepareText(message.message, true) : null,
-					message.userType,
-					(message.homePage != null) ? formatMessage.PrepareText(message.homePage, true) : null);
-				htmlTextBody.Entities.Add(htmlText);
-				htmlTextBody.TransferEncoding = ContentTransferEncoding.Base64;
-				htmlTextBody.ContentType = string.Format("text/html; charset=\"{0}\"", encoding.BodyName);
+					Message htmlTextBody = new Message(false);
+					string htmlText = string.Format(htmlMessageTemplate, message.authorid, message.author,
+						message.gid, message.id,
+						(message.message != null) ? formatMessage.PrepareText(message.message, true) : null,
+						message.userType,
+						(message.homePage != null) ? formatMessage.PrepareText(message.homePage, true) : null);
+					htmlTextBody.Entities.Add(htmlText);
+					htmlTextBody.TransferEncoding = ContentTransferEncoding.Base64;
+					htmlTextBody.ContentType = string.Format("text/html; charset=\"{0}\"", encoding.BodyName);
 
-				newsMessage.Entities.Add(plainTextBody);
-				newsMessage.Entities.Add(htmlTextBody);
-				newsMessage.ContentType = "multipart/alternative";
+					newsMessage.Entities.Add(plainTextBody);
+					newsMessage.Entities.Add(htmlTextBody);
+					newsMessage.ContentType = "multipart/alternative";
+				}			
 			}
 	
 			return newsMessage;
@@ -428,6 +438,7 @@ namespace derIgel.RsdnNntp
 				webService.Proxy = rsdnSettings.Proxy;
 				encoding = rsdnSettings.GetEncoding;
 				cache.Capacity = rsdnSettings.CacheSize;
+				plainText = rsdnSettings.PlainText;
 			}
 		}
 
@@ -458,5 +469,7 @@ namespace derIgel.RsdnNntp
 		{
 			return typeof(DataProviderSettings);
 		}
+
+		protected bool plainText;
 	}
 }

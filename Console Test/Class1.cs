@@ -29,7 +29,7 @@ namespace ForumTest
 			}
 			catch (Exception e)
 			{
-				Console.Out.WriteLine(e.ToString());
+				Console.Out.WriteLine(e);
 			}
 		}
 	}

@@ -103,5 +103,13 @@ namespace derIgel.RsdnNntp
 				return encoding;
 			}
 		}
+
+		protected bool plainText;
+		[DefaultValue(false)]
+		public bool PlainText
+		{
+			get { return plainText; }
+			set { plainText = value; }
+		}
 	}
 }
