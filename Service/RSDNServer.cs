@@ -29,7 +29,7 @@ namespace derIgel.RsdnNntp
 		static void Main()
 		{
 			System.ServiceProcess.ServiceBase[] ServicesToRun;
-				
+
 			// More than one user Service may run within the same process. To add
 			// another service to this process, change the following line to
 			// create a second service object. For example,
@@ -38,6 +38,9 @@ namespace derIgel.RsdnNntp
 			//
 			ServicesToRun = new System.ServiceProcess.ServiceBase[] { new RsdnNntpServer() };
 
+			// tracing
+			Trace.Listeners.Add(new EventLogTraceListener(ServicesToRun[0].EventLog));
+				
 			System.ServiceProcess.ServiceBase.Run(ServicesToRun);
 		}
 
@@ -88,7 +91,7 @@ namespace derIgel.RsdnNntp
 			}
 			catch (Exception e)
 			{
-				EventLog.WriteEntry(e.ToString(), EventLogEntryType.Error);
+				Trace.Fail(e.ToString());
 				nntpManager = null;
 				// start timer, which will stop service in 1 sec
 				Timer timer = new Timer(new TimerCallback(Stop), null, 1000, Timeout.Infinite);
@@ -102,12 +105,15 @@ namespace derIgel.RsdnNntp
 		{
 			try
 			{
-				nntpManager.Stop();
-				nntpManager = null;
+				if (nntpManager != null)
+				{
+					nntpManager.Stop();
+					nntpManager = null;
+				}
 			}
 			catch (Exception e)
 			{
-				EventLog.WriteEntry(e.ToString(), EventLogEntryType.Error);
+				Trace.Fail(e.ToString());
 			}
 		}
 

@@ -12,14 +12,6 @@ namespace derIgel.NNTP
 	/// </summary>
 	public class NNTPSettings
 	{
-		protected string errorOutputFilename;
-		[BrowsableAttribute(false)]
-		public string ErrorOutputFilename
-		{
-			get {return errorOutputFilename; }
-			set {errorOutputFilename = value; }
-		}
-
 		public NNTPSettings()
 		{
 			bindings = new ServerEndPoint[0];
@@ -30,7 +22,6 @@ namespace derIgel.NNTP
 			bindings = settings.bindings;
 			dataProviderType = settings.dataProviderType;
 			DataProviderSettings = settings.DataProviderSettings;
-			errorOutputFilename = settings.errorOutputFilename;
 			name = settings.name;
 		}
 

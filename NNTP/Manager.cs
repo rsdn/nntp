@@ -18,8 +18,6 @@ namespace derIgel.NNTP
 	/// </summary>
 	public class Manager : IDisposable
 	{
-		protected TextWriter errorOutput = System.Console.Error;
-
 #if PERFORMANCE_COUNTERS
 		/// <summary>
 		/// sessions' perfomance counter
@@ -42,9 +40,6 @@ namespace derIgel.NNTP
 
 			this.settings = settings;
 				
-			if (settings.ErrorOutputFilename != null)
-				errorOutput = new StreamWriter(settings.ErrorOutputFilename, false, System.Text.Encoding.ASCII);
-
 			stopEvent = new ManualResetEvent(false);
 			sessions = new ArrayList();
 
@@ -125,7 +120,7 @@ namespace derIgel.NNTP
 					{
 						IDataProvider dataProvider = Activator.CreateInstance(settings.DataProviderType) as IDataProvider;
 						dataProvider.Config(settings.DataProviderSettings);
-						Session session = new Session(socket, dataProvider,	stopEvent, errorOutput);
+						Session session = new Session(socket, dataProvider,	stopEvent);
 						session.Disposed += new EventHandler(SessionDisposedHandler);
 						sessions.Add(session);
 						ThreadPool.QueueUserWorkItem(new WaitCallback(session.Process), this);
@@ -140,9 +135,7 @@ namespace derIgel.NNTP
 				catch(System.ObjectDisposedException)	{	}
 				catch(Exception e)
 				{
-					#if DEBUG || SHOW
-					errorOutput.WriteLine(e.ToString());
-					#endif
+					Trace.Fail(e.ToString());
 					throw;
 				}
 			}
@@ -164,7 +157,6 @@ namespace derIgel.NNTP
 
 		public void Pause()
 		{
-			errorOutput.Flush();
 			paused = true;
 		}
 
@@ -175,7 +167,6 @@ namespace derIgel.NNTP
 
 		public void Stop()
 		{
-			errorOutput.Flush();
 			Close();
 			stopEvent.Set();
 			while (sessions.Count > 0)

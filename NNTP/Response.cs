@@ -216,5 +216,10 @@ namespace derIgel.NNTP
 				return code;
 			}
 		}
+
+		public override string ToString()
+		{
+			return Encoding.ASCII.GetString(GetResponse());
+		}
 	}
 }

@@ -1,6 +1,7 @@
 using System;
-using derIgel.NNTP;
+using System.Diagnostics;
 using System.Configuration;
+using derIgel.NNTP;
 
 namespace ForumTest
 {
@@ -15,6 +16,9 @@ namespace ForumTest
 		[STAThread]
 		static void Main(string[] args)
 		{
+			// Show trace on display
+			Trace.Listeners.Add(new TextWriterTraceListener(System.Console.Out));
+
 			try
 			{
         NNTPSettings serverSettings =
@@ -29,7 +33,7 @@ namespace ForumTest
 			}
 			catch (Exception e)
 			{
-				Console.Out.WriteLine(e);
+				Trace.Fail(e.ToString());
 			}
 		}
 	}

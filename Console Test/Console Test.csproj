@@ -74,6 +74,7 @@
             <Include>
                 <File
                     RelPath = "app.config"
+                    Link = "..\app.config"
                     BuildAction = "None"
                 />
                 <File

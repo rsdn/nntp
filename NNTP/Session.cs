@@ -21,13 +21,14 @@ namespace derIgel.NNTP
 	public class Session : IDisposable
 	{
 
-		protected TextWriter errorOutput = System.Console.Error;
-
 		public static readonly string hostname;
 		public static readonly string fullHostname;
 
+		protected static readonly TraceSwitch tracing;
+
 		static Session()
 		{
+			tracing = new TraceSwitch("Show", "RSDN NNTP Manager Tracing");
 			try
 			{
 				hostname = Dns.GetHostName();
@@ -87,11 +88,9 @@ namespace derIgel.NNTP
 		PerformanceCounter globalArticlesCounter;
 #endif
 
-		public Session(Socket client, IDataProvider dataProvider, WaitHandle exitEvent, TextWriter errorOutput)
+		public Session(Socket client, IDataProvider dataProvider, WaitHandle exitEvent)
 		{
 			sessionState = dataProvider.InitialSessionState;
-
-			this.errorOutput = errorOutput;
 
 			this.exitEvent = exitEvent;
 			commandBuffer = new byte[bufferSize];
@@ -211,9 +210,8 @@ namespace derIgel.NNTP
 						// remove retrivied command from buffer
 						bufferString.Remove(0, bufferString.ToString().IndexOf(delimeter) + delimeter.Length);
 						
-						#if DEBUG || SHOW
-							errorOutput.WriteLine(commandString);
-						#endif
+						// tracing
+						Trace.WriteLineIf(tracing.TraceInfo, commandString, client.RemoteEndPoint.ToString());
 
 						// especialy for Outlook Express
 						// it send sometimes blank lines
@@ -315,25 +313,19 @@ namespace derIgel.NNTP
 						}
 						catch(Exception e)
 						{
-							#if DEBUG || SHOW
-								errorOutput.WriteLine("\texception: {0}" + e);
-							#endif
+							Trace.WriteLineIf(tracing.TraceError, "exception!\n" + e.ToString(), client.RemoteEndPoint.ToString());
 							result = new Response(NntpResponse.ProgramFault);
 						}
 
 						Answer(result);
 
-#if DEBUG || SHOW
-						string firstLine = Encoding.ASCII.GetString(result.GetResponse());
-						/*if ((firstLine.Length -
-									(firstLine.IndexOf(derIgel.Utils.Util.CRLF) + derIgel.Utils.Util.CRLF.Length)) > 0)
-						{
-							firstLine = firstLine.Remove(firstLine.IndexOf(derIgel.Utils.Util.CRLF),
-								firstLine.Length - firstLine.IndexOf(derIgel.Utils.Util.CRLF)) +
-								derIgel.Utils.Util.CRLF + "..." + derIgel.Utils.Util.CRLF;
-						}*/
-						errorOutput.Write(firstLine);
-#endif
+						// tracing....
+						if (tracing.TraceVerbose)
+              Trace.Write(result, client.RemoteEndPoint.ToString());
+						else if (tracing.TraceInfo)
+							// trace only first line
+							Trace.WriteLine(result.ToString().Split(new char[]{'\n', '\r'}, 2)[0],
+									 client.RemoteEndPoint.ToString());
 
 						if (result.Code >= 400)
 						// result code indicates error
