@@ -256,9 +256,15 @@ namespace derIgel.MIME
 			if (!headerAndBodyMatch.Success)
 				throw new MimeFormattingException("MIME message is bad formatted.");
 
+			// remove MIME-Version header, to check it from parsed message
+			message["MIME-Version"] = null;
+
 			foreach (Match headerFieldMatch in
 				headerField.Matches(unfoldHeaderField.Replace(headerAndBodyMatch.Groups["header"].Value, string.Empty)))
 				message[headerFieldMatch.Groups["fieldName"].Value]  = headerFieldMatch.Groups["fieldBody"].Value;
+
+			if (message["MIME-Version"] == null)
+				throw new MimeFormattingException("It's not MIME message!");
 
 			switch (message.type)
 			{
@@ -287,6 +293,7 @@ namespace derIgel.MIME
 							body = Encoding.ASCII.GetBytes(headerAndBodyMatch.Groups["body"].Value);
 							break;
 					}
+					
 					message.entities.Add(message.encoding.GetString(body));
 					break;
 			}

@@ -107,7 +107,7 @@ namespace derIgel.NNTP
 					listener.BeginAccept(new AsyncCallback(AcceptClient), null);
 					if (paused)
 					{
-						Response.Answer(401, socket);
+						Response.Answer(NntpResponse.ServiceUnaviable, socket);
 						socket.Shutdown(SocketShutdown.Both);
 						socket.Close();
 					}

@@ -9,6 +9,46 @@ namespace derIgel.NNTP
 {
 	using Util = derIgel.MIME.Util;
 
+	// NNTP Response's codes
+	public enum NntpResponse
+	{
+		Help = 100,
+		Ok = 200,
+		OkNoPosting = 201,
+		Slave = 202,
+		Bye = 205,
+		GroupSelected = 211,
+		ListOfGroups = 215,
+		ArticleHeadBodyRetrivied = 220,
+		ArticleHeadRetrivied = 221,
+		ArticleBodyRetrivied = 222,
+		ArticleNothingRetrivied = 223,
+		Overview = 224,
+		ListOfArticlesByMessageID = 230,
+		ListOfArticles = 231,
+		PostedOk = 240,
+		SendArticle = 340,
+		MoreAuthentificationRequired = 381,
+		ServiceDiscontinued = 400,
+		ServiceUnaviable = 401,
+		TimeOut = 402,
+		NotAllowed = 403,
+		NoSuchGroup = 411,
+		NoSelectedGroup = 412,
+		NoSelectedArticle = 420,
+		NoNextArticle = 421,
+		NoPrevArticle = 422,
+		NoSuchArticleNumber = 423,
+		NoSuchArticle = 430,
+		PostingFailed = 441,
+		AuthentificationRejected = 482,
+		AuthentificationRequired = 480,
+		NotRecognized = 500,
+		SyntaxisError = 501,
+		NoPermission = 502,
+		ProgramFault = 503
+	};
+
 	/// <summary>
 	/// NNTP Server response
 	/// </summary>
@@ -37,10 +77,10 @@ namespace derIgel.NNTP
 			answers[223] = "223 {0} {1} article retrivied - request text separately";
 			answers[224] = "224 overview information follows";
 			answers[230] = "230 list of new articles by message-id follows";
-			answers[240] = "240 article posted ok";
-			answers[340] = "340 send article to be posted. End with <CR-LF>.<CR-LF>";
 			answers[231] = "231 list of new newsgroup follows";
+			answers[240] = "240 article posted ok";
 			answers[281] = "281 authentification accepted";
+			answers[340] = "340 send article to be posted. End with <CR-LF>.<CR-LF>";
 			answers[381] = "381 more authentification information required";
 			answers[400] = "400 service discontinued";
 			answers[401] = "401 service temporarily unavailable - try later";
@@ -69,8 +109,11 @@ namespace derIgel.NNTP
 			this.parameters = parameters;
 			bodyResponse = body;
 		}
+		public Response(NntpResponse code, byte[] body, params object[] parameters) :
+			this((int)code, body, parameters)	{	}
 		public Response(int code) : this(code, null) {}
-		public Response() : this(500) {} //default - error code 500 (not recognized command)
+		public Response(NntpResponse code) : this(code, null) {}
+		public Response() : this(NntpResponse.NotRecognized) {} //default - error code 500 (not recognized command)
 
 		/// <summary>
 		/// Associative arrays of NNTP server answers
@@ -110,6 +153,11 @@ namespace derIgel.NNTP
 		public static void Answer(int code, Socket socket)
 		{
 			socket.Send(GetResponse(code, null));
+		}
+
+		public static void Answer(NntpResponse code, Socket socket)
+		{
+			Answer((int)code, socket);
 		}
 
 		public byte[] GetResponse()

@@ -40,8 +40,8 @@ namespace derIgel.NNTP
 
 			// answers for commands during allowed states
 			notAllowedStateAnswer = new Hashtable();
-			notAllowedStateAnswer[States.AuthRequired] = new Response(480);
-			notAllowedStateAnswer[States.MoreAuthRequired] = new Response(381);
+			notAllowedStateAnswer[States.AuthRequired] = new Response(NntpResponse.AuthentificationRequired);
+			notAllowedStateAnswer[States.MoreAuthRequired] = new Response(NntpResponse.MoreAuthentificationRequired);
 
 		}
 
@@ -128,6 +128,11 @@ namespace derIgel.NNTP
 			Answer(new Response(code));
 		}
 
+		protected void Answer(NntpResponse code)
+		{
+			Answer(new Response(code));
+		}
+
 		protected void Answer(Response response)
 		{
 			byte[] bytes = response.GetResponse();
@@ -144,7 +149,7 @@ namespace derIgel.NNTP
 			try
 			{
 				// response OK
-				Answer(dataProvider.PostingAllowed ? 200 : 201);
+				Answer(dataProvider.PostingAllowed ? NntpResponse.Ok : NntpResponse.OkNoPosting);
 
 				StringBuilder bufferString = new StringBuilder();
 				while (true)
@@ -158,11 +163,11 @@ namespace derIgel.NNTP
 						{
 							case WaitHandle.WaitTimeout	:
 								// timeout
-								Answer(402);
+								Answer(NntpResponse.TimeOut);
 								return;
 							case 1	:
 								// sorry, bye!
-								Answer(400);
+								Answer(NntpResponse.ServiceDiscontinued);
 								return;
 						}
 						int receivedBytes = netStream.EndRead(asyncResult);
@@ -200,9 +205,9 @@ namespace derIgel.NNTP
 							switch (sessionState)
 							{
 								case States.PostWaiting	:
-									dataProvider.PostMessage(Message.Parse(commandString));
 									sessionState = States.Normal;
-									result = new Response(240);
+									dataProvider.PostMessage(Message.Parse(commandString));
+									result = new Response(NntpResponse.PostedOk);
 									break;
 								default	:
 									// get first word in upper case delimeted by space or tab characters 
@@ -221,67 +226,71 @@ namespace derIgel.NNTP
 										{
 											result = notAllowedStateAnswer[sessionState] as Response;
 											if (result == null)
-												result = new Response(403); // command not allowed
+												result = new Response(NntpResponse.NotAllowed); // command not allowed
 										}
 									}
 									else
-										result = new Response(500); // no such command
+										result = new Response(NntpResponse.NotRecognized); // no such command
 									break;
 							}
 						}
 						catch (Response.ParamsException)
 						{
-							result = new Response(503);
+							result = new Response(NntpResponse.ProgramFault);
 						}
 						catch (DataProviderException exception)
 						{
 							switch (exception.Error)
 							{
 								case DataProviderErrors.NoSuchGroup:
-									result = new Response(411);
+									result = new Response(NntpResponse.NoSuchGroup);
 									break;
 								case DataProviderErrors.NoSelectedGroup:
-									result = new Response(412);
+									result = new Response(NntpResponse.NoSelectedGroup);
 									break;
 								case DataProviderErrors.NoSelectedArticle:
-									result = new Response(420);
+									result = new Response(NntpResponse.NoSelectedArticle);
 									break;
 								case DataProviderErrors.NoNextArticle:
-									result = new Response(421);
+									result = new Response(NntpResponse.NoNextArticle);
 									break;
 								case DataProviderErrors.NoPrevArticle:
-									result = new Response(422);
+									result = new Response(NntpResponse.NoPrevArticle);
 									break;
 								case DataProviderErrors.NoSuchArticleNumber:
-									result = new Response(423);
+									result = new Response(NntpResponse.NoSuchArticleNumber);
 									break;
 								case DataProviderErrors.NoSuchArticle:
-									result = new Response(430);
+									result = new Response(NntpResponse.NoSuchArticle);
 									break;
 								case DataProviderErrors.NoPermission:
-									result = new Response(480);
+									result = new Response(NntpResponse.AuthentificationRequired);
 									sessionState = States.AuthRequired;
 									break;
 								case DataProviderErrors.NotSupported:
-									result = new Response(500);
+									result = new Response(NntpResponse.NotRecognized);
 									break;
 								case DataProviderErrors.PostingFailed:
-									result = new Response(441);
+									result = new Response(NntpResponse.PostingFailed);
 									break;
 								case DataProviderErrors.ServiceUnaviable:
-									result = new Response(400);
+									result = new Response(NntpResponse.ServiceDiscontinued);
 									break;
 								default:
-									result = new Response(503); //error
+									result = new Response(NntpResponse.ProgramFault); //error
 									break;
 							}
+						}
+						catch (derIgel.MIME.MimeFormattingException mimeException)
+						{
+							result = new Response(NntpResponse.PostingFailed);
 						}
 						catch(Exception e)
 						{
 							#if DEBUG || SHOW
 								errorOutput.WriteLine("\texception: " + Util.ExpandException(e));
 							#endif
-							result = new Response(503);
+							result = new Response(NntpResponse.ProgramFault);
 						}
 
 						Answer(result);
@@ -305,19 +314,19 @@ namespace derIgel.NNTP
 							globalBadRequestsCounter.Increment();
 						}
 
-						switch(result.Code)
+						switch((NntpResponse)result.Code)
 						{
-							case 220:
-							case 221:
-							case 222:
-							case 223:
+							case NntpResponse.ArticleHeadBodyRetrivied :
+							case NntpResponse.ArticleHeadRetrivied :
+							case NntpResponse.ArticleBodyRetrivied :
+							case NntpResponse.ArticleNothingRetrivied :
 								articlesCounter.Increment();
 								globalArticlesCounter.Increment();
 								break;
-							case 205: // quit
-							case 400: // service disctontined
-							case 401: // service unaviable
-							case 402: // timeout
+							case NntpResponse.Bye : // quit
+							case NntpResponse.ServiceDiscontinued : // service disctontined
+							case NntpResponse.ServiceUnaviable : // service unaviable
+							case NntpResponse.TimeOut : // timeout
 								return;
 						}
 					}

@@ -345,10 +345,6 @@ namespace derIgel.RsdnNntp
 				foreach (string text in message.Entities)
 					plainText.Append(text);
 				
-				// process wrong encoding
-				if (plainText.ToString().IndexOf("????") > 0)
-					throw new DataProviderException(DataProviderErrors.PostingFailed);
-
 				// tagline
 				plainText.Append("[tagline]Posted via ").Append(serverID).Append("[/tagline]");
 

@@ -57,6 +57,18 @@ namespace derIgel.MIME
 			return result;
 		}
 
+		public static bool OnlyASCIISymbols(byte[] bytes)
+		{
+			bool result = true;
+			foreach (byte symbol in bytes)
+				if (symbol > 0x7f)
+				{
+					result = false;
+					break;
+				}
+			return result;
+		}
+
 		static protected readonly Regex quotedPrintableEncodedSymbol =
 			new Regex(@"(?i)=(?<code>[0-9a-f]{2})", RegexOptions.Compiled);
 

@@ -52,7 +52,7 @@ namespace derIgel.NNTP.Commands
 			if (lastMatch.Success)
 				return ProcessCommand();
 			else
-				return new Response(501); // syntaxis error
+				return new Response(NntpResponse.SyntaxisError); // syntaxis error
 		}
 
 		protected abstract Response ProcessCommand();
@@ -126,7 +126,7 @@ namespace derIgel.NNTP.Commands
 					output.Append('\t').Append(article.EncodedHeader(headerItem));
 				output.Append(Util.CRLF);
 			}
-			return new Response(224, Encoding.ASCII.GetBytes(output.ToString()));
+			return new Response(NntpResponse.Overview, Encoding.ASCII.GetBytes(output.ToString()));
 		}
 	}
 
@@ -152,29 +152,29 @@ namespace derIgel.NNTP.Commands
 
 		protected override Response ProcessCommand()
 		{
-			int responseCode;
+			NntpResponse responseCode;
 			NewsArticle.Content content;
 			switch (lastMatch.Groups["command"].Value.ToUpper())
 			{
 				case "ARTICLE" :
 					content = NewsArticle.Content.HeaderAndBody;
-					responseCode = 220;
+					responseCode = NntpResponse.ArticleHeadBodyRetrivied;
 					break;
 				case "HEAD"	:
 					content = NewsArticle.Content.Header;
-					responseCode = 221;
+					responseCode = NntpResponse.ArticleHeadRetrivied;
 					break;
 				case "BODY"	:
 					content = NewsArticle.Content.Body;
-					responseCode = 222;
+					responseCode = NntpResponse.ArticleBodyRetrivied;
 					break;
 				case "STAT"	:
 					content = NewsArticle.Content.None;
-					responseCode = 223;
+					responseCode = NntpResponse.ArticleNothingRetrivied;
 					break;
 				default:
 					content = NewsArticle.Content.None;
-					responseCode = 503;
+					responseCode = NntpResponse.ProgramFault;
 					break;
 			}
 
@@ -215,7 +215,7 @@ namespace derIgel.NNTP.Commands
 		protected override Response ProcessCommand()
 		{
 			NewsArticle article = session.DataProvider.GetNextArticle();
-			return new Response(223, null, article.Number, article["Message-ID"]);
+			return new Response(NntpResponse.ArticleNothingRetrivied, null, article.Number, article["Message-ID"]);
 		}
 	}
 
@@ -237,7 +237,7 @@ namespace derIgel.NNTP.Commands
 		protected override Response ProcessCommand()
 		{
 			NewsArticle article = session.DataProvider.GetPrevArticle();
-			return new Response(223, null, article.Number, article["Message-ID"]);
+			return new Response(NntpResponse.ArticleNothingRetrivied, null, article.Number, article["Message-ID"]);
 		}
 	}
 
@@ -260,7 +260,7 @@ namespace derIgel.NNTP.Commands
 		{
 			string groupName = lastMatch.Groups["groupName"].Value;
 			NewsGroup group = session.DataProvider.GetGroup(groupName);
-			return new Response(211, null, group.EtimatedArticles, group.FirstArticleNumber,
+			return new Response(NntpResponse.GroupSelected, null, group.EtimatedArticles, group.FirstArticleNumber,
 				group.LastArticleNumber, groupName);
 		}
 	}
@@ -316,7 +316,7 @@ namespace derIgel.NNTP.Commands
 							group.Name, group.LastArticleNumber, group.FirstArticleNumber,
 							group.PostingAllowed ? 'y' : 'n', Util.CRLF);
 			}
-			return new Response(215, Encoding.ASCII.GetBytes(textResponse.ToString()));
+			return new Response(NntpResponse.ListOfGroups, Encoding.ASCII.GetBytes(textResponse.ToString()));
 		}
 	}
 
@@ -364,11 +364,11 @@ namespace derIgel.NNTP.Commands
 					textResponse.AppendFormat("{0} {1} {2} {3}{4}",
 						group.Name, group.LastArticleNumber, group.FirstArticleNumber,
 						group.PostingAllowed ? 'y' : 'n', Util.CRLF);
-				return new Response(231, Encoding.ASCII.GetBytes(textResponse.ToString()));
+				return new Response(NntpResponse.ListOfArticles, Encoding.ASCII.GetBytes(textResponse.ToString()));
 			}
 			catch (ArgumentOutOfRangeException)
 			{
-				return new Response(501); //wrong date/time
+				return new Response(NntpResponse.SyntaxisError); //wrong date/time
 			}
 		}
 	}
@@ -423,11 +423,12 @@ namespace derIgel.NNTP.Commands
 				foreach (NewsArticle article in articleList)
 					textResponse.AppendFormat("{0}{1}", article["Message-ID"],
 						Util.CRLF);
-				return new Response(230, Encoding.ASCII.GetBytes(textResponse.ToString()));
+				return new Response(NntpResponse.ListOfArticlesByMessageID,
+					Encoding.ASCII.GetBytes(textResponse.ToString()));
 			}
 			catch (ArgumentOutOfRangeException)
 			{
-				return new Response(501); //wrong date/time
+				return new Response(NntpResponse.SyntaxisError); //wrong date/time
 			}
 		}
 	}
@@ -450,7 +451,7 @@ namespace derIgel.NNTP.Commands
 		protected override Response ProcessCommand()
 		{
 			session.sessionState = Session.States.PostWaiting;
-			return new Response(340);
+			return new Response(NntpResponse.SendArticle);
 		}
 	}
 
@@ -470,7 +471,7 @@ namespace derIgel.NNTP.Commands
 
 		protected override Response ProcessCommand()
 		{
-			return new Response(205); // bye!
+			return new Response(NntpResponse.Bye);
 		}
 	}
 
@@ -490,7 +491,7 @@ namespace derIgel.NNTP.Commands
 
 		protected override Response ProcessCommand()
 		{
-			return new Response(202); // ok
+			return new Response(NntpResponse.Slave); // ok
 		}
 	}
 
@@ -513,10 +514,10 @@ namespace derIgel.NNTP.Commands
 			Response result;
 			if (lastMatch.Groups["mode"].Value.ToUpper() == "READER")
 				// MODE READER
-				result = new Response(session.DataProvider.PostingAllowed ? 200 : 201);
+				result = new Response(session.DataProvider.PostingAllowed ? NntpResponse.Ok : NntpResponse.OkNoPosting);
 			else
 				// MODE STREAM
-				result = new Response(500);
+				result = new Response(NntpResponse.NotRecognized);
 			return result;
 		}
 	}
@@ -547,12 +548,12 @@ namespace derIgel.NNTP.Commands
 					case	Session.States.AuthRequired	:
 						session.Username	=	lastMatch.Groups["param"].Value;
 						session.sessionState = Session.States.MoreAuthRequired;
-						result = new Response(381);
+						result = new Response(NntpResponse.MoreAuthentificationRequired);
 						break;
 					case Session.States.MoreAuthRequired	:
 						session.sessionState = Session.States.AuthRequired;
 						session.Username = "";
-						result = new Response(482);
+						result = new Response(NntpResponse.AuthentificationRejected);
 						break;
 				}
 			else
@@ -561,7 +562,7 @@ namespace derIgel.NNTP.Commands
 				{
 					case	Session.States.Normal	:
 					case	Session.States.AuthRequired	:
-						result = new Response(482);
+						result = new Response(NntpResponse.AuthentificationRejected);
 						break;
 					case Session.States.MoreAuthRequired	:
 						session.Password	=	lastMatch.Groups["param"].Value;
@@ -575,7 +576,7 @@ namespace derIgel.NNTP.Commands
 							session.Username = "";
 							session.Password = "";
 							session.sessionState = Session.States.AuthRequired;
-							result = new Response(502);
+							result = new Response(NntpResponse.NoPermission);
 						}
 						break;
 				}
@@ -604,7 +605,7 @@ namespace derIgel.NNTP.Commands
 				Append("Support follow commands:").Append(Util.CRLF);
 			foreach (string command in session.commands.Keys)
 				supportCommands.AppendFormat("\t{0}{1}", command,Util.CRLF);
-			return new Response(100, Encoding.ASCII.GetBytes(supportCommands.ToString()));
+			return new Response(NntpResponse.Help, Encoding.ASCII.GetBytes(supportCommands.ToString()));
 		}
 	}
 }
