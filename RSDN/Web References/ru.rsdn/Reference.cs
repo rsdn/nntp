@@ -62,6 +62,28 @@ namespace Rsdn.RsdnNntp.ru.rsdn {
         }
         
         /// <remarks/>
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://rsdn.ru/ws/GetUserInfo", RequestNamespace="http://rsdn.ru/ws/", ResponseNamespace="http://rsdn.ru/ws/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public UserInfo GetUserInfo(string login, string psw) {
+            object[] results = this.Invoke("GetUserInfo", new object[] {
+                        login,
+                        psw});
+            return ((UserInfo)(results[0]));
+        }
+        
+        /// <remarks/>
+        public System.IAsyncResult BeginGetUserInfo(string login, string psw, System.AsyncCallback callback, object asyncState) {
+            return this.BeginInvoke("GetUserInfo", new object[] {
+                        login,
+                        psw}, callback, asyncState);
+        }
+        
+        /// <remarks/>
+        public UserInfo EndGetUserInfo(System.IAsyncResult asyncResult) {
+            object[] results = this.EndInvoke(asyncResult);
+            return ((UserInfo)(results[0]));
+        }
+        
+        /// <remarks/>
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://rsdn.ru/ws/GetGroupList", RequestNamespace="http://rsdn.ru/ws/", ResponseNamespace="http://rsdn.ru/ws/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         public group_list GetGroupList(string login, string psw, System.DateTime dtc) {
             object[] results = this.Invoke("GetGroupList", new object[] {
@@ -284,60 +306,6 @@ namespace Rsdn.RsdnNntp.ru.rsdn {
             object[] results = this.EndInvoke(asyncResult);
             return ((link)(results[0]));
         }
-        
-        /// <remarks/>
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://rsdn.ru/ws/PostMIMEMessage", RequestNamespace="http://rsdn.ru/ws/", ResponseNamespace="http://rsdn.ru/ws/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public post_result PostMIMEMessage(string login, string psw, string message) {
-            object[] results = this.Invoke("PostMIMEMessage", new object[] {
-                        login,
-                        psw,
-                        message});
-            return ((post_result)(results[0]));
-        }
-        
-        /// <remarks/>
-        public System.IAsyncResult BeginPostMIMEMessage(string login, string psw, string message, System.AsyncCallback callback, object asyncState) {
-            return this.BeginInvoke("PostMIMEMessage", new object[] {
-                        login,
-                        psw,
-                        message}, callback, asyncState);
-        }
-        
-        /// <remarks/>
-        public post_result EndPostMIMEMessage(System.IAsyncResult asyncResult) {
-            object[] results = this.EndInvoke(asyncResult);
-            return ((post_result)(results[0]));
-        }
-        
-        /// <remarks/>
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://rsdn.ru/ws/PostUnicodeMessage", RequestNamespace="http://rsdn.ru/ws/", ResponseNamespace="http://rsdn.ru/ws/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public post_result PostUnicodeMessage(string login, string psw, int mid, string group, string subject, string message) {
-            object[] results = this.Invoke("PostUnicodeMessage", new object[] {
-                        login,
-                        psw,
-                        mid,
-                        group,
-                        subject,
-                        message});
-            return ((post_result)(results[0]));
-        }
-        
-        /// <remarks/>
-        public System.IAsyncResult BeginPostUnicodeMessage(string login, string psw, int mid, string group, string subject, string message, System.AsyncCallback callback, object asyncState) {
-            return this.BeginInvoke("PostUnicodeMessage", new object[] {
-                        login,
-                        psw,
-                        mid,
-                        group,
-                        subject,
-                        message}, callback, asyncState);
-        }
-        
-        /// <remarks/>
-        public post_result EndPostUnicodeMessage(System.IAsyncResult asyncResult) {
-            object[] results = this.EndInvoke(asyncResult);
-            return ((post_result)(results[0]));
-        }
     }
     
     /// <remarks/>
@@ -479,6 +447,126 @@ namespace Rsdn.RsdnNntp.ru.rsdn {
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayItemAttribute(IsNullable=false)]
         public group[] groups;
+    }
+    
+    /// <remarks/>
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://rsdn.ru/ws/")]
+    public class UserInfo {
+        
+        /// <remarks/>
+        public UserRole UserRole;
+        
+        /// <remarks/>
+        public int ID;
+        
+        /// <remarks/>
+        public string Name;
+        
+        /// <remarks/>
+        public string Password;
+        
+        /// <remarks/>
+        public string Email;
+        
+        /// <remarks/>
+        public string Nick;
+        
+        /// <remarks/>
+        public string PublicEmail;
+        
+        /// <remarks/>
+        public string RealName;
+        
+        /// <remarks/>
+        public string HomePage;
+        
+        /// <remarks/>
+        public string Specialization;
+        
+        /// <remarks/>
+        public bool SendMail;
+        
+        /// <remarks/>
+        public bool Flat;
+        
+        /// <remarks/>
+        public bool DefaultFlat;
+        
+        /// <remarks/>
+        public int PageCount;
+        
+        /// <remarks/>
+        public string Picture;
+        
+        /// <remarks/>
+        public string WhereFrom;
+        
+        /// <remarks/>
+        public string Origin;
+        
+        /// <remarks/>
+        public bool IncorrectPassword;
+        
+        /// <remarks/>
+        public string IP;
+        
+        /// <remarks/>
+        public int PersonRate;
+        
+        /// <remarks/>
+        public int TotalRate;
+        
+        /// <remarks/>
+        public bool StopMail;
+        
+        /// <remarks/>
+        public bool IsCrawler;
+        
+        /// <remarks/>
+        public string AdminMessage;
+        
+        /// <remarks/>
+        public MessageFormat MessageFormat;
+        
+        /// <remarks/>
+        public System.DateTime BanDate;
+    }
+    
+    /// <remarks/>
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://rsdn.ru/ws/")]
+    public enum UserRole {
+        
+        /// <remarks/>
+        Admin,
+        
+        /// <remarks/>
+        Moderator,
+        
+        /// <remarks/>
+        TeamMember,
+        
+        /// <remarks/>
+        User,
+        
+        /// <remarks/>
+        Anonym,
+    }
+    
+    /// <remarks/>
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://rsdn.ru/ws/")]
+    public enum MessageFormat {
+        
+        /// <remarks/>
+        None,
+        
+        /// <remarks/>
+        Text,
+        
+        /// <remarks/>
+        Html,
+        
+        /// <remarks/>
+        TextHtml,
     }
     
     /// <remarks/>
