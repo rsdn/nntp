@@ -9,14 +9,14 @@
             <Settings
                 ApplicationIcon = ""
                 AssemblyKeyContainerName = ""
-                AssemblyName = "Desktop.app"
+                AssemblyName = "Desktop"
                 AssemblyOriginatorKeyFile = ""
                 DefaultClientScript = "JScript"
                 DefaultHTMLPageLayout = "Grid"
                 DefaultTargetSchema = "IE50"
                 DelaySign = "false"
                 OutputType = "WinExe"
-                RootNamespace = "Desktop.app"
+                RootNamespace = "Desktop"
                 StartupObject = ""
             >
                 <Config
@@ -92,13 +92,29 @@
                     AssemblyName = "System.Web"
                     HintPath = "..\..\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.Web.dll"
                 />
+                <Reference
+                    Name = "SHDocVw"
+                    Guid = "{EAB22AC0-30C1-11CF-A7EB-0000C05BAE0B}"
+                    VersionMajor = "1"
+                    VersionMinor = "1"
+                    Lcid = "0"
+                    WrapperTool = "tlbimp"
+                />
+                <Reference
+                    Name = "AxSHDocVw"
+                    Guid = "{EAB22AC0-30C1-11CF-A7EB-0000C05BAE0B}"
+                    VersionMajor = "1"
+                    VersionMinor = "1"
+                    Lcid = "0"
+                    WrapperTool = "aximp"
+                />
             </References>
         </Build>
         <Files>
             <Include>
                 <File
-                    RelPath = "about.rtf"
-                    BuildAction = "EmbeddedResource"
+                    RelPath = "about.html"
+                    BuildAction = "Content"
                 />
                 <File
                     RelPath = "AboutForm.cs"
@@ -112,7 +128,7 @@
                 />
                 <File
                     RelPath = "app.manifest"
-                    BuildAction = "None"
+                    BuildAction = "Content"
                 />
                 <File
                     RelPath = "AssemblyInfo.cs"
@@ -134,13 +150,23 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "MainForm.ru.resx"
+                    DependentUpon = "MainForm.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "MainForm.ru-RU.resx"
+                    DependentUpon = "MainForm.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "NNTP.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "splash.jpg"
-                    BuildAction = "EmbeddedResource"
+                    BuildAction = "Content"
                 />
                 <File
                     RelPath = "Web References\ru.rsdn\forum.disco"

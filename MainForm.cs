@@ -8,7 +8,7 @@ using System.Net.Sockets;
 using System.Reflection;
 using System.IO;
 
-namespace Desktop.app
+namespace Desktop
 {
 	/// <summary>
 	/// Summary description for MainForm.
@@ -32,7 +32,6 @@ namespace Desktop.app
     private System.Windows.Forms.TextBox webURL;
     private System.Windows.Forms.TextBox portNumber;
     private System.Windows.Forms.CheckBox autoLoad;
-    private System.Windows.Forms.CheckBox off;
     private System.Windows.Forms.CheckBox httpFormat;
     private System.Windows.Forms.GroupBox groupBox2;
     private System.Windows.Forms.Label label3;
@@ -40,13 +39,18 @@ namespace Desktop.app
     private System.Windows.Forms.TextBox user;
     private System.Windows.Forms.TextBox password;
     private System.Windows.Forms.RadioButton authNNTP;
-    private System.Windows.Forms.RadioButton authExplicit;
 
     private NNTPManager socketManager = new NNTPManager();
-    private System.Windows.Forms.RichTextBox aboutBox;
+    private AxSHDocVw.AxWebBrowser aboutBox;
+    private System.Windows.Forms.RadioButton authBuiltin;
 
     private AboutForm aboutForm = new AboutForm();
 
+    private bool RestartManager = false;
+
+    /// <summary>
+    /// 
+    /// </summary>
 		public MainForm()
 		{
       aboutForm.Show();
@@ -61,6 +65,20 @@ namespace Desktop.app
 			//
       try
       {
+        autoLoad.Checked = socketManager.nntpData.AutoLoad;
+        httpFormat.Checked = socketManager.nntpData.HTTPFormat;
+        webURL.Text = socketManager.nntpData.Url;
+        portNumber.Text = Convert.ToString(socketManager.nntpData.PortNumber);
+        authBuiltin.Checked = socketManager.nntpData.BuiltinAuthorization;
+        if (socketManager.nntpData.BuiltinAuthorization)
+        {
+          user.Text = socketManager.nntpData.User;
+          password.Text = socketManager.nntpData.Password;
+        }
+
+        ApplyBtn.Enabled = false;
+        RestartManager = false;
+
         socketManager.StartWork();
       }
       catch(SocketException e)
@@ -78,9 +96,9 @@ namespace Desktop.app
 		/// <summary>
 		/// Clean up any resources being used.
 		/// </summary>
-		protected override void Dispose( bool disposing )
+		protected override void Dispose(bool disposing)
 		{
-			if ( disposing )
+			if (disposing)
 			{
         if (socketManager != null)
         {
@@ -111,7 +129,7 @@ namespace Desktop.app
       this.label4 = new System.Windows.Forms.Label();
       this.user = new System.Windows.Forms.TextBox();
       this.label3 = new System.Windows.Forms.Label();
-      this.authExplicit = new System.Windows.Forms.RadioButton();
+      this.authBuiltin = new System.Windows.Forms.RadioButton();
       this.authNNTP = new System.Windows.Forms.RadioButton();
       this.groupBox1 = new System.Windows.Forms.GroupBox();
       this.portNumber = new System.Windows.Forms.TextBox();
@@ -119,10 +137,9 @@ namespace Desktop.app
       this.webURL = new System.Windows.Forms.TextBox();
       this.label1 = new System.Windows.Forms.Label();
       this.httpFormat = new System.Windows.Forms.CheckBox();
-      this.off = new System.Windows.Forms.CheckBox();
       this.autoLoad = new System.Windows.Forms.CheckBox();
       this.aboutPage = new System.Windows.Forms.TabPage();
-      this.aboutBox = new System.Windows.Forms.RichTextBox();
+      this.aboutBox = new AxSHDocVw.AxWebBrowser();
       this.ApplyBtn = new System.Windows.Forms.Button();
       this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
       this.iconMenu = new System.Windows.Forms.ContextMenu();
@@ -135,6 +152,7 @@ namespace Desktop.app
       this.groupBox2.SuspendLayout();
       this.groupBox1.SuspendLayout();
       this.aboutPage.SuspendLayout();
+      ((System.ComponentModel.ISupportInitialize)(this.aboutBox)).BeginInit();
       this.SuspendLayout();
       // 
       // tabControl
@@ -143,11 +161,13 @@ namespace Desktop.app
                                                                              this.setupPage,
                                                                              this.aboutPage});
       this.tabControl.HotTrack = true;
+      this.tabControl.ItemSize = new System.Drawing.Size(67, 18);
       this.tabControl.Location = new System.Drawing.Point(4, 8);
       this.tabControl.Name = "tabControl";
       this.tabControl.SelectedIndex = 0;
-      this.tabControl.Size = new System.Drawing.Size(348, 292);
+      this.tabControl.Size = new System.Drawing.Size(348, 268);
       this.tabControl.TabIndex = 0;
+      this.tabControl.SelectedIndexChanged += new System.EventHandler(this.tabControl_SelectedIndexChanged);
       // 
       // setupPage
       // 
@@ -155,11 +175,10 @@ namespace Desktop.app
                                                                             this.groupBox2,
                                                                             this.groupBox1,
                                                                             this.httpFormat,
-                                                                            this.off,
                                                                             this.autoLoad});
       this.setupPage.Location = new System.Drawing.Point(4, 22);
       this.setupPage.Name = "setupPage";
-      this.setupPage.Size = new System.Drawing.Size(340, 266);
+      this.setupPage.Size = new System.Drawing.Size(340, 242);
       this.setupPage.TabIndex = 0;
       this.setupPage.Text = "Настройка";
       // 
@@ -170,10 +189,10 @@ namespace Desktop.app
                                                                             this.label4,
                                                                             this.user,
                                                                             this.label3,
-                                                                            this.authExplicit,
+                                                                            this.authBuiltin,
                                                                             this.authNNTP});
       this.groupBox2.FlatStyle = System.Windows.Forms.FlatStyle.System;
-      this.groupBox2.Location = new System.Drawing.Point(4, 148);
+      this.groupBox2.Location = new System.Drawing.Point(4, 124);
       this.groupBox2.Name = "groupBox2";
       this.groupBox2.Size = new System.Drawing.Size(332, 112);
       this.groupBox2.TabIndex = 4;
@@ -184,16 +203,19 @@ namespace Desktop.app
       // 
       this.password.AutoSize = false;
       this.password.Enabled = false;
+      this.password.ImeMode = System.Windows.Forms.ImeMode.NoControl;
       this.password.Location = new System.Drawing.Point(220, 80);
       this.password.Name = "password";
       this.password.PasswordChar = '*';
       this.password.Size = new System.Drawing.Size(104, 24);
       this.password.TabIndex = 5;
       this.password.Text = "";
+      this.password.TextChanged += new System.EventHandler(this.password_TextChanged);
       // 
       // label4
       // 
       this.label4.FlatStyle = System.Windows.Forms.FlatStyle.System;
+      this.label4.ImeMode = System.Windows.Forms.ImeMode.NoControl;
       this.label4.Location = new System.Drawing.Point(220, 60);
       this.label4.Name = "label4";
       this.label4.Size = new System.Drawing.Size(52, 16);
@@ -209,35 +231,41 @@ namespace Desktop.app
       this.user.Size = new System.Drawing.Size(208, 24);
       this.user.TabIndex = 3;
       this.user.Text = "";
+      this.user.TextChanged += new System.EventHandler(this.user_TextChanged);
       // 
       // label3
       // 
       this.label3.FlatStyle = System.Windows.Forms.FlatStyle.System;
+      this.label3.ImeMode = System.Windows.Forms.ImeMode.NoControl;
       this.label3.Location = new System.Drawing.Point(8, 60);
       this.label3.Name = "label3";
       this.label3.Size = new System.Drawing.Size(112, 16);
       this.label3.TabIndex = 2;
       this.label3.Text = "Имя пользователя:";
       // 
-      // authExplicit
+      // authBuiltin
       // 
-      this.authExplicit.FlatStyle = System.Windows.Forms.FlatStyle.System;
-      this.authExplicit.Location = new System.Drawing.Point(8, 40);
-      this.authExplicit.Name = "authExplicit";
-      this.authExplicit.Size = new System.Drawing.Size(256, 16);
-      this.authExplicit.TabIndex = 1;
-      this.authExplicit.Text = "С использованием следующих реквизитов:";
+      this.authBuiltin.FlatStyle = System.Windows.Forms.FlatStyle.System;
+      this.authBuiltin.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+      this.authBuiltin.Location = new System.Drawing.Point(8, 40);
+      this.authBuiltin.Name = "authBuiltin";
+      this.authBuiltin.Size = new System.Drawing.Size(256, 16);
+      this.authBuiltin.TabIndex = 1;
+      this.authBuiltin.Text = "С использованием следующих реквизитов:";
+      this.authBuiltin.CheckedChanged += new System.EventHandler(this.authBuiltin_CheckedChanged);
       // 
       // authNNTP
       // 
       this.authNNTP.Checked = true;
       this.authNNTP.FlatStyle = System.Windows.Forms.FlatStyle.System;
+      this.authNNTP.ImeMode = System.Windows.Forms.ImeMode.NoControl;
       this.authNNTP.Location = new System.Drawing.Point(8, 20);
       this.authNNTP.Name = "authNNTP";
       this.authNNTP.Size = new System.Drawing.Size(148, 16);
       this.authNNTP.TabIndex = 0;
       this.authNNTP.TabStop = true;
       this.authNNTP.Text = "Через клиента NNTP";
+      this.authNNTP.CheckedChanged += new System.EventHandler(this.authNNTP_CheckedChanged);
       // 
       // groupBox1
       // 
@@ -247,7 +275,7 @@ namespace Desktop.app
                                                                             this.webURL,
                                                                             this.label1});
       this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
-      this.groupBox1.Location = new System.Drawing.Point(4, 72);
+      this.groupBox1.Location = new System.Drawing.Point(4, 48);
       this.groupBox1.Name = "groupBox1";
       this.groupBox1.Size = new System.Drawing.Size(332, 72);
       this.groupBox1.TabIndex = 3;
@@ -262,11 +290,13 @@ namespace Desktop.app
       this.portNumber.Name = "portNumber";
       this.portNumber.Size = new System.Drawing.Size(92, 24);
       this.portNumber.TabIndex = 3;
-      this.portNumber.Text = "";
+      this.portNumber.Text = "119";
+      this.portNumber.TextChanged += new System.EventHandler(this.portNumber_TextChanged);
       // 
       // label2
       // 
       this.label2.FlatStyle = System.Windows.Forms.FlatStyle.System;
+      this.label2.ImeMode = System.Windows.Forms.ImeMode.NoControl;
       this.label2.Location = new System.Drawing.Point(232, 20);
       this.label2.Name = "label2";
       this.label2.Size = new System.Drawing.Size(80, 16);
@@ -280,11 +310,13 @@ namespace Desktop.app
       this.webURL.Name = "webURL";
       this.webURL.Size = new System.Drawing.Size(220, 24);
       this.webURL.TabIndex = 1;
-      this.webURL.Text = "";
+      this.webURL.Text = "http://rsdn.ru/WS/Forum.asmx";
+      this.webURL.TextChanged += new System.EventHandler(this.webURL_TextChanged);
       // 
       // label1
       // 
       this.label1.FlatStyle = System.Windows.Forms.FlatStyle.System;
+      this.label1.ImeMode = System.Windows.Forms.ImeMode.NoControl;
       this.label1.Location = new System.Drawing.Point(8, 20);
       this.label1.Name = "label1";
       this.label1.Size = new System.Drawing.Size(100, 16);
@@ -294,29 +326,24 @@ namespace Desktop.app
       // httpFormat
       // 
       this.httpFormat.FlatStyle = System.Windows.Forms.FlatStyle.System;
-      this.httpFormat.Location = new System.Drawing.Point(4, 48);
+      this.httpFormat.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+      this.httpFormat.Location = new System.Drawing.Point(4, 28);
       this.httpFormat.Name = "httpFormat";
       this.httpFormat.Size = new System.Drawing.Size(200, 16);
       this.httpFormat.TabIndex = 2;
       this.httpFormat.Text = "HTTP формат сообщений";
-      // 
-      // off
-      // 
-      this.off.FlatStyle = System.Windows.Forms.FlatStyle.System;
-      this.off.Location = new System.Drawing.Point(4, 28);
-      this.off.Name = "off";
-      this.off.Size = new System.Drawing.Size(104, 16);
-      this.off.TabIndex = 1;
-      this.off.Text = "Отключить";
+      this.httpFormat.CheckedChanged += new System.EventHandler(this.httpFormat_CheckedChanged);
       // 
       // autoLoad
       // 
       this.autoLoad.FlatStyle = System.Windows.Forms.FlatStyle.System;
+      this.autoLoad.ImeMode = System.Windows.Forms.ImeMode.NoControl;
       this.autoLoad.Location = new System.Drawing.Point(4, 8);
       this.autoLoad.Name = "autoLoad";
       this.autoLoad.Size = new System.Drawing.Size(204, 16);
       this.autoLoad.TabIndex = 0;
       this.autoLoad.Text = "Загружать вместе с Windows";
+      this.autoLoad.CheckedChanged += new System.EventHandler(this.autoLoad_CheckedChanged);
       // 
       // aboutPage
       // 
@@ -324,27 +351,30 @@ namespace Desktop.app
                                                                             this.aboutBox});
       this.aboutPage.Location = new System.Drawing.Point(4, 22);
       this.aboutPage.Name = "aboutPage";
-      this.aboutPage.Size = new System.Drawing.Size(340, 266);
+      this.aboutPage.Size = new System.Drawing.Size(340, 242);
       this.aboutPage.TabIndex = 1;
       this.aboutPage.Text = "О программе";
       // 
       // aboutBox
       // 
-      this.aboutBox.Location = new System.Drawing.Point(4, 4);
-      this.aboutBox.Name = "aboutBox";
-      this.aboutBox.ReadOnly = true;
-      this.aboutBox.Size = new System.Drawing.Size(332, 260);
+      this.aboutBox.ContainingControl = this;
+      this.aboutBox.Enabled = true;
+      this.aboutBox.Location = new System.Drawing.Point(4, 8);
+      this.aboutBox.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("aboutBox.OcxState")));
+      this.aboutBox.RightToLeft = false;
+      this.aboutBox.Size = new System.Drawing.Size(332, 228);
       this.aboutBox.TabIndex = 0;
-      this.aboutBox.Text = "";
       // 
       // ApplyBtn
       // 
       this.ApplyBtn.Enabled = false;
       this.ApplyBtn.FlatStyle = System.Windows.Forms.FlatStyle.System;
-      this.ApplyBtn.Location = new System.Drawing.Point(276, 308);
+      this.ApplyBtn.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+      this.ApplyBtn.Location = new System.Drawing.Point(276, 284);
       this.ApplyBtn.Name = "ApplyBtn";
       this.ApplyBtn.TabIndex = 1;
       this.ApplyBtn.Text = "Применить";
+      this.ApplyBtn.Click += new System.EventHandler(this.ApplyBtn_Click);
       // 
       // notifyIcon
       // 
@@ -361,6 +391,7 @@ namespace Desktop.app
                                                                              this.menuItem2,
                                                                              this.restoreItem,
                                                                              this.closeItem});
+      this.iconMenu.RightToLeft = System.Windows.Forms.RightToLeft.No;
       // 
       // aboutItem
       // 
@@ -389,7 +420,7 @@ namespace Desktop.app
       // MainForm
       // 
       this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-      this.ClientSize = new System.Drawing.Size(356, 339);
+      this.ClientSize = new System.Drawing.Size(356, 313);
       this.Controls.AddRange(new System.Windows.Forms.Control[] {
                                                                   this.ApplyBtn,
                                                                   this.tabControl});
@@ -403,12 +434,12 @@ namespace Desktop.app
       this.Text = "RSDN Desktop";
       this.WindowState = System.Windows.Forms.FormWindowState.Minimized;
       this.Resize += new System.EventHandler(this.MainForm_Resize);
-      this.Load += new System.EventHandler(this.MainForm_Load);
       this.tabControl.ResumeLayout(false);
       this.setupPage.ResumeLayout(false);
       this.groupBox2.ResumeLayout(false);
       this.groupBox1.ResumeLayout(false);
       this.aboutPage.ResumeLayout(false);
+      ((System.ComponentModel.ISupportInitialize)(this.aboutBox)).EndInit();
       this.ResumeLayout(false);
 
     }
@@ -487,19 +518,97 @@ namespace Desktop.app
       }
     }
 
-    private void MainForm_Load(object sender, System.EventArgs e)
+    private void tabControl_SelectedIndexChanged(object sender, System.EventArgs e)
     {
-      using (Stream ios = Assembly.GetExecutingAssembly().GetManifestResourceStream("Desktop.app.about.rtf"))
+      if (tabControl.SelectedIndex == 1)
       {
-        try
+        if (aboutBox.LocationURL == string.Empty)
         {
-          aboutBox.LoadFile(ios, RichTextBoxStreamType.RichText);
-        }
-        catch(Exception ex)
-        {
-          MessageBox.Show(ex.Message, "Ошибка");
+          object o = "";
+          aboutBox.Navigate("res://desktop.exe/%2323/%231", ref o, ref o, ref o, ref o);
         }
       }
+    }
+
+    private void autoLoad_CheckedChanged(object sender, System.EventArgs e)
+    {
+      ApplyBtn.Enabled = true;
+    }
+
+    private void authBuiltin_CheckedChanged(object sender, System.EventArgs e)
+    {
+      user.Enabled = authBuiltin.Checked;
+      password.Enabled = authBuiltin.Checked;
+
+      ApplyBtn.Enabled = true;
+      RestartManager = true;
+    }
+
+    private void authNNTP_CheckedChanged(object sender, System.EventArgs e)
+    {
+      ApplyBtn.Enabled = true;
+      RestartManager = true;
+    }
+
+    private void user_TextChanged(object sender, System.EventArgs e)
+    {
+      ApplyBtn.Enabled = true;
+      RestartManager = true;
+    }
+
+    private void password_TextChanged(object sender, System.EventArgs e)
+    {
+      ApplyBtn.Enabled = true;
+      RestartManager = true;
+    }
+
+    private void httpFormat_CheckedChanged(object sender, System.EventArgs e)
+    {
+      ApplyBtn.Enabled = true;
+    }
+
+    private void webURL_TextChanged(object sender, System.EventArgs e)
+    {
+      ApplyBtn.Enabled = true;
+      RestartManager = true;
+    }
+
+    private void portNumber_TextChanged(object sender, System.EventArgs e)
+    {
+      ApplyBtn.Enabled = true;
+      RestartManager = true;
+    }
+
+    private void ApplyBtn_Click(object sender, System.EventArgs e)
+    {
+      try
+      {
+        socketManager.nntpData.AutoLoad = autoLoad.Checked;
+        socketManager.nntpData.HTTPFormat = httpFormat.Checked;
+        socketManager.nntpData.PortNumber = Convert.ToUInt16(portNumber.Text);
+        socketManager.nntpData.BuiltinAuthorization = authBuiltin.Checked;
+        socketManager.nntpData.Url = webURL.Text;
+        if (socketManager.nntpData.BuiltinAuthorization)
+        {
+          socketManager.nntpData.User = user.Text;
+          socketManager.nntpData.Password = password.Text;
+        }
+
+        if (socketManager.nntpData.Write())
+        {
+          if (RestartManager)
+          {
+            socketManager.Restart();
+          }
+        }
+      }
+      catch(Exception ex)
+      {
+        MessageBox.Show(ex.Message);
+      }
+
+      ApplyBtn.Enabled = false;
+      RestartManager = false;
     }
 	}
 }

@@ -4,7 +4,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 
-namespace Desktop.app
+namespace Desktop
 {
 	/// <summary>
 	/// Summary description for AboutForm.
@@ -18,6 +18,9 @@ namespace Desktop.app
 		/// </summary>
 		private System.ComponentModel.Container components = null;
 
+    /// <summary>
+    /// 
+    /// </summary>
 		public AboutForm()
 		{
 			//
