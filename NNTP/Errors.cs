@@ -92,7 +92,7 @@ namespace Rsdn.Nntp
 		/// <param name="error">Specific Data Provider's error.</param>
 		/// <param name="innerException">Inner exception.</param>
 		public DataProviderException (DataProviderErrors error, Exception innerException) :
-			base(error.ToString(), innerException)
+			base(innerException.Message, innerException)
 		{
 			this.error = error;
 		}
