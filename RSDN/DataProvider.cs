@@ -511,33 +511,37 @@ namespace Rsdn.RsdnNntp
     /// <param name="message"></param>
     public override void PostMessage(Message message)
     {
-    	try
-    	{
-    		string postingText = GetPlainTextFromMessage(message);
-    		if (postingText == "")
-    			throw new DataProviderException(DataProviderErrors.PostingFailed);
+			try
+			{
+				string postingText = GetPlainTextFromMessage(message);
+				if (postingText == "")
+					throw new DataProviderException(DataProviderErrors.PostingFailed);
 
-    		// get message ID
-    		int mid = 0;
-    		if (message["References"] != null)
-    			foreach (Match messageIDMatch in messageIdNumber.Matches(message["References"]))
-    				mid = int.Parse(messageIDMatch.Groups["messageIdNumber"].Value);
-    		// get posting news group
-    		string group = message["Newsgroups"].Split(new char[]{','}, 2)[0].Trim();
+				// get message ID
+				int mid = 0;
+				if (message["References"] != null)
+					foreach (Match messageIDMatch in messageIdNumber.Matches(message["References"]))
+						mid = int.Parse(messageIDMatch.Groups["messageIdNumber"].Value);
+				// get posting news group
+				string group = message["Newsgroups"].Split(new char[]{','}, 2)[0].Trim();
     		
-    		// tagline
-    		postingText += Util.CRLF + "[tagline]Posted via " + Manager.ServerID + "[/tagline]";
+				// tagline
+				postingText += Util.CRLF + "[tagline]Posted via " + Manager.ServerID + "[/tagline]";
     		
-    		post_result result = 
- 					webService.PostUnicodeMessage(username, password, mid, group, message.Subject, postingText);
+				post_result result = 
+					webService.PostUnicodeMessage(username, password, mid, group, message.Subject, postingText);
 
-    		if (!result.ok)
-    			ProcessErrorMessage(result.error);
-    	}
-    	catch (System.Exception exception)
-    	{
-    		ProcessException(exception);
-    	}	
+				if (!result.ok)
+					throw new DataProviderException(DataProviderErrors.PostingFailed, result.error);
+			}
+			catch (DataProviderException)
+			{
+				throw;
+			}
+			catch (System.Exception exception)
+			{
+				ProcessException(new DataProviderException(DataProviderErrors.PostingFailed, exception));
+			}	
     }
 
 		/// <summary>

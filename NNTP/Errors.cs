@@ -94,6 +94,17 @@ namespace Rsdn.Nntp
 		}
 
 		/// <summary>
+		/// Create Data Provider exception with specific error and error description.
+		/// </summary>
+		/// <param name="error">Specific Data Provider's error.</param>
+		/// <param name="errorDescription">Error description.</param>
+		public DataProviderException (DataProviderErrors error, string errorDescription) :
+			base(string.Format("DataProvider error ({0})", errorDescription))
+		{
+			this.error = error;
+		}
+
+		/// <summary>
 		/// Internal storage for data provider's error.
 		/// </summary>
 		protected DataProviderErrors error;
