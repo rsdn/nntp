@@ -496,7 +496,9 @@ namespace Rsdn.RsdnNntp
     				string htmlText = string.Format(htmlMessageTemplate, message.authorid, message.author,
     					message.gid, message.id, formatMessage.Format(message.message, true), userType,
 							formatMessage.Format(message.homePage, true), encoding.WebName,
-							Format.ReplaceTags(message.subject), serverName);
+							Format.ReplaceTags(message.subject), serverName,
+							Format.ToInt(message.authorid) != 0 ?
+								string.Format("href='/Users/Profile.aspx?uid={0}'", message.authorid) : null);
     				htmlTextBody.Entities.Add(htmlText);
     				htmlTextBody.TransferEncoding = ContentTransferEncoding.Base64;
     				htmlTextBody.ContentType = string.Format("text/html; charset=\"{0}\"", encoding.WebName);
