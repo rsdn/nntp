@@ -186,11 +186,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "RsdnWebService.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Settings.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

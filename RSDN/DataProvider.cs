@@ -660,7 +660,7 @@ namespace Rsdn.RsdnNntp
     	if (rsdnSettings != null)
     	{
 			// To fix authorization proxy bug use special middle chain
-			webService = new RsdnWebService(rsdnSettings);
+			webService = new Service();
 
     		webService.Url = rsdnSettings.Service;
 				// set proxy if necessary
@@ -668,6 +668,7 @@ namespace Rsdn.RsdnNntp
 				{
 					case ProxyType.Default : 
 						webService.Proxy = WebProxy.GetDefaultProxy();
+						webService.Proxy.Credentials = CredentialCache.DefaultCredentials;
 						break;
 					case ProxyType.Explicit :
 						webService.Proxy = rsdnSettings.Proxy;
