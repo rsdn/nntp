@@ -371,7 +371,7 @@
             Выражения для обработки смайликов.
             </summary>
         </member>
-        <member name="F:Rsdn.Framework.Formatting.TextFormatter.rxTextUrl01">
+        <member name="F:Rsdn.Framework.Formatting.TextFormatter.imgTagRegex">
             <summary>
             [img] тэг. С защитой от javascript.
             </summary>
