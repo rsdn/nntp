@@ -12,7 +12,40 @@ namespace Rsdn.RsdnNntp
 	/// <summary>
 	/// MIME message formatting style
 	/// </summary>
-	public enum FormattingStyle { PlainText, Html, HtmlInlineImages }
+	public enum FormattingStyle
+	{
+		/// <summary>
+		/// Only plain text.
+		/// </summary>
+		PlainText,
+		/// <summary>
+		/// HTML and plain text.
+		/// </summary>
+		Html,
+		/// <summary>
+		/// HTML with inline images and plain text.
+		/// </summary>
+		HtmlInlineImages
+	}
+
+	/// <summary>
+	/// Type of proxy to use.
+	/// </summary>
+	public enum ProxyType
+	{
+		/// <summary>
+		/// Don't use proxy.
+		/// </summary>
+		None,
+		/// <summary>
+		/// Use defaut proxy (from IE settings).
+		/// </summary>
+		Default,
+		/// <summary>
+		/// Use explicit specified proxy.
+		/// </summary>
+		Explicit
+	}
 
 	/// <summary>
 	/// Settings for RSDN Data Provider
@@ -20,33 +53,13 @@ namespace Rsdn.RsdnNntp
 	[Serializable]
 	public class DataProviderSettings : MarshalByRefObject
 	{
-
+		/// <summary>
+		/// Initialize settings.
+		/// </summary>
 		public DataProviderSettings()
 		{
 			serviceAddress = new Uri(defaultServiceAddress);
 			encoding = System.Text.Encoding.UTF8;
-		}
-
-		protected WebProxy proxy = new WebProxy();
-
-		[Category("Connections")]
-		[Description("Web Proxy in format http://username:password@host.com:port\n" +
-			 "Username, password, and port may be skipped.")]
-		[EditorAttribute(typeof(ProxyEditor), typeof(System.Drawing.Design.UITypeEditor))]
-		[TypeConverter(typeof(ProxyConverter))]
-		[XmlIgnore]
-		[EditorAttribute(typeof(ProxyEditor), typeof(System.Drawing.Design.UITypeEditor))]
-		public WebProxy Proxy
-		{
-			get	{	return proxy;	}
-			set { proxy = value; }
-		}
-
-		[BrowsableAttribute(false)]
-		public ProxySettings proxySettings
-		{
-			get { return new ProxySettings(proxy); }
-			set	{ proxy = value.Proxy; }
 		}
 
 		protected const string defaultServiceAddress = "http://rsdn.ru/ws/forum.asmx";
@@ -66,6 +79,51 @@ namespace Rsdn.RsdnNntp
 			{
 				serviceAddress = new Uri(value);
 			}
+		}
+
+		/// <summary>
+		/// Proxy's type.
+		/// By default is none.
+		/// </summary>
+		protected ProxyType proxyType = ProxyType.Default;
+
+		/// <summary>
+		/// Proxy's type.
+		/// </summary>
+		[Category("Connections")]
+		[Description("Type of the proxy to use for connections.")]
+		[DefaultValue(ProxyType.Default)]
+		public ProxyType ProxyType
+		{
+			get { return proxyType; }
+			set { proxyType = value; }
+		}
+
+		/// <summary>
+		/// Web proxy.
+		/// </summary>
+		protected WebProxy proxy = new WebProxy();
+
+		/// <summary>
+		/// Web proxy.
+		/// </summary>
+		[Category("Connections")]
+		[Description("Web Proxy in format http://username:password@host.com:port\n" +
+			 "Username, password, and port may be skipped.")]
+		[XmlIgnore]
+		[TypeConverter(typeof(ProxyConverter))]
+		[EditorAttribute(typeof(ProxyEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		public WebProxy Proxy
+		{
+			get	{	return proxy;	}
+			set { proxy = value; }
+		}
+
+		[BrowsableAttribute(false)]
+		public ProxySettings proxySettings
+		{
+			get { return new ProxySettings(proxy); }
+			set	{ proxy = value.Proxy; }
 		}
 
 		protected int cacheSize;

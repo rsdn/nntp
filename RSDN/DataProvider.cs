@@ -5,7 +5,6 @@ using System.Net;
 using System.Text.RegularExpressions;
 using System.Configuration;
 using System.Text;
-using System.Web;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Serialization.Formatters;
 using System.Runtime.Serialization;
@@ -30,7 +29,8 @@ namespace Rsdn.RsdnNntp
 		/// Authentificate cache
 		/// </summary>
 		protected static ArrayList authCache = new ArrayList();
-	    /// <summary>
+
+    /// <summary>
     /// Cache of refeneces of messages
     /// </summary>
     protected static ReferenceCache referenceCache = new ReferenceCache(); 
@@ -644,7 +644,18 @@ namespace Rsdn.RsdnNntp
     	if (rsdnSettings != null)
     	{
     		webService.Url = rsdnSettings.Service;
-    		webService.Proxy = rsdnSettings.Proxy;
+				// set proxy if necessary
+				switch (rsdnSettings.ProxyType)
+				{
+					case ProxyType.Default : 
+						webService.Proxy = WebProxy.GetDefaultProxy();
+						break;
+					case ProxyType.Explicit :
+						webService.Proxy = rsdnSettings.Proxy;
+						break;
+					default:
+						break;
+				}
     		encoding = rsdnSettings.GetEncoding;
     		cache.Capacity = rsdnSettings.CacheSize;
     		style = rsdnSettings.Formatting;
