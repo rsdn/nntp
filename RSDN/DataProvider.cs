@@ -269,7 +269,7 @@ namespace derIgel.RsdnNntp
 		
 		/// <summary>
 		/// Convert rsdn's message to MIME message
-		/// Also see rfc 2046, 2112, 2183, 2392
+		/// Also see rfc 2046, 2112, 2183, 2392, 2557
 		/// </summary>
 		/// <param name="message"></param>
 		/// <param name="newsgroup"></param>
@@ -344,7 +344,7 @@ namespace derIgel.RsdnNntp
 									imgPart.ContentType = response.ContentType;
 									Guid imgContentID = Guid.NewGuid();
 									imgPart["Content-ID"] = '<' + imgContentID.ToString() + '>';
-									imgPart["Content-Description"] = req.RequestUri.ToString();
+									imgPart["Content-Location"] = req.RequestUri.ToString();
 									imgPart["Content-Disposition"] = "inline";
 									imgPart.TransferEncoding = ContentTransferEncoding.Base64;
 									using (BinaryReader reader = new BinaryReader(response.GetResponseStream()))
