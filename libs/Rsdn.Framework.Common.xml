@@ -347,5 +347,13 @@
             <param name="number">Numeric value to be converted.</param>
             <returns>Converted text value of numeric value.</returns>
         </member>
+        <member name="M:Rsdn.Framework.Common.Utils.GetPasswordHash(System.String,System.String)">
+            <summary>
+            Get hash of password salted by username.
+            </summary>
+            <param name="username">Username</param>
+            <param name="password">Password</param>
+            <returns>Hash of password</returns>
+        </member>
     </members>
 </doc>
