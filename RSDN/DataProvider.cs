@@ -500,6 +500,8 @@ namespace Rsdn.RsdnNntp
     	try
     	{
     		articleList = webService.ArticleList(groupName, startNumber, endNumber, username, password);
+				if (articleList.error != null)
+					ProcessErrorMessage(articleList.error);
     	}
     	catch (System.Exception exception)
     	{
