@@ -151,26 +151,12 @@
         <Files>
             <Include>
                 <File
-                    RelPath = "app.config"
-                    BuildAction = "None"
-                />
-                <File
                     RelPath = "Article.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "AssemblyInfo.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "CompressService.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "CompressWebResponse.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -240,11 +226,11 @@
                     AutoGen = "True"
                 />
                 <File
-                    RelPath = "Web References\RsdnService\service.disco"
+                    RelPath = "Web References\RsdnService\service2.disco"
                     BuildAction = "None"
                 />
                 <File
-                    RelPath = "Web References\RsdnService\service.wsdl"
+                    RelPath = "Web References\RsdnService\service2.wsdl"
                     BuildAction = "None"
                 />
                 <Folder

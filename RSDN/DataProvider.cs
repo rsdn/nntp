@@ -1,14 +1,14 @@
 using System;
+using System.IO;
 using System.Net;
 using System.Reflection;
 
 using Microsoft.Web.Services2.Security;
 using Microsoft.Web.Services2.Security.Tokens;
-
+using Microsoft.Web.Services2.Security.X509;
 using Rsdn.Framework.Common;
 using Rsdn.Nntp;
 using Rsdn.RsdnNntp.Common;
-using Rsdn.RsdnNntp.Public.RsdnService;
 using Rsdn.RsdnNntp.RsdnService;
 
 namespace Rsdn.RsdnNntp.Public
@@ -31,22 +31,15 @@ namespace Rsdn.RsdnNntp.Public
     /// </summary>
     protected Service2 webService;
 
-  	protected UsernameToken usernameToken;
-
-		protected void SetUsernameToken()
-		{
-			;//SetUsernameToken(usernameToken);
-		}
-
 		protected void SetUsernameToken(UsernameToken userToken)
 		{
-			webService.RequestSoapContext.Security.Tokens.Add(userToken);
-			//X509SecurityToken serverToken = GetSecurityToken();
-			//webService.RequestSoapContext.Security.Elements.Add(
-				//new EncryptedData(serverToken, "#" + usernameToken.Id));
-			MessageSignature sig = new MessageSignature(userToken);
-			webService.RequestSoapContext.Security.Elements.Add(sig);
-			webService.RequestSoapContext.Security.Timestamp.TtlInSeconds = 60;
+			if (!webService.RequestSoapContext.Security.Tokens.Contains(userToken))
+			{
+				webService.RequestSoapContext.Security.Tokens.Add(userToken);
+				MessageSignature sig = new MessageSignature(userToken);
+				webService.RequestSoapContext.Security.Elements.Add(sig);
+				webService.RequestSoapContext.Security.Timestamp.TtlInSeconds = 60;
+			}
  		}
 
   	/// <summary>
@@ -56,15 +49,14 @@ namespace Rsdn.RsdnNntp.Public
   	protected override void SetUserInfo(IUserInfo userInfo)
   	{
   		base.SetUserInfo(userInfo);
-			usernameToken =
-				new UsernameToken(userInfo.Name, userInfo.Password, PasswordOption.SendPlainText);
+			SetUsernameToken(	
+				new UsernameToken(userInfo.Name, userInfo.Password, PasswordOption.SendHashed));
   	}
 
   	public override IGroup InternalGetGroup(string groupName)
   	{
 			try
 			{
-				SetUsernameToken();
 				return new Group(webService.GroupInfo(groupName));
 			}		
 			catch (Exception exception)
@@ -90,7 +82,6 @@ namespace Rsdn.RsdnNntp.Public
   	{
 			try
 			{
-				SetUsernameToken();
 				group_list groupList = webService.GetGroupList(startTime);
 				Group[] groups = new Group[groupList.groups.Length];
 				for (int i = 0; i < groups.Length; i++)
@@ -108,7 +99,6 @@ namespace Rsdn.RsdnNntp.Public
   	{
 			try
 			{
-				SetUsernameToken();
 				return new Article(webService.GetArticle(groupName, articleNumber));
 			}
 			catch (Exception exception)
@@ -122,7 +112,6 @@ namespace Rsdn.RsdnNntp.Public
   	{
 			try
 			{
-				SetUsernameToken();
 				return new Article(webService.GetArticleByID(messageID));
 			}	
 			catch (Exception exception)
@@ -145,7 +134,7 @@ namespace Rsdn.RsdnNntp.Public
 			{
 				
 				SetUsernameToken(new UsernameToken(user, Utils.GetPasswordHash(user, pass),
-					PasswordOption.SendPlainText));
+					PasswordOption.SendHashed));
 				webService.Authentication();
 				return new UserInfo(webService.GetUserInfo());
 			}	
@@ -161,7 +150,6 @@ namespace Rsdn.RsdnNntp.Public
   	{
 			try
 			{
-				SetUsernameToken();
 				return new UserInfo(webService.GetUserInfoByID(id));
 			}			
 			catch (Exception exception)
@@ -175,7 +163,6 @@ namespace Rsdn.RsdnNntp.Public
   	{
 			try
 			{
-				SetUsernameToken();
 		    article_list articleList = webService.ArticleList(groupName, startNumber, endNumber);
 				// sometimes web-service return null....
 				if (articleList != null)
@@ -199,7 +186,6 @@ namespace Rsdn.RsdnNntp.Public
   	{
 			try
 			{
-				SetUsernameToken();
 				article_list articleList = webService.ArticleListFromDate(groups, startTime);
 				Article[] iArticles = new Article[articleList.articles.Length];
 				for (int i = 0; i < iArticles.Length; i++)
@@ -217,7 +203,6 @@ namespace Rsdn.RsdnNntp.Public
   	{
 			try
 			{
-				SetUsernameToken();
 				return webService.PostFile(filename, mimeType, content);
 			}
 			catch (Exception exception)
@@ -231,7 +216,6 @@ namespace Rsdn.RsdnNntp.Public
   	{
 			try
 			{
-				SetUsernameToken();
 				webService.PostMessage(mid, group,
 					Utils.ProcessInvalidXmlCharacters(subject),
 					Utils.ProcessInvalidXmlCharacters(message));
@@ -303,9 +287,6 @@ namespace Rsdn.RsdnNntp.Public
     	DataProviderSettings rsdnSettings = settings as DataProviderSettings;
     	if (rsdnSettings != null)
     	{
-				webService = rsdnSettings.EnableHttpCompression ?
-					new CompressService() : new Service2();
-
     		serverSchemeAndName = rsdnSettings.ServiceUri.GetLeftPart(UriPartial.Authority);
 				serverName = rsdnSettings.ServiceUri.Host;
     		webService.Url = rsdnSettings.Service;
