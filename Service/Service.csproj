@@ -48,7 +48,7 @@
                     BaseAddress = "285212672"
                     CheckForOverflowUnderflow = "false"
                     ConfigurationOverrideFile = ""
-                    DefineConstants = "TRACE;SHOW"
+                    DefineConstants = "TRACE;PERFORMANCE_COUNTERS"
                     DocumentationFile = ""
                     DebugSymbols = "false"
                     FileAlignment = "4096"
@@ -98,6 +98,7 @@
                     Name = "log4net-net-1.1"
                     AssemblyName = "log4net-net-1.1"
                     HintPath = "..\libs\log4net-net-1.1.dll"
+                    Private = "False"
                 />
             </References>
         </Build>
