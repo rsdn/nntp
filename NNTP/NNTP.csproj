@@ -16,7 +16,7 @@
                 DefaultTargetSchema = "IE50"
                 DelaySign = "false"
                 OutputType = "Library"
-                PreBuildEvent = ""
+                PreBuildEvent = "$(SolutionDir)Tools\SvnRevision.exe $(SolutionDir) $(SolutionDir)ProductInfo.template.cs $(SolutionDir)ProductInfo.cs"
                 PostBuildEvent = ""
                 RootNamespace = "Rsdn.Nntp"
                 RunPostBuildEvent = "OnBuildSuccess"
