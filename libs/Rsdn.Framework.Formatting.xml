@@ -415,12 +415,12 @@
             Regex for [purl] tag.
             </summary>
         </member>
-        <member name="M:Rsdn.Framework.Formatting.TextFormatter.UrlReplacer(System.Text.RegularExpressions.Match)">
+        <member name="M:Rsdn.Framework.Formatting.TextFormatter.ProcessImplicitURLs(System.Text.RegularExpressions.Match)">
             <summary>
-            Match evaluator for URL formatting
+            Process implicit URLs (not explicity specified by RSDN URL tag).
             </summary>
-            <param name="match">URI match</param>
-            <returns>Replacement string</returns>
+            <param name="match">URL match.</param>
+            <returns>Formatted URL.</returns>
         </member>
         <member name="M:Rsdn.Framework.Formatting.TextFormatter.GetMSDNRef(System.String)">
             <summary>
@@ -514,6 +514,11 @@
             </summary>
             <param name="text">Original text.</param>
             <returns>Modified text.</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.TextFormatter.ParseUrl(System.String)">
+            <summary>
+            Отпарсить URL.
+            </summary>
         </member>
     </members>
 </doc>
