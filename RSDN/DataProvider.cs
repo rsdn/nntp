@@ -593,11 +593,13 @@ namespace Rsdn.RsdnNntp
 				// get posting news group
 				string group = message["Newsgroups"].Split(new char[]{','}, 2)[0].Trim();
     		
-				// tagline
-				postingText += Util.CRLF + "[tagline]Posted via " + Manager.ServerID + "[/tagline]";
+				// add tagline
+				postingText.Append(Util.CRLF).Append("[tagline]Posted via " + Manager.ServerID + "[/tagline]");
     		
 				post_result result = 
-					webService.PostMessage(username, password, mid, group, message.Subject, postingText);
+					webService.PostMessage(username, password, mid, group,
+						Utils.ProcessInvalidXmlCharacters(message.Subject),
+						Utils.ProcessInvalidXmlCharacters(postingText.ToString()));
 
 				if (!result.ok)
 					throw new DataProviderException(DataProviderErrors.PostingFailed, result.error);
