@@ -345,6 +345,11 @@ namespace Rsdn.RsdnNntp
     protected static readonly Regex detectImages = new Regex(@"\[img\](?<url>.*?)\[/img\]",
 			RegexOptions.Compiled);
     
+		/// <summary>
+		/// Deep of the references chain
+		/// </summary>
+		protected const int referencesDeep = 15;
+
     /// <summary>
     /// Convert rsdn's message to MIME message
     /// Also see rfc 2046, 2112, 2183, 2392, 2557
@@ -378,7 +383,8 @@ namespace Rsdn.RsdnNntp
     			references = referenceCache.GetReferences(int.Parse(message.id));
     		}
     		// get parent from root (don't include itself)
-    		for (int i = references.Length - 1; i > 0; i--)
+				// limit deep of references to 23
+    		for (int i = references.Length - 1; i > 0 && i > references.Length - 1 - referencesDeep; i--)
     			referencesString.AppendFormat("<{0}{1}> ", references[i], message.postfix);
     		if (referencesString.Length > 0)
     			newsMessage["References"] = referencesString.ToString();
