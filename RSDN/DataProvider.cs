@@ -68,7 +68,7 @@ namespace Rsdn.RsdnNntp
 
 			// load message template
 			using (StreamReader reader = new StreamReader(Assembly.GetExecutingAssembly().
-							 GetManifestResourceStream("Rsdn.RsdnNntp.Header.htm")))
+							 GetManifestResourceStream("Rsdn.RsdnNntp.Header.htm"), Encoding.GetEncoding("windows-1251"), true))
 			{
 				htmlMessageTemplate = reader.ReadToEnd();
 			}
