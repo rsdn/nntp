@@ -132,18 +132,12 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
-                    RelPath = "PasswordEditor.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "ProductInfo.cs"
                     Link = "..\ProductInfo.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-<<<<<<< RsdnDataProvider.csproj
                     RelPath = "ProxyConverter.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

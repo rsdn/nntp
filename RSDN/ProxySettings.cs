@@ -35,12 +35,8 @@ namespace derIgel.RsdnNntp
 
 		public string Username
 		{
-<<<<<<< ProxySettings.cs
 			get { return uriBuilder.UserName; }
 			set { uriBuilder.UserName = value; }
-=======
-			get {return (host != null) ? CreateUri(protocol, host, port, username + "@" + password) : null;}
->>>>>>> 1.3
 		}
 
 		/// <summary>
@@ -51,70 +47,42 @@ namespace derIgel.RsdnNntp
 		{
 			get
 			{
-				RijndaelManaged myRijndael = new RijndaelManaged();
-				byte[] Key = myRijndael.Key;
-				Encoding.UTF8.GetBytes(Address, 0, Math.Min(Key.Length, Address.Length), Key, 0);
-				byte[] IV = myRijndael.IV;
-				Encoding.UTF8.GetBytes(Username, 0, Math.Min(IV.Length, Username.Length), IV, 0);
-				ICryptoTransform encryptor =
-					myRijndael.CreateEncryptor(Key, IV);
-				byte[] source = Encoding.UTF8.GetBytes(uriBuilder.Password);
-				byte[] result = encryptor.TransformFinalBlock(source, 0, source.Length);
-				encryptor.Dispose();
-
+				byte[] result = new byte[0];
+				if (uriBuilder.Password != "")
+				{
+					RijndaelManaged myRijndael = new RijndaelManaged();
+					byte[] Key = myRijndael.Key;
+					Encoding.UTF8.GetBytes(Address, 0, Math.Min(Key.Length, Address.Length), Key, 0);
+					byte[] IV = myRijndael.IV;
+					Encoding.UTF8.GetBytes(Username, 0, Math.Min(IV.Length, Username.Length), IV, 0);
+					ICryptoTransform encryptor =
+						myRijndael.CreateEncryptor(Key, IV);
+					byte[] source = Encoding.UTF8.GetBytes(uriBuilder.Password);
+					result = encryptor.TransformFinalBlock(source, 0, source.Length);
+					encryptor.Dispose();
+				}
 				return result;
 			}
 			set
 			{
-				RijndaelManaged myRijndael = new RijndaelManaged();
-				byte[] Key = myRijndael.Key;
-				Encoding.UTF8.GetBytes(Address, 0, Math.Min(Key.Length, Address.Length), Key, 0);
-				byte[] IV = myRijndael.IV;
-				Encoding.UTF8.GetBytes(Username, 0, Math.Min(IV.Length, Username.Length), IV, 0);
-				ICryptoTransform decryptor =
-					myRijndael.CreateEncryptor(Key, IV);
-				byte[] result = decryptor.TransformFinalBlock(value, 0, value.Length);
-				decryptor.Dispose();
+				byte[] result = value;
+				if (result.Length > 0)
+				{
+					RijndaelManaged myRijndael = new RijndaelManaged();
+					byte[] Key = myRijndael.Key;
+					Encoding.UTF8.GetBytes(Address, 0, Math.Min(Key.Length, Address.Length), Key, 0);
+					byte[] IV = myRijndael.IV;
+					Encoding.UTF8.GetBytes(Username, 0, Math.Min(IV.Length, Username.Length), IV, 0);
+					ICryptoTransform decryptor =
+						myRijndael.CreateEncryptor(Key, IV);
+					result = decryptor.TransformFinalBlock(value, 0, value.Length);
+					decryptor.Dispose();
+				}
 
 				uriBuilder.Password = Encoding.UTF8.GetString(result);
 			}
 		}
 
-<<<<<<< ProxySettings.cs
-=======
-		protected int port = 80;
-		[DefaultValue(80)]
-		[Description("Port")]
-		public int Port
-		{
-			get	{	return port;	}
-			set	{	port =  value; }
-		}
-
-		protected string username;
-		[Description("username")]
-		public string Username
-		{
-			get	{	return username;}
-			set	{	username = value; }
-		}
-
-		protected string password;
-		[Description("Password")]
-		[EditorAttribute(typeof(PasswordEditor), typeof(System.Drawing.Design.UITypeEditor))]
-		public string Password
-		{
-			get	{	return password; }
-			set	{password = value; }
-		}
-
-		public override string ToString()
-		{
-			return (ProxyUri != null) ? ProxyUri.GetLeftPart(UriPartial.Authority) :
-				null;
-		}
-
->>>>>>> 1.3
 		[XmlIgnore]
 		public WebProxy Proxy
 		{

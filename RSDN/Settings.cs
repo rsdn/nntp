@@ -21,15 +21,11 @@ namespace derIgel.RsdnNntp
 
 		protected WebProxy proxy = new WebProxy();
 
-<<<<<<< Settings.cs
 		[Category("Connections")]
 		[Description("Web Proxy in format http://username:password@host.com:port\n" +
 			 "Username, password, and port may be skipped.")]
 		[EditorAttribute(typeof(ProxyEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		[TypeConverter(typeof(ProxyConverter))]
-=======
-		//[BrowsableAttribute(false)]
->>>>>>> 1.5
 		[XmlIgnore]
 		[EditorAttribute(typeof(ProxyEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public WebProxy Proxy
@@ -106,6 +102,8 @@ namespace derIgel.RsdnNntp
 		}
 
 		protected bool plainText;
+
+		[Category("Others")]
 		[DefaultValue(false)]
 		public bool PlainText
 		{
