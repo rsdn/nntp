@@ -52,6 +52,10 @@ namespace Rsdn.Nntp
 		/// </summary>
 		PostingFailed,
 		/// <summary>
+		/// Timeout.
+		/// </summary>
+		Timeout,
+		/// <summary>
 		/// Service is unaviable.
 		/// </summary>
 		ServiceUnaviable

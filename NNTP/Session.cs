@@ -366,6 +366,9 @@ namespace Rsdn.Nntp
 								case DataProviderErrors.ServiceUnaviable:
 									result = new Response(NntpResponse.ServiceDiscontinued);
 									break;
+								case DataProviderErrors.Timeout:
+									result = new Response(NntpResponse.TimeOut);
+									break;
 								default:
 									// Unknown data provider error
 									result = new Response(NntpResponse.ProgramFault);
