@@ -126,6 +126,11 @@
                     AssemblyName = "log4net"
                     HintPath = "..\libs\log4net.dll"
                 />
+                <Reference
+                    Name = "Rsdn.Framework.Common"
+                    AssemblyName = "Rsdn.Framework.Common"
+                    HintPath = "..\libs\Rsdn.Framework.Common.dll"
+                />
             </References>
         </Build>
         <Files>
