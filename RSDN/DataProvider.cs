@@ -160,7 +160,6 @@ namespace Rsdn.RsdnNntp
     		ProcessException(exception);
     	}
     	currentGroupArticleStartNumber = requestedGroup.first;
-    	currentGroupArticleEndNumber = requestedGroup.last;
     	return new NewsGroup(groupName,	requestedGroup.first, requestedGroup.last,
     		requestedGroup.last - requestedGroup.first + 1, true);
     }
@@ -258,7 +257,7 @@ namespace Rsdn.RsdnNntp
 
     public NewsArticle GetNextArticle(int messageNumber, string groupName)
     {
-    	NewsArticle[] articleList = GetArticleList(messageNumber + 1, currentGroupArticleEndNumber,
+    	NewsArticle[] articleList = GetArticleList(messageNumber + 1, int.MaxValue,
     		groupName, NewsArticle.Content.Header);
   
     	if (articleList.Length == 0)
@@ -499,9 +498,7 @@ namespace Rsdn.RsdnNntp
     	article_list articleList = null;
     	try
     	{
-    		articleList = webService.ArticleList(groupName,
-    			(startNumber == -1) ? currentGroupArticleStartNumber : startNumber,
-    			(endNumber == -1) ? currentGroupArticleEndNumber : endNumber, username, password);
+    		articleList = webService.ArticleList(groupName, startNumber, endNumber, username, password);
     	}
     	catch (System.Exception exception)
     	{
@@ -531,10 +528,6 @@ namespace Rsdn.RsdnNntp
     /// start article number for current group
     /// </summary>
     protected int currentGroupArticleStartNumber = -1;
-    /// <summary>
-    /// end article number for current group
-    /// </summary>
-    protected int currentGroupArticleEndNumber = -1;
 
     /// <summary>
     /// Post MIME message through data provider
