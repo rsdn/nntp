@@ -74,7 +74,7 @@ namespace Rsdn.Nntp.Commands
 				if (lastMatch.Groups["wildmat"].Success)
 					pattern = TransformWildmat(lastMatch.Groups["wildmat"].Value);
 
-				NewsGroup[] groupList = session.DataProvider.GetGroupList(new DateTime(), pattern);
+				NewsGroup[] groupList = session.DataProvider.GetGroupList(DateTime.MinValue, pattern);
 
 				if (lastMatch.Groups["wideFormat"].Success)
 					// wide format

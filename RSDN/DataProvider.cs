@@ -256,17 +256,11 @@ namespace Rsdn.RsdnNntp
 		/// <returns></returns>
     public override NewsGroup[] GetGroupList(DateTime startDate, string pattern)
     {
-    	// minimum date, supported by web service, is unknown...
-    	// So take midnight of 30 december 1899
-    	DateTime minDate = new DateTime(1899, 12, 30, 0, 0, 0, 0);
-    	if (startDate < minDate)
-    		startDate = minDate; 
-
     	group_list groupList = cache["$group_list_cache$"] as group_list;
 			if (groupList == null)
     		try
     		{
-    			groupList = webService.GetGroupList(username, password, startDate);
+    			groupList = webService.GetGroupList(username, password, DateTime.MinValue);
     			if (groupList.error != null)
     				ProcessErrorMessage(groupList.error);
 					// add group list to cache with 15 minitues sliding expiration
@@ -284,7 +278,8 @@ namespace Rsdn.RsdnNntp
 
 			ArrayList listOfGroups = new ArrayList(groupList.groups.Length);
     	foreach (group currentGroup in groupList.groups)
-				if ((checker == null) || (checker.IsMatch(currentGroup.name)))
+				if (currentGroup.created >= startDate &&
+						((checker == null) || (checker.IsMatch(currentGroup.name))))
 					listOfGroups.Add(new NewsGroup(currentGroup.name, currentGroup.first, currentGroup.last,
 						currentGroup.last - currentGroup.first + 1, true, currentGroup.created));
 
