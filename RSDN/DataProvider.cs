@@ -420,10 +420,22 @@ namespace Rsdn.RsdnNntp
     				plainTextBody.ContentType = string.Format("text/plain; charset=\"{0}\"", encoding.WebName);
 
     				Message htmlTextBody = new Message(false);
+						string userType;
+						switch (message.userType)
+						{
+							case "rsdn": 
+								userType = string.Format("<span style=\"color: red;\">{0}</span>", message.userType);
+								break;
+							case "эксперт": 
+								userType = string.Format("<span style=\"color: green;\">{0}</span>", message.userType);
+								break;
+							default :
+								userType = message.userType;
+								break;
+						}
     				string htmlText = string.Format(htmlMessageTemplate, message.authorid, message.author,
-    					message.gid, message.id, formatMessage.Format(message.message, true),
-    					(message.userType == "rsdn") ? string.Format("<span style=\"color: red;\">{0}</span>", message.userType) : message.userType,
-						formatMessage.Format(message.homePage, true));
+    					message.gid, message.id, formatMessage.Format(message.message, true), userType,
+							formatMessage.Format(message.homePage, true));
     				htmlTextBody.Entities.Add(htmlText);
     				htmlTextBody.TransferEncoding = ContentTransferEncoding.Base64;
     				htmlTextBody.ContentType = string.Format("text/html; charset=\"{0}\"", encoding.WebName);
