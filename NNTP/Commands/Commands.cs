@@ -133,9 +133,9 @@ namespace Rsdn.Nntp.Commands
 			{
 				output.Append(ModifyArticle(article).MessageNumbers[session.DataProvider.CurrentGroup]);
 				foreach (string headerItem in List.headerItems)
-					// replace in *unfolded* header all '\t' to space
+					// replace in *unfolded* header all non-good symbols to space
 					output.Append('\t').Append(article[headerItem] == null ? null :
-						Header.Unfold(article.EncodedHeader(headerItem)).Replace('\t', ' '));
+						Regex.Replace(Header.Unfold(article.EncodedHeader(headerItem)), @"\s", " "));
 				output.Append(Util.CRLF);
 			}
 			return new Response(NntpResponse.Overview, output.ToString());
