@@ -12,8 +12,6 @@ using System.IO;
 
 namespace Rsdn.Nntp
 {
-	using Util = Rsdn.Mime.Util;
-
 	/// <summary>
 	/// NNTP Connection Manager 
 	/// </summary>
@@ -113,14 +111,6 @@ namespace Rsdn.Nntp
 			stopEvent = new ManualResetEvent(false);
 			sessions = new ArrayList();
 
-			listeners = new Socket[settings.Bindings.Length];
-			for (int i = 0; i < settings.Bindings.Length; i++)
-			{
-				listeners[i] = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-				listeners[i].Bind(settings.Bindings[i].EndPoint);
-				listeners[i].Listen(listenConnections);
-			}
-
 #if PERFORMANCE_COUNTERS
 			/// create performance counters
 			// connections
@@ -148,15 +138,15 @@ namespace Rsdn.Nntp
 		/// </summary>
 		public void Start()
 		{
-			stopEvent.Reset();
-			try
+			listeners = new Socket[settings.Bindings.Length];
+			for (int i = 0; i < settings.Bindings.Length; i++)
 			{
-				foreach (Socket listener in listeners)
-					listener.BeginAccept(new AsyncCallback(AcceptClient), listener);
+				listeners[i] = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+				listeners[i].Bind(settings.Bindings[i].EndPoint);
+				listeners[i].Listen(listenConnections);
+				listeners[i].BeginAccept(new AsyncCallback(AcceptClient), listeners[i]);
 			}
-			// it's okay when we stopped manager (closed socket)
-			// we can't cancel asynchronious callback
-			catch(System.ObjectDisposedException)	{	}
+			stopEvent.Reset();
 
 			// trace start message
 			if (tracing.TraceWarning)
@@ -179,6 +169,10 @@ namespace Rsdn.Nntp
 		{
 			lock (this)
 			{
+				// if we are stopped
+				//if (stopEvent.WaitOne(0, false))
+				//	return;
+
 				try
 				{
 					// get listener socket
@@ -204,23 +198,17 @@ namespace Rsdn.Nntp
 #if PERFORMANCE_COUNTERS
 						connectionsCounter.Increment();
 						globalConnectionsCounter.Increment();
+						// set max connections counter
 						if (connectionsCounter.RawValue > maxConnectionsCounter.RawValue)
-						{
-							globalMaxConnectionsCounter.
-								IncrementBy(connectionsCounter.RawValue - maxConnectionsCounter.RawValue);
 							maxConnectionsCounter.RawValue = connectionsCounter.RawValue;
-						}
+						// set global max connections counter
+						if (maxConnectionsCounter.RawValue > globalMaxConnectionsCounter.RawValue)
+							globalMaxConnectionsCounter.RawValue = maxConnectionsCounter.RawValue;
 #endif
 					}
 				}
-				// it's okay when we stopped manager (closed socket)
-				// we can't cancel asynchronious callback
-				catch(System.ObjectDisposedException)	{	}
-				catch(Exception e)
-				{
-					Trace.Fail(e.ToString());
-					throw;
-				}
+				// socket is closed
+				catch(ObjectDisposedException) {}
 			}
 		}
 
@@ -238,27 +226,38 @@ namespace Rsdn.Nntp
 		/// </summary>
 		protected ManualResetEvent stopEvent;
 		/// <summary>
-		/// Signalled when need to stop. Use by child sessions.
+		/// Signalled when need to stop. Used by child sessions.
 		/// </summary>
 		internal WaitHandle ExitEvent
 		{
 			get { return stopEvent; }
 		}
+
+		/// <summary>
+		/// Stop accept new clients.
+		/// Continue work with current clients.
+		/// </summary>
 		public void Pause()
 		{
 			paused = true;
 			Trace.WriteLineIf(tracing.TraceWarning, "Server paused", settings.Name);
 		}
 
+		/// <summary>
+		/// Resume accept clients after pause.
+		/// </summary>
 		public void Resume()
 		{
 			paused = false;
 			Trace.WriteLineIf(tracing.TraceWarning, "Server resumed", settings.Name);
 		}
 
+		/// <summary>
+		/// Stop listen & accept clients
+		/// </summary>
 		public void Stop()
 		{
-			Close();
+			Dispose();
 			stopEvent.Set();
 			while (sessions.Count > 0)
 				Thread.Sleep(sessionsCheckInterval);
@@ -269,13 +268,20 @@ namespace Rsdn.Nntp
 
 		public void SessionDisposedHandler(object obj, EventArgs args)
 		{
-			sessions.Remove(obj);
+			// check to ensure taht we have that object
+			if (sessions.Contains(obj))
+			{
+				sessions.Remove(obj);
 #if PERFORMANCE_COUNTERS
-			connectionsCounter.Decrement();
-			globalConnectionsCounter.Decrement();
+				connectionsCounter.Decrement();
+				globalConnectionsCounter.Decrement();
 #endif
+			}
 		}
 
+		/// <summary>
+		/// length of queue of pending connections
+		/// </summary>
 		protected const int listenConnections = 100;
 
 		/// <summary>
@@ -283,22 +289,15 @@ namespace Rsdn.Nntp
 		/// </summary>
 		protected NntpSettings settings;
 
-		public void Close()
-		{
-			Dispose();
-		}
-
-		public void Dispose()
+		/// <summary>
+		/// free resources (end all child sessions) 
+		/// </summary>
+ 		public void Dispose()
 		{
 			// listener socket do not need shutdown
 			foreach (Socket listener in listeners)
-				listener.Close();			
-#if PERFORMANCE_COUNTERS
-			globalMaxConnectionsCounter.IncrementBy(-maxConnectionsCounter.RawValue);
-			// enough remove only one counter with specified instance?
-			connectionsCounter.RemoveInstance();
-			maxConnectionsCounter.RemoveInstance();
-#endif
+				listener.Close();
+			listeners = null;
 		}
 
 		/// <summary>
@@ -309,9 +308,16 @@ namespace Rsdn.Nntp
 			get {return sessions.Count;	}
 		}
 
-		/// server identification string
+		/// <summary>
+		/// Server's identification string
+		/// </summary>
 		public static readonly string ServerID = Manager.GetProductTitle(Assembly.GetExecutingAssembly());
 
+		/// <summary>
+		/// Get product's title from assembly (AssemblyProduct + AssemblyInformationalVersion)
+		/// </summary>
+		/// <param name="assembly">Assembly</param>
+		/// <returns>Title if assembly</returns>
 		public static string GetProductTitle(Assembly assembly)
 		{
 			StringBuilder builder = new StringBuilder();
