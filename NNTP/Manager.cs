@@ -120,14 +120,14 @@ namespace Rsdn.Nntp
 					new CounterCreationData(bytesTotalPerSecCounterName,
 						"Total bytes rate",	PerformanceCounterType.RateOfCountsPerSecond32));
 				perfomanceCountersCollection.Add(
-					new CounterCreationData(bytesTotalPerSecCounterName,
-						"Total bytes",	PerformanceCounterType.RateOfCountsPerSecond32));
+					new CounterCreationData(bytesTotalCounterName,
+						"Total bytes",	PerformanceCounterType.NumberOfItems32));
 
 				PerformanceCounterCategory.Create(ServerCategoryName , "", perfomanceCountersCollection);
 			}
 
 			/// create global performance counters
-			CreatePerformanceCounters(globalPerformanceCounters, ServerCategoryName);
+			CreatePerformanceCounters(globalPerformanceCounters, GlobalInstanceName);
 #endif
 		}
 
@@ -135,7 +135,7 @@ namespace Rsdn.Nntp
 		private static void CreatePerformanceCounters(Hashtable store, string instanceName)
 		{
 			foreach (string counterName in performanceCountersNames)
-				store.Add(connectionsCounterName,
+				store.Add(counterName,
 					new PerformanceCounter(ServerCategoryName, counterName, instanceName, false));
 		}
 #endif
