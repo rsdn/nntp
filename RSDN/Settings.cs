@@ -71,6 +71,7 @@ namespace Rsdn.RsdnNntp
 
 		protected Uri serviceAddress;
 
+		[BrowsableAttribute(false)]
 		[XmlIgnore]
 		public Uri ServiceUri
 		{
