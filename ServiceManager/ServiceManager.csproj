@@ -107,8 +107,13 @@
                 />
                 <Reference
                     Name = "System.XML"
-                    AssemblyName = "System.XML"
+                    AssemblyName = "System.Xml"
                     HintPath = "C:\WINNT\Microsoft.NET\Framework\v1.0.3705\System.XML.dll"
+                />
+                <Reference
+                    Name = "System.Management"
+                    AssemblyName = "System.Management"
+                    HintPath = "C:\WINNT\Microsoft.NET\Framework\v1.0.3705\System.Management.dll"
                 />
             </References>
         </Build>
@@ -172,11 +177,6 @@
                 <File
                     RelPath = "Stopped.ico"
                     BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "UriConverter.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Win32Window.cs"

@@ -108,7 +108,7 @@ namespace RSDN
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "About";
-			this.Text = "About";
+			this.Text = "RSDN NNTP Server";
 			this.ResumeLayout(false);
 
 		}
