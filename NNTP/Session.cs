@@ -181,17 +181,23 @@ namespace derIgel.NNTP
 					else
 						delimeter = Util.CRLF;
 
-					if (bufferString.ToString().IndexOf(delimeter) != -1)
+					while (bufferString.ToString().IndexOf(delimeter) != -1)
 					{
 						// get command string till delimeter
 						commandString = bufferString.ToString().Substring(0, bufferString.ToString().IndexOf(delimeter));
+
+						// remove retrivied command from buffer
+						bufferString.Remove(0, bufferString.ToString().IndexOf(delimeter) + delimeter.Length);
 						
 						#if DEBUG || SHOW
 							errorOutput.WriteLine(commandString);
 						#endif
 
-						bufferString.Remove(0, bufferString.ToString().IndexOf(delimeter) + delimeter.Length);
-					
+						// especialy for Outlook Express
+						// it send sometimes blank lines
+						if (commandString == string.Empty)
+							continue;
+
 						try
 						{
 							switch (sessionState)

@@ -9,10 +9,6 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyTitle("RSDN NNTP Manager")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("RSDN NNTP Server")]
-[assembly: AssemblyCopyright("(c) 2002 der Igel")]
-[assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]		
 
 //
@@ -27,7 +23,6 @@ using System.Runtime.CompilerServices;
 // by using the '*' as shown below:
 
 [assembly: AssemblyVersion("1.3.*")]
-[assembly: AssemblyInformationalVersion("1.3.5")]
 
 //
 // In order to sign your assembly you must specify a key to use. Refer to the 

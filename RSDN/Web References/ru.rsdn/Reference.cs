@@ -23,7 +23,7 @@ namespace derIgel.RsdnNntp.ru.rsdn {
     /// <remarks/>
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Web.Services.WebServiceBindingAttribute(Name="ForumSoap", Namespace="http://tempuri.org/")]
+    [System.Web.Services.WebServiceBindingAttribute(Name="ForumSoap", Namespace="http://rsdn.ru/ws/")]
     public class Forum : System.Web.Services.Protocols.SoapHttpClientProtocol {
         
         /// <remarks/>
@@ -32,7 +32,7 @@ namespace derIgel.RsdnNntp.ru.rsdn {
         }
         
         /// <remarks/>
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GroupList", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://rsdn.ru/ws/GroupList", RequestNamespace="http://rsdn.ru/ws/", ResponseNamespace="http://rsdn.ru/ws/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         public group_list GroupList(string login, string psw) {
             object[] results = this.Invoke("GroupList", new object[] {
                         login,
@@ -54,7 +54,7 @@ namespace derIgel.RsdnNntp.ru.rsdn {
         }
         
         /// <remarks/>
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GetGroupList", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://rsdn.ru/ws/GetGroupList", RequestNamespace="http://rsdn.ru/ws/", ResponseNamespace="http://rsdn.ru/ws/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         public group_list GetGroupList(string login, string psw, System.DateTime dtc) {
             object[] results = this.Invoke("GetGroupList", new object[] {
                         login,
@@ -78,7 +78,7 @@ namespace derIgel.RsdnNntp.ru.rsdn {
         }
         
         /// <remarks/>
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GroupInfo", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://rsdn.ru/ws/GroupInfo", RequestNamespace="http://rsdn.ru/ws/", ResponseNamespace="http://rsdn.ru/ws/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         public group GroupInfo(string name, string login, string psw) {
             object[] results = this.Invoke("GroupInfo", new object[] {
                         name,
@@ -102,7 +102,7 @@ namespace derIgel.RsdnNntp.ru.rsdn {
         }
         
         /// <remarks/>
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GetArticle", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://rsdn.ru/ws/GetArticle", RequestNamespace="http://rsdn.ru/ws/", ResponseNamespace="http://rsdn.ru/ws/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         public article GetArticle(string group, int number, string login, string psw) {
             object[] results = this.Invoke("GetArticle", new object[] {
                         group,
@@ -128,7 +128,7 @@ namespace derIgel.RsdnNntp.ru.rsdn {
         }
         
         /// <remarks/>
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GetFormattedArticle", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://rsdn.ru/ws/GetFormattedArticle", RequestNamespace="http://rsdn.ru/ws/", ResponseNamespace="http://rsdn.ru/ws/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         public article GetFormattedArticle(string group, int number, string login, string psw) {
             object[] results = this.Invoke("GetFormattedArticle", new object[] {
                         group,
@@ -154,7 +154,7 @@ namespace derIgel.RsdnNntp.ru.rsdn {
         }
         
         /// <remarks/>
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GetArticleByID", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://rsdn.ru/ws/GetArticleByID", RequestNamespace="http://rsdn.ru/ws/", ResponseNamespace="http://rsdn.ru/ws/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         public article GetArticleByID(int mid, string login, string psw) {
             object[] results = this.Invoke("GetArticleByID", new object[] {
                         mid,
@@ -178,7 +178,7 @@ namespace derIgel.RsdnNntp.ru.rsdn {
         }
         
         /// <remarks/>
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GetFormattedArticleByID", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://rsdn.ru/ws/GetFormattedArticleByID", RequestNamespace="http://rsdn.ru/ws/", ResponseNamespace="http://rsdn.ru/ws/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         public article GetFormattedArticleByID(int mid, string login, string psw) {
             object[] results = this.Invoke("GetFormattedArticleByID", new object[] {
                         mid,
@@ -202,7 +202,7 @@ namespace derIgel.RsdnNntp.ru.rsdn {
         }
         
         /// <remarks/>
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/ArticleList", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://rsdn.ru/ws/ArticleList", RequestNamespace="http://rsdn.ru/ws/", ResponseNamespace="http://rsdn.ru/ws/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         public article_list ArticleList(string group, int first, int last, string login, string psw) {
             object[] results = this.Invoke("ArticleList", new object[] {
                         group,
@@ -230,7 +230,7 @@ namespace derIgel.RsdnNntp.ru.rsdn {
         }
         
         /// <remarks/>
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/Authentication", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://rsdn.ru/ws/Authentication", RequestNamespace="http://rsdn.ru/ws/", ResponseNamespace="http://rsdn.ru/ws/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         public auth_info Authentication(string login, string psw) {
             object[] results = this.Invoke("Authentication", new object[] {
                         login,
@@ -252,7 +252,7 @@ namespace derIgel.RsdnNntp.ru.rsdn {
         }
         
         /// <remarks/>
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GetLink", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://rsdn.ru/ws/GetLink", RequestNamespace="http://rsdn.ru/ws/", ResponseNamespace="http://rsdn.ru/ws/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         public link GetLink(string link, LinkType type, string login, string psw) {
             object[] results = this.Invoke("GetLink", new object[] {
                         link,
@@ -278,7 +278,7 @@ namespace derIgel.RsdnNntp.ru.rsdn {
         }
         
         /// <remarks/>
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/PostMIMEMessage", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://rsdn.ru/ws/PostMIMEMessage", RequestNamespace="http://rsdn.ru/ws/", ResponseNamespace="http://rsdn.ru/ws/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         public post_result PostMIMEMessage(string login, string psw, string message) {
             object[] results = this.Invoke("PostMIMEMessage", new object[] {
                         login,
@@ -302,7 +302,7 @@ namespace derIgel.RsdnNntp.ru.rsdn {
         }
         
         /// <remarks/>
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/PostUnicodeMessage", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://rsdn.ru/ws/PostUnicodeMessage", RequestNamespace="http://rsdn.ru/ws/", ResponseNamespace="http://rsdn.ru/ws/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         public post_result PostUnicodeMessage(string login, string psw, int mid, string group, string subject, string message) {
             object[] results = this.Invoke("PostUnicodeMessage", new object[] {
                         login,
@@ -333,7 +333,7 @@ namespace derIgel.RsdnNntp.ru.rsdn {
     }
     
     /// <remarks/>
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://tempuri.org/")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://rsdn.ru/ws/")]
     public class group_list {
         
         /// <remarks/>
@@ -348,7 +348,7 @@ namespace derIgel.RsdnNntp.ru.rsdn {
     }
     
     /// <remarks/>
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://tempuri.org/")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://rsdn.ru/ws/")]
     public class group {
         
         /// <remarks/>
@@ -371,7 +371,7 @@ namespace derIgel.RsdnNntp.ru.rsdn {
     }
     
     /// <remarks/>
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://tempuri.org/")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://rsdn.ru/ws/")]
     public class post_result {
         
         /// <remarks/>
@@ -382,7 +382,7 @@ namespace derIgel.RsdnNntp.ru.rsdn {
     }
     
     /// <remarks/>
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://tempuri.org/")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://rsdn.ru/ws/")]
     public class link {
         
         /// <remarks/>
@@ -396,7 +396,7 @@ namespace derIgel.RsdnNntp.ru.rsdn {
     }
     
     /// <remarks/>
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://tempuri.org/")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://rsdn.ru/ws/")]
     public class auth_info {
         
         /// <remarks/>
@@ -407,7 +407,7 @@ namespace derIgel.RsdnNntp.ru.rsdn {
     }
     
     /// <remarks/>
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://tempuri.org/")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://rsdn.ru/ws/")]
     public class article_list {
         
         /// <remarks/>
@@ -424,7 +424,7 @@ namespace derIgel.RsdnNntp.ru.rsdn {
     }
     
     /// <remarks/>
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://tempuri.org/")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://rsdn.ru/ws/")]
     public class article {
         
         /// <remarks/>
@@ -474,7 +474,7 @@ namespace derIgel.RsdnNntp.ru.rsdn {
     }
     
     /// <remarks/>
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://tempuri.org/")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://rsdn.ru/ws/")]
     public enum LinkType {
         
         /// <remarks/>

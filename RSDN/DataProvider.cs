@@ -297,8 +297,6 @@ namespace derIgel.RsdnNntp
 				articleList = webService.ArticleList(currentGroup,
 					(startNumber == -1) ? currentGroupArticleStartNumber : startNumber,
 					(endNumber == -1) ? currentGroupArticleEndNumber : endNumber, username, password);
-				if (articleList.error != null)
-					ProcessErrorMessage(articleList.error);
 			}
 			catch (System.Exception exception)
 			{
@@ -307,10 +305,10 @@ namespace derIgel.RsdnNntp
 
 			NewsArticle[] articleArray = new NewsArticle[articleList.articles.GetLength(0)];
 
-			for (int i = 0; i <articleList.articles.GetLength(0); i++)
+			for (int i = 0; i <articleList.articles.Length; i++)
 				articleArray[i] =
 					ToNNTPArticle(articleList.articles[i], currentGroup, content);
-
+	
 			return articleArray;
 		}
 

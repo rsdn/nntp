@@ -109,7 +109,7 @@ namespace derIgel.NNTP.Commands
 					else
 						endNumber = -1;
 				articleList = session.DataProvider.
-					GetArticleList(startNumber, endNumber, NewsArticle.Content.Header);
+					GetArticleList(startNumber, endNumber, NewsArticle.Content.HeaderAndBody);
 			}
 			else
 			{
@@ -125,7 +125,9 @@ namespace derIgel.NNTP.Commands
 					article["Date"],
 					article["Message-ID"],
 					article["References"],
-					article.GetBody().Length, null, Util.CRLF);
+					//disabled, since RsdnNntpDataProvider doesn't provide full text of article in this mode
+					/*article.GetBody().Length*/null,
+					null, Util.CRLF);
 			return new Response(224, Encoding.ASCII.GetBytes(output.ToString()));
 		}
 	}
@@ -272,7 +274,7 @@ namespace derIgel.NNTP.Commands
 	public class List : Generic
 	{
 		protected static Regex ListSyntaxisChecker =
-			new	Regex(@"(?in)^LIST[ \t]*$", RegexOptions.Compiled);
+			new	Regex(@"(?in)^LIST(?<wideFormat>[ \t]+NEWSGROUPS)?[ \t]*$", RegexOptions.Compiled);
 
 		public List(Session session) : base(session)
 		{
@@ -282,12 +284,20 @@ namespace derIgel.NNTP.Commands
 
 		protected override Response ProcessCommand()
 		{
+		
 			NewsGroup[] groupList = session.DataProvider.GetGroupList(new DateTime(), null);
 			StringBuilder textResponse = new StringBuilder();
-			foreach (NewsGroup group in groupList)
-				textResponse.AppendFormat("{0} {1} {2} {3}{4}",
-					group.Name, group.LastArticleNumber, group.FirstArticleNumber,
-					group.PostingAllowed ? 'y' : 'n', Util.CRLF);
+			if (!lastMatch.Groups["wideFormat"].Success)
+				// standart format
+				foreach (NewsGroup group in groupList)
+					textResponse.AppendFormat("{0} {1} {2} {3}{4}",
+						group.Name, group.LastArticleNumber, group.FirstArticleNumber,
+						group.PostingAllowed ? 'y' : 'n', Util.CRLF);
+			else
+				// wide format
+				foreach (NewsGroup group in groupList)
+					textResponse.AppendFormat("{0} {1}{2}",
+						group.Name, group.Description, Util.CRLF);
 			return new Response(215, Encoding.ASCII.GetBytes(textResponse.ToString()));
 		}
 	}

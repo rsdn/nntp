@@ -19,6 +19,7 @@ namespace derIgel
 				this.postingAllowed = postingAllowed;
 			}
 			protected	string name;
+			protected string description;
 			protected int firstArticleNumber;
 			protected int lastArticleNumber;
 			protected int etimatedArticles;
@@ -30,6 +31,12 @@ namespace derIgel
 				{
 					return name;
 				}
+			}
+
+			public string Description
+			{
+				get {return description;}
+				set {description = value;}
 			}
 
 			public int FirstArticleNumber

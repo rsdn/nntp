@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s0="http://tempuri.org/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://tempuri.org/" xmlns="http://schemas.xmlsoap.org/wsdl/">
+<definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s0="http://rsdn.ru/ws/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://rsdn.ru/ws/" xmlns="http://schemas.xmlsoap.org/wsdl/">
   <types>
-    <s:schema elementFormDefault="qualified" targetNamespace="http://tempuri.org/">
+    <s:schema elementFormDefault="qualified" targetNamespace="http://rsdn.ru/ws/">
       <s:element name="GroupList">
         <s:complexType>
           <s:sequence>
@@ -752,7 +752,7 @@
   <binding name="ForumSoap" type="s0:ForumSoap">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
     <operation name="GroupList">
-      <soap:operation soapAction="http://tempuri.org/GroupList" style="document" />
+      <soap:operation soapAction="http://rsdn.ru/ws/GroupList" style="document" />
       <input>
         <soap:body use="literal" />
       </input>
@@ -761,7 +761,7 @@
       </output>
     </operation>
     <operation name="GetGroupList">
-      <soap:operation soapAction="http://tempuri.org/GetGroupList" style="document" />
+      <soap:operation soapAction="http://rsdn.ru/ws/GetGroupList" style="document" />
       <input>
         <soap:body use="literal" />
       </input>
@@ -770,7 +770,7 @@
       </output>
     </operation>
     <operation name="GroupInfo">
-      <soap:operation soapAction="http://tempuri.org/GroupInfo" style="document" />
+      <soap:operation soapAction="http://rsdn.ru/ws/GroupInfo" style="document" />
       <input>
         <soap:body use="literal" />
       </input>
@@ -779,7 +779,7 @@
       </output>
     </operation>
     <operation name="GetArticle">
-      <soap:operation soapAction="http://tempuri.org/GetArticle" style="document" />
+      <soap:operation soapAction="http://rsdn.ru/ws/GetArticle" style="document" />
       <input>
         <soap:body use="literal" />
       </input>
@@ -788,7 +788,7 @@
       </output>
     </operation>
     <operation name="GetFormattedArticle">
-      <soap:operation soapAction="http://tempuri.org/GetFormattedArticle" style="document" />
+      <soap:operation soapAction="http://rsdn.ru/ws/GetFormattedArticle" style="document" />
       <input>
         <soap:body use="literal" />
       </input>
@@ -797,7 +797,7 @@
       </output>
     </operation>
     <operation name="GetArticleByID">
-      <soap:operation soapAction="http://tempuri.org/GetArticleByID" style="document" />
+      <soap:operation soapAction="http://rsdn.ru/ws/GetArticleByID" style="document" />
       <input>
         <soap:body use="literal" />
       </input>
@@ -806,7 +806,7 @@
       </output>
     </operation>
     <operation name="GetFormattedArticleByID">
-      <soap:operation soapAction="http://tempuri.org/GetFormattedArticleByID" style="document" />
+      <soap:operation soapAction="http://rsdn.ru/ws/GetFormattedArticleByID" style="document" />
       <input>
         <soap:body use="literal" />
       </input>
@@ -815,7 +815,7 @@
       </output>
     </operation>
     <operation name="ArticleList">
-      <soap:operation soapAction="http://tempuri.org/ArticleList" style="document" />
+      <soap:operation soapAction="http://rsdn.ru/ws/ArticleList" style="document" />
       <input>
         <soap:body use="literal" />
       </input>
@@ -824,7 +824,7 @@
       </output>
     </operation>
     <operation name="Authentication">
-      <soap:operation soapAction="http://tempuri.org/Authentication" style="document" />
+      <soap:operation soapAction="http://rsdn.ru/ws/Authentication" style="document" />
       <input>
         <soap:body use="literal" />
       </input>
@@ -833,7 +833,7 @@
       </output>
     </operation>
     <operation name="GetLink">
-      <soap:operation soapAction="http://tempuri.org/GetLink" style="document" />
+      <soap:operation soapAction="http://rsdn.ru/ws/GetLink" style="document" />
       <input>
         <soap:body use="literal" />
       </input>
@@ -842,7 +842,7 @@
       </output>
     </operation>
     <operation name="PostMIMEMessage">
-      <soap:operation soapAction="http://tempuri.org/PostMIMEMessage" style="document" />
+      <soap:operation soapAction="http://rsdn.ru/ws/PostMIMEMessage" style="document" />
       <input>
         <soap:body use="literal" />
       </input>
@@ -851,7 +851,7 @@
       </output>
     </operation>
     <operation name="PostUnicodeMessage">
-      <soap:operation soapAction="http://tempuri.org/PostUnicodeMessage" style="document" />
+      <soap:operation soapAction="http://rsdn.ru/ws/PostUnicodeMessage" style="document" />
       <input>
         <soap:body use="literal" />
       </input>

@@ -9,11 +9,7 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyTitle("NNTP Library")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("RSDN NNTP Server")]
-[assembly: AssemblyCopyright("(c) 2002 der Igel")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]		
+[assembly: AssemblyCulture("")]
 
 //
 // Version information for an assembly consists of the following four values:
@@ -27,7 +23,6 @@ using System.Runtime.CompilerServices;
 // by using the '*' as shown below:
 
 [assembly: AssemblyVersion("1.4.*")]
-[assembly: AssemblyInformationalVersion("1.3.5")]
 
 //
 // In order to sign your assembly you must specify a key to use. Refer to the 

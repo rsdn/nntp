@@ -167,6 +167,12 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "ProductInfo.cs"
+                    Link = "..\ProductInfo.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "RsdnNntpServerSettings.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

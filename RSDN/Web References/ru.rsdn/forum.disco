@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <discovery xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.xmlsoap.org/disco/">
   <contractRef ref="http://rsdn.ru/ws/forum.asmx?wsdl" docRef="http://rsdn.ru/ws/forum.asmx" xmlns="http://schemas.xmlsoap.org/disco/scl/" />
-  <soap address="http://rsdn.ru/ws/forum.asmx" xmlns:q1="http://tempuri.org/" binding="q1:ForumSoap" xmlns="http://schemas.xmlsoap.org/disco/soap/" />
+  <soap address="http://rsdn.ru/ws/forum.asmx" xmlns:q1="http://rsdn.ru/ws/" binding="q1:ForumSoap" xmlns="http://schemas.xmlsoap.org/disco/soap/" />
 </discovery>
