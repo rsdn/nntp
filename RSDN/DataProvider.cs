@@ -603,9 +603,6 @@ namespace Rsdn.RsdnNntp
 				}
 				case "3 Article not found." :
 					throw new DataProviderException(DataProviderErrors.NoSuchArticle);
-				case "Timeout expired." +
-				"  The timeout period elapsed prior to completion of the operation or the server is not responding." :
-					throw new DataProviderException(DataProviderErrors.Timeout);
 				default:
 					throw exception;
 			}
