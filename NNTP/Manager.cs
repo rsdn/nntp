@@ -44,6 +44,10 @@ namespace derIgel.NNTP
 		/// sessions' perfomance counter
 		/// </summary>
 		PerformanceCounter sessionsCounter;
+		/// <summary>
+		/// global sessions' perfomance counter
+		/// </summary>
+		PerformanceCounter globalSessionsCounter;
     	
 		/// <summary>
 		/// NNTP Connection Manager constructor
@@ -86,6 +90,8 @@ namespace derIgel.NNTP
 			// create perfomance counters
 			sessionsCounter = new PerformanceCounter(PerfomanceCategoryName,
 				sessionsCounterData.CounterName, "Port " + settings.Port, false);
+			globalSessionsCounter = new PerformanceCounter(PerfomanceCategoryName,
+				sessionsCounterData.CounterName, "All", false);
 
 			Start();
 		}
@@ -139,6 +145,7 @@ namespace derIgel.NNTP
 						sessions.Add(session);
 						ThreadPool.QueueUserWorkItem(new WaitCallback(session.Process), this);
 						sessionsCounter.Increment();
+						globalSessionsCounter.Increment();
 					}
 				}
 				// it's okay when we stopped manager (closed socket)
@@ -198,6 +205,7 @@ namespace derIgel.NNTP
 		{
 			sessions.Remove(obj);
 			sessionsCounter.Decrement();
+			globalSessionsCounter.Decrement();
 		}
 
 		protected const int listenConnections = 100;

@@ -58,6 +58,18 @@ namespace derIgel.NNTP
 		/// perfomance counter transfered articles
 		/// </summary>
 		PerformanceCounter articlesCounter;
+		/// <summary>
+		/// global perfomance counter for requests
+		/// </summary>
+		PerformanceCounter globalRequestsCounter;
+		/// <summary>
+		/// global perfomance counter for not performed requests
+		/// </summary>
+		PerformanceCounter globalBadRequestsCounter;
+		/// <summary>
+		/// global perfomance counter transfered articles
+		/// </summary>
+		PerformanceCounter globalArticlesCounter;
 
 		public Session(Socket client, IDataProvider dataProvider, WaitHandle exitEvent, Statistics stat,
 			TextWriter errorOutput)
@@ -101,6 +113,12 @@ namespace derIgel.NNTP
 				badRequestsCounterData .CounterName, "Client " + client.RemoteEndPoint.ToString(), false);
 			articlesCounter = new PerformanceCounter(PerfomanceCategoryName,
 				articlesCounterData .CounterName, "Client " + client.RemoteEndPoint.ToString(), false);
+			globalRequestsCounter = new PerformanceCounter(PerfomanceCategoryName,
+				requestsCounterData .CounterName, "All", false);
+			globalBadRequestsCounter = new PerformanceCounter(PerfomanceCategoryName,
+				badRequestsCounterData .CounterName, "All", false);
+			globalArticlesCounter = new PerformanceCounter(PerfomanceCategoryName,
+				articlesCounterData .CounterName, "All", false);
 		}
 
 		protected static Hashtable commandsTypes;
@@ -189,6 +207,7 @@ namespace derIgel.NNTP
 
 									stat.AddStatistic(command);
 									requestsCounter.Increment();
+									globalRequestsCounter.Increment();
 
 									Commands.Generic nntpCommand = commands[command] as Commands.Generic;
 									// check suppoting command
@@ -281,6 +300,7 @@ namespace derIgel.NNTP
 						// result code indicates error
 						{
 							badRequestsCounter.Increment();
+							globalBadRequestsCounter.Increment();
 							stat.AddError(result.Code, commandString);
 						}
 
@@ -293,6 +313,7 @@ namespace derIgel.NNTP
 							case 222:
 							case 223:
 								articlesCounter.Increment();
+								globalArticlesCounter.Increment();
 								break;
 							case 205: // quit
 							case 400: // service disctontined
