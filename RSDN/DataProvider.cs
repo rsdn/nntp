@@ -259,7 +259,8 @@ namespace derIgel.RsdnNntp
 					newsMessage.From = string.Format("\"{0}\" <{1}>", message.author, "forum@rsdn.ru");
 				newsMessage.Date = message.date;
 				newsMessage.Subject = message.subject;
-				newsMessage["X-UserID"] = message.authorid;
+				if ((message.authorid != null) && (int.Parse(message.authorid) != 0))
+					newsMessage["X-UserID"] = message.authorid;
 				if (message.pid != string.Empty)
 					newsMessage["References"] = "<" + message.pid + message.postfix + ">";
 				newsMessage["Newsgroups"] = newsgroup;
