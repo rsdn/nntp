@@ -105,8 +105,8 @@ namespace Rsdn.RsdnNntp
 			// 
 			// alertImage
 			// 
-			this.alertImage.Anchor = (System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left);
-			this.alertImage.Image = ((System.Drawing.Bitmap)(resources.GetObject("alertImage.Image")));
+			this.alertImage.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.alertImage.Image = ((System.Drawing.Image)(resources.GetObject("alertImage.Image")));
 			this.alertImage.Location = new System.Drawing.Point(7, 429);
 			this.alertImage.Name = "alertImage";
 			this.alertImage.Size = new System.Drawing.Size(16, 16);
@@ -117,12 +117,12 @@ namespace Rsdn.RsdnNntp
 			// 
 			// alertText
 			// 
-			this.alertText.Anchor = (System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left);
+			this.alertText.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.alertText.AutoSize = true;
 			this.alertText.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.alertText.Location = new System.Drawing.Point(32, 431);
 			this.alertText.Name = "alertText";
-			this.alertText.Size = new System.Drawing.Size(248, 13);
+			this.alertText.Size = new System.Drawing.Size(248, 16);
 			this.alertText.TabIndex = 6;
 			this.alertText.Text = "Changes will take effect after you restart service.";
 			this.alertText.Visible = false;
@@ -135,6 +135,7 @@ namespace Rsdn.RsdnNntp
 			this.serverPropertyGrid.HelpVisible = false;
 			this.serverPropertyGrid.LargeButtons = false;
 			this.serverPropertyGrid.LineColor = System.Drawing.SystemColors.ScrollBar;
+			this.serverPropertyGrid.Location = new System.Drawing.Point(0, 0);
 			this.serverPropertyGrid.Name = "serverPropertyGrid";
 			this.serverPropertyGrid.PropertySort = System.Windows.Forms.PropertySort.Categorized;
 			this.serverPropertyGrid.Size = new System.Drawing.Size(535, 395);
@@ -155,13 +156,13 @@ namespace Rsdn.RsdnNntp
 			// 
 			// tabControl
 			// 
-			this.tabControl.Anchor = (((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+			this.tabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
 				| System.Windows.Forms.AnchorStyles.Left) 
-				| System.Windows.Forms.AnchorStyles.Right);
+				| System.Windows.Forms.AnchorStyles.Right)));
 			this.tabControl.Appearance = System.Windows.Forms.TabAppearance.FlatButtons;
-			this.tabControl.Controls.AddRange(new System.Windows.Forms.Control[] {
-																																						 this.serverSettingsTabPage,
-																																						 this.dataProviderSettingsTabPage});
+			this.tabControl.Controls.Add(this.serverSettingsTabPage);
+			this.tabControl.Controls.Add(this.dataProviderSettingsTabPage);
+			this.tabControl.Location = new System.Drawing.Point(0, 0);
 			this.tabControl.Multiline = true;
 			this.tabControl.Name = "tabControl";
 			this.tabControl.SelectedIndex = 0;
@@ -170,8 +171,7 @@ namespace Rsdn.RsdnNntp
 			// 
 			// serverSettingsTabPage
 			// 
-			this.serverSettingsTabPage.Controls.AddRange(new System.Windows.Forms.Control[] {
-																																												this.serverPropertyGrid});
+			this.serverSettingsTabPage.Controls.Add(this.serverPropertyGrid);
 			this.serverSettingsTabPage.Location = new System.Drawing.Point(4, 25);
 			this.serverSettingsTabPage.Name = "serverSettingsTabPage";
 			this.serverSettingsTabPage.Size = new System.Drawing.Size(535, 395);
@@ -180,8 +180,7 @@ namespace Rsdn.RsdnNntp
 			// 
 			// dataProviderSettingsTabPage
 			// 
-			this.dataProviderSettingsTabPage.Controls.AddRange(new System.Windows.Forms.Control[] {
-																																															this.dataProviderPropertyGrid});
+			this.dataProviderSettingsTabPage.Controls.Add(this.dataProviderPropertyGrid);
 			this.dataProviderSettingsTabPage.Location = new System.Drawing.Point(4, 25);
 			this.dataProviderSettingsTabPage.Name = "dataProviderSettingsTabPage";
 			this.dataProviderSettingsTabPage.Size = new System.Drawing.Size(535, 395);
@@ -194,8 +193,8 @@ namespace Rsdn.RsdnNntp
 			this.dataProviderPropertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.dataProviderPropertyGrid.LargeButtons = false;
 			this.dataProviderPropertyGrid.LineColor = System.Drawing.SystemColors.ScrollBar;
+			this.dataProviderPropertyGrid.Location = new System.Drawing.Point(0, 0);
 			this.dataProviderPropertyGrid.Name = "dataProviderPropertyGrid";
-			this.dataProviderPropertyGrid.PropertySort = System.Windows.Forms.PropertySort.Categorized;
 			this.dataProviderPropertyGrid.Size = new System.Drawing.Size(535, 395);
 			this.dataProviderPropertyGrid.TabIndex = 0;
 			this.dataProviderPropertyGrid.Text = "dataProviderPropertyGrid";
@@ -208,13 +207,12 @@ namespace Rsdn.RsdnNntp
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(543, 476);
-			this.Controls.AddRange(new System.Windows.Forms.Control[] {
-																																	this.tabControl,
-																																	this.alertText,
-																																	this.alertImage,
-																																	this.applyButton,
-																																	this.cancelButton,
-																																	this.okButton});
+			this.Controls.Add(this.tabControl);
+			this.Controls.Add(this.alertText);
+			this.Controls.Add(this.alertImage);
+			this.Controls.Add(this.applyButton);
+			this.Controls.Add(this.cancelButton);
+			this.Controls.Add(this.okButton);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
