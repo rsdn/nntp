@@ -132,11 +132,6 @@
                     HintPath = "..\libs\Rsdn.Framework.Common.dll"
                 />
                 <Reference
-                    Name = "ICSharpCode.SharpZipLib"
-                    AssemblyName = "ICSharpCode.SharpZipLib"
-                    HintPath = "..\libs\ICSharpCode.SharpZipLib.dll"
-                />
-                <Reference
                     Name = "RsdnDataCommonProvider"
                     Project = "{A6ACE0D8-88D2-4306-AFB6-7A3EDD509D28}"
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
@@ -145,6 +140,11 @@
                     Name = "Microsoft.Web.Services2"
                     AssemblyName = "Microsoft.Web.Services2"
                     HintPath = "..\libs\Microsoft.Web.Services2.dll"
+                />
+                <Reference
+                    Name = "Plumbwork.Orange.Compression"
+                    AssemblyName = "Plumbwork.Orange.Compression"
+                    HintPath = "..\libs\Plumbwork.Orange.Compression.dll"
                 />
             </References>
         </Build>

@@ -6,6 +6,7 @@ using System.Reflection;
 using Microsoft.Web.Services2.Security;
 using Microsoft.Web.Services2.Security.Tokens;
 using Microsoft.Web.Services2.Security.X509;
+using Plumbwork.Orange.Compression;
 using Rsdn.Framework.Common;
 using Rsdn.Nntp;
 using Rsdn.RsdnNntp.Common;
@@ -24,6 +25,13 @@ namespace Rsdn.RsdnNntp.Public
     public RsdnDataPublicProvider() : base()
     {
     	webService = new Service2();
+			// set compression filters
+			webService.Pipeline.InputFilters.Add(new CompressionInputFilter());
+			webService.Pipeline.OutputFilters.Add(new CompressionOutputFilter());
+			// set compression parameters for output messages
+			CompressionContext outContext = new CompressionContext(webService.RequestSoapContext);
+			outContext.CompressionMode = CompressionMode.BZip2;
+			outContext.CompressionLevel = CompressionLevel.Normal;
     }
 
     /// <summary>
