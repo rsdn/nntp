@@ -108,13 +108,13 @@ namespace Rsdn.Nntp
 			answers[436] = "436 transfer failed - try again later";
 			answers[437] = "437 article rejected - do not try again";
 			answers[440] = "440 posting not allowed";
-			answers[441] = "441 posting failed";
+			answers[441] = "441 posting failed. {0}";
 			answers[480] = "480 authentification required";
 			answers[482] = "482 authentification rejected";
 			answers[500] = "500 command not recognized";
 			answers[501] = "501 command syntax error";
 			answers[502] = "502 no permission";
-			answers[503] = "503 program fault - command not performed";
+			answers[503] = "503 program fault. {0}";
 		}
 
 		public Response(string description, int code, object body, params object[] parameters)

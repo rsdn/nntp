@@ -323,7 +323,7 @@ namespace Rsdn.Nntp
 						}
 						catch (Response.ParamsException exception)
 						{
-							result = new Response(NntpResponse.ProgramFault);
+							result = new Response(NntpResponse.ProgramFault, null, exception.Message);
 							logger.Error("Parameters are invalid", exception);
 						}
 						catch (DataProviderException exception)
@@ -360,8 +360,9 @@ namespace Rsdn.Nntp
 									logger.Warn(string.Format("{0} provider don't support {1} command.", dataProvider.GetType(), command));
 									break;
 								case DataProviderErrors.PostingFailed:
-									result = new Response(
-										sessionState == States.TransferWaiting ? NntpResponse.TransferFailed :  NntpResponse.PostingFailed);
+									result = new Response(sessionState == States.TransferWaiting ?
+										NntpResponse.TransferFailed :  NntpResponse.PostingFailed, null,
+										exception.Message);
 									break;
 								case DataProviderErrors.ServiceUnaviable:
 									result = new Response(NntpResponse.ServiceDiscontinued);
@@ -371,14 +372,14 @@ namespace Rsdn.Nntp
 									break;
 								default:
 									// Unknown data provider error
-									result = new Response(NntpResponse.ProgramFault);
+									result = new Response(NntpResponse.ProgramFault, null, exception.Message);
 									break;
 							}
 							logger.Warn(string.Format("Data Provider Error ({0})", exception.Error), exception);
 						}
-						catch (MimeFormattingException)
+						catch (MimeFormattingException ex)
 						{
-							result = new Response(NntpResponse.PostingFailed);
+							result = new Response(NntpResponse.PostingFailed, null, ex.Message);
 						}
 							// not good....
 						catch(Exception e)
@@ -390,7 +391,7 @@ namespace Rsdn.Nntp
 									" (selected group '{0}', last request '{1}').\n",
 									currentGroup, commandString), e);
 							}
-							result = new Response(NntpResponse.ProgramFault);
+							result = new Response(NntpResponse.ProgramFault, null, e.Message);
 						}
 						finally
 						{
