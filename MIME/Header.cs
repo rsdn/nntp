@@ -49,7 +49,7 @@ namespace Rsdn.Mime
 		{
 			string result = value;
 			if (filters[name] != null)
-				foreach (FilterHandler handler in (IEnumerable)filters[name])
+				foreach (FilterHandler handler in ((SortedList)filters[name]).Values)
 					result = handler(name, result);
 
 			return result;
