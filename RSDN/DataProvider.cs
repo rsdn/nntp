@@ -346,8 +346,9 @@ namespace Rsdn.RsdnNntp
     {
 			try
 			{
+				string cacheKey = user + pass;
 				// if in cache - auth ok
-				UserInfo userInfo = cache[user+pass] as UserInfo;
+				UserInfo userInfo = cache[cacheKey] as UserInfo;
 				if (userInfo != null)
 				{
 					SetUserInfo(userInfo);
@@ -362,8 +363,11 @@ namespace Rsdn.RsdnNntp
 					// set it to plaint text on client side 
 					userInfo.Password = pass;
 					// Put user information to cache for 1 hour.
-					cache.Add(user+pass, userInfo, null, Cache.NoAbsoluteExpiration,
+					cache.Add(cacheKey, userInfo, null, Cache.NoAbsoluteExpiration,
 						new TimeSpan(1, 0, 0), CacheItemPriority.AboveNormal, null);
+					cache.Insert("userId$" + userInfo.ID, userInfo,
+						new CacheDependency(null, new string[]{cacheKey}));
+
 					SetUserInfo(userInfo);
     		}
     		else
@@ -379,6 +383,27 @@ namespace Rsdn.RsdnNntp
 				return false;
     	}
     }
+
+		protected UserInfo GetUserInfo(int id)
+		{
+			try
+			{
+				UserInfo userInfo = cache.Get("userId$" + id) as UserInfo;
+				if (userInfo == null)
+				{
+					userInfo = webService.GetUserInfoByID(username, password, id);
+					// Put user information to cache for 1 hour.
+					cache.Add("userId$" + userInfo.ID, userInfo, null, Cache.NoAbsoluteExpiration,
+						new TimeSpan(1, 0, 0), CacheItemPriority.Normal, null);
+				}
+				return userInfo;
+			}
+			catch (System.Exception exception)
+			{
+				ProcessException(exception);
+				return null;
+			}
+		}
 
 		/// <summary>
 		/// Set data provider's parameters from UserInfo object.
@@ -493,12 +518,16 @@ namespace Rsdn.RsdnNntp
 							userType = string.Format("<span style=\"color: #{0:x6}; font-size: smaller;\">{1}</span>",
 								message.userColor, message.userType);
 						}
+
+						UserInfo userInfo = GetUserInfo(Format.ToInt(message.authorid));
+
     				string htmlText = string.Format(htmlMessageTemplate, message.authorid, message.author,
     					message.gid, message.id, formatMessage.Format(message.message, true), userType,
 							formatMessage.Format(message.homePage, true), encoding.WebName,
 							Format.ReplaceTags(message.subject), serverName,
 							Format.ToInt(message.authorid) != 0 ?
-								string.Format("href='/Users/Profile.aspx?uid={0}'", message.authorid) : null);
+								string.Format("href='/Users/Profile.aspx?uid={0}'", message.authorid) : null,
+							formatMessage.Format(userInfo == null ? null : userInfo.Origin , true));
     				htmlTextBody.Entities.Add(htmlText);
     				htmlTextBody.TransferEncoding = ContentTransferEncoding.Base64;
     				htmlTextBody.ContentType = string.Format("text/html; charset=\"{0}\"", encoding.WebName);

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s0="http://rsdn.ru/ws/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://rsdn.ru/ws/" xmlns="http://schemas.xmlsoap.org/wsdl/">
-  <types>
+<wsdl:definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://rsdn.ru/ws/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://rsdn.ru/ws/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
     <s:schema elementFormDefault="qualified" targetNamespace="http://rsdn.ru/ws/">
       <s:element name="PostMessage">
         <s:complexType>
@@ -17,7 +17,7 @@
       <s:element name="PostMessageResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="PostMessageResult" type="s0:post_result" />
+            <s:element minOccurs="0" maxOccurs="1" name="PostMessageResult" type="tns:post_result" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -38,13 +38,13 @@
       <s:element name="GetUserInfoResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="GetUserInfoResult" type="s0:UserInfo" />
+            <s:element minOccurs="0" maxOccurs="1" name="GetUserInfoResult" type="tns:UserInfo" />
           </s:sequence>
         </s:complexType>
       </s:element>
       <s:complexType name="UserInfo">
         <s:sequence>
-          <s:element minOccurs="1" maxOccurs="1" name="UserRole" type="s0:UserRole" />
+          <s:element minOccurs="1" maxOccurs="1" name="UserRole" type="tns:UserRole" />
           <s:element minOccurs="1" maxOccurs="1" name="ID" type="s:int" />
           <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="Password" type="s:string" />
@@ -56,8 +56,8 @@
           <s:element minOccurs="0" maxOccurs="1" name="HomePage" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="Specialization" type="s:string" />
           <s:element minOccurs="1" maxOccurs="1" name="SendMail" type="s:boolean" />
-          <s:element minOccurs="1" maxOccurs="1" name="MessageFormat" type="s0:MessageFormat" />
-          <s:element minOccurs="1" maxOccurs="1" name="ForwardType" type="s0:ForwardType" />
+          <s:element minOccurs="1" maxOccurs="1" name="MessageFormat" type="tns:MessageFormat" />
+          <s:element minOccurs="1" maxOccurs="1" name="ForwardType" type="tns:ForwardType" />
           <s:element minOccurs="1" maxOccurs="1" name="StopMail" type="s:boolean" />
           <s:element minOccurs="0" maxOccurs="1" name="AdminMessage" type="s:string" />
           <s:element minOccurs="1" maxOccurs="1" name="Flat" type="s:boolean" />
@@ -104,6 +104,22 @@
           <s:enumeration value="Public" />
         </s:restriction>
       </s:simpleType>
+      <s:element name="GetUserInfoByID">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="login" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="psw" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="id" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetUserInfoByIDResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetUserInfoByIDResult" type="tns:UserInfo" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
       <s:element name="GetGroupList">
         <s:complexType>
           <s:sequence>
@@ -116,7 +132,7 @@
       <s:element name="GetGroupListResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="GetGroupListResult" type="s0:group_list" />
+            <s:element minOccurs="0" maxOccurs="1" name="GetGroupListResult" type="tns:group_list" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -124,12 +140,12 @@
         <s:sequence>
           <s:element minOccurs="1" maxOccurs="1" name="date" type="s:dateTime" />
           <s:element minOccurs="0" maxOccurs="1" name="error" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="groups" type="s0:ArrayOfGroup" />
+          <s:element minOccurs="0" maxOccurs="1" name="groups" type="tns:ArrayOfGroup" />
         </s:sequence>
       </s:complexType>
       <s:complexType name="ArrayOfGroup">
         <s:sequence>
-          <s:element minOccurs="0" maxOccurs="unbounded" name="group" type="s0:group" />
+          <s:element minOccurs="0" maxOccurs="unbounded" name="group" type="tns:group" />
         </s:sequence>
       </s:complexType>
       <s:complexType name="group">
@@ -154,7 +170,7 @@
       <s:element name="GroupInfoResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="1" maxOccurs="1" name="GroupInfoResult" type="s0:group" />
+            <s:element minOccurs="1" maxOccurs="1" name="GroupInfoResult" type="tns:group" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -171,7 +187,7 @@
       <s:element name="GetArticleResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="GetArticleResult" type="s0:article" />
+            <s:element minOccurs="0" maxOccurs="1" name="GetArticleResult" type="tns:article" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -208,7 +224,7 @@
       <s:element name="GetFormattedArticleResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="GetFormattedArticleResult" type="s0:article" />
+            <s:element minOccurs="0" maxOccurs="1" name="GetFormattedArticleResult" type="tns:article" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -224,7 +240,7 @@
       <s:element name="GetArticleByIDResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="GetArticleByIDResult" type="s0:article" />
+            <s:element minOccurs="0" maxOccurs="1" name="GetArticleByIDResult" type="tns:article" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -240,7 +256,7 @@
       <s:element name="GetFormattedArticleByIDResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="GetFormattedArticleByIDResult" type="s0:article" />
+            <s:element minOccurs="0" maxOccurs="1" name="GetFormattedArticleByIDResult" type="tns:article" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -258,7 +274,7 @@
       <s:element name="ArticleListResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="ArticleListResult" type="s0:article_list" />
+            <s:element minOccurs="0" maxOccurs="1" name="ArticleListResult" type="tns:article_list" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -267,18 +283,18 @@
           <s:element minOccurs="0" maxOccurs="1" name="error" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="postfix" type="s:string" />
           <s:element minOccurs="1" maxOccurs="1" name="date" type="s:dateTime" />
-          <s:element minOccurs="0" maxOccurs="1" name="articles" type="s0:ArrayOfArticle" />
+          <s:element minOccurs="0" maxOccurs="1" name="articles" type="tns:ArrayOfArticle" />
         </s:sequence>
       </s:complexType>
       <s:complexType name="ArrayOfArticle">
         <s:sequence>
-          <s:element minOccurs="0" maxOccurs="unbounded" name="article" nillable="true" type="s0:article" />
+          <s:element minOccurs="0" maxOccurs="unbounded" name="article" nillable="true" type="tns:article" />
         </s:sequence>
       </s:complexType>
       <s:element name="ArticleListFromDate">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="groups" type="s0:ArrayOfString" />
+            <s:element minOccurs="0" maxOccurs="1" name="groups" type="tns:ArrayOfString" />
             <s:element minOccurs="1" maxOccurs="1" name="startDate" type="s:dateTime" />
             <s:element minOccurs="0" maxOccurs="1" name="login" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="psw" type="s:string" />
@@ -293,7 +309,7 @@
       <s:element name="ArticleListFromDateResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="ArticleListFromDateResult" type="s0:article_list" />
+            <s:element minOccurs="0" maxOccurs="1" name="ArticleListFromDateResult" type="tns:article_list" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -308,7 +324,7 @@
       <s:element name="AuthenticationResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="1" maxOccurs="1" name="AuthenticationResult" type="s0:auth_info" />
+            <s:element minOccurs="1" maxOccurs="1" name="AuthenticationResult" type="tns:auth_info" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -322,7 +338,7 @@
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="0" maxOccurs="1" name="link" type="s:string" />
-            <s:element minOccurs="1" maxOccurs="1" name="type" type="s0:LinkType" />
+            <s:element minOccurs="1" maxOccurs="1" name="type" type="tns:LinkType" />
             <s:element minOccurs="0" maxOccurs="1" name="login" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="psw" type="s:string" />
           </s:sequence>
@@ -336,7 +352,7 @@
       <s:element name="GetLinkResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="1" maxOccurs="1" name="GetLinkResult" type="s0:link" />
+            <s:element minOccurs="1" maxOccurs="1" name="GetLinkResult" type="tns:link" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -348,256 +364,276 @@
         </s:sequence>
       </s:complexType>
     </s:schema>
-  </types>
-  <message name="PostMessageSoapIn">
-    <part name="parameters" element="s0:PostMessage" />
-  </message>
-  <message name="PostMessageSoapOut">
-    <part name="parameters" element="s0:PostMessageResponse" />
-  </message>
-  <message name="GetUserInfoSoapIn">
-    <part name="parameters" element="s0:GetUserInfo" />
-  </message>
-  <message name="GetUserInfoSoapOut">
-    <part name="parameters" element="s0:GetUserInfoResponse" />
-  </message>
-  <message name="GetGroupListSoapIn">
-    <part name="parameters" element="s0:GetGroupList" />
-  </message>
-  <message name="GetGroupListSoapOut">
-    <part name="parameters" element="s0:GetGroupListResponse" />
-  </message>
-  <message name="GroupInfoSoapIn">
-    <part name="parameters" element="s0:GroupInfo" />
-  </message>
-  <message name="GroupInfoSoapOut">
-    <part name="parameters" element="s0:GroupInfoResponse" />
-  </message>
-  <message name="GetArticleSoapIn">
-    <part name="parameters" element="s0:GetArticle" />
-  </message>
-  <message name="GetArticleSoapOut">
-    <part name="parameters" element="s0:GetArticleResponse" />
-  </message>
-  <message name="GetFormattedArticleSoapIn">
-    <part name="parameters" element="s0:GetFormattedArticle" />
-  </message>
-  <message name="GetFormattedArticleSoapOut">
-    <part name="parameters" element="s0:GetFormattedArticleResponse" />
-  </message>
-  <message name="GetArticleByIDSoapIn">
-    <part name="parameters" element="s0:GetArticleByID" />
-  </message>
-  <message name="GetArticleByIDSoapOut">
-    <part name="parameters" element="s0:GetArticleByIDResponse" />
-  </message>
-  <message name="GetFormattedArticleByIDSoapIn">
-    <part name="parameters" element="s0:GetFormattedArticleByID" />
-  </message>
-  <message name="GetFormattedArticleByIDSoapOut">
-    <part name="parameters" element="s0:GetFormattedArticleByIDResponse" />
-  </message>
-  <message name="ArticleListSoapIn">
-    <part name="parameters" element="s0:ArticleList" />
-  </message>
-  <message name="ArticleListSoapOut">
-    <part name="parameters" element="s0:ArticleListResponse" />
-  </message>
-  <message name="ArticleListFromDateSoapIn">
-    <part name="parameters" element="s0:ArticleListFromDate" />
-  </message>
-  <message name="ArticleListFromDateSoapOut">
-    <part name="parameters" element="s0:ArticleListFromDateResponse" />
-  </message>
-  <message name="AuthenticationSoapIn">
-    <part name="parameters" element="s0:Authentication" />
-  </message>
-  <message name="AuthenticationSoapOut">
-    <part name="parameters" element="s0:AuthenticationResponse" />
-  </message>
-  <message name="GetLinkSoapIn">
-    <part name="parameters" element="s0:GetLink" />
-  </message>
-  <message name="GetLinkSoapOut">
-    <part name="parameters" element="s0:GetLinkResponse" />
-  </message>
-  <portType name="ServiceSoap">
-    <operation name="PostMessage">
-      <documentation>Accepts Unicode formatted message postings.</documentation>
-      <input message="s0:PostMessageSoapIn" />
-      <output message="s0:PostMessageSoapOut" />
-    </operation>
-    <operation name="GetUserInfo">
-      <documentation>Get inforamtion about user.</documentation>
-      <input message="s0:GetUserInfoSoapIn" />
-      <output message="s0:GetUserInfoSoapOut" />
-    </operation>
-    <operation name="GetGroupList">
-      <documentation>Returns a list of groups.</documentation>
-      <input message="s0:GetGroupListSoapIn" />
-      <output message="s0:GetGroupListSoapOut" />
-    </operation>
-    <operation name="GroupInfo">
-      <documentation>Returns information about the group.</documentation>
-      <input message="s0:GroupInfoSoapIn" />
-      <output message="s0:GroupInfoSoapOut" />
-    </operation>
-    <operation name="GetArticle">
-      <documentation>Returns information about the article.</documentation>
-      <input message="s0:GetArticleSoapIn" />
-      <output message="s0:GetArticleSoapOut" />
-    </operation>
-    <operation name="GetFormattedArticle">
-      <documentation>Returns formated article.</documentation>
-      <input message="s0:GetFormattedArticleSoapIn" />
-      <output message="s0:GetFormattedArticleSoapOut" />
-    </operation>
-    <operation name="GetArticleByID">
-      <documentation>Returns information about the article by message ID.</documentation>
-      <input message="s0:GetArticleByIDSoapIn" />
-      <output message="s0:GetArticleByIDSoapOut" />
-    </operation>
-    <operation name="GetFormattedArticleByID">
-      <documentation>Returns formated article by message ID.</documentation>
-      <input message="s0:GetFormattedArticleByIDSoapIn" />
-      <output message="s0:GetFormattedArticleByIDSoapOut" />
-    </operation>
-    <operation name="ArticleList">
-      <documentation>Returns a list of articles.</documentation>
-      <input message="s0:ArticleListSoapIn" />
-      <output message="s0:ArticleListSoapOut" />
-    </operation>
-    <operation name="ArticleListFromDate">
-      <documentation>Returns a list of articles from specified date.</documentation>
-      <input message="s0:ArticleListFromDateSoapIn" />
-      <output message="s0:ArticleListFromDateSoapOut" />
-    </operation>
-    <operation name="Authentication">
-      <documentation>Performs user authentication.</documentation>
-      <input message="s0:AuthenticationSoapIn" />
-      <output message="s0:AuthenticationSoapOut" />
-    </operation>
-    <operation name="GetLink">
-      <documentation>Returns link information.</documentation>
-      <input message="s0:GetLinkSoapIn" />
-      <output message="s0:GetLinkSoapOut" />
-    </operation>
-  </portType>
-  <binding name="ServiceSoap" type="s0:ServiceSoap">
+  </wsdl:types>
+  <wsdl:message name="PostMessageSoapIn">
+    <wsdl:part name="parameters" element="tns:PostMessage" />
+  </wsdl:message>
+  <wsdl:message name="PostMessageSoapOut">
+    <wsdl:part name="parameters" element="tns:PostMessageResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetUserInfoSoapIn">
+    <wsdl:part name="parameters" element="tns:GetUserInfo" />
+  </wsdl:message>
+  <wsdl:message name="GetUserInfoSoapOut">
+    <wsdl:part name="parameters" element="tns:GetUserInfoResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetUserInfoByIDSoapIn">
+    <wsdl:part name="parameters" element="tns:GetUserInfoByID" />
+  </wsdl:message>
+  <wsdl:message name="GetUserInfoByIDSoapOut">
+    <wsdl:part name="parameters" element="tns:GetUserInfoByIDResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetGroupListSoapIn">
+    <wsdl:part name="parameters" element="tns:GetGroupList" />
+  </wsdl:message>
+  <wsdl:message name="GetGroupListSoapOut">
+    <wsdl:part name="parameters" element="tns:GetGroupListResponse" />
+  </wsdl:message>
+  <wsdl:message name="GroupInfoSoapIn">
+    <wsdl:part name="parameters" element="tns:GroupInfo" />
+  </wsdl:message>
+  <wsdl:message name="GroupInfoSoapOut">
+    <wsdl:part name="parameters" element="tns:GroupInfoResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetArticleSoapIn">
+    <wsdl:part name="parameters" element="tns:GetArticle" />
+  </wsdl:message>
+  <wsdl:message name="GetArticleSoapOut">
+    <wsdl:part name="parameters" element="tns:GetArticleResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetFormattedArticleSoapIn">
+    <wsdl:part name="parameters" element="tns:GetFormattedArticle" />
+  </wsdl:message>
+  <wsdl:message name="GetFormattedArticleSoapOut">
+    <wsdl:part name="parameters" element="tns:GetFormattedArticleResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetArticleByIDSoapIn">
+    <wsdl:part name="parameters" element="tns:GetArticleByID" />
+  </wsdl:message>
+  <wsdl:message name="GetArticleByIDSoapOut">
+    <wsdl:part name="parameters" element="tns:GetArticleByIDResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetFormattedArticleByIDSoapIn">
+    <wsdl:part name="parameters" element="tns:GetFormattedArticleByID" />
+  </wsdl:message>
+  <wsdl:message name="GetFormattedArticleByIDSoapOut">
+    <wsdl:part name="parameters" element="tns:GetFormattedArticleByIDResponse" />
+  </wsdl:message>
+  <wsdl:message name="ArticleListSoapIn">
+    <wsdl:part name="parameters" element="tns:ArticleList" />
+  </wsdl:message>
+  <wsdl:message name="ArticleListSoapOut">
+    <wsdl:part name="parameters" element="tns:ArticleListResponse" />
+  </wsdl:message>
+  <wsdl:message name="ArticleListFromDateSoapIn">
+    <wsdl:part name="parameters" element="tns:ArticleListFromDate" />
+  </wsdl:message>
+  <wsdl:message name="ArticleListFromDateSoapOut">
+    <wsdl:part name="parameters" element="tns:ArticleListFromDateResponse" />
+  </wsdl:message>
+  <wsdl:message name="AuthenticationSoapIn">
+    <wsdl:part name="parameters" element="tns:Authentication" />
+  </wsdl:message>
+  <wsdl:message name="AuthenticationSoapOut">
+    <wsdl:part name="parameters" element="tns:AuthenticationResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetLinkSoapIn">
+    <wsdl:part name="parameters" element="tns:GetLink" />
+  </wsdl:message>
+  <wsdl:message name="GetLinkSoapOut">
+    <wsdl:part name="parameters" element="tns:GetLinkResponse" />
+  </wsdl:message>
+  <wsdl:portType name="ServiceSoap">
+    <wsdl:operation name="PostMessage">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Accepts Unicode formatted message postings.</documentation>
+      <wsdl:input message="tns:PostMessageSoapIn" />
+      <wsdl:output message="tns:PostMessageSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetUserInfo">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Get inforamtion about user.</documentation>
+      <wsdl:input message="tns:GetUserInfoSoapIn" />
+      <wsdl:output message="tns:GetUserInfoSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetUserInfoByID">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Get inforamtion about user by id.</documentation>
+      <wsdl:input message="tns:GetUserInfoByIDSoapIn" />
+      <wsdl:output message="tns:GetUserInfoByIDSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetGroupList">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns a list of groups.</documentation>
+      <wsdl:input message="tns:GetGroupListSoapIn" />
+      <wsdl:output message="tns:GetGroupListSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GroupInfo">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns information about the group.</documentation>
+      <wsdl:input message="tns:GroupInfoSoapIn" />
+      <wsdl:output message="tns:GroupInfoSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetArticle">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns information about the article.</documentation>
+      <wsdl:input message="tns:GetArticleSoapIn" />
+      <wsdl:output message="tns:GetArticleSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetFormattedArticle">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns formated article.</documentation>
+      <wsdl:input message="tns:GetFormattedArticleSoapIn" />
+      <wsdl:output message="tns:GetFormattedArticleSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetArticleByID">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns information about the article by message ID.</documentation>
+      <wsdl:input message="tns:GetArticleByIDSoapIn" />
+      <wsdl:output message="tns:GetArticleByIDSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetFormattedArticleByID">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns formated article by message ID.</documentation>
+      <wsdl:input message="tns:GetFormattedArticleByIDSoapIn" />
+      <wsdl:output message="tns:GetFormattedArticleByIDSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ArticleList">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns a list of articles.</documentation>
+      <wsdl:input message="tns:ArticleListSoapIn" />
+      <wsdl:output message="tns:ArticleListSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ArticleListFromDate">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns a list of articles from specified date.</documentation>
+      <wsdl:input message="tns:ArticleListFromDateSoapIn" />
+      <wsdl:output message="tns:ArticleListFromDateSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Authentication">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Performs user authentication.</documentation>
+      <wsdl:input message="tns:AuthenticationSoapIn" />
+      <wsdl:output message="tns:AuthenticationSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetLink">
+      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns link information.</documentation>
+      <wsdl:input message="tns:GetLinkSoapIn" />
+      <wsdl:output message="tns:GetLinkSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="ServiceSoap" type="tns:ServiceSoap">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
-    <operation name="PostMessage">
+    <wsdl:operation name="PostMessage">
       <soap:operation soapAction="http://rsdn.ru/ws/PostMessage" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="GetUserInfo">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetUserInfo">
       <soap:operation soapAction="http://rsdn.ru/ws/GetUserInfo" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="GetGroupList">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetUserInfoByID">
+      <soap:operation soapAction="http://rsdn.ru/ws/GetUserInfoByID" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetGroupList">
       <soap:operation soapAction="http://rsdn.ru/ws/GetGroupList" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="GroupInfo">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GroupInfo">
       <soap:operation soapAction="http://rsdn.ru/ws/GroupInfo" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="GetArticle">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetArticle">
       <soap:operation soapAction="http://rsdn.ru/ws/GetArticle" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="GetFormattedArticle">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetFormattedArticle">
       <soap:operation soapAction="http://rsdn.ru/ws/GetFormattedArticle" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="GetArticleByID">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetArticleByID">
       <soap:operation soapAction="http://rsdn.ru/ws/GetArticleByID" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="GetFormattedArticleByID">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetFormattedArticleByID">
       <soap:operation soapAction="http://rsdn.ru/ws/GetFormattedArticleByID" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="ArticleList">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ArticleList">
       <soap:operation soapAction="http://rsdn.ru/ws/ArticleList" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="ArticleListFromDate">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ArticleListFromDate">
       <soap:operation soapAction="http://rsdn.ru/ws/ArticleListFromDate" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="Authentication">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Authentication">
       <soap:operation soapAction="http://rsdn.ru/ws/Authentication" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="GetLink">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetLink">
       <soap:operation soapAction="http://rsdn.ru/ws/GetLink" style="document" />
-      <input>
+      <wsdl:input>
         <soap:body use="literal" />
-      </input>
-      <output>
+      </wsdl:input>
+      <wsdl:output>
         <soap:body use="literal" />
-      </output>
-    </operation>
-  </binding>
-  <service name="Service">
-    <documentation>The service provides access to the RSDN forums. </documentation>
-    <port name="ServiceSoap" binding="s0:ServiceSoap">
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="Service">
+    <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">The service provides access to the RSDN forums. </documentation>
+    <wsdl:port name="ServiceSoap" binding="tns:ServiceSoap">
       <soap:address location="http://rsdn.ru/ws/service.asmx" />
-    </port>
-  </service>
-</definitions>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

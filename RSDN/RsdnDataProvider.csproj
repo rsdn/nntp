@@ -17,7 +17,7 @@
                 DelaySign = "false"
                 OutputType = "Library"
                 PreBuildEvent = ""
-                PostBuildEvent = "xcopy $(TargetDir)*.dll $(SolutionDir)$(OutDir) /D /Y"
+                PostBuildEvent = 'xcopy /D /Y *.dll "$(SolutionDir)$(OutDir)"'
                 RootNamespace = "Rsdn.RsdnNntp"
                 RunPostBuildEvent = "OnBuildSuccess"
                 StartupObject = ""
