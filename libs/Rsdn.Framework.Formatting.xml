@@ -85,6 +85,22 @@
             <param name="str">Исходный текст.</param>
             <returns>Результат.</returns>
         </member>
+        <member name="M:Rsdn.Framework.Formatting.Format.EncodeJScriptText(System.String)">
+            <summary>
+            Подготавливает текст для JScript.
+            </summary>
+            <warning>Текст не должен содержать спецмаркеры :quotes:, :apostroph: !</warning>
+            <param name="str">Исходная строка.</param>
+            <returns>Преобразованная строка.</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Format.EncodeAgainstXSS(System.String)">
+            <summary>
+            Подготавливает текст для предотовращения XSS (Cross Site Scripting)
+            Используется, в основном для кодирования адресов (ссылок, картинок).
+            </summary>
+            <param name="value">Исходный текст.</param>
+            <returns>Преобразованный текст.</returns>
+        </member>
         <member name="M:Rsdn.Framework.Formatting.Format.ToInt(System.Object)">
             <summary>
             Преобразует object в int. 
