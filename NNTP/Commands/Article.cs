@@ -67,19 +67,29 @@ namespace Rsdn.Nntp.Commands
 				article = session.DataProvider.GetArticle(
 					lastMatch.Groups["messageID"].Value, content);
 			}
+			else if (lastMatch.Groups["messageNumber"].Success)
+			{
+				if (session.currentGroup == null)
+					throw new DataProviderException(DataProviderErrors.NoSelectedGroup);
+
+				article = session.DataProvider.GetArticle(
+					Convert.ToInt32(lastMatch.Groups["messageNumber"].Value), session.currentGroup, content);
+
+				session.currentArticle = Convert.ToInt32(lastMatch.Groups["messageNumber"].Value);
+			}
 			else
-				if (lastMatch.Groups["messageNumber"].Success)
-				{
-					article = session.DataProvider.GetArticle(
-						Convert.ToInt32(lastMatch.Groups["messageNumber"].Value), content);
-				}
-				else
-					article = session.DataProvider.GetArticle(content);
-			
+			{
+				if (session.currentArticle == -1)
+					throw new DataProviderException((session.currentGroup == null) ?
+						DataProviderErrors.NoSelectedGroup : DataProviderErrors.NoSelectedArticle);
+
+				article = session.DataProvider.GetArticle(session.currentArticle, session.currentGroup, content);
+			}
+
 			ModifyArticle(article);
 			return new Response(responseCode, article.GetBody(),
 				// article retirived by messageID don't change "internal current pointer", so we may not have current group
-				lastMatch.Groups["messageID"].Success ? null : article.MessageNumbers[session.DataProvider.CurrentGroup],
+				lastMatch.Groups["messageID"].Success ? null : lastMatch.Groups["messageNumber"].Value,
 				article["Message-ID"] != null ? article["Message-ID"] : "<0>");
 		}
 	}

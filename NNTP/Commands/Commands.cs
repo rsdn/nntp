@@ -41,6 +41,9 @@ namespace Rsdn.Nntp.Commands
 		/// <returns>Server's NNTP response</returns>
 		protected override Response ProcessCommand()
 		{
+			if (session.currentGroup == null)
+				throw new DataProviderException(DataProviderErrors.NoSelectedGroup);
+
 			NewsArticle[] articleList;
 			if (lastMatch.Groups["startNumber"].Success)
 			{
@@ -52,17 +55,21 @@ namespace Rsdn.Nntp.Commands
 					else
 						endNumber = -1;
 				articleList = session.DataProvider.
-					GetArticleList(startNumber, endNumber, NewsArticle.Content.HeaderAndBody);
+					GetArticleList(startNumber, endNumber, session.currentGroup, NewsArticle.Content.Header);
 			}
 			else
 			{
+				if (session.currentArticle == -1)
+					throw new DataProviderException((session.currentGroup == null) ?
+						DataProviderErrors.NoSelectedGroup : DataProviderErrors.NoSelectedArticle);
+
 				articleList = new NewsArticle[1];
-				articleList[0] = session.DataProvider.GetArticle(NewsArticle.Content.HeaderAndBody);
+				articleList[0] = session.DataProvider.GetArticle(session.currentArticle, session.currentGroup, NewsArticle.Content.Header);
 			}
 			StringBuilder output = new StringBuilder();
 			foreach (NewsArticle article in articleList)
 			{
-				output.Append(ModifyArticle(article).MessageNumbers[session.DataProvider.CurrentGroup]);
+				output.Append(ModifyArticle(article).MessageNumbers[session.currentGroup]);
 				foreach (string headerItem in List.headerItems)
 					// replace in *unfolded* header all non-good symbols to space
 					output.Append('\t').Append(article[headerItem] == null ? null :
@@ -101,9 +108,18 @@ namespace Rsdn.Nntp.Commands
 		/// <returns>Server's NNTP response</returns>
 		protected override Response ProcessCommand()
 		{
-			NewsArticle article = session.DataProvider.GetNextArticle();
+			if (session.currentGroup == null)
+				throw new DataProviderException(DataProviderErrors.NoSelectedGroup);
+
+			if (session.currentArticle == -1)
+				throw new DataProviderException(DataProviderErrors.NoSelectedArticle);
+
+			NewsArticle article = session.DataProvider.GetNextArticle(session.currentArticle, session.currentGroup);
+
+			session.currentArticle = (int)article.MessageNumbers[session.currentGroup];
+
 			return new Response(NntpResponse.ArticleNothingRetrivied, null,
-				article.MessageNumbers[session.DataProvider.CurrentGroup], article["Message-ID"]);
+				article.MessageNumbers[session.currentGroup], article["Message-ID"]);
 		}
 	}
 
@@ -135,9 +151,18 @@ namespace Rsdn.Nntp.Commands
 		/// <returns>Server's NNTP response</returns>
 		protected override Response ProcessCommand()
 		{
-			NewsArticle article = session.DataProvider.GetPrevArticle();
+			if (session.currentGroup == null)
+				throw new DataProviderException(DataProviderErrors.NoSelectedGroup);
+
+			if (session.currentArticle == -1)
+				throw new DataProviderException(DataProviderErrors.NoSelectedArticle);
+
+			NewsArticle article = session.DataProvider.GetPrevArticle(session.currentArticle, session.currentGroup);
+
+			session.currentArticle = (int)article.MessageNumbers[session.currentGroup];
+
 			return new Response(NntpResponse.ArticleNothingRetrivied, null,
-				article.MessageNumbers[session.DataProvider.CurrentGroup], article["Message-ID"]);
+				article.MessageNumbers[session.currentGroup], article["Message-ID"]);
 		}
 	}
 
@@ -164,6 +189,7 @@ namespace Rsdn.Nntp.Commands
 		{
 			string groupName = lastMatch.Groups["groupName"].Value;
 			NewsGroup group = session.DataProvider.GetGroup(groupName);
+			session.currentGroup = groupName;
 			return new Response(NntpResponse.GroupSelected, null, group.EtimatedArticles, group.FirstArticleNumber,
 				group.LastArticleNumber, groupName);
 		}

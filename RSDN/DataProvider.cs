@@ -145,23 +145,6 @@ namespace Rsdn.RsdnNntp
     protected Forum webService;
     protected string username = "";
     protected string password = "";
-    /// <summary>
-    /// Currently selected group
-    /// </summary>
-    protected string currentGroup = null;
-    /// <summary>
-    /// Currently selected article
-    /// </summary>
-    protected int currentArticle = -1;
-
-    public NewsArticle GetArticle(NewsArticle.Content content)
-    {
-    	if (currentArticle == -1)
-    		throw new DataProviderException((currentGroup == null) ?
-    			DataProviderErrors.NoSelectedGroup : DataProviderErrors.NoSelectedArticle);
-
-    	return GetArticle(currentArticle, content);
-    }
 
     public NewsGroup GetGroup(string groupName)
     {
@@ -176,7 +159,6 @@ namespace Rsdn.RsdnNntp
     	{
     		ProcessException(exception);
     	}
-    	currentGroup = groupName;
     	currentGroupArticleStartNumber = requestedGroup.first;
     	currentGroupArticleEndNumber = requestedGroup.last;
     	return new NewsGroup(groupName,	requestedGroup.first, requestedGroup.last,
@@ -196,29 +178,27 @@ namespace Rsdn.RsdnNntp
     	}
     }
 
-    /// <summary>
-    /// Get article by article number
-    /// </summary>
-    /// <param name="articleNumber"></param>
-    /// <param name="content"></param>
-    /// <returns></returns>
-    public NewsArticle GetArticle(int articleNumber, NewsArticle.Content content)
+		/// <summary>
+		/// Get article by article number in specified group
+		/// </summary>
+		/// <param name="articleNumber"></param>
+		/// <param name="groupName"></param>
+		/// <param name="content"></param>
+		/// <returns></returns>
+    public NewsArticle GetArticle(int articleNumber, string groupName, NewsArticle.Content content)
     {
-    	if (currentGroup == null)
-    		throw new DataProviderException(DataProviderErrors.NoSelectedGroup);
-
     	NewsArticle newsMessage = null;
     	// access to cache
     	lock(cache)
     		if (cache.Capacity > 0)
-    			newsMessage = cache[currentGroup, articleNumber];
+    			newsMessage = cache[groupName, articleNumber];
 
     	if (newsMessage == null)
     	{
     		article message = null;
     		try
     		{
-    			message = webService.GetArticle(currentGroup, articleNumber, username,	password);
+    			message = webService.GetArticle(groupName, articleNumber, username,	password);
     			if (message.error != null)
     				ProcessErrorMessage(message.error);
     		}
@@ -230,12 +210,11 @@ namespace Rsdn.RsdnNntp
     		// update refenece cache
     		UpdateReferences(message);
 
-    		currentArticle = articleNumber;
-    		newsMessage = ToNNTPArticle(message, currentGroup, content);
+    		newsMessage = ToNNTPArticle(message, groupName, content);
     		// access to cache
     		lock(cache)
     			if (cache.Capacity > 0)
-    				cache[newsMessage.MessageID, currentGroup, articleNumber] =	newsMessage;
+    				cache[newsMessage.MessageID, groupName, articleNumber] =	newsMessage;
     	}
 
     	return newsMessage;
@@ -270,46 +249,32 @@ namespace Rsdn.RsdnNntp
     		// access to cache
     		lock(cache)
     			if (cache.Capacity > 0)
-    				cache[newsMessage.MessageID, currentGroup, (int)newsMessage.MessageNumbers[currentGroup]] =	newsMessage;
+						// since article may belong to several groups, put it to cache without connection to specific group
+    				cache[newsMessage.MessageID, "", 0] =	newsMessage;
     	}
 
     	return newsMessage;
     }
 
-    public NewsArticle GetNextArticle()
+    public NewsArticle GetNextArticle(int messageNumber, string groupName)
     {
-    	if (currentGroup == null)
-    		throw new DataProviderException(DataProviderErrors.NoSelectedGroup);
-
-    	if (currentArticle == -1)
-    		throw new DataProviderException(DataProviderErrors.NoSelectedArticle);
-
-    	NewsArticle[] articleList = GetArticleList(currentArticle + 1, currentGroupArticleEndNumber,
-    		NewsArticle.Content.Header);
+    	NewsArticle[] articleList = GetArticleList(messageNumber + 1, currentGroupArticleEndNumber,
+    		groupName, NewsArticle.Content.Header);
   
     	if (articleList.Length == 0)
     		throw new DataProviderException(DataProviderErrors.NoNextArticle);
 
-    	currentArticle = (int)articleList[0].MessageNumbers[currentGroup];
-
     	return articleList[0];
     }
 
-    public NewsArticle GetPrevArticle()
+    public NewsArticle GetPrevArticle(int messageNumber, string groupName)
     {
-    	if (currentGroup == null)
-    		throw new DataProviderException(DataProviderErrors.NoSelectedGroup);
-
-    	if (currentArticle == -1)
-    		throw new DataProviderException(DataProviderErrors.NoSelectedArticle);
-
     	NewsArticle[] articleList = GetArticleList(currentGroupArticleStartNumber,
-    		currentArticle - 1,	NewsArticle.Content.Header);
+    		messageNumber - 1,	groupName, NewsArticle.Content.Header);
   
     	if (articleList.Length == 0)
     		throw new DataProviderException(DataProviderErrors.NoPrevArticle);
 
-    	currentArticle = (int)articleList[articleList.Length - 1].MessageNumbers[currentGroup];
     	return articleList[articleList.Length - 1];
     }
 
@@ -512,15 +477,12 @@ namespace Rsdn.RsdnNntp
     	return newsMessage;
     }
 
-    public NewsArticle[] GetArticleList(int startNumber, int endNumber, NewsArticle.Content content)
+    public NewsArticle[] GetArticleList(int startNumber, int endNumber, string groupName, NewsArticle.Content content)
     {
-    	if (this.currentGroup == null)
-    		throw new DataProviderException(DataProviderErrors.NoSelectedGroup);
-
     	article_list articleList = null;
     	try
     	{
-    		articleList = webService.ArticleList(currentGroup,
+    		articleList = webService.ArticleList(groupName,
     			(startNumber == -1) ? currentGroupArticleStartNumber : startNumber,
     			(endNumber == -1) ? currentGroupArticleEndNumber : endNumber, username, password);
     	}
@@ -539,7 +501,7 @@ namespace Rsdn.RsdnNntp
     		{
     			UpdateReferences(articleList.articles[i]);
     			articleArray[i] =
-    				ToNNTPArticle(articleList.articles[i], currentGroup, content);
+    				ToNNTPArticle(articleList.articles[i], groupName, content);
     		}
     	}
     	else
@@ -703,17 +665,6 @@ namespace Rsdn.RsdnNntp
     		return null;
     	else
   		return platformDependedBreak.Replace(moderatorTagline.Replace(removeTagline.Replace(text, ""), ""), Util.CRLF);
-    }
-
-    /// <summary>
-    /// currently selected news group
-    /// </summary>
-    public string CurrentGroup
-    {
-    	get
-    	{
-    		return currentGroup;
-    	}
     }
 
 		/// <summary>

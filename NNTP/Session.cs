@@ -151,6 +151,15 @@ namespace Rsdn.Nntp
 #endif
 		}
 
+		/// <summary>
+		/// Currently selected group
+		/// </summary>
+		protected internal string currentGroup = null;
+		/// <summary>
+		/// Currently selected article
+		/// </summary>
+		protected internal int currentArticle = -1;
+
 		protected static Hashtable commandsTypes;
 		public string Username;
 		public string Password;
@@ -363,7 +372,7 @@ namespace Rsdn.Nntp
 								logger.Error(
 									string.Format("Exception during processing command" +
 										" (selected group '{0}', last request '{1}').\n",
-										dataProvider.CurrentGroup, commandString), e);
+										currentGroup, commandString), e);
 							}
 							result = new Response(NntpResponse.ProgramFault);
 						}

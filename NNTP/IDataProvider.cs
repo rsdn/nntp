@@ -23,12 +23,13 @@ namespace Rsdn.Nntp
 			NewsArticle.Content content);
 
 		/// <summary>
-		/// Retrive article.
+		/// Retrive article by number.
 		/// </summary>
 		/// <param name="articleNumber">Article's number.</param>
+		/// <param name="groupName">Article's group name.</param>
 		/// <param name="content">Necessary content of article.</param>
 		/// <returns>News article.</returns>
-		NewsArticle GetArticle(int articleNumber,
+		NewsArticle GetArticle(int articleNumber, string groupName,
 			NewsArticle.Content content);
 
 		/// <summary>
@@ -36,29 +37,29 @@ namespace Rsdn.Nntp
 		/// </summary>
 		/// <param name="startNumber">Start article's number.</param>
 		/// <param name="endNumber">End article's number.</param>
+		/// <param name="groupName">News group.</param>
 		/// <param name="content">Necessary content of articles.</param>
 		/// <returns>List of news articles.</returns>
 		NewsArticle[] GetArticleList(int startNumber, int endNumber,
-			NewsArticle.Content content);
+			string groupName, NewsArticle.Content content);
 
 		/// <summary>
-		/// Get selected article.
+		/// Get next article IDs.
+		/// Only article number & MessageID required.
 		/// </summary>
-		/// <param name="content">Necessary content of article.</param>
-		/// <returns>News article.</returns>
-		NewsArticle GetArticle(NewsArticle.Content content);
+		/// <param name="messageNumber">Current message number.</param>
+		/// <param name="groupName">Current news group.</param>
+		/// <returns>Next article's IDs.</returns>
+		NewsArticle GetNextArticle(int messageNumber, string groupName);
 
 		/// <summary>
-		/// Get next article.
+		/// Get previous article IDs.
+		/// Only article number & MessageID required.
 		/// </summary>
-		/// <returns>News article.</returns>
-		NewsArticle GetNextArticle();
-
-		/// <summary>
-		/// Get previous article.
-		/// </summary>
-		/// <returns>News article.</returns>
-		NewsArticle GetPrevArticle();
+		/// <param name="messageNumber">Current message number.</param>
+		/// <param name="groupName">Current news group.</param>
+		/// <returns>Previous article's IDs.</returns>
+		NewsArticle GetPrevArticle(int messageNumber, string groupName);
 
 		/// <summary>
 		/// Get article list.
@@ -93,15 +94,6 @@ namespace Rsdn.Nntp
 		bool Authentificate(string user, string pass);
 
 		void PostMessage(Message article);
-
-		/// <summary>
-		/// Get current selected group.
-		/// 'null' if no group selected
-		/// </summary>
-		string CurrentGroup
-		{
-			get;
-		}
 
 		/// <summary>
 		/// True, if posting allowed for this provider
