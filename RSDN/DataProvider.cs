@@ -29,11 +29,6 @@ namespace Rsdn.RsdnNntp
   /// </summary>
   public class RsdnDataProvider : CacheDataProvider
   {
-		/// <summary>
-		/// Authentificate cache
-		/// </summary>
-		protected static Cache cache = HttpRuntime.Cache;
-
     /// <summary>
     /// Cache of refeneces of messages
     /// </summary>
