@@ -22,12 +22,6 @@ namespace derIgel.MIME
 		/// </summary>
 		protected Hashtable filters;
 
-		/// <summary>
-		/// MIME encoding for non-ascii headers
-		/// Only base64 & Quoted-Printable encodings have meaning
-		/// </summary>
-		protected ContentTransferEncoding mimeEncoding = ContentTransferEncoding.QoutedPrintable;
-
 		public Header() : base()
 		{
 			filters = CollectionsUtil.CreateCaseInsensitiveHashtable();
@@ -62,26 +56,61 @@ namespace derIgel.MIME
 				((ArrayList)filters[name]).Remove(handler);
 		}
 
+		// text & mime encoding to pass in non-ascii replacer
+		protected Encoding encoding;
+		protected ContentTransferEncoding mimeEncoding;
+
+		static protected readonly Regex nonAsciiReplace = new Regex(@"([^\x00-\xFF]+\s*)+(?<!\s)", RegexOptions.Compiled);
 		/// <summary>
-		/// get MIME encoded header item (if don't fit in ASCII symbols ) with specific encoding
+		/// Get MIME encoded header item (if don't fit in ASCII symbols) with specific text & MIME encodings
 		/// </summary>
-		public string this[string name, Encoding encoding]
+		public string this[string name, Encoding encoding, ContentTransferEncoding mimeEncoding]
 		{
+			// use MIME encoding only if non-ascii symbols & quoted-printable or base64 mime encoding
 			get
 			{
-				return (this[name] == null) ? null : 
-					Util.OnlyASCIISymbols(this[name]) ? this[name] : Util.Encode(this[name], encoding, mimeEncoding, true, false);
+				if (this[name] == null)
+					return null;
+				
+				this.encoding = encoding;
+				this.mimeEncoding = mimeEncoding;
+
+				return nonAsciiReplace.Replace(this[name], new MatchEvaluator(NonAsciiReplacer));
 			}
 		}
 
-		public string Encoded(Encoding encoding)
+		protected string NonAsciiReplacer(Match match)
+		{
+			return Util.Encode(match.Value, encoding, mimeEncoding, true, false);
+		}
+
+		/// <summary>
+		/// Get Quoted-Printable MIME encoded header item
+		/// </summary>
+		public string this[string name, Encoding encoding]
+		{
+			get	{ return this[name, encoding, ContentTransferEncoding.QoutedPrintable]; }
+		}
+
+		/// <summary>
+		/// Get whole encoded header 
+		/// </summary>
+		public string Encode(Encoding encoding, ContentTransferEncoding mimeEncoding)
 		{
 			StringBuilder builder = new StringBuilder();
 			foreach (string key in AllKeys)
-				builder.AppendFormat("{0}: {1}{2}", key, this[key, encoding], Util.CRLF);
+				builder.AppendFormat("{0}: {1}{2}", key, this[key, encoding, mimeEncoding], Util.CRLF);
 			return builder.ToString();
 		}
 
+		/// <summary>
+		/// Get encoded header with Quoted-Printable mime encoding
+		/// </summary>
+		public string Encode(Encoding encoding)
+		{
+			return Encode(encoding, ContentTransferEncoding.QoutedPrintable);
+		}
+			
 		static readonly protected Regex extractEncodedParts =
 			new Regex(@"=\?(?<charset>\S+?)\?(?<encoding>[qQbB])\?(?<value>[^\?\s]+?)\?=");
 
@@ -106,6 +135,12 @@ namespace derIgel.MIME
 						Convert.FromBase64String(result));
 			}
 			return result;
+		}
+
+		public override string ToString()
+		{
+			// encode header without MIME encoding
+			return Encode(Encoding.Unicode, ContentTransferEncoding.Unknown);
 		}
 	}
 }

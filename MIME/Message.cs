@@ -329,7 +329,7 @@ namespace derIgel.MIME
 			StringBuilder builder = new StringBuilder();
 
 			// headers
-			builder.Append(header.Encoded(headerEncoding));
+			builder.Append(header.Encode(headerEncoding));
 
 			// delimeter
 			builder.Append(Util.CRLF);
@@ -369,6 +369,5 @@ namespace derIgel.MIME
 		{
 			return header[name, headerEncoding];
 		}
-
 	}
 }
