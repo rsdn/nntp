@@ -85,6 +85,11 @@ namespace Rsdn.RsdnNntp
 		/// </summary>
 		protected override void OnStart(string[] args)
 		{
+			ThreadPool.QueueUserWorkItem(new WaitCallback(StartServer));
+		}
+ 
+		protected void StartServer(object obj)
+		{
 			try
 			{
 				Directory.SetCurrentDirectory(
@@ -102,7 +107,7 @@ namespace Rsdn.RsdnNntp
 				Timer timer = new Timer(new TimerCallback(Stop), null, 1000, Timeout.Infinite);
 			}
 		}
- 
+
 		/// <summary>
 		/// Stop this service.
 		/// </summary>
