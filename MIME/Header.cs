@@ -81,7 +81,8 @@ namespace derIgel.MIME
 
 		public static string DecodeHeaderFieldValue(string encodedValue)
 		{
-			return extractEncodedParts.Replace(encodedValue, new MatchEvaluator(DecodeEncodedMatch));
+			return (encodedValue == null) ? null :
+				extractEncodedParts.Replace(encodedValue, new MatchEvaluator(DecodeEncodedMatch));
 		}
 
 		protected static string DecodeEncodedMatch(Match encodedMatch)

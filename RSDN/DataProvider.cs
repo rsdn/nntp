@@ -212,8 +212,8 @@ namespace derIgel.RsdnNntp
 			{
 				ProcessException(exception);
 			}	
-			NewsGroup[] listOfGroups = new NewsGroup[groupList.groups.GetLength(0)];
-			for (int i = 0; i < groupList.groups.GetLength(0); i++)
+			NewsGroup[] listOfGroups = new NewsGroup[groupList.groups.Length];
+			for (int i = 0; i < groupList.groups.Length; i++)
 				listOfGroups[i] = new NewsGroup(groupList.groups[i].name, groupList.groups[i].first,
 					groupList.groups[i].last, groupList.groups[i].last - groupList.groups[i].first + 1,
 					true);
@@ -258,7 +258,7 @@ namespace derIgel.RsdnNntp
 				newsMessage.From = string.Format("\"{0}\" <{1}>", message.author, "forum@rsdn.ru");
 				newsMessage.Date = message.date;
 				newsMessage.Subject = message.subject;
-				newsMessage["X-UserID"] = message.authorid.ToString();
+				newsMessage["X-UserID"] = message.authorid;
 				if (message.pid != string.Empty)
 					newsMessage["References"] = "<" + message.pid + message.postfix + ">";
 				newsMessage["Newsgroups"] = newsgroup;
@@ -309,7 +309,7 @@ namespace derIgel.RsdnNntp
 				ProcessException(exception);
 			}	
 
-			NewsArticle[] articleArray = new NewsArticle[articleList.articles.GetLength(0)];
+			NewsArticle[] articleArray = new NewsArticle[articleList.articles.Length];
 
 			for (int i = 0; i <articleList.articles.Length; i++)
 				articleArray[i] =
