@@ -182,11 +182,14 @@ namespace Rsdn.RsdnNntp.Common
 					GetArticle(articleNumber, groupName)), groupName, content);
     }
 
+		static protected readonly string messageIdPostfix = "@news.rsdn.ru";
+
 		/// <summary>
 		/// Regex to extract Message-IDs from rsdn post messages
 		/// </summary>
     static protected readonly Regex messageIdNumber =
-    	new Regex(@"<(?<messageIdNumber>\d+)@news.rsdn.ru>", RegexOptions.Compiled);
+    	new Regex(string.Format(@"<(?<messageIdNumber>\d+){0}>", messageIdPostfix),
+				RegexOptions.Compiled);
 
 		/// <summary>
 		/// Get article without lookup in cache by message id.
@@ -436,8 +439,9 @@ namespace Rsdn.RsdnNntp.Common
     protected NewsArticle ToNNTPArticle(IArticle message, string newsgroup,
 			NewsArticle.Content content)
     {
-			NewsArticle newsMessage = new NewsArticle("<" + message.ID + message.Postfix + ">",
-    		new string[]{newsgroup}, new int[]{message.Number}, content);
+			NewsArticle newsMessage =
+				new NewsArticle(string.Format("<{0}{1}>", message.ID, message.Postfix),
+    			new string[]{newsgroup}, new int[]{message.Number}, content);
     	newsMessage.HeaderEncoding = encoding;
 
     	if ((content == NewsArticle.Content.Header) ||
@@ -530,6 +534,8 @@ namespace Rsdn.RsdnNntp.Common
 
     					foreach (Message img in imageProcessor.GetProcessedImages())
    							newsMessage.Entities.Add(img);
+
+							imageProcessor.ClearProcessedImages();
     				}
     				else
     				{
@@ -751,7 +757,7 @@ namespace Rsdn.RsdnNntp.Common
 					style = rsdnSettings.Formatting;
 
 				if (style == FormattingStyle.HtmlInlineImages)
-					imageProcessor = new ImageProcessor(Proxy);
+					imageProcessor = new ImageProcessor(messageIdPostfix, Proxy);
 				else
 					imageProcessor = null;
     	}

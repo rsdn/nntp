@@ -124,10 +124,16 @@
             Web Proxy used to retrieve external resources.
             </summary>
         </member>
-        <member name="M:Rsdn.RsdnNntp.ImageProcessor.#ctor(System.Net.IWebProxy)">
+        <member name="F:Rsdn.RsdnNntp.ImageProcessor.contentIdPostfix">
+            <summary>
+            Images' Content-ID postfix
+            </summary>
+        </member>
+        <member name="M:Rsdn.RsdnNntp.ImageProcessor.#ctor(System.String,System.Net.IWebProxy)">
             <summary>
             Message text formatter used to format nntp messages.
             </summary>
+            <param name="contentIdPostfix">Generated images' content-id postfix.</param>
             <param name="proxy">Proxy to retrieve extrenal resources.</param>
         </member>
         <member name="M:Rsdn.RsdnNntp.ImageProcessor.GetProcessedImages">
@@ -135,6 +141,11 @@
             Array of processed during message formatting inline images.
             </summary>
             <returns></returns>
+        </member>
+        <member name="M:Rsdn.RsdnNntp.ImageProcessor.ClearProcessedImages">
+            <summary>
+            Clear all processed images.
+            </summary>
         </member>
         <member name="M:Rsdn.RsdnNntp.ImageProcessor.ProcessImages(Rsdn.Framework.Formatting.TextFormatter,System.Text.RegularExpressions.Match)">
             <summary>

@@ -27,11 +27,18 @@ namespace Rsdn.RsdnNntp
 		protected IWebProxy proxy;
 
 		/// <summary>
+		/// Images' Content-ID postfix
+		/// </summary>
+		protected string contentIdPostfix;
+
+		/// <summary>
 		/// Message text formatter used to format nntp messages.
 		/// </summary>
+		/// <param name="contentIdPostfix">Generated images' content-id postfix.</param>
 		/// <param name="proxy">Proxy to retrieve extrenal resources.</param>
-  	public ImageProcessor(IWebProxy proxy)
+  	public ImageProcessor(string contentIdPostfix, IWebProxy proxy)
   	{
+			this.contentIdPostfix = contentIdPostfix;
 			this.proxy = proxy;
 			ProcessImagesDelegate = new TextFormatter.ProcessImagesDelegate(ProcessImages);
   	}
@@ -56,6 +63,15 @@ namespace Rsdn.RsdnNntp
 		}
 
 		/// <summary>
+		/// Clear all processed images.
+		/// </summary>
+		public void ClearProcessedImages()
+		{
+			processedImagesIDs.Clear();
+			processedImages.Clear();
+		}
+
+		/// <summary>
 		/// Process image specified through [img] tag.
 		/// </summary>
 		/// <param name="formatter">Owning formatter.</param>
@@ -74,8 +90,8 @@ namespace Rsdn.RsdnNntp
 					response = req.GetResponse();
 					Message imgPart = new Message(false);
 					imgPart.ContentType = response.ContentType;
-					imgContentID = Guid.NewGuid().ToString();
-					imgPart["Content-ID"] = '<' + imgContentID + '>';
+					imgContentID = string.Format("{0}{1}", Guid.NewGuid(), contentIdPostfix);
+					imgPart["Content-ID"] = string.Format("<{0}>", imgContentID);
 					imgPart["Content-Location"] = req.RequestUri.ToString();
 					imgPart["Content-Disposition"] = "inline";
 					imgPart.TransferEncoding = ContentTransferEncoding.Base64;
