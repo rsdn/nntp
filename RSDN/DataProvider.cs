@@ -427,19 +427,10 @@ namespace Rsdn.RsdnNntp
 		}
 
     /// <summary>
-    /// RSDN tags processor
-    /// </summary>
-    protected static readonly TextFormatter formatMessage = new TextFormatter();
-    /// <summary>
     /// Result MIME messages' format.
     /// Default Html.
     /// </summary>
     protected FormattingStyle style = FormattingStyle.Html;
-    /// <summary>
-    /// Regular expression for detecting images in [url] tag
-    /// </summary>
-    protected static readonly Regex detectImages = new Regex(@"\[img\](?<url>.*?)\[/img\]",
-			RegexOptions.Compiled);
     
 		/// <summary>
 		/// Deep of the references chain
@@ -457,10 +448,13 @@ namespace Rsdn.RsdnNntp
     protected NewsArticle ToNNTPArticle(article message, string newsgroup,
 			NewsArticle.Content content)
     {
-    	NewsArticle newsMessage = new NewsArticle("<" + message.id + message.postfix + ">",
+
+			NntpTextFormatter formatMessage =
+				new NntpTextFormatter(serverName, webService.Proxy, style);
+
+			NewsArticle newsMessage = new NewsArticle("<" + message.id + message.postfix + ">",
     		new string[]{newsgroup}, new int[]{message.num}, content);
     	newsMessage.HeaderEncoding = encoding;
-
 
     	if ((content == NewsArticle.Content.Header) ||
     		(content == NewsArticle.Content.HeaderAndBody))
@@ -528,8 +522,8 @@ namespace Rsdn.RsdnNntp
 
     				string htmlText = string.Format(htmlMessageTemplate, message.authorid, message.author,
     					message.gid, message.id, formatMessage.Format(message.message, message.smile), userType,
-							formatMessage.Format(message.homePage, true), encoding.WebName,
-							Format.ReplaceTags(message.subject), serverName,
+							formatMessage.Format(message.homePage, message.smile), encoding.WebName,
+							Format.ReplaceTags(message.subject), serverSchemeAndName,
 							Format.ToInt(message.authorid) != 0 ?
 								string.Format("href='/Users/Profile.aspx?uid={0}'", message.authorid) : null,
 							formatMessage.Format(userInfo == null ? null : userInfo.Origin , true));
@@ -537,8 +531,7 @@ namespace Rsdn.RsdnNntp
     				htmlTextBody.TransferEncoding = ContentTransferEncoding.Base64;
     				htmlTextBody.ContentType = string.Format("text/html; charset=\"{0}\"", encoding.WebName);
     				
-    				MatchCollection detectedImages = detectImages.Matches((message.message != null) ? message.message : "");
-    				if ((style == FormattingStyle.HtmlInlineImages) && (detectedImages.Count > 0))
+    				if (formatMessage.ProcessedImagesCount > 0 )
     				{
     					newsMessage.ContentType = "multipart/related; type=multipart/alternative";
 
@@ -548,40 +541,8 @@ namespace Rsdn.RsdnNntp
     					combineMessage.Entities.Add(htmlTextBody);
     					newsMessage.Entities.Add(combineMessage);
 
-    					foreach (Match match in detectedImages)
-    					{
-    						WebResponse response = null;
-    						try
-    						{
-    							WebRequest req = WebRequest.Create(match.Groups["url"].Value);
-									// set proxy setting the same as for web service
-									req.Proxy = webService.Proxy;
-    							response = req.GetResponse();
-    							Message imgPart = new Message(false);
-    							imgPart.ContentType = response.ContentType;
-    							Guid imgContentID = Guid.NewGuid();
-    							imgPart["Content-ID"] = '<' + imgContentID.ToString() + '>';
-    							imgPart["Content-Location"] = req.RequestUri.ToString();
-    							imgPart["Content-Disposition"] = "inline";
-    							imgPart.TransferEncoding = ContentTransferEncoding.Base64;
-    							using (BinaryReader reader = new BinaryReader(response.GetResponseStream()))
-    							{
-    								imgPart.Entities.Add(reader.ReadBytes((int)response.ContentLength));
-    							}
-    							newsMessage.Entities.Add(imgPart);
-    							htmlText = htmlText.Replace(match.Groups["url"].Value, "cid:" + imgContentID.ToString());
-    						}
-    						catch (Exception ex)
-								{
-									logger.Warn(string.Format("Image {0} not found.", match.Groups["url"].Value), ex);
-								}
-    						finally
-    						{
-    							if (response != null)
-    								response.Close();
-    						}
-    					}
-    					htmlTextBody.Entities[0] = htmlText;
+    					foreach (Message img in formatMessage.GetProcessedImages())
+   							newsMessage.Entities.Add(img);
     				}
     				else
     				{
@@ -746,13 +707,21 @@ namespace Rsdn.RsdnNntp
 		protected DataProviderSettings rsdnSettings;
 
 		/// <summary>
-		/// Server address used to generate site links.
+		/// Server address (scheme & host name) used to generate site links.
 		/// Retrivied from web service address.
 		/// Only top level hosting supported.
 		/// </summary>
-		protected String serverName = "http://rsdn.ru";
+		protected String serverSchemeAndName = "http://" + Format.RsdnDomainName;
 
-    /// <summary>
+
+		/// <summary>
+		/// Server address (only host) used to generate internal site links.
+		/// Retrivied from web service address.
+		/// Only top level hosting supported.
+		/// </summary>
+		protected String serverName = Format.RsdnDomainName;
+		
+		/// <summary>
     /// Configures data provider
     /// </summary>
     /// <param name="settings"></param>
@@ -766,7 +735,8 @@ namespace Rsdn.RsdnNntp
 				webService = rsdnSettings.EnableHttpCompression ?
 					new CompressService() : new Service();
 
-				serverName = rsdnSettings.ServiceUri.GetLeftPart(UriPartial.Authority);
+    		serverSchemeAndName = rsdnSettings.ServiceUri.GetLeftPart(UriPartial.Authority);
+				serverName = rsdnSettings.ServiceUri.Host;
     		webService.Url = rsdnSettings.Service;
 				// set proxy if necessary
 				switch (rsdnSettings.ProxyType)

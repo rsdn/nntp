@@ -126,15 +126,6 @@
             <param name="o">Преобразуемый объект.</param>
             <returns>Результат.</returns>
         </member>
-        <member name="M:Rsdn.Framework.Formatting.Format.ReplaceRsdnLinks(System.String,System.Boolean,System.String)">
-            <summary>
-            Replace links targeted to RSDN
-            </summary>
-            <param name="text">Text, to search RSDN links</param>
-            <param name="replaceTarget">true, remove link's target, false - leave targeted to 'balnk'</param>
-            <param name="applicationPath">Application path to generate links.</param>
-            <returns>Text, with modified links.</returns>
-        </member>
         <member name="F:Rsdn.Framework.Formatting.Format.RsdnDomainName">
             <summary>
             Top level RSDN domain name
@@ -400,6 +391,28 @@
             <param name="urlMatch">Regexp match with RSDN url tag</param>
             <returns>Formatted url value</returns>
         </member>
+        <member name="M:Rsdn.Framework.Formatting.TextFormatter.ProcessImplicitURLs(System.Text.RegularExpressions.Match)">
+            <summary>
+            Process implicit URLs (not explicity specified by RSDN URL tag).
+            </summary>
+            <param name="match">URL match.</param>
+            <returns>Formatted URL.</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.TextFormatter.FormatURLs(System.Text.RegularExpressions.Match,System.String,System.String)">
+            <summary>
+            Format URLs to hyperlinks.
+            Used in both, explicitly &amp; implicitly specified links.
+            </summary>
+            <param name="urlMatch">Regex match with URL address.</param>
+            <param name="urlAdsress">URL address.</param>
+            <param name="urlName">URL name. May be or may be not different from URL address.</param>
+            <returns>Formatted link for specified URL.</returns>
+        </member>
+        <member name="F:Rsdn.Framework.Formatting.TextFormatter.rsdnHostRegex">
+            <summary>
+            Regex for determining of RSDN host name.
+            </summary>
+        </member>
         <member name="F:Rsdn.Framework.Formatting.TextFormatter.TaglineDetector">
             <summary>
             Detect [tagline] tag.
@@ -414,13 +427,6 @@
             <summary>
             Regex for [purl] tag.
             </summary>
-        </member>
-        <member name="M:Rsdn.Framework.Formatting.TextFormatter.ProcessImplicitURLs(System.Text.RegularExpressions.Match)">
-            <summary>
-            Process implicit URLs (not explicity specified by RSDN URL tag).
-            </summary>
-            <param name="match">URL match.</param>
-            <returns>Formatted URL.</returns>
         </member>
         <member name="M:Rsdn.Framework.Formatting.TextFormatter.GetMSDNRef(System.String)">
             <summary>
@@ -518,6 +524,16 @@
         <member name="M:Rsdn.Framework.Formatting.TextFormatter.ParseUrl(System.String)">
             <summary>
             Отпарсить URL.
+            </summary>
+        </member>
+        <member name="P:Rsdn.Framework.Formatting.TextFormatter.OpenRsdnLinksInNewWindow">
+            <summary>
+            How to open internal RSDN links.
+            </summary>
+        </member>
+        <member name="P:Rsdn.Framework.Formatting.TextFormatter.CanonicalRsdnHostName">
+            <summary>
+            Canonical (common) name of RSDN to replace in all links to rsdn
             </summary>
         </member>
     </members>
