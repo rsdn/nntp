@@ -44,7 +44,10 @@ namespace derIgel.RsdnNntp
 		{
 			if (value is string) 
 			{
-				return new ProxySettings((string)value);
+				string strValue = (string)value;
+				if ((strValue != "") && (strValue.IndexOf(Uri.SchemeDelimiter) < 0))
+					strValue = Uri.UriSchemeHttp + Uri.SchemeDelimiter + strValue;
+				return new ProxySettings(strValue);
 			}
 			else
 				return base.ConvertFrom(context, culture, value);
@@ -78,7 +81,7 @@ namespace derIgel.RsdnNntp
 		{
 			if (proxyUri != null)
 			{
-					protocol = proxyUri.Scheme;
+				protocol = proxyUri.Scheme;
 				host = proxyUri.Host;
 				port = proxyUri.Port;
 				Match userInfoMatch = userInfo.Match(proxyUri.UserInfo);
