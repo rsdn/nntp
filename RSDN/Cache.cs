@@ -1,10 +1,5 @@
 using System;
 using System.Collections;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Runtime.Serialization.Formatters;
-using System.Runtime.Serialization;
-using System.IO;
-using System.Runtime.CompilerServices;
 
 using Rsdn.Nntp;
 
@@ -56,7 +51,6 @@ namespace Rsdn.RsdnNntp
 		/// </summary>
 		public NewsArticle this[string messageID]
 		{
-			[MethodImpl(MethodImplOptions.Synchronized)]
 			get {return cache[messageID] as NewsArticle; }
 		}
 
@@ -65,7 +59,6 @@ namespace Rsdn.RsdnNntp
 		/// </summary>
 		public NewsArticle this[string newsGroup, int number]
 		{
-			[MethodImpl(MethodImplOptions.Synchronized)]
 			get
 			{
 				if (identities[newsGroup] != null)
@@ -83,7 +76,6 @@ namespace Rsdn.RsdnNntp
 		/// </summary>
 		public NewsArticle this[string messageID, string newsGroup, int number]
 		{
-			[MethodImpl(MethodImplOptions.Synchronized)]
 			set
 			{
 				if (cache.Count >= capacity)
@@ -112,25 +104,6 @@ namespace Rsdn.RsdnNntp
 
 				cache[messageID] = value;
 			}
-		}
-
-		public static Cache Deserialize(string filename)
-		{
-			BinaryFormatter formatter = new BinaryFormatter();
-			formatter.AssemblyFormat = FormatterAssemblyStyle.Simple;
-			Stream stream = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read);
-			Cache cache = (Cache) formatter.Deserialize(stream);
-			stream.Close();
-			return cache;
-		}
-
-		public void Serialize(string filename)
-		{
-			BinaryFormatter formatter = new BinaryFormatter();
-			formatter.AssemblyFormat = FormatterAssemblyStyle.Simple;
-			Stream stream = new FileStream(filename, FileMode.Create, FileAccess.Write, FileShare.None);
-			formatter.Serialize(stream, this);
-			stream.Close();
 		}
 
 		protected void RemoveOldestMessage()

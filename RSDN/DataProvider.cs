@@ -6,6 +6,10 @@ using System.Text.RegularExpressions;
 using System.Configuration;
 using System.Text;
 using System.Web;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.Serialization.Formatters;
+using System.Runtime.Serialization;
+using System.Diagnostics;
 
 using RSDN.Common;
 
@@ -21,23 +25,96 @@ namespace Rsdn.RsdnNntp
 	public class RsdnDataProvider : IDataProvider
 	{
 		/// <summary>
-		/// read cache at the start
+		/// Cache of refeneces of messages
+		/// </summary>
+		protected static ReferenceCache referenceCache = new ReferenceCache(); 
+		/// <summary>
+		/// Filename of references cache
+		/// </summary>
+		protected static string referencesCacheFilename = 
+			Assembly.GetExecutingAssembly().GetName().Name + ".references.cache";
+
+		/// <summary>
+		/// Cache of messages
+		/// </summary>
+		static protected Cache cache = new Cache();
+		/// <summary>
+		/// Filename of messages cache
+		/// </summary>
+		protected static string cacheFilename =
+			Assembly.GetExecutingAssembly().GetName().Name + ".cache";
+
+		/// <summary>
+		/// Read caches at the start
 		/// </summary>
 		static RsdnDataProvider()
 		{
-			cacheFilename = Assembly.GetExecutingAssembly().GetName().Name + ".cache";
-			if (File.Exists(cacheFilename))
-				cache = Cache.Deserialize(cacheFilename);
-			else
-				cache = new Cache();
+			// load messages cache
+			try
+			{
+				if (File.Exists(cacheFilename))
+					cache = (Cache)Deserialize(cacheFilename);
+			}
+			catch (Exception e)
+			{
+				Trace.Fail("Messages cache corrupted: " + e.ToString());
+			}
+
+			// load references cache
+			try
+			{
+				if (File.Exists(referencesCacheFilename))
+					referenceCache = (ReferenceCache)Deserialize(referencesCacheFilename);
+			}
+			catch (Exception e)
+			{
+				Trace.Fail("References cache corrupted: " + e.ToString());
+			}
 		}
 
 		/// <summary>
-		/// Write cache at the end
+		/// Save caches at the end of work
 		/// </summary>
-		~RsdnDataProvider()
+		public void Dispose()
 		{
-			cache.Serialize(cacheFilename);
+			// save message cache
+			lock (cache)
+				Serialize(cache, cacheFilename);
+
+			// save references cache
+			lock (referenceCache)
+				Serialize(referenceCache, referencesCacheFilename);
+		}
+
+		/// <summary>
+		/// Deserialize object by binary formatter from file
+		/// </summary>
+		/// <param name="filename">name of file to read</param>
+		/// <returns>deserialized object</returns>
+		protected static object Deserialize(string filename)
+		{
+			BinaryFormatter formatter = new BinaryFormatter();
+			formatter.AssemblyFormat = FormatterAssemblyStyle.Simple;
+			using (Stream stream = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read))
+			{
+				return formatter.Deserialize(stream);
+			}
+		}
+
+		/// <summary>
+		/// Serialize object by binary formatter to file
+		/// </summary>
+		/// <param name="obj">object to save</param>
+		/// <param name="filename">name of file to save</param>
+		protected static void Serialize(object obj, string filename)
+		{
+			BinaryFormatter formatter = new BinaryFormatter();
+			formatter.AssemblyFormat = FormatterAssemblyStyle.Simple;
+			using (Stream stream = new FileStream(filename, FileMode.Create,
+							 FileAccess.Write, FileShare.None))
+			{
+				formatter.Serialize(stream, obj);
+			}		
 		}
 
 		public RsdnDataProvider()
@@ -94,6 +171,25 @@ namespace Rsdn.RsdnNntp
 				requestedGroup.last - requestedGroup.first + 1, true);
 		}
 
+		/// <summary>
+		/// Update references cache
+		/// </summary>
+		/// <param name="message"></param>
+		protected static void UpdateReferences(article message)
+		{
+			lock (referenceCache)
+			{
+				referenceCache.AddReference(int.Parse(message.id), 
+					(message.pid != "") ? int.Parse(message.pid) : 0);
+			}
+		}
+
+		/// <summary>
+		/// Get article by article number
+		/// </summary>
+		/// <param name="articleNumber"></param>
+		/// <param name="content"></param>
+		/// <returns></returns>
 		public NewsArticle GetArticle(int articleNumber, NewsArticle.Content content)
 		{
 			if (currentGroup == null)
@@ -101,8 +197,9 @@ namespace Rsdn.RsdnNntp
 
 			NewsArticle newsMessage = null;
 			// access to cache
-			if (cache.Capacity > 0)
-				newsMessage = cache[currentGroup, articleNumber];
+			lock(cache)
+				if (cache.Capacity > 0)
+					newsMessage = cache[currentGroup, articleNumber];
 
 			if (newsMessage == null)
 			{
@@ -119,11 +216,15 @@ namespace Rsdn.RsdnNntp
 					ProcessException(exception);
 				}	
 
+				// update refenece cache
+				UpdateReferences(message);
+
 				currentArticle = articleNumber;
 				newsMessage = ToNNTPArticle(message, currentGroup, content);
 				// access to cache
-				if (cache.Capacity > 0)
-					cache[newsMessage.MessageID, currentGroup, articleNumber] =	newsMessage;
+				lock(cache)
+					if (cache.Capacity > 0)
+						cache[newsMessage.MessageID, currentGroup, articleNumber] =	newsMessage;
 			}
 
 			return newsMessage;
@@ -135,8 +236,9 @@ namespace Rsdn.RsdnNntp
 		{
 			NewsArticle newsMessage = null;
 			// access to cache
-			if (cache.Capacity > 0)
-				newsMessage = cache[messageID];
+			lock(cache)
+				if (cache.Capacity > 0)
+					newsMessage = cache[messageID];
 
 			if (newsMessage == null)
 			{
@@ -155,8 +257,9 @@ namespace Rsdn.RsdnNntp
 
 				newsMessage = ToNNTPArticle(message, message.group, content);
 				// access to cache
-				if (cache.Capacity > 0)
-					cache[newsMessage.MessageID, currentGroup, (int)newsMessage.MessageNumbers[currentGroup]] =	newsMessage;
+				lock(cache)
+					if (cache.Capacity > 0)
+						cache[newsMessage.MessageID, currentGroup, (int)newsMessage.MessageNumbers[currentGroup]] =	newsMessage;
 			}
 
 			return newsMessage;
@@ -293,8 +396,19 @@ namespace Rsdn.RsdnNntp
 				newsMessage.Subject = message.subject;
 				if ((message.authorid != null) && (int.Parse(message.authorid) != 0))
 					newsMessage["X-UserID"] = message.authorid;
-				if (message.pid != string.Empty)
-					newsMessage["References"] = "<" + message.pid + message.postfix + ">";
+				
+				// build refences
+				StringBuilder referencesString = new StringBuilder();
+				int[] references;
+				lock (referenceCache)
+				{
+					references = referenceCache.GetReferences(int.Parse(message.id));
+				}
+				// get parent from root (don't include itself)
+				for (int i = references.Length - 1; i > 0; i--)
+					referencesString.AppendFormat("<{0}{1}> ", references[i], message.postfix);
+				if (referencesString.Length > 0)
+					newsMessage["References"] = referencesString.ToString();
 			}
 
 			if ((content == NewsArticle.Content.Body) ||
@@ -402,8 +516,11 @@ namespace Rsdn.RsdnNntp
 				articleArray = new NewsArticle[articleList.articles.Length];
 
 				for (int i = 0; i < articleList.articles.Length; i++)
+				{
+					UpdateReferences(articleList.articles[i]);
 					articleArray[i] =
 						ToNNTPArticle(articleList.articles[i], currentGroup, content);
+				}
 			}
 			else
 				articleArray = new NewsArticle[0];
@@ -470,15 +587,6 @@ namespace Rsdn.RsdnNntp
 		protected readonly string htmlMessageTemplate;
 		protected System.Text.Encoding encoding;
 		
-		/// <summary>
-		/// Cache
-		/// </summary>
-		static protected Cache cache;
-		/// <summary>
-		/// Cache filename
-		/// </summary>
-		static string cacheFilename;
-
 		/// <summary>
 		/// Process exception raised during request to data provider
 		/// </summary>

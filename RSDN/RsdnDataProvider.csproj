@@ -164,6 +164,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "ReferenceCache.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "RSDN.Format.dll"
                     BuildAction = "None"
                 />
