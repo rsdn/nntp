@@ -1,14 +1,14 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Settings xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<DataProviderSettings xsi:type="DataProviderSettings">
-		<ProxyServer />
-	</DataProviderSettings>
-	<Name>RSDN.RU</Name>
-	<DataProviderTypeName>derIgel.RsdnNntp.RsdnDataProvider, RsdnDataProvider</DataProviderTypeName>
-	<Bindings>
-		<ServerEndPoint>
-			<Address>0.0.0.0</Address>
-			<Port>119</Port>
-		</ServerEndPoint>
-	</Bindings>
+  <Name>RSDN.RU</Name>
+  <DataProviderTypeName>derIgel.RsdnNntp.RsdnDataProvider, RsdnDataProvider</DataProviderTypeName>
+  <DataProviderSettings xsi:type="DataProviderSettings">
+    <proxySettings />
+  </DataProviderSettings>
+  <Bindings>
+    <ServerEndPoint>
+      <Address>0.0.0.0</Address>
+      <Port>119</Port>
+    </ServerEndPoint>
+  </Bindings>
 </Settings>

@@ -15,27 +15,30 @@ namespace derIgel.RsdnNntp
 	public class ProxySettings
 	{
 		protected UriBuilder uriBuilder;
-		public ProxySettings()
-		{
-			uriBuilder = new UriBuilder();
-		}
+		public ProxySettings()	{	}
 
 		public ProxySettings(WebProxy proxy)
 		{
-			uriBuilder = new UriBuilder(proxy.Address);
-			uriBuilder.UserName = ((NetworkCredential)proxy.Credentials).UserName;
-			uriBuilder.Password = ((NetworkCredential)proxy.Credentials).Password;
+			if ((proxy != null) && (proxy.Address != null))
+			{
+				uriBuilder = new UriBuilder(proxy.Address);
+				if ((proxy.Credentials as NetworkCredential) != null)
+				{
+					uriBuilder.UserName = ((NetworkCredential)proxy.Credentials).UserName;
+					uriBuilder.Password = ((NetworkCredential)proxy.Credentials).Password;
+				}
+			}
 		}
 
 		public string Address
 		{
-			get { return uriBuilder.Scheme + Uri.SchemeDelimiter + uriBuilder.Uri.Authority; }
+			get { return (uriBuilder == null) ? null : uriBuilder.Scheme + Uri.SchemeDelimiter + uriBuilder.Uri.Authority; }
 			set { uriBuilder = new UriBuilder(value); }
 		}
 
 		public string Username
 		{
-			get { return uriBuilder.UserName; }
+			get { return (uriBuilder == null) ? null : uriBuilder.UserName; }
 			set { uriBuilder.UserName = value; }
 		}
 
@@ -47,8 +50,8 @@ namespace derIgel.RsdnNntp
 		{
 			get
 			{
-				byte[] result = new byte[0];
-				if (uriBuilder.Password != "")
+				byte[] result = null;
+				if ((uriBuilder != null) && (uriBuilder.Password != ""))
 				{
 					RijndaelManaged myRijndael = new RijndaelManaged();
 					byte[] Key = myRijndael.Key;
@@ -79,7 +82,8 @@ namespace derIgel.RsdnNntp
 					decryptor.Dispose();
 				}
 
-				uriBuilder.Password = Encoding.UTF8.GetString(result);
+				if (uriBuilder != null)
+					uriBuilder.Password = Encoding.UTF8.GetString(result);
 			}
 		}
 
@@ -88,8 +92,8 @@ namespace derIgel.RsdnNntp
 		{
 			get
 			{
-				return new WebProxy(uriBuilder.Uri, false, null,
-					new NetworkCredential(uriBuilder.UserName, uriBuilder.Password));
+				return (uriBuilder == null) ? new WebProxy() :
+					new WebProxy(uriBuilder.Uri, false, null,	new NetworkCredential(uriBuilder.UserName, uriBuilder.Password));
 			}		
 		}
 	}
