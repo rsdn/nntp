@@ -1,0 +1,845 @@
+<?xml version="1.0" encoding="utf-8"?>
+<definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s0="http://tempuri.org/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://tempuri.org/" xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://tempuri.org/">
+      <s:element name="GroupList">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="login" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="psw" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GroupListResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GroupListResult" type="s0:group_list" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="group_list">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="date" type="s:dateTime" />
+          <s:element minOccurs="0" maxOccurs="1" name="error" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="groups" type="s0:ArrayOfGroup" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfGroup">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="group" type="s0:group" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="group">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="error" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="name" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="created" type="s:dateTime" />
+          <s:element minOccurs="1" maxOccurs="1" name="number" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="first" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="last" type="s:int" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="GetGroupList">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="login" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="psw" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="dtc" type="s:dateTime" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetGroupListResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetGroupListResult" type="s0:group_list" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GroupInfo">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="name" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="login" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="psw" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GroupInfoResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="GroupInfoResult" type="s0:group" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetArticle">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="group" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="number" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="login" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="psw" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetArticleResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetArticleResult" type="s0:article" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="article">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="error" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="postfix" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="id" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="pid" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="gid" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="num" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="author" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="authorid" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="date" type="s:dateTime" />
+          <s:element minOccurs="0" maxOccurs="1" name="subject" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="message" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="fmtmessage" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="GetFormattedArticle">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="group" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="number" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="login" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="psw" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetFormattedArticleResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetFormattedArticleResult" type="s0:article" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ArticleList">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="group" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="first" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="last" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="login" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="psw" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ArticleListResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ArticleListResult" type="s0:article_list" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="article_list">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="error" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="postfix" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="date" type="s:dateTime" />
+          <s:element minOccurs="0" maxOccurs="1" name="articles" type="s0:ArrayOfArticle" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfArticle">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="article" nillable="true" type="s0:article" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="Authentication">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="login" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="psw" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="AuthenticationResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="AuthenticationResult" type="s0:auth_info" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="auth_info">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="error" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="ok" type="s:boolean" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="GetLink">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="link" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="type" type="s0:LinkType" />
+            <s:element minOccurs="0" maxOccurs="1" name="login" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="psw" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:simpleType name="LinkType">
+        <s:restriction base="s:string">
+          <s:enumeration value="MSDN" />
+        </s:restriction>
+      </s:simpleType>
+      <s:element name="GetLinkResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="GetLinkResult" type="s0:link" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="link">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="error" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="url" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="name" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="PostMIMEMessage">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="login" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="psw" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="message" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="PostMIMEMessageResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="PostMIMEMessageResult" type="s0:post_result" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="post_result">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="error" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="ok" type="s:boolean" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="group_list" nillable="true" type="s0:group_list" />
+      <s:element name="group" type="s0:group" />
+      <s:element name="article" nillable="true" type="s0:article" />
+      <s:element name="article_list" nillable="true" type="s0:article_list" />
+      <s:element name="auth_info" type="s0:auth_info" />
+      <s:element name="link" type="s0:link" />
+      <s:element name="post_result" nillable="true" type="s0:post_result" />
+    </s:schema>
+  </types>
+  <message name="GroupListSoapIn">
+    <part name="parameters" element="s0:GroupList" />
+  </message>
+  <message name="GroupListSoapOut">
+    <part name="parameters" element="s0:GroupListResponse" />
+  </message>
+  <message name="GetGroupListSoapIn">
+    <part name="parameters" element="s0:GetGroupList" />
+  </message>
+  <message name="GetGroupListSoapOut">
+    <part name="parameters" element="s0:GetGroupListResponse" />
+  </message>
+  <message name="GroupInfoSoapIn">
+    <part name="parameters" element="s0:GroupInfo" />
+  </message>
+  <message name="GroupInfoSoapOut">
+    <part name="parameters" element="s0:GroupInfoResponse" />
+  </message>
+  <message name="GetArticleSoapIn">
+    <part name="parameters" element="s0:GetArticle" />
+  </message>
+  <message name="GetArticleSoapOut">
+    <part name="parameters" element="s0:GetArticleResponse" />
+  </message>
+  <message name="GetFormattedArticleSoapIn">
+    <part name="parameters" element="s0:GetFormattedArticle" />
+  </message>
+  <message name="GetFormattedArticleSoapOut">
+    <part name="parameters" element="s0:GetFormattedArticleResponse" />
+  </message>
+  <message name="ArticleListSoapIn">
+    <part name="parameters" element="s0:ArticleList" />
+  </message>
+  <message name="ArticleListSoapOut">
+    <part name="parameters" element="s0:ArticleListResponse" />
+  </message>
+  <message name="AuthenticationSoapIn">
+    <part name="parameters" element="s0:Authentication" />
+  </message>
+  <message name="AuthenticationSoapOut">
+    <part name="parameters" element="s0:AuthenticationResponse" />
+  </message>
+  <message name="GetLinkSoapIn">
+    <part name="parameters" element="s0:GetLink" />
+  </message>
+  <message name="GetLinkSoapOut">
+    <part name="parameters" element="s0:GetLinkResponse" />
+  </message>
+  <message name="PostMIMEMessageSoapIn">
+    <part name="parameters" element="s0:PostMIMEMessage" />
+  </message>
+  <message name="PostMIMEMessageSoapOut">
+    <part name="parameters" element="s0:PostMIMEMessageResponse" />
+  </message>
+  <message name="GroupListHttpGetIn">
+    <part name="login" type="s:string" />
+    <part name="psw" type="s:string" />
+  </message>
+  <message name="GroupListHttpGetOut">
+    <part name="Body" element="s0:group_list" />
+  </message>
+  <message name="GetGroupListHttpGetIn">
+    <part name="login" type="s:string" />
+    <part name="psw" type="s:string" />
+    <part name="dtc" type="s:string" />
+  </message>
+  <message name="GetGroupListHttpGetOut">
+    <part name="Body" element="s0:group_list" />
+  </message>
+  <message name="GroupInfoHttpGetIn">
+    <part name="name" type="s:string" />
+    <part name="login" type="s:string" />
+    <part name="psw" type="s:string" />
+  </message>
+  <message name="GroupInfoHttpGetOut">
+    <part name="Body" element="s0:group" />
+  </message>
+  <message name="GetArticleHttpGetIn">
+    <part name="group" type="s:string" />
+    <part name="number" type="s:string" />
+    <part name="login" type="s:string" />
+    <part name="psw" type="s:string" />
+  </message>
+  <message name="GetArticleHttpGetOut">
+    <part name="Body" element="s0:article" />
+  </message>
+  <message name="GetFormattedArticleHttpGetIn">
+    <part name="group" type="s:string" />
+    <part name="number" type="s:string" />
+    <part name="login" type="s:string" />
+    <part name="psw" type="s:string" />
+  </message>
+  <message name="GetFormattedArticleHttpGetOut">
+    <part name="Body" element="s0:article" />
+  </message>
+  <message name="ArticleListHttpGetIn">
+    <part name="group" type="s:string" />
+    <part name="first" type="s:string" />
+    <part name="last" type="s:string" />
+    <part name="login" type="s:string" />
+    <part name="psw" type="s:string" />
+  </message>
+  <message name="ArticleListHttpGetOut">
+    <part name="Body" element="s0:article_list" />
+  </message>
+  <message name="AuthenticationHttpGetIn">
+    <part name="login" type="s:string" />
+    <part name="psw" type="s:string" />
+  </message>
+  <message name="AuthenticationHttpGetOut">
+    <part name="Body" element="s0:auth_info" />
+  </message>
+  <message name="GetLinkHttpGetIn">
+    <part name="link" type="s:string" />
+    <part name="type" type="s:string" />
+    <part name="login" type="s:string" />
+    <part name="psw" type="s:string" />
+  </message>
+  <message name="GetLinkHttpGetOut">
+    <part name="Body" element="s0:link" />
+  </message>
+  <message name="PostMIMEMessageHttpGetIn">
+    <part name="login" type="s:string" />
+    <part name="psw" type="s:string" />
+    <part name="message" type="s:string" />
+  </message>
+  <message name="PostMIMEMessageHttpGetOut">
+    <part name="Body" element="s0:post_result" />
+  </message>
+  <message name="GroupListHttpPostIn">
+    <part name="login" type="s:string" />
+    <part name="psw" type="s:string" />
+  </message>
+  <message name="GroupListHttpPostOut">
+    <part name="Body" element="s0:group_list" />
+  </message>
+  <message name="GetGroupListHttpPostIn">
+    <part name="login" type="s:string" />
+    <part name="psw" type="s:string" />
+    <part name="dtc" type="s:string" />
+  </message>
+  <message name="GetGroupListHttpPostOut">
+    <part name="Body" element="s0:group_list" />
+  </message>
+  <message name="GroupInfoHttpPostIn">
+    <part name="name" type="s:string" />
+    <part name="login" type="s:string" />
+    <part name="psw" type="s:string" />
+  </message>
+  <message name="GroupInfoHttpPostOut">
+    <part name="Body" element="s0:group" />
+  </message>
+  <message name="GetArticleHttpPostIn">
+    <part name="group" type="s:string" />
+    <part name="number" type="s:string" />
+    <part name="login" type="s:string" />
+    <part name="psw" type="s:string" />
+  </message>
+  <message name="GetArticleHttpPostOut">
+    <part name="Body" element="s0:article" />
+  </message>
+  <message name="GetFormattedArticleHttpPostIn">
+    <part name="group" type="s:string" />
+    <part name="number" type="s:string" />
+    <part name="login" type="s:string" />
+    <part name="psw" type="s:string" />
+  </message>
+  <message name="GetFormattedArticleHttpPostOut">
+    <part name="Body" element="s0:article" />
+  </message>
+  <message name="ArticleListHttpPostIn">
+    <part name="group" type="s:string" />
+    <part name="first" type="s:string" />
+    <part name="last" type="s:string" />
+    <part name="login" type="s:string" />
+    <part name="psw" type="s:string" />
+  </message>
+  <message name="ArticleListHttpPostOut">
+    <part name="Body" element="s0:article_list" />
+  </message>
+  <message name="AuthenticationHttpPostIn">
+    <part name="login" type="s:string" />
+    <part name="psw" type="s:string" />
+  </message>
+  <message name="AuthenticationHttpPostOut">
+    <part name="Body" element="s0:auth_info" />
+  </message>
+  <message name="GetLinkHttpPostIn">
+    <part name="link" type="s:string" />
+    <part name="type" type="s:string" />
+    <part name="login" type="s:string" />
+    <part name="psw" type="s:string" />
+  </message>
+  <message name="GetLinkHttpPostOut">
+    <part name="Body" element="s0:link" />
+  </message>
+  <message name="PostMIMEMessageHttpPostIn">
+    <part name="login" type="s:string" />
+    <part name="psw" type="s:string" />
+    <part name="message" type="s:string" />
+  </message>
+  <message name="PostMIMEMessageHttpPostOut">
+    <part name="Body" element="s0:post_result" />
+  </message>
+  <portType name="ForumSoap">
+    <operation name="GroupList">
+      <documentation>Obsolete.</documentation>
+      <input message="s0:GroupListSoapIn" />
+      <output message="s0:GroupListSoapOut" />
+    </operation>
+    <operation name="GetGroupList">
+      <documentation>Returns a list of groups.</documentation>
+      <input message="s0:GetGroupListSoapIn" />
+      <output message="s0:GetGroupListSoapOut" />
+    </operation>
+    <operation name="GroupInfo">
+      <documentation>Returns information about the group.</documentation>
+      <input message="s0:GroupInfoSoapIn" />
+      <output message="s0:GroupInfoSoapOut" />
+    </operation>
+    <operation name="GetArticle">
+      <documentation>Returns information about the article.</documentation>
+      <input message="s0:GetArticleSoapIn" />
+      <output message="s0:GetArticleSoapOut" />
+    </operation>
+    <operation name="GetFormattedArticle">
+      <documentation>Returns formated article.</documentation>
+      <input message="s0:GetFormattedArticleSoapIn" />
+      <output message="s0:GetFormattedArticleSoapOut" />
+    </operation>
+    <operation name="ArticleList">
+      <documentation>Returns a list of articles.</documentation>
+      <input message="s0:ArticleListSoapIn" />
+      <output message="s0:ArticleListSoapOut" />
+    </operation>
+    <operation name="Authentication">
+      <documentation>Performs user authentication.</documentation>
+      <input message="s0:AuthenticationSoapIn" />
+      <output message="s0:AuthenticationSoapOut" />
+    </operation>
+    <operation name="GetLink">
+      <documentation>Returns link information.</documentation>
+      <input message="s0:GetLinkSoapIn" />
+      <output message="s0:GetLinkSoapOut" />
+    </operation>
+    <operation name="PostMIMEMessage">
+      <documentation>Accepts MIME formatted message postings.</documentation>
+      <input message="s0:PostMIMEMessageSoapIn" />
+      <output message="s0:PostMIMEMessageSoapOut" />
+    </operation>
+  </portType>
+  <portType name="ForumHttpGet">
+    <operation name="GroupList">
+      <documentation>Obsolete.</documentation>
+      <input message="s0:GroupListHttpGetIn" />
+      <output message="s0:GroupListHttpGetOut" />
+    </operation>
+    <operation name="GetGroupList">
+      <documentation>Returns a list of groups.</documentation>
+      <input message="s0:GetGroupListHttpGetIn" />
+      <output message="s0:GetGroupListHttpGetOut" />
+    </operation>
+    <operation name="GroupInfo">
+      <documentation>Returns information about the group.</documentation>
+      <input message="s0:GroupInfoHttpGetIn" />
+      <output message="s0:GroupInfoHttpGetOut" />
+    </operation>
+    <operation name="GetArticle">
+      <documentation>Returns information about the article.</documentation>
+      <input message="s0:GetArticleHttpGetIn" />
+      <output message="s0:GetArticleHttpGetOut" />
+    </operation>
+    <operation name="GetFormattedArticle">
+      <documentation>Returns formated article.</documentation>
+      <input message="s0:GetFormattedArticleHttpGetIn" />
+      <output message="s0:GetFormattedArticleHttpGetOut" />
+    </operation>
+    <operation name="ArticleList">
+      <documentation>Returns a list of articles.</documentation>
+      <input message="s0:ArticleListHttpGetIn" />
+      <output message="s0:ArticleListHttpGetOut" />
+    </operation>
+    <operation name="Authentication">
+      <documentation>Performs user authentication.</documentation>
+      <input message="s0:AuthenticationHttpGetIn" />
+      <output message="s0:AuthenticationHttpGetOut" />
+    </operation>
+    <operation name="GetLink">
+      <documentation>Returns link information.</documentation>
+      <input message="s0:GetLinkHttpGetIn" />
+      <output message="s0:GetLinkHttpGetOut" />
+    </operation>
+    <operation name="PostMIMEMessage">
+      <documentation>Accepts MIME formatted message postings.</documentation>
+      <input message="s0:PostMIMEMessageHttpGetIn" />
+      <output message="s0:PostMIMEMessageHttpGetOut" />
+    </operation>
+  </portType>
+  <portType name="ForumHttpPost">
+    <operation name="GroupList">
+      <documentation>Obsolete.</documentation>
+      <input message="s0:GroupListHttpPostIn" />
+      <output message="s0:GroupListHttpPostOut" />
+    </operation>
+    <operation name="GetGroupList">
+      <documentation>Returns a list of groups.</documentation>
+      <input message="s0:GetGroupListHttpPostIn" />
+      <output message="s0:GetGroupListHttpPostOut" />
+    </operation>
+    <operation name="GroupInfo">
+      <documentation>Returns information about the group.</documentation>
+      <input message="s0:GroupInfoHttpPostIn" />
+      <output message="s0:GroupInfoHttpPostOut" />
+    </operation>
+    <operation name="GetArticle">
+      <documentation>Returns information about the article.</documentation>
+      <input message="s0:GetArticleHttpPostIn" />
+      <output message="s0:GetArticleHttpPostOut" />
+    </operation>
+    <operation name="GetFormattedArticle">
+      <documentation>Returns formated article.</documentation>
+      <input message="s0:GetFormattedArticleHttpPostIn" />
+      <output message="s0:GetFormattedArticleHttpPostOut" />
+    </operation>
+    <operation name="ArticleList">
+      <documentation>Returns a list of articles.</documentation>
+      <input message="s0:ArticleListHttpPostIn" />
+      <output message="s0:ArticleListHttpPostOut" />
+    </operation>
+    <operation name="Authentication">
+      <documentation>Performs user authentication.</documentation>
+      <input message="s0:AuthenticationHttpPostIn" />
+      <output message="s0:AuthenticationHttpPostOut" />
+    </operation>
+    <operation name="GetLink">
+      <documentation>Returns link information.</documentation>
+      <input message="s0:GetLinkHttpPostIn" />
+      <output message="s0:GetLinkHttpPostOut" />
+    </operation>
+    <operation name="PostMIMEMessage">
+      <documentation>Accepts MIME formatted message postings.</documentation>
+      <input message="s0:PostMIMEMessageHttpPostIn" />
+      <output message="s0:PostMIMEMessageHttpPostOut" />
+    </operation>
+  </portType>
+  <binding name="ForumSoap" type="s0:ForumSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+    <operation name="GroupList">
+      <soap:operation soapAction="http://tempuri.org/GroupList" style="document" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+    <operation name="GetGroupList">
+      <soap:operation soapAction="http://tempuri.org/GetGroupList" style="document" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+    <operation name="GroupInfo">
+      <soap:operation soapAction="http://tempuri.org/GroupInfo" style="document" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+    <operation name="GetArticle">
+      <soap:operation soapAction="http://tempuri.org/GetArticle" style="document" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+    <operation name="GetFormattedArticle">
+      <soap:operation soapAction="http://tempuri.org/GetFormattedArticle" style="document" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+    <operation name="ArticleList">
+      <soap:operation soapAction="http://tempuri.org/ArticleList" style="document" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+    <operation name="Authentication">
+      <soap:operation soapAction="http://tempuri.org/Authentication" style="document" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+    <operation name="GetLink">
+      <soap:operation soapAction="http://tempuri.org/GetLink" style="document" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+    <operation name="PostMIMEMessage">
+      <soap:operation soapAction="http://tempuri.org/PostMIMEMessage" style="document" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+  </binding>
+  <binding name="ForumHttpGet" type="s0:ForumHttpGet">
+    <http:binding verb="GET" />
+    <operation name="GroupList">
+      <http:operation location="/GroupList" />
+      <input>
+        <http:urlEncoded />
+      </input>
+      <output>
+        <mime:mimeXml part="Body" />
+      </output>
+    </operation>
+    <operation name="GetGroupList">
+      <http:operation location="/GetGroupList" />
+      <input>
+        <http:urlEncoded />
+      </input>
+      <output>
+        <mime:mimeXml part="Body" />
+      </output>
+    </operation>
+    <operation name="GroupInfo">
+      <http:operation location="/GroupInfo" />
+      <input>
+        <http:urlEncoded />
+      </input>
+      <output>
+        <mime:mimeXml part="Body" />
+      </output>
+    </operation>
+    <operation name="GetArticle">
+      <http:operation location="/GetArticle" />
+      <input>
+        <http:urlEncoded />
+      </input>
+      <output>
+        <mime:mimeXml part="Body" />
+      </output>
+    </operation>
+    <operation name="GetFormattedArticle">
+      <http:operation location="/GetFormattedArticle" />
+      <input>
+        <http:urlEncoded />
+      </input>
+      <output>
+        <mime:mimeXml part="Body" />
+      </output>
+    </operation>
+    <operation name="ArticleList">
+      <http:operation location="/ArticleList" />
+      <input>
+        <http:urlEncoded />
+      </input>
+      <output>
+        <mime:mimeXml part="Body" />
+      </output>
+    </operation>
+    <operation name="Authentication">
+      <http:operation location="/Authentication" />
+      <input>
+        <http:urlEncoded />
+      </input>
+      <output>
+        <mime:mimeXml part="Body" />
+      </output>
+    </operation>
+    <operation name="GetLink">
+      <http:operation location="/GetLink" />
+      <input>
+        <http:urlEncoded />
+      </input>
+      <output>
+        <mime:mimeXml part="Body" />
+      </output>
+    </operation>
+    <operation name="PostMIMEMessage">
+      <http:operation location="/PostMIMEMessage" />
+      <input>
+        <http:urlEncoded />
+      </input>
+      <output>
+        <mime:mimeXml part="Body" />
+      </output>
+    </operation>
+  </binding>
+  <binding name="ForumHttpPost" type="s0:ForumHttpPost">
+    <http:binding verb="POST" />
+    <operation name="GroupList">
+      <http:operation location="/GroupList" />
+      <input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </input>
+      <output>
+        <mime:mimeXml part="Body" />
+      </output>
+    </operation>
+    <operation name="GetGroupList">
+      <http:operation location="/GetGroupList" />
+      <input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </input>
+      <output>
+        <mime:mimeXml part="Body" />
+      </output>
+    </operation>
+    <operation name="GroupInfo">
+      <http:operation location="/GroupInfo" />
+      <input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </input>
+      <output>
+        <mime:mimeXml part="Body" />
+      </output>
+    </operation>
+    <operation name="GetArticle">
+      <http:operation location="/GetArticle" />
+      <input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </input>
+      <output>
+        <mime:mimeXml part="Body" />
+      </output>
+    </operation>
+    <operation name="GetFormattedArticle">
+      <http:operation location="/GetFormattedArticle" />
+      <input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </input>
+      <output>
+        <mime:mimeXml part="Body" />
+      </output>
+    </operation>
+    <operation name="ArticleList">
+      <http:operation location="/ArticleList" />
+      <input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </input>
+      <output>
+        <mime:mimeXml part="Body" />
+      </output>
+    </operation>
+    <operation name="Authentication">
+      <http:operation location="/Authentication" />
+      <input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </input>
+      <output>
+        <mime:mimeXml part="Body" />
+      </output>
+    </operation>
+    <operation name="GetLink">
+      <http:operation location="/GetLink" />
+      <input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </input>
+      <output>
+        <mime:mimeXml part="Body" />
+      </output>
+    </operation>
+    <operation name="PostMIMEMessage">
+      <http:operation location="/PostMIMEMessage" />
+      <input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </input>
+      <output>
+        <mime:mimeXml part="Body" />
+      </output>
+    </operation>
+  </binding>
+  <service name="Forum">
+    <documentation>The service provides access to the RSDN forums. Desktop client for Outlook Express can be downloaded &lt;a href=http://www.rsdn.ru/?files/?Progs/desktop.xml&gt;right here&lt;/a&gt;.</documentation>
+    <port name="ForumSoap" binding="s0:ForumSoap">
+      <soap:address location="http://rsdn.ru/ws/forum.asmx" />
+    </port>
+    <port name="ForumHttpGet" binding="s0:ForumHttpGet">
+      <http:address location="http://rsdn.ru/ws/forum.asmx" />
+    </port>
+    <port name="ForumHttpPost" binding="s0:ForumHttpPost">
+      <http:address location="http://rsdn.ru/ws/forum.asmx" />
+    </port>
+  </service>
+</definitions>
