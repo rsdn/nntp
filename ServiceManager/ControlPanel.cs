@@ -64,6 +64,7 @@ namespace derIgel.RsdnNntp
 			// 
 			this.okButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
 			this.okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
+			this.okButton.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.okButton.Location = new System.Drawing.Point(33, 319);
 			this.okButton.Name = "okButton";
 			this.okButton.TabIndex = 1;
@@ -74,6 +75,7 @@ namespace derIgel.RsdnNntp
 			// 
 			this.cancelButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
 			this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.cancelButton.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.cancelButton.Location = new System.Drawing.Point(137, 319);
 			this.cancelButton.Name = "cancelButton";
 			this.cancelButton.TabIndex = 2;
@@ -83,6 +85,7 @@ namespace derIgel.RsdnNntp
 			// 
 			this.applyButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
 			this.applyButton.Enabled = false;
+			this.applyButton.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.applyButton.Location = new System.Drawing.Point(233, 319);
 			this.applyButton.Name = "applyButton";
 			this.applyButton.TabIndex = 3;
@@ -105,6 +108,7 @@ namespace derIgel.RsdnNntp
 			// 
 			this.alertText.Anchor = (System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left);
 			this.alertText.AutoSize = true;
+			this.alertText.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.alertText.Location = new System.Drawing.Point(32, 299);
 			this.alertText.Name = "alertText";
 			this.alertText.Size = new System.Drawing.Size(248, 13);

@@ -9,6 +9,7 @@ using derIgel.NNTP.Commands;
 using System.Text.RegularExpressions;
 using derIgel.MIME;
 using System.Diagnostics;
+using System.Net;
 
 namespace derIgel.NNTP
 {
@@ -121,6 +122,7 @@ namespace derIgel.NNTP
 		protected static Hashtable commandsTypes;
 		public string Username;
 		public string Password;
+		protected internal string sender;
 
 		// resonse answer from server
 		protected void Answer(int code)
@@ -206,7 +208,15 @@ namespace derIgel.NNTP
 							{
 								case States.PostWaiting	:
 									sessionState = States.Normal;
-									dataProvider.PostMessage(Message.Parse(commandString));
+									Message postingMessage = Message.Parse(commandString);
+									
+									// add addtitional server headers
+									postingMessage["Sender"] = sender;
+									if (postingMessage["Path"] != null)
+										postingMessage["Path"] += "!";
+									postingMessage["Path"] = Dns.GetHostByAddress(IPAddress.Loopback).HostName + postingMessage["Path"];
+									
+									dataProvider.PostMessage(postingMessage);
 									result = new Response(NntpResponse.PostedOk);
 									break;
 								default	:
@@ -264,7 +274,7 @@ namespace derIgel.NNTP
 									result = new Response(NntpResponse.NoSuchArticle);
 									break;
 								case DataProviderErrors.NoPermission:
-									result = new Response(NntpResponse.AuthentificationRequired);
+									result = new Response(NntpResponse.NoPermission);
 									sessionState = States.AuthRequired;
 									break;
 								case DataProviderErrors.NotSupported:
@@ -345,7 +355,7 @@ namespace derIgel.NNTP
 		/// <summary>
 		/// network client
 		/// </summary>
-		protected Socket client;
+		protected internal Socket client;
 		/// <summary>
 		/// network stream for client's session
 		/// </summary>

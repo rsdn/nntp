@@ -150,7 +150,7 @@ namespace derIgel.RsdnNntp
 				newsMessage = ToNNTPArticle(message, message.group, content);
 				// access to cache
 				if (cache.Capacity > 0)
-					cache[newsMessage.MessageID, currentGroup, newsMessage.Number] =	newsMessage;
+					cache[newsMessage.MessageID, currentGroup, (int)newsMessage.MessageNumbers[currentGroup]] =	newsMessage;
 			}
 
 			return newsMessage;
@@ -170,7 +170,7 @@ namespace derIgel.RsdnNntp
 			if (articleList.Length == 0)
 				throw new DataProviderException(DataProviderErrors.NoNextArticle);
 
-			currentArticle = articleList[0].Number;
+			currentArticle = (int)articleList[0].MessageNumbers[currentGroup];
 
 			return articleList[0];
 		}
@@ -189,7 +189,7 @@ namespace derIgel.RsdnNntp
 			if (articleList.Length == 0)
 				throw new DataProviderException(DataProviderErrors.NoPrevArticle);
 
-			currentArticle = articleList[articleList.Length - 1].Number;
+			currentArticle = (int)articleList[articleList.Length - 1].MessageNumbers[currentGroup];
 			return articleList[articleList.Length - 1];
 		}
 
@@ -232,10 +232,16 @@ namespace derIgel.RsdnNntp
 			try
 			{
 				auth = webService.Authentication(user, pass);
-				if (!auth.ok)
-					throw new DataProviderException(DataProviderErrors.NoPermission);
-				username = user;
-				password = pass;
+				if (auth.ok)
+				{
+					username = user;
+					password = pass;
+				}
+				else
+				{
+					username = "";
+					password = "";
+				}
 			}
 			catch (System.Exception exception)
 			{
@@ -249,7 +255,7 @@ namespace derIgel.RsdnNntp
 		protected NewsArticle ToNNTPArticle(article message, string newsgroup, NewsArticle.Content content)
 		{
 			NewsArticle newsMessage = new NewsArticle("<" + message.id + message.postfix + ">",
-				message.num);
+				new string[]{newsgroup}, new int[]{message.num});
 			newsMessage.HeaderEncoding = encoding;
 
 			if ((content == NewsArticle.Content.Header) ||
@@ -263,9 +269,6 @@ namespace derIgel.RsdnNntp
 					newsMessage["X-UserID"] = message.authorid;
 				if (message.pid != string.Empty)
 					newsMessage["References"] = "<" + message.pid + message.postfix + ">";
-				newsMessage["Newsgroups"] = newsgroup;
-				newsMessage["Xref"] = string.Format("{0} {1}:{2}", Dns.GetHostName(), newsgroup, message.num);
-				newsMessage["X-Server"] = serverID;
 			}
 
 			if ((content == NewsArticle.Content.Body) ||
@@ -330,8 +333,6 @@ namespace derIgel.RsdnNntp
 		/// </summary>
 		protected int currentGroupArticleEndNumber = -1;
 
-		protected static readonly string serverID = Manager.GetProductTitle(Assembly.GetExecutingAssembly());
-
 		protected static Regex leadingSpaces = new Regex(@"(?m)^\s+", RegexOptions.Compiled);
 
 		public void PostMessage(Message message)
@@ -348,7 +349,7 @@ namespace derIgel.RsdnNntp
 					plainText.Append(text);
 				
 				// tagline
-				plainText.Append("[tagline]Posted via ").Append(serverID).Append("[/tagline]");
+				plainText.Append("[tagline]Posted via ").Append(derIgel.NNTP.Commands.Generic.ServerID).Append("[/tagline]");
 
 				post_result result =
 					webService.PostUnicodeMessage(username, password, mid, group, message.Subject,
@@ -443,6 +444,14 @@ namespace derIgel.RsdnNntp
 				return null;
 			else
 				return moderatorTagline.Replace(removeTagline.Replace(text, ""), "");
+		}
+
+		public string CurrentGroup
+		{
+			get
+			{
+				return currentGroup;
+			}
 		}
 	}
 }

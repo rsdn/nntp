@@ -112,6 +112,7 @@ namespace derIgel.RsdnNntp
 			// titleLabel
 			// 
 			this.titleLabel.AutoSize = true;
+			this.titleLabel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.titleLabel.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
 			this.titleLabel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.titleLabel.Location = new System.Drawing.Point(72, 16);

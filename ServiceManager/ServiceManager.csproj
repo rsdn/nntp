@@ -193,6 +193,7 @@
                 />
             </Include>
         </Files>
+        <UserProperties Themed = "FALSE" />
     </CSHARP>
 </VisualStudioProject>
 

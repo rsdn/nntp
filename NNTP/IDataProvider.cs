@@ -34,6 +34,15 @@ namespace derIgel.NNTP
 		void PostMessage(Message article);
 
 		/// <summary>
+		/// Get current selected group.
+		/// 'null' if no group selected
+		/// </summary>
+		string CurrentGroup
+		{
+			get;
+		}
+
+		/// <summary>
 		/// true, if posting allowed for this provider
 		/// </summary>
 		bool PostingAllowed

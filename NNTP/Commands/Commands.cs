@@ -5,12 +5,17 @@ using derIgel.NNTP;
 using System.Text;
 using derIgel.MIME;
 using System.Reflection;
+using System.Collections;
 using System.Collections.Specialized;
+using System.Net;
 
 [assembly:derIgel.NNTP.Commands.NNTPCommand("")]
 
 namespace derIgel.NNTP.Commands
 {
+	/// See RFC  977 'Network News Transport Protocol'
+	/// See RFC 2980 'Common NNTP Extensions'
+	
 	using Util = derIgel.MIME.Util;
 	
 	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Assembly, Inherited = false,
@@ -37,6 +42,9 @@ namespace derIgel.NNTP.Commands
 	/// </summary>
 	public abstract class Generic
 	{
+		/// server identification string
+		public static readonly string ServerID = Manager.GetProductTitle(Assembly.GetExecutingAssembly());
+
 		public Generic(Session session)
 		{
 			syntaxisChecker = null;
@@ -78,6 +86,21 @@ namespace derIgel.NNTP.Commands
 					return true;
 
 			return false;
+		}
+
+		/// <summary>
+		/// add dditional headers specified by server
+		/// </summary>
+		/// <param name="article">news article</param>
+		/// <returns>modified news article</returns>
+		protected NewsArticle ModifyArticle(NewsArticle article)
+		{
+			StringBuilder xref = new StringBuilder(Dns.GetHostName());
+			foreach (DictionaryEntry newsGroupNumber in article.MessageNumbers)
+				xref.Append(" ").Append(newsGroupNumber.Key).Append(":").Append(newsGroupNumber.Value);
+			article["Xref"] = xref.ToString();
+			article["X-Server"] = ServerID;
+			return article;
 		}
 	}
 
@@ -121,9 +144,11 @@ namespace derIgel.NNTP.Commands
 			StringBuilder output = new StringBuilder();
 			foreach (NewsArticle article in articleList)
 			{
-				output.Append(article.Number);
+				output.Append(ModifyArticle(article).MessageNumbers[session.DataProvider.CurrentGroup]);
 				foreach (string headerItem in List.headerItems)
-					output.Append('\t').Append(article.EncodedHeader(headerItem));
+					// replace in header all '\t', '\r', '\n' symbols to space
+					output.Append('\t').Append(article[headerItem] == null ? null :
+						article.EncodedHeader(headerItem).Replace('\t', ' ').Replace('\r', ' ').Replace('\n', ' '));
 				output.Append(Util.CRLF);
 			}
 			return new Response(NntpResponse.Overview, Encoding.ASCII.GetBytes(output.ToString()));
@@ -192,8 +217,9 @@ namespace derIgel.NNTP.Commands
 			else
 				article = session.DataProvider.GetArticle(NewsArticle.Content.HeaderAndBody);
 			
+			ModifyArticle(article);
 			return new Response(responseCode, article.GetBody(),
-				article.Number, article["Message-ID"]);
+				article.MessageNumbers[session.DataProvider.CurrentGroup], article["Message-ID"]);
 		}
 	}
 
@@ -215,7 +241,8 @@ namespace derIgel.NNTP.Commands
 		protected override Response ProcessCommand()
 		{
 			NewsArticle article = session.DataProvider.GetNextArticle();
-			return new Response(NntpResponse.ArticleNothingRetrivied, null, article.Number, article["Message-ID"]);
+			return new Response(NntpResponse.ArticleNothingRetrivied, null,
+				article.MessageNumbers[session.DataProvider.CurrentGroup], article["Message-ID"]);
 		}
 	}
 
@@ -237,7 +264,8 @@ namespace derIgel.NNTP.Commands
 		protected override Response ProcessCommand()
 		{
 			NewsArticle article = session.DataProvider.GetPrevArticle();
-			return new Response(NntpResponse.ArticleNothingRetrivied, null, article.Number, article["Message-ID"]);
+			return new Response(NntpResponse.ArticleNothingRetrivied, null,
+				article.MessageNumbers[session.DataProvider.CurrentGroup], article["Message-ID"]);
 		}
 	}
 
@@ -286,6 +314,7 @@ namespace derIgel.NNTP.Commands
 			headerItems.Add("references");
 			headerItems.Add("bytes");
 			headerItems.Add("lines");
+			headerItems.Add("xref");
 		}
 		public List(Session session) : base(session)
 		{
@@ -570,6 +599,7 @@ namespace derIgel.NNTP.Commands
 						{
 							session.sessionState = Session.States.Normal;
 							result = new Response(281);
+							session.sender = session.Username + "@" + Dns.GetHostByAddress(((IPEndPoint)session.client.RemoteEndPoint).Address).HostName;
 						}
 						else
 						{
@@ -577,6 +607,7 @@ namespace derIgel.NNTP.Commands
 							session.Password = "";
 							session.sessionState = Session.States.AuthRequired;
 							result = new Response(NntpResponse.NoPermission);
+							session.sender = null;
 						}
 						break;
 				}
@@ -601,8 +632,8 @@ namespace derIgel.NNTP.Commands
 		protected override Response ProcessCommand()
 		{
 			StringBuilder supportCommands = new StringBuilder();
-			supportCommands.Append(Manager.GetProductTitle(Assembly.GetExecutingAssembly())).Append(Util.CRLF).
-				Append("Support follow commands:").Append(Util.CRLF);
+			supportCommands.Append(Manager.GetProductTitle(Assembly.GetExecutingAssembly())).Append(" ").
+				Append("supports follow commands:").Append(Util.CRLF);
 			foreach (string command in session.commands.Keys)
 				supportCommands.AppendFormat("\t{0}{1}", command,Util.CRLF);
 			return new Response(NntpResponse.Help, Encoding.ASCII.GetBytes(supportCommands.ToString()));

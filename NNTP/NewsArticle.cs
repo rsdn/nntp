@@ -13,13 +13,29 @@ namespace derIgel.NNTP
 	[Serializable]
 	public class NewsArticle : Message
 	{
-		public NewsArticle(string messageID, int messageNumber)
+		public NewsArticle(string messageID, string[] newsGroups, int[] messageNumbers)
 		{
-			this.messageNumber = messageNumber;
-			this["Message-ID"] = messageID;
+			if (newsGroups.Length != messageNumbers.Length)
+				throw new ArgumentException("Size of newsGroups and messageNumbers parameters must be the same.");
+
+			StringBuilder newsGroupsHeader = new StringBuilder();
+			MessageID = messageID;
+
+			this.messageNumbers = CollectionsUtil.CreateCaseInsensitiveHashtable(newsGroups.Length);
+			for (int i = 0; i < newsGroups.Length; i++)
+			{
+				newsGroupsHeader.Append(newsGroups[i]).Append(" ");
+				this.messageNumbers[newsGroups[i]] = messageNumbers[i];
+			}
+			
+			this["Newsgroups"] = newsGroupsHeader.ToString();
 		}
 
-		protected	int messageNumber;
+		protected	Hashtable messageNumbers;
+		public Hashtable MessageNumbers
+		{
+			get { return messageNumbers; }
+		}
 
 		public enum Content {None, Header, Body, HeaderAndBody }
 
@@ -28,12 +44,6 @@ namespace derIgel.NNTP
 			get { return this["Message-ID"]; }
 			set { this["Message-ID"] = value; }
 		}
-		public int Number
-		{
-			get	{	return messageNumber;	}
-			set	{	messageNumber = value;}
-		}
-
 		/// <summary>
 		/// type of content of article
 		/// </summary>
