@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.ComponentModel;
 using System.Configuration.Install;
+using System.IO;
 
 namespace derIgel.RsdnNntp
 {
@@ -59,6 +60,21 @@ namespace derIgel.RsdnNntp
 		private void serviceProcessInstaller_AfterInstall(object sender, System.Configuration.Install.InstallEventArgs e)
 		{
 		
+		}
+
+		private void customInstaller_AfterInstall(object sender, System.Configuration.Install.InstallEventArgs e)
+		{
+		
+		}
+
+		public override void Uninstall(System.Collections.IDictionary savedState)
+		{
+			base.Uninstall(savedState);
+
+			// remove statistics & cache files
+			string installdir = Path.GetDirectoryName(Context.Parameters["assemblypath"]);
+			File.Delete(Path.Combine(installdir, "NNTP.stat"));
+			File.Delete(Path.Combine(installdir, "RsdnDataProvider.cache"));
 		}
 	}
 }

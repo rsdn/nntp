@@ -93,31 +93,31 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_EE34BBB7A6A2485ABB6A1A83AB33CCFB"
+        "MsmKey" = "8:_FF49F573772C4C238CA5491DFEAE4EBB"
         "OwnerKey" = "8:_A295B17FAF2A46728459EDDD4E09D8ED"
         "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
         }
         "Entry"
         {
-        "MsmKey" = "8:_EE34BBB7A6A2485ABB6A1A83AB33CCFB"
+        "MsmKey" = "8:_FF49F573772C4C238CA5491DFEAE4EBB"
         "OwnerKey" = "8:_B389EFE1C7124CC5AF04813D17771C0A"
         "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
         }
         "Entry"
         {
-        "MsmKey" = "8:_EE34BBB7A6A2485ABB6A1A83AB33CCFB"
+        "MsmKey" = "8:_FF49F573772C4C238CA5491DFEAE4EBB"
         "OwnerKey" = "8:_B7AC9C7FB609EB5E7D8220DCE170FC93"
         "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
         }
         "Entry"
         {
-        "MsmKey" = "8:_EE34BBB7A6A2485ABB6A1A83AB33CCFB"
+        "MsmKey" = "8:_FF49F573772C4C238CA5491DFEAE4EBB"
         "OwnerKey" = "8:_0C42E6EB01A133CC10FF43372AAAFFDD"
         "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
         }
         "Entry"
         {
-        "MsmKey" = "8:_EE34BBB7A6A2485ABB6A1A83AB33CCFB"
+        "MsmKey" = "8:_FF49F573772C4C238CA5491DFEAE4EBB"
         "OwnerKey" = "8:_8AFFB29AF246716366319FA362E0F50F"
         "MsmSig" = "8:mondo.E4183BB4_18A8_11D5_A549_0090278A1BB8"
         }
@@ -161,21 +161,7 @@
     {
         "CustomAction"
         {
-            "{BD802302-E51A-43FD-B633-D8B93C611E5F}:_246332E0B31841E0881608B67AC769FE"
-            {
-            "Name" = "8:Primary output from Service (Active)"
-            "Condition" = "8:"
-            "Object" = "8:_B389EFE1C7124CC5AF04813D17771C0A"
-            "FileType" = "3:2"
-            "InstallAction" = "3:1"
-            "Arguments" = "8:"
-            "EntryPoint" = "8:"
-            "Sequence" = "3:1"
-            "Identifier" = "8:_8009AFFC_F624_43BB_8B10_9CC283DE3E4A"
-            "InstallerClass" = "11:TRUE"
-            "CustomActionData" = "8:"
-            }
-            "{BD802302-E51A-43FD-B633-D8B93C611E5F}:_4FED2F6F49A44A8983EB502C12D64609"
+            "{BD802302-E51A-43FD-B633-D8B93C611E5F}:_357172997CFD4EFCBDEFCD1D7141E725"
             {
             "Name" = "8:Primary output from Service (Active)"
             "Condition" = "8:"
@@ -185,11 +171,11 @@
             "Arguments" = "8:"
             "EntryPoint" = "8:"
             "Sequence" = "3:1"
-            "Identifier" = "8:_128DEE69_2E29_48A1_8945_CDF9C3D31232"
+            "Identifier" = "8:_B07A614F_7924_4BA0_8F0E_1F09E2429F31"
             "InstallerClass" = "11:TRUE"
             "CustomActionData" = "8:"
             }
-            "{BD802302-E51A-43FD-B633-D8B93C611E5F}:_876E6DE06A9542F7B0A811A1FD4D97C4"
+            "{BD802302-E51A-43FD-B633-D8B93C611E5F}:_6211A3469C9743CF92B45B129094EBF8"
             {
             "Name" = "8:Primary output from Service (Active)"
             "Condition" = "8:"
@@ -199,11 +185,11 @@
             "Arguments" = "8:"
             "EntryPoint" = "8:"
             "Sequence" = "3:1"
-            "Identifier" = "8:_7151575F_6A6D_436C_8655_88E9E3563DDA"
+            "Identifier" = "8:_7A7727C8_C13A_4B73_A3AF_995C2DF9B268"
             "InstallerClass" = "11:TRUE"
             "CustomActionData" = "8:"
             }
-            "{BD802302-E51A-43FD-B633-D8B93C611E5F}:_BC734D8D4B744763905FDC96DF05E438"
+            "{BD802302-E51A-43FD-B633-D8B93C611E5F}:_99F656185B2C4A5A8C115537B40C514B"
             {
             "Name" = "8:Primary output from Service (Active)"
             "Condition" = "8:"
@@ -213,7 +199,21 @@
             "Arguments" = "8:"
             "EntryPoint" = "8:"
             "Sequence" = "3:1"
-            "Identifier" = "8:_D794605B_7451_4294_8B85_CFD879956597"
+            "Identifier" = "8:_09358E78_10E9_48DF_BCEC_2FF3216988BB"
+            "InstallerClass" = "11:TRUE"
+            "CustomActionData" = "8:"
+            }
+            "{BD802302-E51A-43FD-B633-D8B93C611E5F}:_A0158AE3DE494CCDBEEBC915543BF10A"
+            {
+            "Name" = "8:Primary output from Service (Active)"
+            "Condition" = "8:"
+            "Object" = "8:_B389EFE1C7124CC5AF04813D17771C0A"
+            "FileType" = "3:2"
+            "InstallAction" = "3:1"
+            "Arguments" = "8:"
+            "EntryPoint" = "8:"
+            "Sequence" = "3:1"
+            "Identifier" = "8:_16DD3195_5D78_47CF_88A0_134CC6D40D53"
             "InstallerClass" = "11:TRUE"
             "CustomActionData" = "8:"
             }
@@ -233,7 +233,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:NNTP, Version=1.4.1075.16598, Culture=neutral"
+            "AssemblyAsmDisplayName" = "8:NNTP, Version=1.4.1075.21055, Culture=neutral"
                 "ScatterAssemblies"
                 {
                     "_0C42E6EB01A133CC10FF43372AAAFFDD"
@@ -304,7 +304,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:MIME, Version=0.5.1075.16598, Culture=neutral"
+            "AssemblyAsmDisplayName" = "8:MIME, Version=0.5.1075.21054, Culture=neutral"
                 "ScatterAssemblies"
                 {
                     "_8AFFB29AF246716366319FA362E0F50F"
@@ -335,7 +335,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:RsdnDataProvider, Version=1.4.1075.16598, Culture=neutral"
+            "AssemblyAsmDisplayName" = "8:RsdnDataProvider, Version=1.4.1075.21056, Culture=neutral"
                 "ScatterAssemblies"
                 {
                     "_B7AC9C7FB609EB5E7D8220DCE170FC93"
@@ -630,7 +630,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:RSDN NNTP Server"
         "ProductCode" = "8:{87DB25D7-CD9F-44FD-922D-B6D91F6A2B56}"
-        "PackageCode" = "8:{62694ADA-8890-4A2B-97DF-66F6ADA7B936}"
+        "PackageCode" = "8:{4139A411-26B6-41AC-A3BC-AB0C8738DE30}"
         "UpgradeCode" = "8:{7123A411-9564-4667-9C7C-C08988E1B0AC}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
@@ -656,7 +656,7 @@
         }
         "MergeModule"
         {
-            "{AC8774A4-3E09-11D3-8E14-00C04F6837D0}:_EE34BBB7A6A2485ABB6A1A83AB33CCFB"
+            "{AC8774A4-3E09-11D3-8E14-00C04F6837D0}:_FF49F573772C4C238CA5491DFEAE4EBB"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
