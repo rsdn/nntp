@@ -9,10 +9,17 @@ using derIgel.NNTP;
 namespace derIgel.RsdnNntp
 {
 	/// <summary>
-	/// settings for application
+	/// MIME message formatting style
 	/// </summary>
-	public class DataProviderSettings
+	public enum FormattingStyle { PlainText, Html, HtmlInlineImages }
+
+	/// <summary>
+	/// Settings for RSDN Data Provider
+	/// </summary>
+	[Serializable]
+	public class DataProviderSettings : MarshalByRefObject
 	{
+
 		public DataProviderSettings()
 		{
 			serviceAddress = new Uri(defaultServiceAddress);
@@ -101,14 +108,14 @@ namespace derIgel.RsdnNntp
 			}
 		}
 
-		protected bool plainText;
+		protected FormattingStyle formatting = FormattingStyle.Html;
 
 		[Category("Others")]
-		[DefaultValue(false)]
-		public bool PlainText
+		[DefaultValue(FormattingStyle.Html)]
+		public FormattingStyle Formatting
 		{
-			get { return plainText; }
-			set { plainText = value; }
+			get { return formatting; }
+			set { formatting = value; }
 		}
 	}
 }

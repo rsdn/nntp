@@ -9,11 +9,12 @@ using System.Configuration;
 using System.Text;
 using derIgel.MIME;
 using RSDN.Common;
+using System.Web;
 
 namespace derIgel.RsdnNntp
 {
 	/// <summary>
-	/// 
+	/// RSDN Data Provider
 	/// </summary>
 	public class RsdnDataProvider : derIgel.NNTP.IDataProvider
 	{
@@ -252,6 +253,16 @@ namespace derIgel.RsdnNntp
 
 		protected static readonly FormatMessage formatMessage = new FormatMessage();
 
+		protected static readonly Regex detectImages = new Regex(@"\[img\](?<url>.*?)\[/img\]", RegexOptions.Compiled);
+		
+		/// <summary>
+		/// Convert rsdn's message to MIME message
+		/// Also see rfc 2046, 2112, 2392
+		/// </summary>
+		/// <param name="message"></param>
+		/// <param name="newsgroup"></param>
+		/// <param name="content"></param>
+		/// <returns></returns>
 		protected NewsArticle ToNNTPArticle(article message, string newsgroup, NewsArticle.Content content)
 		{
 			NewsArticle newsMessage = new NewsArticle("<" + message.id + message.postfix + ">",
@@ -275,34 +286,78 @@ namespace derIgel.RsdnNntp
 			if ((content == NewsArticle.Content.Body) ||
 				(content == NewsArticle.Content.HeaderAndBody))
 			{
-				
-				if (plainText)
+				switch (style)
 				{
-					newsMessage.Entities.Add(PrepareText(message.message));
-					newsMessage.TransferEncoding = ContentTransferEncoding.Base64;
-					newsMessage.ContentType = string.Format("text/plain; charset=\"{0}\"", encoding.WebName);
+					case FormattingStyle.PlainText :
+						newsMessage.Entities.Add(PrepareText(message.message));
+						newsMessage.TransferEncoding = ContentTransferEncoding.Base64;
+						newsMessage.ContentType = string.Format("text/plain; charset=\"{0}\"", encoding.WebName);
+						break;
+					case FormattingStyle.Html :
+					case FormattingStyle.HtmlInlineImages :
+						Message plainTextBody = new Message(false);
+						plainTextBody.Entities.Add(PrepareText(message.message));
+						plainTextBody.TransferEncoding = ContentTransferEncoding.Base64;
+						plainTextBody.ContentType = string.Format("text/plain; charset=\"{0}\"", encoding.WebName);
+
+						Message htmlTextBody = new Message(false);
+						string htmlText = string.Format(htmlMessageTemplate, message.authorid, message.author,
+							message.gid, message.id,
+							(message.message != null) ? formatMessage.PrepareText(message.message, true) : "",
+							message.userType,
+							(message.homePage != null) ? formatMessage.PrepareText(message.homePage, true) : null);
+						htmlTextBody.Entities.Add(htmlText);
+						htmlTextBody.TransferEncoding = ContentTransferEncoding.Base64;
+						htmlTextBody.ContentType = string.Format("text/html; charset=\"{0}\"", encoding.WebName);
+						
+						MatchCollection detectedImages = detectImages.Matches((message.message != null) ? message.message : "");
+						if ((style == FormattingStyle.HtmlInlineImages) && (detectedImages.Count > 0))
+						{
+							newsMessage.ContentType = "multipart/related; type=multipart/alternative";
+
+							Message combineMessage = new Message(false);
+							combineMessage.ContentType = "multipart/alternative";
+							combineMessage.Entities.Add(plainTextBody);
+							combineMessage.Entities.Add(htmlTextBody);
+							newsMessage.Entities.Add(combineMessage);
+
+							foreach (Match match in detectedImages)
+							{
+								WebResponse response = null;
+								try
+								{
+									WebRequest req = WebRequest.Create(match.Groups["url"].Value);
+									response = req.GetResponse();
+									Message imgPart = new Message(false);
+									imgPart.ContentType = response.ContentType;
+									Guid imgContentID = Guid.NewGuid();
+									imgPart["Content-ID"] = '<' + imgContentID.ToString() + '>';
+									imgPart["Content-Description"] = req.RequestUri.ToString();
+									imgPart["Content-Disposition"] = "INLINE; file=\"" + req.RequestUri.AbsolutePath+ '"';
+									imgPart.TransferEncoding = ContentTransferEncoding.Base64;
+									using (BinaryReader reader = new BinaryReader(response.GetResponseStream()))
+									{
+										imgPart.Entities.Add(reader.ReadBytes((int)response.ContentLength));
+									}
+									newsMessage.Entities.Add(imgPart);
+									htmlText = htmlText.Replace(match.Groups["url"].Value, "cid:" + imgContentID.ToString());
+								}
+								finally
+								{
+									if (response != null)
+										response.Close();
+								}
+							}
+							htmlTextBody.Entities[0] = htmlText;
+						}
+						else
+						{
+							newsMessage.ContentType = "multipart/alternative";
+							newsMessage.Entities.Add(plainTextBody);
+							newsMessage.Entities.Add(htmlTextBody);
+						}
+						break;
 				}
-				else
-				{
-					Message plainTextBody = new Message(false);
-					plainTextBody.Entities.Add(PrepareText(message.message));
-					plainTextBody.TransferEncoding = ContentTransferEncoding.Base64;
-					plainTextBody.ContentType = string.Format("text/plain; charset=\"{0}\"", encoding.WebName);
-
-					Message htmlTextBody = new Message(false);
-					string htmlText = string.Format(htmlMessageTemplate, message.authorid, message.author,
-						message.gid, message.id,
-						(message.message != null) ? formatMessage.PrepareText(message.message, true) : null,
-						message.userType,
-						(message.homePage != null) ? formatMessage.PrepareText(message.homePage, true) : null);
-					htmlTextBody.Entities.Add(htmlText);
-					htmlTextBody.TransferEncoding = ContentTransferEncoding.Base64;
-					htmlTextBody.ContentType = string.Format("text/html; charset=\"{0}\"", encoding.WebName);
-
-					newsMessage.Entities.Add(plainTextBody);
-					newsMessage.Entities.Add(htmlTextBody);
-					newsMessage.ContentType = "multipart/alternative";
-				}			
 			}
 	
 			return newsMessage;
@@ -447,9 +502,11 @@ namespace derIgel.RsdnNntp
 				webService.Proxy = rsdnSettings.Proxy;
 				encoding = rsdnSettings.GetEncoding;
 				cache.Capacity = rsdnSettings.CacheSize;
-				plainText = rsdnSettings.PlainText;
+				style = rsdnSettings.Formatting;
 			}
 		}
+
+		protected FormattingStyle style = FormattingStyle.Html;
 
 		protected static Regex removeTagline = new Regex(@"(?s)\[tagline\].*?\[/tagline\]", RegexOptions.Compiled);
 		protected static Regex moderatorTagline = new Regex(@"(?s)\[moderator\].*?\[/moderator\]",
@@ -478,8 +535,6 @@ namespace derIgel.RsdnNntp
 		{
 			return typeof(DataProviderSettings);
 		}
-
-		protected bool plainText;
 
 		internal string GetPlainTextFromMessage(Message message)
 		{

@@ -355,22 +355,28 @@ namespace derIgel.MIME
 					{
 						case ContentTransferEncoding.Base64	:
 							// Encode & break in lines, if needed
-							writer.Write(Util.Encode(body.ToString(), false, encoding,
-								Util.lineLength).ToCharArray());
+							if (body is byte[])
+								// TODO: trunc to line length!
+								writer.Write(Convert.ToBase64String((byte[])body).ToCharArray());
+							else
+								writer.Write(Util.Encode(body.ToString(), false, encoding,
+									Util.lineLength).ToCharArray());
 							break;
 						case ContentTransferEncoding.QoutedPrintable :
-							writer.Write(Util.ToQuotedPrintableString(encoding.GetBytes(body.ToString())).ToCharArray());
+							writer.Write(Util.ToQuotedPrintableString(
+								(body is byte[]) ? (byte[])body : encoding.GetBytes(body.ToString())).ToCharArray());
 							break;
 						case ContentTransferEncoding.EightBit :
 							// split per 1000 symbols (including trailing CRLF)
 							//writer.Write(encoding.GetBytes(split998.Replace(body.ToString(), "$&" + Util.CRLF)));
-							writer.Write(encoding.GetBytes(body.ToString()));
+							writer.Write((body is byte[]) ? (byte[])body : encoding.GetBytes(body.ToString()));
 							break;
 						default	:
 							// split per 1000 symbols (including trailing CRLF)
 							// leave only 7bit from each 8-bit symbol
 							writer.Write(
-								Encoding.ASCII.GetBytes(Encoding.ASCII.GetString(encoding.GetBytes(body.ToString()))));
+								Encoding.ASCII.GetBytes(Encoding.ASCII.GetString(
+								(body is byte[]) ? (byte[])body : encoding.GetBytes(body.ToString()))));
 							break;
 					}
 			}
