@@ -231,6 +231,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Commands\Help.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Commands\XHdr.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

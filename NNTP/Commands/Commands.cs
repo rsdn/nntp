@@ -582,40 +582,4 @@ namespace Rsdn.Nntp.Commands
 			return result;
 		}
 	}
-
-	/// <summary>
-	/// HELP client command
-	/// </summary>
-	[NntpCommand("HELP")]
-	public class Help : Generic
-	{
-		/// <summary>
-		/// Command syntaxis checker.
-		/// </summary>
-		protected static Regex HelpSyntaxisChecker =
-			new Regex(@"(?in)^HELP[ \t]*$", RegexOptions.Compiled);
-
-		/// <summary>
-		/// Create command handler.
-		/// </summary>
-		/// <param name="session">Parent NNTP session.</param>
-		public Help(Session session) : base(session)
-		{
-			syntaxisChecker = HelpSyntaxisChecker;
-		}
-
-		/// <summary>
-		/// Process command.
-		/// </summary>
-		/// <returns>Server's NNTP response</returns>
-		protected override Response ProcessCommand()
-		{
-			StringBuilder supportCommands = new StringBuilder();
-			supportCommands.Append(Manager.ServerID).Append(" ").
-				Append("supports follow commands:").Append(Util.CRLF);
-			foreach (string command in session.commands.Keys)
-				supportCommands.AppendFormat("\t{0}{1}", command,Util.CRLF);
-			return new Response(NntpResponse.Help, supportCommands.ToString());
-		}
-	}
 }
