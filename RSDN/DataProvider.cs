@@ -572,8 +572,9 @@ namespace Rsdn.RsdnNntp
     /// <param name="exception"></param>
     protected void ProcessException(System.Exception exception)
     {
-    	if (exception.GetType() == typeof(System.Net.WebException))
-    		// problems with connection?
+    	if (typeof(InvalidOperationException).IsAssignableFrom(exception.GetType()))
+    		// check for System.InvalidOperationException (html instead xml in answer),
+				// System.Net.WebException (connection problems)
     		throw new DataProviderException(DataProviderErrors.ServiceUnaviable, exception);
 
 			switch (exception.Message)
