@@ -11,7 +11,7 @@ using System.Runtime.Serialization.Formatters;
 using System.Runtime.Serialization;
 using System.Diagnostics;
 
-using RSDN.Common;
+using Rsdn.Framework.Formatting;
 
 using Rsdn.Mime;
 using Rsdn.Nntp;
@@ -362,7 +362,7 @@ namespace Rsdn.RsdnNntp
 		/// <summary>
 		/// RSDN tags processor
 		/// </summary>
-		protected static readonly FormatMessage formatMessage = new FormatMessage();
+		protected static readonly TextFormatter formatMessage = new TextFormatter();
 		/// <summary>
 		/// Result MIME messages' format
 		/// </summary>
@@ -431,9 +431,9 @@ namespace Rsdn.RsdnNntp
 						Message htmlTextBody = new Message(false);
 						string htmlText = string.Format(htmlMessageTemplate, message.authorid, message.author,
 							message.gid, message.id,
-							(message.message != null) ? formatMessage.PrepareText(message.message, true) : "",
+							(message.message != null) ? formatMessage.Format(message.message, true) : "",
 							message.userType,
-							(message.homePage != null) ? formatMessage.PrepareText(message.homePage, true) : null);
+							(message.homePage != null) ? formatMessage.Format(message.homePage, true) : null);
 						htmlTextBody.Entities.Add(htmlText);
 						htmlTextBody.TransferEncoding = ContentTransferEncoding.Base64;
 						htmlTextBody.ContentType = string.Format("text/html; charset=\"{0}\"", encoding.WebName);
