@@ -320,7 +320,7 @@
             <param name="str">Исходная строка.</param>
             <returns>Результирующая строка</returns>
         </member>
-        <member name="F:Rsdn.Framework.Common.Utils.invalidXmlCharacters">
+        <member name="F:Rsdn.Framework.Common.Utils.InvalidXmlCharacters">
             <summary>
             Regular expression for detecting invalid XML characters.
             </summary>
