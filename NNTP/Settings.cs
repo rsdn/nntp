@@ -124,7 +124,7 @@ namespace Rsdn.Nntp
 			XmlSerializer serializer = new XmlSerializer(typeof(NntpSettings), null,
 				(Type[])dataProviderTypes.ToArray(typeof(Type)), new XmlRootAttribute("Settings"), null);
 			
-			XmlReader fileReader = new XmlTextReader(filename);
+			XmlReader fileReader = new XmlNodeReader(doc);
 
 			NntpSettings serverSettings = (NntpSettings)serializer.Deserialize(fileReader);
 
