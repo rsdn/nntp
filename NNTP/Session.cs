@@ -29,7 +29,7 @@ namespace derIgel.NNTP
 		static Session()
 		{
 			// tracing
-			tracing = new TraceSwitch("Show", "RSDN NNTP Manager Tracing");
+			tracing = new TraceSwitch("Show", "RSDN NNTP Server Tracing");
 
 			// DNS
 			try
@@ -177,6 +177,8 @@ namespace derIgel.NNTP
 		/// </summary>
 		public void Process(Object obj)
 		{
+			Trace.WriteLineIf(tracing.TraceInfo, "Session started", client.ToString());
+
 			manager = (Manager)obj;
 			string delimeter;
 			Response result = null;
@@ -395,6 +397,7 @@ namespace derIgel.NNTP
 			}
 			finally
 			{
+				Trace.WriteLineIf(tracing.TraceInfo, "Session finished", client.ToString());
 				Dispose();
 			}
 		}

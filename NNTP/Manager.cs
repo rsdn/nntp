@@ -50,8 +50,13 @@ namespace derIgel.NNTP
 		protected internal PerformanceCounter bytesTotalCounter;
 #endif
 
+		protected static readonly TraceSwitch tracing;
+
 		static Manager()
 		{
+			// tracing
+			tracing = new TraceSwitch("Show", "RSDN NNTP Server Tracing");
+
 #if PERFORMANCE_COUNTERS
 			// create performance counters' category if necessary
 			if (!PerformanceCounterCategory.Exists(ServerCategoryName ))
@@ -153,6 +158,8 @@ namespace derIgel.NNTP
 			// it's okay when we stopped manager (closed socket)
 			// we can't cancel asynchronious callback
 			catch(System.ObjectDisposedException)	{	}
+
+			Trace.WriteIf(tracing.TraceInfo, "Server started", settings.Name);
 		}
 
 		
@@ -225,11 +232,13 @@ namespace derIgel.NNTP
 		public void Pause()
 		{
 			paused = true;
+			Trace.WriteIf(tracing.TraceInfo, "Server paused", settings.Name);
 		}
 
 		public void Resume()
 		{
 			paused = false;
+			Trace.WriteIf(tracing.TraceInfo, "Server resumed", settings.Name);
 		}
 
 		public void Stop()
@@ -238,6 +247,7 @@ namespace derIgel.NNTP
 			stopEvent.Set();
 			while (sessions.Count > 0)
 				Thread.Sleep(sessionsCheckInterval);
+			Trace.WriteIf(tracing.TraceInfo, "Server stopped", settings.Name);
 		}
 
 		protected ArrayList sessions;
