@@ -114,6 +114,14 @@
             Initializes a new instance of the RsdnException class.
             </summary>
         </member>
+        <member name="M:Rsdn.Framework.Common.RsdnException.#ctor(Rsdn.Framework.Common.RsdnException.ErrorCodes,System.String)">
+            <summary>
+            Initializes a new instance of the RsdnException class 
+            with the specified error code and message.
+            </summary>
+            <param name="message">The message to display to the client when the exception is thrown.</param>
+            <param name="errorCode">Code of the error.</param>
+        </member>
         <member name="M:Rsdn.Framework.Common.RsdnException.#ctor(System.Int32,System.String)">
             <summary>
             Initializes a new instance of the RsdnException class 
@@ -148,6 +156,11 @@
         <member name="P:Rsdn.Framework.Common.RsdnException.ErrorCode">
             <summary>
             The error code.
+            </summary>
+        </member>
+        <member name="T:Rsdn.Framework.Common.RsdnException.ErrorCodes">
+            <summary>
+            RSDN specific error codes.
             </summary>
         </member>
         <member name="T:Rsdn.Framework.Common.ConfigManager">

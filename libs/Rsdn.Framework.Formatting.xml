@@ -335,6 +335,11 @@
             Форматирование сообщение и расцветка кода.
             </summary>
         </member>
+        <member name="F:Rsdn.Framework.Formatting.TextFormatter.defaultImagePath">
+            <summary>
+            Default image path.
+            </summary>
+        </member>
         <member name="F:Rsdn.Framework.Formatting.TextFormatter.startCitation">
             <summary>
             Start of line citation.
@@ -436,7 +441,11 @@
             <param name="image">Regexp match with RSDN img tag</param>
             <returns>Formatted image value</returns>
         </member>
-        <!-- Badly formed XML comment ignored for member "F:Rsdn.Framework.Formatting.TextFormatter.urlTagRegex" -->
+        <member name="F:Rsdn.Framework.Formatting.TextFormatter.urlTagRegex">
+            <summary>
+            [url] &amp; [purl] тэг.
+            </summary>
+        </member>
         <member name="M:Rsdn.Framework.Formatting.TextFormatter.ProcessURLs(System.Text.RegularExpressions.Match)">
             <summary>
             Process RSDN URL tag
@@ -474,6 +483,11 @@
         <member name="F:Rsdn.Framework.Formatting.TextFormatter.rsdnHostRegex">
             <summary>
             Regex for determining of RSDN host name.
+            </summary>
+        </member>
+        <member name="F:Rsdn.Framework.Formatting.TextFormatter.serverName">
+            <summary>
+            Server's name for using in rsdn host replacing.
             </summary>
         </member>
         <member name="F:Rsdn.Framework.Formatting.TextFormatter.TaglineDetector">
