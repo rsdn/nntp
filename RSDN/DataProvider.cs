@@ -143,11 +143,11 @@ namespace Rsdn.RsdnNntp
     	}		
     	catch (System.Exception exception)
     	{
-    		ProcessException(exception);
-    	}
+					ProcessException(exception);
+			}
     	currentGroupArticleStartNumber = requestedGroup.first;
     	return new NewsGroup(groupName,	requestedGroup.first, requestedGroup.last,
-    		requestedGroup.last - requestedGroup.first + 1, true);
+    		requestedGroup.last - requestedGroup.first + 1, true, requestedGroup.created);
     }
 
     /// <summary>
@@ -275,7 +275,7 @@ namespace Rsdn.RsdnNntp
     	foreach (group currentGroup in groupList.groups)
 				if ((checker == null) || (checker.IsMatch(currentGroup.name)))
 					listOfGroups.Add(new NewsGroup(currentGroup.name, currentGroup.first, currentGroup.last,
-						currentGroup.last - currentGroup.first + 1, true));
+						currentGroup.last - currentGroup.first + 1, true, currentGroup.created));
 
     	return (NewsGroup[])listOfGroups.ToArray(typeof(NewsGroup));
     }
