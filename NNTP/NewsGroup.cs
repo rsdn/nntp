@@ -8,13 +8,14 @@ namespace Rsdn.Nntp
 	public class NewsGroup
 	{
 		public NewsGroup(string name, int firstArticleNumber, int lastArticleNumber,
-			int etimatedArticles, bool postingAllowed)
+			int etimatedArticles, bool postingAllowed, DateTime created)
 		{
 			this.name = name;
 			this.firstArticleNumber = firstArticleNumber;
 			this.lastArticleNumber = lastArticleNumber;
 			this.etimatedArticles = etimatedArticles;
 			this.postingAllowed = postingAllowed;
+			this.created = created;
 		}
 		protected	string name;
 		protected string description;
@@ -22,6 +23,7 @@ namespace Rsdn.Nntp
 		protected int lastArticleNumber;
 		protected int etimatedArticles;
 		protected bool postingAllowed;
+		protected DateTime created;
 
 		public string Name
 		{
@@ -66,6 +68,14 @@ namespace Rsdn.Nntp
 			get
 			{
 				return postingAllowed;
+			}
+		}
+
+		public DateTime Created
+		{
+			get
+			{
+				return created;
 			}
 		}
 	}

@@ -19,7 +19,7 @@ namespace Rsdn.Nntp.Commands
 		public static readonly StringCollection headerItems = new StringCollection();
 
 		protected static Regex ListSyntaxisChecker =
-			new	Regex(@"(?in)^LIST([ \t]+((?<wideFormat>NEWSGROUPS([ \t]+(?<wildmat>\S+))?)|(?<overview>OVERVIEW\.FMT)))?[ \t]*$",
+			new	Regex(@"(?in)^LIST([ \t]+((?<wideFormat>NEWSGROUPS([ \t]+(?<wildmat>\S+))?)|(?<overview>OVERVIEW\.FMT)|(?<active>ACTIVE\.TIMES)))?[ \t]*$",
 			RegexOptions.Compiled);
 
 		/// <summary>
@@ -47,6 +47,8 @@ namespace Rsdn.Nntp.Commands
 			syntaxisChecker = ListSyntaxisChecker;
 		}
 
+		protected static DateTime unixStartDate = new DateTime(1970, 1, 1);
+
 		/// <summary>
 		/// Process command.
 		/// </summary>
@@ -58,6 +60,14 @@ namespace Rsdn.Nntp.Commands
 				// overview format
 				foreach (string headerItem in headerItems)
 					textResponse.Append(headerItem).Append(':').Append(Util.CRLF);
+			else if (lastMatch.Groups["active"].Success)
+				// active.times
+				foreach (NewsGroup group in session.DataProvider.GetGroupList(DateTime.MinValue, null))
+				{
+					TimeSpan period = group.Created - unixStartDate;
+					textResponse.AppendFormat("{0} {1} admin@rsdn.ru", group.Name, (int)period.TotalSeconds).
+						Append(Util.CRLF);
+				}
 			else
 			{
 				string pattern = null;
