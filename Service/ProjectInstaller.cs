@@ -70,21 +70,5 @@ namespace Rsdn.RsdnNntp
 		{
 		
 		}
-
-		public override void Uninstall(System.Collections.IDictionary savedState)
-		{
-			base.Uninstall(savedState);
-
-			string installdir = Path.GetDirectoryName(Context.Parameters["assemblypath"]);
-			// remove messages cache file
-			File.Delete(Path.Combine(installdir, "RsdnDataProvider.cache"));
-			// remove references cache file
-			File.Delete(Path.Combine(installdir, "RsdnDataProvider.references.cache"));
-			// remove log file
-			File.Delete(Path.Combine(installdir, "rsdnnntp.log"));
-			// remove performance counters
-			if (PerformanceCounterCategory.Exists(Manager.ServerCategoryName))
-				PerformanceCounterCategory.Delete(Manager.ServerCategoryName);
-		}
 	}
 }

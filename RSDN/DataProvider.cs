@@ -53,7 +53,8 @@ namespace Rsdn.RsdnNntp
 		/// <summary>
 		/// Logger 
 		/// </summary>
-		private static ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		private static ILog logger =
+			log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
     /// <summary>
     /// Read caches at the start

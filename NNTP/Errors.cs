@@ -18,7 +18,7 @@ namespace Rsdn.Nntp
 		}
 
 		public DataProviderException (DataProviderErrors error, Exception innerException) :
-			base("DataProvider error", innerException)
+			base(string.Format("DataProvider error ({0})", error), innerException)
 		{
 			this.error = error;
 		}

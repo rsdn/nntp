@@ -112,7 +112,6 @@ namespace Rsdn.Nntp
 			this.manager = manager;
 
 			logger = LogManager.GetLogger(manager.Name);
-			NDC.Push(client.RemoteEndPoint.ToString());
 
 			// Init client's command array
 			commands = new Hashtable();
@@ -185,7 +184,9 @@ namespace Rsdn.Nntp
 		/// </summary>
 		public void Process(Object obj)
 		{
-			//TODO: SessionID using!
+			// Set nested device context for current client
+			NDC.Push(client.RemoteEndPoint.ToString());
+
 			if (logger.IsInfoEnabled)
 				logger.Info(string.Format("Session started. Local end point {0}.", client.LocalEndPoint));
 
@@ -246,8 +247,7 @@ namespace Rsdn.Nntp
 						// remove retrivied command from buffer
 						bufferString.Remove(0, bufferString.ToString().IndexOf(delimeter) + delimeter.Length);
 						
-						// tracing
-						//TODO: SessionID!
+						// debug tracing
 						logger.Debug(commandString);
 
 						// especialy for Outlook Express
@@ -346,7 +346,7 @@ namespace Rsdn.Nntp
 									result = new Response(NntpResponse.ProgramFault);
 									break;
 							}
-							logger.Error("Unknown Data Provider Error", exception);
+							logger.Warn("Data Provider Error", exception);
 						}
 						catch (MimeFormattingException)
 						{
@@ -355,7 +355,6 @@ namespace Rsdn.Nntp
 						// not good....
 						catch(Exception e)
 						{
-							// TODO: SessionID!
 							if (logger.IsErrorEnabled)
 							{
 								logger.Error(
@@ -368,9 +367,8 @@ namespace Rsdn.Nntp
 
 						Answer(result);
 
-						// TODO: SessionID!
-						if (logger.IsDebugEnabled)
-							logger.Debug(result);
+						// debug tracing
+						logger.Debug(result);
 
 						if (result.Code >= 400)
 							// result code indicates error
@@ -412,7 +410,6 @@ namespace Rsdn.Nntp
 			}
 			finally
 			{
-				// TODO: SessionID
 				logger.Info("Session finished");
 				NDC.Pop();
 				Dispose();
