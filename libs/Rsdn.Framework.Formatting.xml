@@ -93,6 +93,15 @@
             <param name="o">Преобразуемый объект.</param>
             <returns>Результат.</returns>
         </member>
+        <member name="M:Rsdn.Framework.Formatting.Format.ToInt(System.Object,System.Int32)">
+            <summary>
+            Преобразует object в int. 
+            В случае возникновения исключения возвращается errorValue.
+            </summary>
+            <param name="o">Преобразуемый объект.</param>
+            <param name="errorValue">Значение возвращаемое если произошла ошибка.</param>
+            <returns>Результат.</returns>
+        </member>
         <member name="M:Rsdn.Framework.Formatting.Format.ToDouble(System.Object)">
             <summary>
             Преобразует object в double. 
