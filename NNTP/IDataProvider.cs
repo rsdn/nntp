@@ -33,7 +33,7 @@ namespace Rsdn.Nntp
 			NewsArticle.Content content);
 
 		/// <summary>
-		/// retrive article list.
+		/// Retrive article list.
 		/// </summary>
 		/// <param name="startNumber">Start article's number.</param>
 		/// <param name="endNumber">End article's number.</param>
@@ -64,11 +64,10 @@ namespace Rsdn.Nntp
 		/// <summary>
 		/// Get article list.
 		/// </summary>
-		/// <param name="newsgroups">Newsgroups' names pattern.</param>
 		/// <param name="date">Start date.</param>
-		/// <param name="distributions">Distribution parameter.</param>
-		/// <returns>List of news articles.</returns>
-		NewsArticle[] GetArticleList(string[] newsgroups, DateTime date, string[] distributions);
+		/// <param name="pattern">Group name patterns.</param>
+		/// <returns>List of articles.</returns>
+		NewsArticle[] GetArticleList(DateTime date, string[] patterns);
 		
 		/// <summary>
 		/// Get news group's description.

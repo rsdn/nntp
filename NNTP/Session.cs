@@ -346,6 +346,7 @@ namespace Rsdn.Nntp
 									break;
 								case DataProviderErrors.NotSupported:
 									result = new Response(NntpResponse.NotRecognized);
+									logger.Warn(string.Format("{0} provider don't support {1} command.", dataProvider.GetType(), command));
 									break;
 								case DataProviderErrors.PostingFailed:
 									result = new Response(NntpResponse.PostingFailed);

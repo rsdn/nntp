@@ -317,8 +317,13 @@ namespace Rsdn.RsdnNntp
     	return (NewsGroup[])listOfGroups.ToArray(typeof(NewsGroup));
     }
 
-    public NewsArticle[] GetArticleList(string[] newsgroups, System.DateTime date,
-    	string[] distributions)
+		/// <summary>
+		/// Get article list.
+		/// </summary>
+		/// <param name="date">Start date.</param>
+		/// <param name="pattern">Group name patterns.</param>
+		/// <returns>List of articles.</returns>
+    public NewsArticle[] GetArticleList(System.DateTime date, string[] patterns)
     {
     	throw new DataProviderException(DataProviderErrors.NotSupported);
     }
