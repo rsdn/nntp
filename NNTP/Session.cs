@@ -180,10 +180,14 @@ namespace Rsdn.Nntp
 			byte[] bytes = Util.StringToBytes(response.GetResponse());
 			netStream.Write(bytes, 0, bytes.Length);
 #if PERFORMANCE_COUNTERS
-			manager.bytesSentCounter.IncrementBy(bytes.Length);
-			Manager.globalBytesSentCounter.IncrementBy(bytes.Length);
-			manager.bytesTotalCounter.IncrementBy(bytes.Length);
-			Manager.globalBytesTotalCounter.IncrementBy(bytes.Length);
+			manager.GetPerformanceCounter(Manager.bytesSentPerSecCounterName).IncrementBy(bytes.Length);
+			Manager.GetGlobalPerformanceCounter(Manager.bytesSentPerSecCounterName).IncrementBy(bytes.Length);
+			manager.GetPerformanceCounter(Manager.bytesSentCounterName).IncrementBy(bytes.Length);
+			Manager.GetGlobalPerformanceCounter(Manager.bytesSentCounterName).IncrementBy(bytes.Length);
+			manager.GetPerformanceCounter(Manager.bytesTotalPerSecCounterName).IncrementBy(bytes.Length);
+			Manager.GetGlobalPerformanceCounter(Manager.bytesTotalPerSecCounterName).IncrementBy(bytes.Length);
+			manager.GetPerformanceCounter(Manager.bytesTotalCounterName).IncrementBy(bytes.Length);
+			Manager.GetGlobalPerformanceCounter(Manager.bytesTotalCounterName).IncrementBy(bytes.Length);
 #endif
 		}
 
@@ -231,10 +235,14 @@ namespace Rsdn.Nntp
 						{
 							bufferString.Append(Util.BytesToString(commandBuffer, receivedBytes));
 #if PERFORMANCE_COUNTERS
-							manager.bytesReceivedCounter.IncrementBy(receivedBytes);
-							Manager.globalBytesReceivedCounter.IncrementBy(receivedBytes);
-							manager.bytesTotalCounter.IncrementBy(receivedBytes);
-							Manager.globalBytesTotalCounter.IncrementBy(receivedBytes);
+							manager.GetPerformanceCounter(Manager.bytesReceivedPerSecCounterName).IncrementBy(receivedBytes);
+							Manager.GetGlobalPerformanceCounter(Manager.bytesReceivedPerSecCounterName).IncrementBy(receivedBytes);
+							manager.GetPerformanceCounter(Manager.bytesReceivedCounterName).IncrementBy(receivedBytes);
+							Manager.GetGlobalPerformanceCounter(Manager.bytesReceivedCounterName).IncrementBy(receivedBytes);
+							manager.GetPerformanceCounter(Manager.bytesTotalPerSecCounterName).IncrementBy(receivedBytes);
+							Manager.GetGlobalPerformanceCounter(Manager.bytesTotalPerSecCounterName).IncrementBy(receivedBytes);
+							manager.GetPerformanceCounter(Manager.bytesTotalCounterName).IncrementBy(receivedBytes);
+							Manager.GetGlobalPerformanceCounter(Manager.bytesTotalCounterName).IncrementBy(receivedBytes);
 #endif
 						}
 						else

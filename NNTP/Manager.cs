@@ -27,26 +27,58 @@ namespace Rsdn.Nntp
 		/// </summary>
 		public const string GlobalInstanceName = "_All";
 		
+		/// global performance counters collection
+		protected static Hashtable globalPerformanceCounters = new Hashtable();
+		/// <summary>
+		/// Get specified global performance counter
+		/// </summary>
+		/// <param name="name">Counter's name</param>
+		/// <returns>Specified counter</returns>
+		public static PerformanceCounter GetGlobalPerformanceCounter(string name)
+		{
+		  return (PerformanceCounter)globalPerformanceCounters[name];
+		}
+
+		/// instance performance counters collection
+		protected Hashtable performanceCounters = new Hashtable();
+		/// <summary>
+		/// Get specified instance performance counter
+		/// </summary>
+		/// <param name="name">Counter's name</param>
+		/// <returns>Specified counter</returns>
+		public PerformanceCounter GetPerformanceCounter(string name)
+		{
+			return (PerformanceCounter)performanceCounters[name];
+		}
+
 		/// Connections performance counter
-		protected const string connectionsCounterName = "Current Connections";
-		protected static PerformanceCounter globalConnectionsCounter;
-		protected PerformanceCounter connectionsCounter;
+		public const string connectionsCounterName = "Current Connections";
 		/// Max Connections performance counter
-		protected const string maxConnectionsCounterName = "Maximum Connections";
-		protected static PerformanceCounter globalMaxConnectionsCounter;
-		protected PerformanceCounter maxConnectionsCounter;
+		public const string maxConnectionsCounterName = "Maximum Connections";
 		/// Bytes Received per sec
-		protected const string bytesReceivedCounterName = "Bytes Received / sec";
-		protected internal static PerformanceCounter globalBytesReceivedCounter;
-		protected internal PerformanceCounter bytesReceivedCounter;
+		public const string bytesReceivedPerSecCounterName = "Bytes Received / sec";
+		/// Bytes Received
+		public const string bytesReceivedCounterName = "Bytes Received";
 		/// Bytes Sent per sec
-		protected const string bytesSentCounterName = "Bytes Sent / sec";
-		protected internal static PerformanceCounter globalBytesSentCounter;
-		protected internal PerformanceCounter bytesSentCounter;
+		public const string bytesSentPerSecCounterName = "Bytes Sent / sec";
+		/// Bytes Sent
+		public const string bytesSentCounterName = "Bytes Sent";
 		/// Bytes Total per sec
-		protected const string bytesTotalCounterName = "Bytes Total / sec";
-		protected internal static PerformanceCounter globalBytesTotalCounter;
-		protected internal PerformanceCounter bytesTotalCounter;
+		public const string bytesTotalPerSecCounterName = "Bytes Total / sec";
+		/// Bytes Total
+		public const string bytesTotalCounterName = "Bytes Total";
+
+		protected static string[] performanceCountersNames =
+			{
+				connectionsCounterName,
+				maxConnectionsCounterName,
+			  bytesReceivedPerSecCounterName,
+				bytesReceivedCounterName,
+				bytesSentPerSecCounterName,
+				bytesSentCounterName,
+				bytesTotalPerSecCounterName,
+				bytesTotalCounterName,
+		};
 #endif
 
 		/// <summary>
@@ -61,41 +93,52 @@ namespace Rsdn.Nntp
 			if (!PerformanceCounterCategory.Exists(ServerCategoryName ))
 			{
 				CounterCreationDataCollection perfomanceCountersCollection = new CounterCreationDataCollection();
+
 				// connections
-				CounterCreationData connectionsCounterData = new CounterCreationData(connectionsCounterName,
-					"Number of client's connections",	PerformanceCounterType.NumberOfItems32);
-				perfomanceCountersCollection.Add(connectionsCounterData);
-				CounterCreationData maxConnectionsCounterData = new CounterCreationData(maxConnectionsCounterName,
-					"Maximum number of client's connections",	PerformanceCounterType.NumberOfItems32);
-				perfomanceCountersCollection.Add(maxConnectionsCounterData);
-				// bytes
-				CounterCreationData bytesReceivedCounterData = new CounterCreationData(bytesReceivedCounterName,
-					"Received bytes rate",	PerformanceCounterType.RateOfCountsPerSecond32);
-				perfomanceCountersCollection.Add(bytesReceivedCounterData);
-				CounterCreationData bytesSentCounterData = new CounterCreationData(bytesSentCounterName,
-					"Sent bytes rate",	PerformanceCounterType.RateOfCountsPerSecond32);
-				perfomanceCountersCollection.Add(bytesSentCounterData);
-				CounterCreationData bytesTotalCounterData = new CounterCreationData(bytesTotalCounterName,
-					"Total bytes rate",	PerformanceCounterType.RateOfCountsPerSecond32);
-				perfomanceCountersCollection.Add(bytesTotalCounterData);
+				perfomanceCountersCollection.Add(
+					new CounterCreationData(connectionsCounterName,
+						"Number of client's connections",	PerformanceCounterType.NumberOfItems32));
+				perfomanceCountersCollection.Add(
+					new CounterCreationData(maxConnectionsCounterName,
+						"Maximum number of client's connections",	PerformanceCounterType.NumberOfItems32));
+				// bytes received
+				perfomanceCountersCollection.Add(
+					new CounterCreationData(bytesReceivedPerSecCounterName,
+						"Received bytes rate",	PerformanceCounterType.RateOfCountsPerSecond32));
+				perfomanceCountersCollection.Add(
+					new CounterCreationData(bytesReceivedCounterName,
+						"Received bytes",	PerformanceCounterType.NumberOfItems32));
+				// bytes sent
+				perfomanceCountersCollection.Add(
+					new CounterCreationData(bytesSentPerSecCounterName,
+						"Sent bytes rate",	PerformanceCounterType.RateOfCountsPerSecond32));
+				perfomanceCountersCollection.Add(
+					new CounterCreationData(bytesSentCounterName,
+						"Sent bytes",	PerformanceCounterType.NumberOfItems32));
+				// bytes total
+				perfomanceCountersCollection.Add(
+					new CounterCreationData(bytesTotalPerSecCounterName,
+						"Total bytes rate",	PerformanceCounterType.RateOfCountsPerSecond32));
+				perfomanceCountersCollection.Add(
+					new CounterCreationData(bytesTotalPerSecCounterName,
+						"Total bytes",	PerformanceCounterType.RateOfCountsPerSecond32));
+
 				PerformanceCounterCategory.Create(ServerCategoryName , "", perfomanceCountersCollection);
 			}
 
 			/// create global performance counters
-			// connections
-			globalConnectionsCounter = new PerformanceCounter(ServerCategoryName, connectionsCounterName,
-				GlobalInstanceName, false);
-			globalMaxConnectionsCounter = new PerformanceCounter(ServerCategoryName, maxConnectionsCounterName,
-				GlobalInstanceName, false);
-			// bytes
-			globalBytesReceivedCounter = new PerformanceCounter(ServerCategoryName, bytesReceivedCounterName,
-				GlobalInstanceName, false);
-			globalBytesSentCounter = new PerformanceCounter(ServerCategoryName, bytesSentCounterName,
-				GlobalInstanceName, false);
-			globalBytesTotalCounter = new PerformanceCounter(ServerCategoryName, bytesTotalCounterName,
-				GlobalInstanceName, false);
+			CreatePerformanceCounters(globalPerformanceCounters, ServerCategoryName);
 #endif
 		}
+
+#if PERFORMANCE_COUNTERS
+		private static void CreatePerformanceCounters(Hashtable store, string instanceName)
+		{
+			foreach (string counterName in performanceCountersNames)
+				store.Add(connectionsCounterName,
+					new PerformanceCounter(ServerCategoryName, counterName, instanceName, false));
+		}
+#endif
 
 		/// <summary>
 		/// NNTP Connection Manager constructor
@@ -114,18 +157,7 @@ namespace Rsdn.Nntp
 
 #if PERFORMANCE_COUNTERS
 			/// create performance counters
-			// connections
-			connectionsCounter = new PerformanceCounter(ServerCategoryName, connectionsCounterName,
-				settings.Name, false);
-			maxConnectionsCounter = new PerformanceCounter(ServerCategoryName, maxConnectionsCounterName,
-				settings.Name, false);
-			// bytes
-			bytesReceivedCounter = new PerformanceCounter(ServerCategoryName, bytesReceivedCounterName,
-				settings.Name, false);
-			bytesSentCounter = new PerformanceCounter(ServerCategoryName, bytesSentCounterName,
-				settings.Name, false);
-			bytesTotalCounter = new PerformanceCounter(ServerCategoryName, bytesTotalCounterName,
-				settings.Name, false);
+			CreatePerformanceCounters(performanceCounters, settings.Name);
 #endif
 		}
 
@@ -198,13 +230,23 @@ namespace Rsdn.Nntp
 						// reset event (now we have child sessions)
 						noSessions.Reset();
 						ThreadPool.QueueUserWorkItem(new WaitCallback(session.Process), this);
+
 #if PERFORMANCE_COUNTERS
+						// set connections counter
+						PerformanceCounter connectionsCounter =
+							GetPerformanceCounter(connectionsCounterName);
 						connectionsCounter.Increment();
-						globalConnectionsCounter.Increment();
+					  GetGlobalPerformanceCounter(connectionsCounterName).Increment();
+
 						// set max connections counter
+						PerformanceCounter maxConnectionsCounter =
+							GetPerformanceCounter(maxConnectionsCounterName);
 						if (connectionsCounter.RawValue > maxConnectionsCounter.RawValue)
 							maxConnectionsCounter.RawValue = connectionsCounter.RawValue;
+
 						// set global max connections counter
+						PerformanceCounter globalMaxConnectionsCounter =
+						  GetGlobalPerformanceCounter(maxConnectionsCounterName);
 						if (maxConnectionsCounter.RawValue > globalMaxConnectionsCounter.RawValue)
 							globalMaxConnectionsCounter.RawValue = maxConnectionsCounter.RawValue;
 #endif
@@ -292,8 +334,8 @@ namespace Rsdn.Nntp
 					noSessions.Set();
 
 #if PERFORMANCE_COUNTERS
-				connectionsCounter.Decrement();
-				globalConnectionsCounter.Decrement();
+				GetPerformanceCounter(connectionsCounterName).Decrement();
+			  GetGlobalPerformanceCounter(connectionsCounterName).Decrement();
 #endif
 			}
 		}
