@@ -52,7 +52,7 @@ namespace Rsdn.Nntp
 		/// <summary>
 		/// Logger
 		/// </summary>
-		private static ILog logger = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		protected ILog logger;
 
 		static Manager()
 		{
@@ -107,7 +107,8 @@ namespace Rsdn.Nntp
 					"settings");
 
 			this.settings = settings;
-				
+			logger = LogManager.GetLogger(settings.Name);
+
 			stopEvent = new ManualResetEvent(false);
 			sessions = new ArrayList();
 
@@ -151,7 +152,7 @@ namespace Rsdn.Nntp
 			// trace start message
 			if (logger.IsInfoEnabled)
 			{
-				StringBuilder startInfo = new StringBuilder(string.Format("Server {0} started. Listen on ", settings.Name));
+				StringBuilder startInfo = new StringBuilder("Server started. Listen on ");
 				for (int i = 0; i < listeners.Length; i++)
 				{
 					if (i > 0) startInfo.Append(',');
@@ -242,8 +243,7 @@ namespace Rsdn.Nntp
 		public void Pause()
 		{
 			paused = true;
-			if (logger.IsInfoEnabled)
-				logger.Info(string.Format("Server {0} paused.", settings.Name));
+			logger.Info("Server paused.");
 		}
 
 		/// <summary>
@@ -252,8 +252,7 @@ namespace Rsdn.Nntp
 		public void Resume()
 		{
 			paused = false;
-			if (logger.IsInfoEnabled)
-				logger.Info(string.Format("Server {0} resumed.", settings.Name));
+			logger.Info("Server resumed.");
 		}
 
 		/// <summary>
@@ -266,11 +265,9 @@ namespace Rsdn.Nntp
 			if (!noSessions.WaitOne(waitSessionsTimeout, false))
 			{
 				sessions.Clear();
-				if (logger.IsInfoEnabled)
-					logger.Info(string.Format("Server {0} forced closing of child sessions.", settings.Name));
+				logger.Info("Server forced closing of child sessions.");
 			}
-			if (logger.IsInfoEnabled)
-				logger.Info(string.Format("Server {0} stopped.", settings.Name));
+			logger.Info("Server stopped.");
 		}
 
 		/// <summary>

@@ -178,17 +178,6 @@ namespace Rsdn.Mime
 			return "=" + ((int)match.Value[0]).ToString("X2"); // 2 hexadeximal digits
 		}
 
-		public static string ExpandException(Exception exception)
-		{
-			StringBuilder result = new StringBuilder();
-			while (exception != null)
-			{
-				result.Append(exception.Message).Append(Environment.NewLine);
-				exception = exception.InnerException;
-			}
-			return result.ToString();
-		}
-
 		/// <summary>
 		/// Convert string to raw bytes
 		/// </summary>

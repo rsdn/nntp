@@ -18,7 +18,8 @@ namespace ForumTest
 		[STAThread]
 		static void Main(string[] args)
 		{
-			ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+			ILog logger =
+				log4net.LogManager.GetLogger("RSDN NNTP Server ConsoleApp");
 			try
 			{
         NntpSettings serverSettings =

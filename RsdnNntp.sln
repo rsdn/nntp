@@ -62,7 +62,6 @@ Global
 		{3512427B-A32E-4C8A-BF0A-7AF2DD1B3B54}.Release.Build.0 = Release|.NET
 	EndGlobalSection
 	GlobalSection(SolutionItems) = postSolution
-		app.config = app.config
 		ProductInfo.cs = ProductInfo.cs
 		TODO.txt = TODO.txt
 	EndGlobalSection

@@ -27,7 +27,7 @@ namespace Rsdn.Nntp
 		/// <summary>
 		/// Logger
 		/// </summary>
-		private static ILog logger = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		protected ILog logger;
 
 		static Session()
 		{
@@ -53,7 +53,8 @@ namespace Rsdn.Nntp
 								type.IsSubclassOf(typeof(Generic)) &&
 								!type.IsAbstract)
 						{
-							foreach(NntpCommandAttribute attr in type.GetCustomAttributes(typeof(NntpCommandAttribute), false))
+							foreach(NntpCommandAttribute attr in
+									type.GetCustomAttributes(typeof(NntpCommandAttribute), false))
 								commandsTypes[attr.Name] = type;
 						}
 
@@ -100,11 +101,6 @@ namespace Rsdn.Nntp
 			get { return manager; }
 		}
 
-		/// <summary>
-		/// Session ID (Server name + client remote IP endpoint)
-		/// </summary>
-		protected readonly string sessionID;
-
 		public Session(Socket client, IDataProvider dataProvider, Manager manager)
 		{
 			sessionState = dataProvider.InitialSessionState;
@@ -115,7 +111,8 @@ namespace Rsdn.Nntp
 			this.dataProvider = dataProvider;
 			this.manager = manager;
 
-			sessionID = string.Format("{0}({1})", manager.Name, client.RemoteEndPoint);
+			logger = LogManager.GetLogger(manager.Name);
+			NDC.Push(client.RemoteEndPoint.ToString());
 
 			// Init client's command array
 			commands = new Hashtable();
@@ -301,9 +298,10 @@ namespace Rsdn.Nntp
 									break;
 							}
 						}
-						catch (Response.ParamsException)
+						catch (Response.ParamsException exception)
 						{
 							result = new Response(NntpResponse.ProgramFault);
+							logger.Error("Parameters are invalid", exception);
 						}
 						catch (DataProviderException exception)
 						{
@@ -344,9 +342,11 @@ namespace Rsdn.Nntp
 									result = new Response(NntpResponse.ServiceDiscontinued);
 									break;
 								default:
-									result = new Response(NntpResponse.ProgramFault); //error
+									// Unknown data provider error
+									result = new Response(NntpResponse.ProgramFault);
 									break;
 							}
+							logger.Error("Unknown Data Provider Error", exception);
 						}
 						catch (MimeFormattingException)
 						{
@@ -359,9 +359,9 @@ namespace Rsdn.Nntp
 							if (logger.IsErrorEnabled)
 							{
 								logger.Error(
-									string.Format("Exception during processing...\n" +
-										"(selected group '{0}', last request '{1}')\n{2}",
-										dataProvider.CurrentGroup, commandString, e));
+									string.Format("Exception during processing command" +
+										" (selected group '{0}', last request '{1}').\n",
+										dataProvider.CurrentGroup, commandString), e);
 							}
 							result = new Response(NntpResponse.ProgramFault);
 						}
@@ -414,6 +414,7 @@ namespace Rsdn.Nntp
 			{
 				// TODO: SessionID
 				logger.Info("Session finished");
+				NDC.Pop();
 				Dispose();
 			}
 		}
