@@ -1,3 +1,5 @@
++ Server-To-Server protocol
+
 * MIME Headers folding
 	22:32 23.03.2003
 + MIME Message & NNTP Session Streaming
@@ -13,4 +15,5 @@
 * Кэш на WeakReference
 	22:33 23.03.2003 Rejected
 + Виртуальные сервера
+
 + Управление через ремоутинг
