@@ -284,21 +284,28 @@ namespace Rsdn.Nntp
 							{
 								case States.PostWaiting	:
 								case States.TransferWaiting :
-
-									posting = true;
-									string message = Response.DemodifyTextResponse(commandString);
-									Message postingMessage = Message.Parse(message, true, true,
-										new Regex("(?i)Subject"));
+									try
+									{
+										posting = true;
+										string message = Response.DemodifyTextResponse(commandString);
+										Message postingMessage = Message.Parse(message, true, true,
+											new Regex("(?i)Subject"));
 								
-									// add addtitional server headers
-									if (sender != null)
-										postingMessage["Sender"] = sender;
-									if (postingMessage["Path"] == null)
-										postingMessage["Path"] = "not-for-mail";
-									postingMessage["Path"] = FullHostname + "!" + postingMessage["Path"];
+										// add addtitional server headers
+										if (sender != null)
+											postingMessage["Sender"] = sender;
+										if (postingMessage["Path"] == null)
+											postingMessage["Path"] = "not-for-mail";
+										postingMessage["Path"] = FullHostname + "!" + postingMessage["Path"];
 								
-									dataProvider.PostMessage(postingMessage);
-									result = new Response(sessionState == States.PostWaiting ? NntpResponse.PostedOk : NntpResponse.TransferOk);
+										dataProvider.PostMessage(postingMessage);
+										result = new Response(sessionState == States.PostWaiting ? NntpResponse.PostedOk : NntpResponse.TransferOk);
+									}
+									catch (MimeFormattingException ex)
+									{
+										throw new DataProviderException(DataProviderErrors.PostingFailed,
+											ex.Message);
+									}
 									break;
 								default	:
 									// get first word in upper case delimeted by space or tab characters 
@@ -386,11 +393,7 @@ namespace Rsdn.Nntp
 							}
 							logger.Warn(string.Format("Data Provider Error ({0})", exception.Error), exception);
 						}
-						catch (MimeFormattingException ex)
-						{
-							result = new Response(NntpResponse.PostingFailed, null, ex.Message);
-						}
-							// not good....
+						// not good....
 						catch(Exception e)
 						{
 							if (logger.IsErrorEnabled)
