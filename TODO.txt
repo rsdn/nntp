@@ -4,7 +4,7 @@
 + Server-To-Server protocol
 
 * MIME Headers folding
-	22:32 23.03.2003
+ 22:32 23.03.2003
 + MIME Message & NNTP Session Streaming
 	19:13 20.02.2003 Rejected
 * Полное дерево в refernces
