@@ -67,7 +67,7 @@ namespace Rsdn.Nntp
 		/// </summary>
 		/// <param name="error">Specific Data Provider's error.</param>
 		public DataProviderException (DataProviderErrors error) :
-			base("DataProvider error")
+			base(error.ToString())
 		{
 			this.error = error;
 		}
@@ -77,7 +77,7 @@ namespace Rsdn.Nntp
 		/// </summary>
 		/// <param name="errorDescription">Error description.</param>
 		public DataProviderException (string errorDescription) :
-			base(string.Format("DataProvider error ({0})", errorDescription))
+			base(errorDescription)
 		{
 			error = DataProviderErrors.UnknownError;
 		}
@@ -88,7 +88,7 @@ namespace Rsdn.Nntp
 		/// <param name="error">Specific Data Provider's error.</param>
 		/// <param name="innerException">Inner exception.</param>
 		public DataProviderException (DataProviderErrors error, Exception innerException) :
-			base(string.Format("DataProvider error ({0})", error), innerException)
+			base(error.ToString(), innerException)
 		{
 			this.error = error;
 		}
@@ -99,7 +99,7 @@ namespace Rsdn.Nntp
 		/// <param name="error">Specific Data Provider's error.</param>
 		/// <param name="errorDescription">Error description.</param>
 		public DataProviderException (DataProviderErrors error, string errorDescription) :
-			base(string.Format("DataProvider error ({0})", errorDescription))
+			base(errorDescription)
 		{
 			this.error = error;
 		}
