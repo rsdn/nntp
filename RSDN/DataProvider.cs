@@ -48,15 +48,18 @@ namespace derIgel.RsdnNntp
 			reader.Close();
 		}
 
+		/// <summary>
+		/// RSDN forums' web-service proxy
+		/// </summary>
 		protected Forum webService;
 		protected string username = "";
 		protected string password = "";
 		/// <summary>
-		/// Current selected group
+		/// Currently selected group
 		/// </summary>
 		protected string currentGroup = null;
 		/// <summary>
-		/// Current selected article
+		/// Currently selected article
 		/// </summary>
 		protected int currentArticle = -1;
 
@@ -251,13 +254,22 @@ namespace derIgel.RsdnNntp
 			return auth.ok;
 		}
 
+		/// <summary>
+		/// RSDN tags processor
+		/// </summary>
 		protected static readonly FormatMessage formatMessage = new FormatMessage();
-
+		/// <summary>
+		/// Result MIME messages' format
+		/// </summary>
+		protected FormattingStyle style = FormattingStyle.Html;
+		/// <summary>
+		/// Regular expression for detecting images in [url] tag
+		/// </summary>
 		protected static readonly Regex detectImages = new Regex(@"\[img\](?<url>.*?)\[/img\]", RegexOptions.Compiled);
 		
 		/// <summary>
 		/// Convert rsdn's message to MIME message
-		/// Also see rfc 2046, 2112, 2392
+		/// Also see rfc 2046, 2112, 2183, 2392
 		/// </summary>
 		/// <param name="message"></param>
 		/// <param name="newsgroup"></param>
@@ -333,7 +345,7 @@ namespace derIgel.RsdnNntp
 									Guid imgContentID = Guid.NewGuid();
 									imgPart["Content-ID"] = '<' + imgContentID.ToString() + '>';
 									imgPart["Content-Description"] = req.RequestUri.ToString();
-									imgPart["Content-Disposition"] = "INLINE; file=\"" + req.RequestUri.AbsolutePath+ '"';
+									imgPart["Content-Disposition"] = "inline";
 									imgPart.TransferEncoding = ContentTransferEncoding.Base64;
 									using (BinaryReader reader = new BinaryReader(response.GetResponseStream()))
 									{
@@ -342,6 +354,7 @@ namespace derIgel.RsdnNntp
 									newsMessage.Entities.Add(imgPart);
 									htmlText = htmlText.Replace(match.Groups["url"].Value, "cid:" + imgContentID.ToString());
 								}
+								catch (Exception) {}
 								finally
 								{
 									if (response != null)
@@ -408,6 +421,10 @@ namespace derIgel.RsdnNntp
 
 		protected static Regex leadingSpaces = new Regex(@"(?m)^[\t ]+", RegexOptions.Compiled);
 
+		/// <summary>
+		/// Post MIME message through data provider
+		/// </summary>
+		/// <param name="message"></param>
 		public void PostMessage(Message message)
 		{
 			try
@@ -449,6 +466,10 @@ namespace derIgel.RsdnNntp
 		/// </summary>
 		static string cacheFilename;
 
+		/// <summary>
+		/// Process exception raised during request to data provider
+		/// </summary>
+		/// <param name="exception"></param>
 		protected void ProcessException(System.Exception exception)
 		{
 			if (exception.GetType() == typeof(System.Net.WebException))
@@ -459,6 +480,10 @@ namespace derIgel.RsdnNntp
 			throw exception;
 		}
 
+		/// <summary>
+		/// Parse error messages from web-service
+		/// </summary>
+		/// <param name="message"></param>
 		protected void ProcessErrorMessage(string message)
 		{
 			switch (message)
@@ -477,6 +502,9 @@ namespace derIgel.RsdnNntp
 			}
 		}
 
+		/// <summary>
+		/// Initial session's state for this data provider
+		/// </summary>
 		public derIgel.NNTP.Session.States InitialSessionState
 		{
 			get
@@ -485,6 +513,9 @@ namespace derIgel.RsdnNntp
 			}
 		}
 
+		/// <summary>
+		/// Posting are allowed or not for this data provider 
+		/// </summary>
 		public bool PostingAllowed
 		{
 			get
@@ -493,6 +524,10 @@ namespace derIgel.RsdnNntp
 			}
 		}
 
+		/// <summary>
+		/// Configures data provider
+		/// </summary>
+		/// <param name="settings"></param>
 		public void Config(object settings)
 		{
 			DataProviderSettings rsdnSettings = settings as DataProviderSettings;
@@ -505,8 +540,6 @@ namespace derIgel.RsdnNntp
 				style = rsdnSettings.Formatting;
 			}
 		}
-
-		protected FormattingStyle style = FormattingStyle.Html;
 
 		protected static Regex removeTagline = new Regex(@"(?s)\[tagline\].*?\[/tagline\]", RegexOptions.Compiled);
 		protected static Regex moderatorTagline = new Regex(@"(?s)\[moderator\].*?\[/moderator\]",
@@ -523,6 +556,9 @@ namespace derIgel.RsdnNntp
 				return moderatorTagline.Replace(removeTagline.Replace(text, ""), "");
 		}
 
+		/// <summary>
+		/// currently selected news group
+		/// </summary>
 		public string CurrentGroup
 		{
 			get
@@ -536,6 +572,11 @@ namespace derIgel.RsdnNntp
 			return typeof(DataProviderSettings);
 		}
 
+		/// <summary>
+		/// Get only plain text from MIME message
+		/// </summary>
+		/// <param name="message"></param>
+		/// <returns></returns>
 		internal string GetPlainTextFromMessage(Message message)
 		{
 			StringBuilder text = new StringBuilder();
