@@ -1,24 +1,29 @@
 using System;
-using System.Net;
-using System.Xml;
-using System.Xml.Serialization;
+using System.Collections;
 using System.ComponentModel;
 using System.IO;
-using System.Collections;
-using System.Diagnostics;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace Rsdn.Nntp
 {
 	/// <summary>
-	/// Summary description for NntpSettings.
+	/// General settings for NNTP Virtual Server.
 	/// </summary>
 	public class NntpSettings
 	{
+		/// <summary>
+		/// Create default settings.
+		/// </summary>
 		public NntpSettings()
 		{
 			bindings = new ServerEndPoint[0];
 		}
 
+		/// <summary>
+		/// Create settings based on existing settings.
+		/// </summary>
+		/// <param name="settings">Settings to copy.</param>
 		public NntpSettings(NntpSettings settings)
 		{
 			bindings = settings.bindings;
@@ -27,7 +32,13 @@ namespace Rsdn.Nntp
 			name = settings.name;
 		}
 
+		/// <summary>
+		/// Server's name
+		/// </summary>
 		protected string name = "";
+		/// <summary>
+		/// Server's name accessor
+		/// </summary>
 		public string Name
 		{
 			get { return name; }
@@ -39,8 +50,13 @@ namespace Rsdn.Nntp
 			}
 		}
 
+		/// <summary>
+		/// Data Provider's type.
+		/// </summary>
 		protected Type dataProviderType = typeof(object);
-		protected Type dataProviderSettingsType = typeof(object);
+		/// <summary>
+		/// Data Provider's type accessor.
+		/// </summary>
 		[XmlIgnore]
 		[TypeConverter(typeof(TypeClassConverter))]
 		[EditorAttribute(typeof(TypeEditor), typeof(System.Drawing.Design.UITypeEditor))]
@@ -58,7 +74,9 @@ namespace Rsdn.Nntp
 					dataProviderSettings = Activator.CreateInstance(dataProviderSettingsType);
 			}
 		}
-
+		/// <summary>
+		/// Name of Data Provider's type.
+		/// </summary>
 		[Browsable(false)]
 		public string DataProviderTypeName
 		{
@@ -66,6 +84,10 @@ namespace Rsdn.Nntp
 			set { DataProviderType = Type.GetType(value, true); }
 		}
 
+		/// <summary>
+		/// Data Provider settings' type
+		/// </summary>
+		protected Type dataProviderSettingsType = typeof(object);
 		protected object dataProviderSettings = new object();
 		[Browsable(false)]
 		public object DataProviderSettings
@@ -80,10 +102,13 @@ namespace Rsdn.Nntp
 			}
 		}
 
-		[XmlAnyElement()]
-		public XmlElement RawSettings;
-
+		/// <summary>
+		/// Server TCP/IP endpoins.
+		/// </summary>
 		protected ServerEndPoint[] bindings;
+		/// <summary>
+		/// Server TCP/IP endpoints accessor.
+		/// </summary>
 		[TypeConverter(typeof(BindingsConverter))]
 		public ServerEndPoint[] Bindings
 		{
@@ -91,11 +116,19 @@ namespace Rsdn.Nntp
 			set { bindings = value; }
 		}
 
+		/// <summary>
+		/// Serialize this settings object to file.
+		/// </summary>
+		/// <param name="filename">Name of the file.</param>
 		public void Serialize(string filename)
 		{
 			Serialize(new FileStream(filename, FileMode.Create));
 		}
 
+		/// <summary>
+		/// Serialize this settings object.
+		/// </summary>
+		/// <param name="stream">Stream to serialize.</param>
 		public void Serialize(Stream stream)
 		{
 			XmlTextWriter fileWriter = new XmlTextWriter(stream, System.Text.Encoding.UTF8);
@@ -107,6 +140,11 @@ namespace Rsdn.Nntp
 			fileWriter.Close();
 		}
 
+		/// <summary>
+		/// Deserialize settings from a file.
+		/// </summary>
+		/// <param name="filename">Name of the file.</param>
+		/// <returns></returns>
 		public static NntpSettings Deseriazlize(string filename)
 		{
 			ArrayList dataProviderTypes = new ArrayList();
@@ -116,7 +154,7 @@ namespace Rsdn.Nntp
 
 			/// Collect all data provider's types
 			foreach (XmlNode dataProviderTypeNode in doc.DocumentElement.
-									SelectNodes("/Settings/DataProviderTypeName"))
+				SelectNodes("/Settings/DataProviderTypeName"))
 				dataProviderTypes.Add(((IDataProvider)Activator.CreateInstance(
 					Type.GetType(dataProviderTypeNode.InnerText, true))).GetConfigType());
 			
@@ -131,6 +169,26 @@ namespace Rsdn.Nntp
 			fileReader.Close();
 
 			return serverSettings;
+		}
+
+		/// <summary>
+		/// Thread Pool's size
+		/// </summary>
+		[DefaultValue(25)]
+		public uint ThreadPoolSize
+		{
+			get
+			{
+				int workerThreads, competitionPortThreads;
+				System.Threading.ThreadPool.GetMaxThreads(out workerThreads, out competitionPortThreads);
+				return (uint)workerThreads;
+			}
+			set
+			{
+				int workerThreads, competitionPortThreads;
+				System.Threading.ThreadPool.GetMaxThreads(out workerThreads, out competitionPortThreads);
+				CLRThreadPool.Controller.SetMaxThreads(value, (uint)competitionPortThreads);
+			}
 		}
 	}	
 }
