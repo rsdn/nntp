@@ -530,7 +530,7 @@ namespace Rsdn.Mime
 			foreach (object body in entities)
 			{
 				if (multipart)
-					builder.AppendFormat("{0}--{1}{0}", Util.CRLF, multipartBoundary);
+					builder.Append(Util.CRLF).AppendFormat("--{0}", multipartBoundary).Append(Util.CRLF);
 
 				if (body is IBody)
 					builder.Append(((IBody)body).GetBody());
@@ -543,7 +543,7 @@ namespace Rsdn.Mime
 				}
 			}
 			if (multipart)
-				builder.Append(Util.CRLF).AppendFormat("--{1}--", multipartBoundary);
+				builder.Append(Util.CRLF).AppendFormat("--{0}--", multipartBoundary);
 
 			return builder.ToString();
 		}
