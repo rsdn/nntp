@@ -28,6 +28,7 @@ namespace Rsdn.Nntp
 		ListOfArticlesByMessageID = 230,
 		ListOfArticles = 231,
 		PostedOk = 240,
+		AuthentificationAccepted = 281,
 		SendArticle = 340,
 		MoreAuthentificationRequired = 381,
 		ServiceDiscontinued = 400,

@@ -273,7 +273,8 @@ namespace Rsdn.Nntp
 									Message postingMessage = Message.Parse(commandString);
 									
 									// add addtitional server headers
-									postingMessage["Sender"] = sender;
+									if (sender != null)
+										postingMessage["Sender"] = sender;
 									if (postingMessage["Path"] == null)
 										postingMessage["Path"] = "not-for-mail";
 									postingMessage["Path"] = FullHostname + "!" + postingMessage["Path"];
