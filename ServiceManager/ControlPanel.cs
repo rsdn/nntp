@@ -267,7 +267,7 @@ namespace derIgel.RsdnNntp
 		private void propertyGrid_PropertyValueChanged(object s,
 			System.Windows.Forms.PropertyValueChangedEventArgs e)
 		{
-			// if data procider changed
+			// if data provider changed
 			if (e.ChangedItem.PropertyDescriptor.Name == "DataProviderTypeName")
 				dataProviderPropertyGrid.SelectedObject = settings.DataProviderSettings;
 			applyButton.Enabled = true;

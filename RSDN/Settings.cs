@@ -19,9 +19,17 @@ namespace derIgel.RsdnNntp
 			encoding = System.Text.Encoding.UTF8;
 		}
 
-		protected WebProxy proxy;
+		protected WebProxy proxy = new WebProxy();
 
+<<<<<<< Settings.cs
+		[Category("Connections")]
+		[Description("Web Proxy in format http://username:password@host.com:port\n" +
+			 "Username, password, and port may be skipped.")]
+		[EditorAttribute(typeof(ProxyEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[TypeConverter(typeof(ProxyConverter))]
+=======
 		//[BrowsableAttribute(false)]
+>>>>>>> 1.5
 		[XmlIgnore]
 		[EditorAttribute(typeof(ProxyEditor), typeof(System.Drawing.Design.UITypeEditor))]
 		public WebProxy Proxy
@@ -30,20 +38,11 @@ namespace derIgel.RsdnNntp
 			set { proxy = value; }
 		}
 
-		protected ProxySettings proxySettings = new ProxySettings();
-
-		[Category("Connections")]
-		[Description("Web Proxy in format http://username:password@host.com:port.\n" +
-			 "Username, password, and port may be skipped.")]
-		public ProxySettings ProxyServer
+		[BrowsableAttribute(false)]
+		public ProxySettings proxySettings
 		{
-			get {return proxySettings;}
-			set
-			{
-				proxySettings = value;
-				proxy =
-					new WebProxy(proxySettings.ProxyUri, false, null,	proxySettings.Credentials);
-			}
+			get { return new ProxySettings(proxy); }
+			set	{ proxy = value.Proxy; }
 		}
 
 		protected const string defaultServiceAddress = "http://rsdn.ru/ws/forum.asmx";

@@ -143,6 +143,12 @@
                     BuildAction = "Compile"
                 />
                 <File
+<<<<<<< RsdnDataProvider.csproj
+                    RelPath = "ProxyConverter.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "ProxyEditor.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -158,6 +164,23 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+=======
+                    RelPath = "ProxyEditor.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ProxyEditorForm.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ProxyEditorForm.resx"
+                    DependentUpon = "ProxyEditorForm.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+>>>>>>> 1.14
                     RelPath = "ProxySettings.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

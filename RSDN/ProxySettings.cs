@@ -5,133 +5,83 @@ using System.Text.RegularExpressions;
 using System.Net;
 using System.Xml.Serialization;
 using System.Text;
+using System.Security.Cryptography;
 
 namespace derIgel.RsdnNntp
 {
-	public class ProxySettingsConverter : ExpandableObjectConverter
-	{
-		public override bool CanConvertTo(ITypeDescriptorContext context,
-			System.Type destinationType) 
-		{
-			if (destinationType == typeof(ProxySettings))
-				return true;
-			else
-				return base.CanConvertTo(context, destinationType);
-		}
-
-		public override object ConvertTo(ITypeDescriptorContext context,
-			CultureInfo culture, object value, System.Type destinationType) 
-		{
-			if (destinationType == typeof(string) )
-			{
-				return ((ProxySettings)value).ToString();
-			}
-			else
-				return base.ConvertTo(context, culture, value, destinationType);
-		}
-
-		public override bool CanConvertFrom(ITypeDescriptorContext context,
-			System.Type sourceType) 
-		{
-			if (sourceType == typeof(string))
-				return true;
-			else
-				return base.CanConvertFrom(context, sourceType);
-		}
-
-		public override object ConvertFrom(ITypeDescriptorContext context,
-			CultureInfo culture, object value) 
-		{
-			if (value is string) 
-			{
-				string strValue = (string)value;
-				if ((strValue != "") && (strValue.IndexOf(Uri.SchemeDelimiter) < 0))
-					strValue = Uri.UriSchemeHttp + Uri.SchemeDelimiter + strValue;
-				return new ProxySettings(strValue);
-			}
-			else
-				return base.ConvertFrom(context, culture, value);
-		}
-	}
-
 	/// <summary>
-	/// Summary description for ProxySettings.
+	/// Helper class for XML Serializatiob of WebProxy class
 	/// </summary>
-	[TypeConverterAttribute(typeof(ProxySettingsConverter))]
 	public class ProxySettings
 	{
-		public static Uri CreateUri(string scheme, string host, int port, string username)
-		{
-			StringBuilder uriString = new StringBuilder();
-			uriString.Append(scheme).Append(Uri.SchemeDelimiter);
-			if (username != null)
-				uriString.Append(username).Append('@');
-			uriString.Append(host).Append(':').Append(port);
-			return new Uri(uriString.ToString());
-		}
-
+		protected UriBuilder uriBuilder;
 		public ProxySettings()
 		{
+			uriBuilder = new UriBuilder();
 		}
 
-		protected static readonly Regex userInfo =
-			new Regex(@"(?n)(?<username>[^:]+)(:(?<password>.*))?", RegexOptions.Compiled);
-
-		public ProxySettings(Uri proxyUri)
+		public ProxySettings(WebProxy proxy)
 		{
-			if (proxyUri != null)
-			{
-				protocol = proxyUri.Scheme;
-				host = proxyUri.Host;
-				port = proxyUri.Port;
-				Match userInfoMatch = userInfo.Match(proxyUri.UserInfo);
-				if (userInfoMatch.Success)
-				{
-					username = userInfoMatch.Groups["username"].Value;
-					password = userInfoMatch.Groups["password"].Value;
-				}
-			}
+			uriBuilder = new UriBuilder(proxy.Address);
+			uriBuilder.UserName = ((NetworkCredential)proxy.Credentials).UserName;
+			uriBuilder.Password = ((NetworkCredential)proxy.Credentials).Password;
 		}
 
-		public ProxySettings(string proxyAddress) : this(proxyAddress != "" ? new Uri(proxyAddress) : null) {	}
-
-		[XmlIgnore]
-		[Browsable(false)]
-		public Uri ProxyUri
+		public string Address
 		{
+			get { return uriBuilder.Scheme + Uri.SchemeDelimiter + uriBuilder.Uri.Authority; }
+			set { uriBuilder = new UriBuilder(value); }
+		}
+
+		public string Username
+		{
+<<<<<<< ProxySettings.cs
+			get { return uriBuilder.UserName; }
+			set { uriBuilder.UserName = value; }
+=======
 			get {return (host != null) ? CreateUri(protocol, host, port, username + "@" + password) : null;}
+>>>>>>> 1.3
 		}
 
-		protected string protocol = Uri.UriSchemeHttp;
-		[Description("Protocol")]
-		[DefaultValue("http")]
-		public string Protocol
+		/// <summary>
+		/// encrypted password
+		/// </summary>
+		[XmlElement(DataType = "base64Binary")]
+		public byte[] Password
 		{
-			get { return protocol; }
+			get
+			{
+				RijndaelManaged myRijndael = new RijndaelManaged();
+				byte[] Key = myRijndael.Key;
+				Encoding.UTF8.GetBytes(Address, 0, Math.Min(Key.Length, Address.Length), Key, 0);
+				byte[] IV = myRijndael.IV;
+				Encoding.UTF8.GetBytes(Username, 0, Math.Min(IV.Length, Username.Length), IV, 0);
+				ICryptoTransform encryptor =
+					myRijndael.CreateEncryptor(Key, IV);
+				byte[] source = Encoding.UTF8.GetBytes(uriBuilder.Password);
+				byte[] result = encryptor.TransformFinalBlock(source, 0, source.Length);
+				encryptor.Dispose();
+
+				return result;
+			}
 			set
 			{
-				if (!Uri.CheckSchemeName(value))
-					throw new ArgumentException("Wrong scheme name");
-				protocol = value;
+				RijndaelManaged myRijndael = new RijndaelManaged();
+				byte[] Key = myRijndael.Key;
+				Encoding.UTF8.GetBytes(Address, 0, Math.Min(Key.Length, Address.Length), Key, 0);
+				byte[] IV = myRijndael.IV;
+				Encoding.UTF8.GetBytes(Username, 0, Math.Min(IV.Length, Username.Length), IV, 0);
+				ICryptoTransform decryptor =
+					myRijndael.CreateEncryptor(Key, IV);
+				byte[] result = decryptor.TransformFinalBlock(value, 0, value.Length);
+				decryptor.Dispose();
+
+				uriBuilder.Password = Encoding.UTF8.GetString(result);
 			}
 		}
 
-		protected string host;
-		[Description("Proxy address")]
-		public string Host
-		{
-			get	{	return host;	}
-			set
-			{
-				if (value != "")
-				{
-					if (Uri.CheckHostName(value) == UriHostNameType.Unknown)
-						throw new ArgumentException("Unknown host name");
-				}
-				host = (value == "") ? null : value;
-			}
-		}
-
+<<<<<<< ProxySettings.cs
+=======
 		protected int port = 80;
 		[DefaultValue(80)]
 		[Description("Port")]
@@ -164,11 +114,15 @@ namespace derIgel.RsdnNntp
 				null;
 		}
 
+>>>>>>> 1.3
 		[XmlIgnore]
-		[Browsable(false)]
-		public ICredentials Credentials
+		public WebProxy Proxy
 		{
-			get { return new NetworkCredential(username, password); }
+			get
+			{
+				return new WebProxy(uriBuilder.Uri, false, null,
+					new NetworkCredential(uriBuilder.UserName, uriBuilder.Password));
+			}		
 		}
 	}
 }
