@@ -129,6 +129,10 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "RSDN.Format.dll"
+                    BuildAction = "None"
+                />
+                <File
                     RelPath = "Settings.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
