@@ -110,6 +110,15 @@
             <param name="o">Преобразуемый объект.</param>
             <returns>Результат.</returns>
         </member>
+        <member name="M:Rsdn.Framework.Formatting.Format.ReplaceRsdnLinks(System.String,System.Boolean,System.String)">
+            <summary>
+            Replace links targeted to RSDN
+            </summary>
+            <param name="text">Text, to search RSDN links</param>
+            <param name="replaceTarget">true, remove link's target, false - leave targeted to 'balnk'</param>
+            <param name="applicationPath">Application path to generate links.</param>
+            <returns>Text, with modified links.</returns>
+        </member>
         <member name="T:Rsdn.Framework.Formatting.Format.Date">
             <summary>
             Инкапсулирует функции форматирования даты.
@@ -348,7 +357,12 @@
         </member>
         <member name="F:Rsdn.Framework.Formatting.TextFormatter.rxTextUrl01">
             <summary>
-            Выражения для обработки текста.
+            [img] тэг. С защитой от javascript.
+            </summary>
+        </member>
+        <member name="F:Rsdn.Framework.Formatting.TextFormatter.rxTextUrl02">
+            <summary>
+            [url] тэг.
             </summary>
         </member>
         <member name="F:Rsdn.Framework.Formatting.TextFormatter.TaglineDetector">
