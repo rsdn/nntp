@@ -1,0 +1,351 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Rsdn.Framework.Formatting</name>
+    </assembly>
+    <members>
+        <member name="T:Rsdn.Framework.Formatting.CodeFormatter">
+            <summary>
+            Класс, для раскраски исходников
+            Загружает правила раскраски из xml-файла
+            </summary>
+        </member>
+        <member name="F:Rsdn.Framework.Formatting.CodeFormatter.xmlSchemas">
+            <summary>
+            Source XML validating schemas (XSD)
+            </summary>
+        </member>
+        <member name="F:Rsdn.Framework.Formatting.CodeFormatter.colorerRegex">
+            <summary>
+            Регулярное выражение, используемое при расераске.
+            Получается после преобразования исходных данных.
+            </summary>
+        </member>
+        <member name="F:Rsdn.Framework.Formatting.CodeFormatter.groupNames">
+            <summary>
+            Массив имен именованых групп в регулярном выражении
+            Используется при поиске имени группы по ее номеру
+            </summary>
+        </member>
+        <member name="F:Rsdn.Framework.Formatting.CodeFormatter.countGroups">
+            <summary>
+            Число групп в регулярном выражении
+            </summary>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.CodeFormatter.#ctor(System.IO.Stream)">
+            <summary>
+            Создание экземпляра раскрасивальщика.
+            </summary>
+            <param name="xmlSource">Исходный xml-поток</param>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.CodeFormatter.#ctor(System.IO.Stream,System.Text.RegularExpressions.RegexOptions)">
+            <summary>
+            Создание экземпляра раскрасивальщика с дополнительными опциями для регулярного выражения.
+            </summary>
+            <param name="xmlSource">Исходный xml-поток</param>
+            <param name="options">Regex опции</param>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.CodeFormatter.Transform(System.String)">
+            <summary>
+            Преобразование текста раскрасивальщиком
+            </summary>
+            <param name="sourceText">Исходный текст</param>
+            <returns>Преобразованный текст</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.CodeFormatter.ReplaceEvaluator(System.Text.RegularExpressions.Match)">
+            <summary>
+            Функция обработки найденного выражения во время трансформации
+            </summary>
+            <param name="match">Соответсвие</param>
+            <returns>Обработанное соответсвие</returns>
+        </member>
+        <member name="T:Rsdn.Framework.Formatting.Format">
+            <summary>
+            Инкапсулирует функции форматирования.
+            </summary>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Format.ReplaceTags(System.String)">
+            <summary>
+            Заменяет служебные символы HTML на их аналоги.
+            </summary>
+            <param name="str">Исходный текст.</param>
+            <returns>Результат.</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Format.ReplaceTagsWQ(System.String)">
+            <summary>
+            Заменяет служебные символы HTML на их аналоги исключая '"'.
+            </summary>
+            <param name="str">Исходный текст.</param>
+            <returns>Результат.</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Format.ReplaceTags(System.Object)">
+            <summary>
+            Заменяет служебные символы HTML на их аналоги.
+            </summary>
+            <param name="str">Исходный текст.</param>
+            <returns>Результат.</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Format.ToInt(System.Object)">
+            <summary>
+            Преобразует object в int. 
+            В случае возникновения исключения возвращается 0.
+            </summary>
+            <param name="o">Преобразуемый объект.</param>
+            <returns>Результат.</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Format.ToDouble(System.Object)">
+            <summary>
+            Преобразует object в double. 
+            В случае возникновения исключения возвращается 0.
+            </summary>
+            <param name="o">Преобразуемый объект.</param>
+            <returns>Результат.</returns>
+        </member>
+        <member name="T:Rsdn.Framework.Formatting.Format.Date">
+            <summary>
+            Инкапсулирует функции форматирования даты.
+            </summary>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Format.Date.#ctor">
+            <summary>
+            Контсруктор объекта.
+            </summary>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Format.Date.#ctor(System.DateTime)">
+            <summary>
+            Конструктор объекта.
+            </summary>
+            <param name="dateTime">Дата.</param>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Format.Date.Correct(System.DateTime,System.Double)">
+            <summary>
+            Correct server time to client time zone's time
+            </summary>
+            <param name="serverTime">Server time</param>
+            <param name="clientTimezoneOffsetMinutes">Client time zone's offset in minutes</param>
+            <returns></returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Format.Date.Correct(System.Object,System.Double)">
+            <summary>
+            Correct server time to client time zone's time
+            </summary>
+            <param name="serverTime">Server time. If not DateTime then return zero date</param>
+            <param name="clientTimezoneOffsetMinutes">Client time zone's offset in minutes</param>
+            <returns></returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Format.Date.ToYearString">
+            <summary>
+            Форматирует дату используя формат "dd.MM.yy HH:mm"
+            </summary>
+            <returns>Результирующая строка.</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Format.Date.ToYearString(System.DateTime)">
+            <summary>
+            Форматирует дату используя формат "dd.MM.yy HH:mm"
+            </summary>
+            <param name="dateTime">Форматируемая дата.</param>
+            <returns>Результирующая строка.</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Format.Date.ToShortString">
+            <summary>
+            Форматирует дату используя формат "dd.MM HH:mm"
+            </summary>
+            <returns>Результирующая строка.</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Format.Date.ToShortString(System.DateTime)">
+            <summary>
+            Форматирует дату используя формат "dd.MM HH:mm"
+            </summary>
+            <param name="dateTime">Форматируемая дата.</param>
+            <returns>Результирующая строка.</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Format.Date.GetDayBeginning">
+            <summary>
+            Возвращает дату на начало текущего дня.
+            </summary>
+            <returns>Начало текущего дня.</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Format.Date.GetDayBeginning(System.DateTime)">
+            <summary>
+            Возвращает дату на начало заданного дня.
+            </summary>
+            <returns>Начало дня.</returns>
+        </member>
+        <member name="T:Rsdn.Framework.Formatting.Format.Forum">
+            <summary>
+            Инкапсулирует функции форматирования сообщений форума.
+            </summary>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Format.Forum.GetEditSubject(System.String)">
+            <summary>
+            Готовит поле 'тема' для редактирования.
+            </summary>
+            <param name="subj">Название темы.</param>
+            <returns>Результат.</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Format.Forum.GetShortNick(System.String)">
+            <summary>
+            Возвращает сокращения для заданного ника.
+            </summary>
+            <param name="nick">Ник.</param>
+            <returns>Сокращение.</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Format.Forum.GetEditMessage(System.String,System.String)">
+            <summary>
+            Готовит сообщение к цитированию.
+            </summary>
+            <param name="msg">Сообщение.</param>
+            <param name="nick">Автор ссобщения.</param>
+            <returns>Обработанное сообщение</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Format.Forum.GetEditMessage(System.String,System.String,System.Boolean)">
+            <summary>
+            Готовит сообщение к цитированию.
+            </summary>
+            <param name="msg">Сообщение.</param>
+            <param name="nick">Автор ссобщения.</param>
+            <param name="moderator">== true, если пользователь - модератор.</param>
+            <returns>Обработанное сообщение</returns>
+        </member>
+        <member name="T:Rsdn.Framework.Formatting.Matcher">
+            <summary>
+            Helper class for counting of matches.
+            </summary>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Matcher.#ctor(System.String)">
+            <summary>
+            Class constructor
+            </summary>
+            <param name="pattern">Match replacement pattern</param>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Matcher.Match(System.Text.RegularExpressions.Match)">
+            <summary>
+            Match evaluator
+            </summary>
+            <param name="match">Match</param>
+            <returns>Replacement string</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Matcher.Reset">
+            <summary>
+            Reset evaluator
+            </summary>
+        </member>
+        <member name="P:Rsdn.Framework.Formatting.Matcher.Count">
+            <summary>
+            Get count of matches
+            </summary>
+        </member>
+        <member name="P:Rsdn.Framework.Formatting.Matcher.Item(System.Int32)">
+            <summary>
+            Get evaluated match by number
+            </summary>
+        </member>
+        <member name="T:Rsdn.Framework.Formatting.TextFormatter">
+            <summary>
+            Форматирование сообщение и расцветка кода.
+            </summary>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.TextFormatter.#ctor">
+            <summary>
+            Создаёт экземпляр класса <b>TextFormatter</b>.
+            </summary>
+        </member>
+        <member name="F:Rsdn.Framework.Formatting.TextFormatter.codeFormatters">
+            <summary>
+            Ассоциативная таблица для раскраски кода.
+            Ключ - имя тэга, значение - раскрасивальщик.
+            </summary>
+        </member>
+        <member name="F:Rsdn.Framework.Formatting.TextFormatter.rxCodeFormatting">
+            <summary>
+            Выражения для обработки кодов.
+            </summary>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.TextFormatter.#cctor">
+            <summary>
+            Инициализация раскрасчиков кода.
+            </summary>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.TextFormatter.PaintCode(System.Text.RegularExpressions.Match)">
+            <summary>
+            Раскраска кода
+            </summary>
+            <param name="codeMatch">Вхождение кода (группа tag содержит тип кода)</param>
+            <returns></returns>
+        </member>
+        <member name="F:Rsdn.Framework.Formatting.TextFormatter.rxSetFont01">
+            <summary>
+            Выражения для замены временных тегов.
+            </summary>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.TextFormatter.SetFont(System.String)">
+            <summary>
+            Заменяет временные теги на html.
+            </summary>
+            <param name="code">Исходный код.</param>
+            <returns>Обработанный текст.</returns>
+        </member>
+        <member name="F:Rsdn.Framework.Formatting.TextFormatter.rxSmile08">
+            <summary>
+            Выражения для обработки смайликов.
+            </summary>
+        </member>
+        <member name="F:Rsdn.Framework.Formatting.TextFormatter.rxTextUrl01">
+            <summary>
+            Выражения для обработки текста.
+            </summary>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.TextFormatter.UrlReplacer(System.Text.RegularExpressions.Match)">
+            <summary>
+            Match evaluator for URL formatting
+            </summary>
+            <param name="match">URI match</param>
+            <returns>Replacement string</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.TextFormatter.GetMSDNRef(System.String)">
+            <summary>
+            Возвращает ссылку на MSDN.
+            </summary>
+            <param name="str">Название функции или искомый текст.</param>
+            <returns>Ссылка.</returns>
+        </member>
+        <member name="F:Rsdn.Framework.Formatting.TextFormatter.rxMsdn">
+            <summary>
+            Выражения для обработки ссылок на MSDN.
+            </summary>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.TextFormatter.DoMSDNref(System.Text.RegularExpressions.Match)">
+            <summary>
+            Обработывает ссылки на MSDN.
+            </summary>
+            <param name="match">Вхождение [msdn]</param>
+            <returns>Обработаный текст</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.TextFormatter.GetImagePrefix">
+            <summary>
+            Возвращает префикс для картинок.
+            </summary>
+            <returns>Строка префикса.</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.TextFormatter.ListEvaluator(System.Text.RegularExpressions.Match)">
+            <summary>
+            Обработка нумерованных списков
+            </summary>
+            <param name="match"></param>
+            <returns></returns>
+        </member>
+        <member name="F:Rsdn.Framework.Formatting.TextFormatter.rxPrep01">
+            <summary>
+            Выражения для форматирования текста.
+            </summary>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.TextFormatter.Format(System.String,System.Boolean)">
+            <summary>
+            Форматирование текста.
+            </summary>
+            <param name="txt">Исходный текст.</param>
+            <param name="smile">Признак обработки смайликов.</param>
+            <returns>Сформатированный текст.</returns>
+        </member>
+    </members>
+</doc>
