@@ -325,12 +325,19 @@ namespace derIgel.RsdnNntp
 				ProcessException(exception);
 			}	
 
-			NewsArticle[] articleArray = new NewsArticle[articleList.articles.Length];
+			NewsArticle[] articleArray;
+			// sometimes web-service return null....
+			if (articleList != null)
+			{
+				articleArray = new NewsArticle[articleList.articles.Length];
 
-			for (int i = 0; i <articleList.articles.Length; i++)
-				articleArray[i] =
-					ToNNTPArticle(articleList.articles[i], currentGroup, content);
-	
+				for (int i = 0; i < articleList.articles.Length; i++)
+					articleArray[i] =
+						ToNNTPArticle(articleList.articles[i], currentGroup, content);
+			}
+			else
+				articleArray = new NewsArticle[0];
+
 			return articleArray;
 		}
 
