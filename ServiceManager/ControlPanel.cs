@@ -132,7 +132,6 @@ namespace Rsdn.RsdnNntp
 			this.serverPropertyGrid.CommandsBackColor = System.Drawing.SystemColors.Highlight;
 			this.serverPropertyGrid.CommandsVisibleIfAvailable = true;
 			this.serverPropertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.serverPropertyGrid.HelpVisible = false;
 			this.serverPropertyGrid.LargeButtons = false;
 			this.serverPropertyGrid.LineColor = System.Drawing.SystemColors.ScrollBar;
 			this.serverPropertyGrid.Location = new System.Drawing.Point(0, 0);
