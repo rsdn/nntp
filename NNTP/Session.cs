@@ -294,7 +294,10 @@ namespace Rsdn.Nntp
 										}
 									}
 									else
+									{
 										result = new Response(NntpResponse.NotRecognized); // no such command
+										logger.Warn(string.Format("Command not recognized ({0}).", commandString));
+									}
 									break;
 							}
 						}
