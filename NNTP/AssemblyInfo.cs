@@ -7,9 +7,7 @@ using System.Runtime.CompilerServices;
 // associated with an assembly.
 //
 [assembly: AssemblyTitle("NNTP Library")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCulture("")]
+[assembly: AssemblyDescription("News Network Transport Protocol library for .NET")]
 
 //
 // Version information for an assembly consists of the following four values:

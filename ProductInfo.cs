@@ -6,10 +6,9 @@ using System.Runtime.CompilerServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 //
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Russian Software Developer Network")]
 [assembly: AssemblyProduct("RSDN NNTP Server")]
 [assembly: AssemblyCopyright("© 2002-2003 der Igel, the RSDN Group")]
-[assembly: AssemblyTrademark("")]
 
 //
 // Version information for an assembly consists of the following four values:

@@ -8,12 +8,9 @@ using System.Runtime.CompilerServices;
 //
 [assembly: AssemblyTitle(".Net MIME Library")]
 [assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct(".Net MIME Library")]
-[assembly: AssemblyCopyright("© 2002-2003 der Igel, RSDN Group")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]		
+[assembly: AssemblyCompany("Russian Software Developer Network")]
+[assembly: AssemblyCopyright("© 2002-2003 der Igel, the RSDN Group")]
 
 //
 // Version information for an assembly consists of the following four values:
