@@ -168,7 +168,8 @@ namespace derIgel.NNTP
 			try
 			{
 				// response OK
-				Answer(dataProvider.PostingAllowed ? NntpResponse.Ok : NntpResponse.OkNoPosting);
+				Answer(new Response(dataProvider.PostingAllowed ? NntpResponse.Ok : NntpResponse.OkNoPosting,
+					null, Manager.ServerID));
 
 				StringBuilder bufferString = new StringBuilder();
 				while (true)

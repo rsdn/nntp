@@ -211,6 +211,9 @@ namespace derIgel.NNTP
 			get {return sessions.Count;	}
 		}
 
+		/// server identification string
+		public static readonly string ServerID = Manager.GetProductTitle(Assembly.GetExecutingAssembly());
+
 		public static string GetProductTitle(Assembly assembly)
 		{
 			StringBuilder builder = new StringBuilder();

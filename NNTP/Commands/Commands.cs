@@ -42,9 +42,6 @@ namespace derIgel.NNTP.Commands
 	/// </summary>
 	public abstract class Generic
 	{
-		/// server identification string
-		public static readonly string ServerID = Manager.GetProductTitle(Assembly.GetExecutingAssembly());
-
 		public Generic(Session session)
 		{
 			syntaxisChecker = null;
@@ -99,7 +96,7 @@ namespace derIgel.NNTP.Commands
 			foreach (DictionaryEntry newsGroupNumber in article.MessageNumbers)
 				xref.Append(" ").Append(newsGroupNumber.Key).Append(":").Append(newsGroupNumber.Value);
 			article["Xref"] = xref.ToString();
-			article["X-Server"] = ServerID;
+			article["X-Server"] = Manager.ServerID;
 			return article;
 		}
 	}
@@ -640,7 +637,7 @@ namespace derIgel.NNTP.Commands
 		protected override Response ProcessCommand()
 		{
 			StringBuilder supportCommands = new StringBuilder();
-			supportCommands.Append(Manager.GetProductTitle(Assembly.GetExecutingAssembly())).Append(" ").
+			supportCommands.Append(Manager.ServerID).Append(" ").
 				Append("supports follow commands:").Append(Util.CRLF);
 			foreach (string command in session.commands.Keys)
 				supportCommands.AppendFormat("\t{0}{1}", command,Util.CRLF);

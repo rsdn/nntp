@@ -65,10 +65,10 @@ namespace derIgel.NNTP
 		{
 			answers = new Hashtable();
 			answers[100] = "100 help text follows";
-			answers[200] = "200 RSDN NNTP Server -- posting allowed";
-			answers[201] = "201 RSDN NNTP Server -- no posting allowed";
+			answers[200] = "200 {0} -- posting allowed";
+			answers[201] = "201 {0} -- no posting allowed";
 			answers[202] = "202 slave status noted";
-			answers[205] = "205 RSDN NNTP Server closing connection - goodbye!";
+			answers[205] = "205 closing connection - goodbye!";
 			answers[211] = "211 {0} {1} {2} {3} group selected";
 			answers[215] = "215 list of newsgroups follows";
 			answers[220] = "220 {0} {1} article retrivied - head and body follow";

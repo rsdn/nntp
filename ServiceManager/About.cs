@@ -33,7 +33,7 @@ namespace derIgel.RsdnNntp
 				Assembly.GetExecutingAssembly().GetManifestResourceStream("derIgel.RsdnNntp.About.rtf"),
 				RichTextBoxStreamType.RichText);
 
-			titleLabel.Text = derIgel.NNTP.Manager.GetProductTitle(Assembly.GetExecutingAssembly());
+			titleLabel.Text = derIgel.NNTP.Manager.ServerID;
 
 			Assembly.Load("RsdnNntpServer");
 			foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
