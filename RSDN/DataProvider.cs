@@ -14,6 +14,7 @@ using System.Web;
 using System.Web.Caching;
 
 using log4net;
+using Rsdn.Framework.Common;
 using Rsdn.Framework.Formatting;
 
 using Rsdn.Mime;
@@ -581,8 +582,8 @@ namespace Rsdn.RsdnNntp
     {
 			try
 			{
-				string postingText = GetPlainTextFromMessage(message);
-				if (postingText == "")
+				StringBuilder postingText = GetPlainTextFromMessage(message);
+				if (postingText.Length == 0)
 					throw new DataProviderException(DataProviderErrors.PostingFailed, "Empty message.");
 
 				// get message ID
@@ -746,13 +747,13 @@ namespace Rsdn.RsdnNntp
     {
     	return typeof(DataProviderSettings);
     }
-
-    /// <summary>
+	  
+	/// <summary>
     /// Get only plain text from MIME message
     /// </summary>
     /// <param name="message"></param>
     /// <returns></returns>
-    internal string GetPlainTextFromMessage(Message message)
+    internal StringBuilder GetPlainTextFromMessage(Message message)
     {
     	StringBuilder text = new StringBuilder();
     	if ((message.ContentTypeType == "text") && (message.ContentTypeSubtype == "plain") ||
@@ -762,7 +763,7 @@ namespace Rsdn.RsdnNntp
     				text.Append(GetPlainTextFromMessage((Message)entity));
     			else
     				text.Append(entity);
-    	return text.ToString();
+    	return text;
     }
 
 		/// <summary>
