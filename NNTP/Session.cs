@@ -46,6 +46,7 @@ namespace derIgel.NNTP
 
 		}
 
+#if PERFORMANCE_COUNTERS
 		/// <summary>
 		/// perfomance counter for requests
 		/// </summary>
@@ -70,6 +71,7 @@ namespace derIgel.NNTP
 		/// global perfomance counter transfered articles
 		/// </summary>
 		PerformanceCounter globalArticlesCounter;
+#endif
 
 		public Session(Socket client, IDataProvider dataProvider, WaitHandle exitEvent, TextWriter errorOutput)
 		{
@@ -89,6 +91,7 @@ namespace derIgel.NNTP
 				commands[entry.Key] = 
 					Activator.CreateInstance((Type)entry.Value, new Object[]{this});
 
+#if PERFORMANCE_COUNTERS
 			// create perfomance counters' category if necessary
 			string PerfomanceCategoryName = "RSDN NNTP Server Sessions";
 			CounterCreationDataCollection perfomanceCountersCollection = new CounterCreationDataCollection();
@@ -117,6 +120,7 @@ namespace derIgel.NNTP
 				badRequestsCounterData .CounterName, "All", false);
 			globalArticlesCounter = new PerformanceCounter(PerfomanceCategoryName,
 				articlesCounterData .CounterName, "All", false);
+#endif
 		}
 
 		protected static Hashtable commandsTypes;
@@ -223,9 +227,10 @@ namespace derIgel.NNTP
 									// get first word in upper case delimeted by space or tab characters 
 									command = commandString.Split(new char[]{' ', '\t', '\r'}, 2)[0].ToUpper();
 
+#if PERFORMANCE_COUNTERS
 									requestsCounter.Increment();
 									globalRequestsCounter.Increment();
-
+#endif
 									Commands.Generic nntpCommand = commands[command] as Commands.Generic;
 									// check suppoting command
 									if (nntpCommand != null)
@@ -320,8 +325,10 @@ namespace derIgel.NNTP
 						if (result.Code >= 400)
 						// result code indicates error
 						{
+#if PERFORMANCE_COUNTERS
 							badRequestsCounter.Increment();
 							globalBadRequestsCounter.Increment();
+#endif
 						}
 
 						switch((NntpResponse)result.Code)
@@ -330,8 +337,10 @@ namespace derIgel.NNTP
 							case NntpResponse.ArticleHeadRetrivied :
 							case NntpResponse.ArticleBodyRetrivied :
 							case NntpResponse.ArticleNothingRetrivied :
+#if PERFORMANCE_COUNTERS
 								articlesCounter.Increment();
 								globalArticlesCounter.Increment();
+#endif
 								break;
 							case NntpResponse.Bye : // quit
 							case NntpResponse.ServiceDiscontinued : // service disctontined

@@ -219,7 +219,9 @@ namespace derIgel.NNTP.Commands
 			
 			ModifyArticle(article);
 			return new Response(responseCode, article.GetBody(),
-				article.MessageNumbers[session.DataProvider.CurrentGroup], article["Message-ID"]);
+				// article retirived by messageID don't change "internal current pointer", so we may don't have current group
+				lastMatch.Groups["messageID"].Success ? null : article.MessageNumbers[session.DataProvider.CurrentGroup],
+				article["Message-ID"]);
 		}
 	}
 
