@@ -559,12 +559,6 @@ namespace Rsdn.RsdnNntp
     protected int currentGroupArticleEndNumber = -1;
 
     /// <summary>
-    /// refular expression for detecting Re: & Re[number]: prefixes in subject at the start of the line
-    /// </summary>
-    protected static Regex reDetecter =
-    	new Regex(@"(?i)^((Re\[(?<num>\d+)\]|Re(?<num>.{0,0})):\s*)+", RegexOptions.Compiled | RegexOptions.ExplicitCapture);
-
-    /// <summary>
     /// Post MIME message through data provider
     /// </summary>
     /// <param name="message"></param>
@@ -587,11 +581,8 @@ namespace Rsdn.RsdnNntp
     		// tagline
     		postingText += Util.CRLF + "[tagline]Posted via " + Manager.ServerID + "[/tagline]";
     		
-    		// remove "Re" prefix from subject
-    		string subject = reDetecter.Replace(message.Subject, "");
-
     		post_result result = 
- 					webService.PostUnicodeMessage(username, password, mid, group, subject, postingText);
+ 					webService.PostUnicodeMessage(username, password, mid, group, message.Subject, postingText);
 
     		if (!result.ok)
     			ProcessErrorMessage(result.error);
