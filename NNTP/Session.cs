@@ -15,8 +15,6 @@ using Rsdn.Nntp.Commands;
 
 namespace Rsdn.Nntp
 {
-	using Util = Rsdn.Mime.Util;
-
 	/// <summary>
 	/// NNTP Session
 	/// </summary>
@@ -51,12 +49,12 @@ namespace Rsdn.Nntp
 				if (assembly.IsDefined(typeof(NntpCommandsAssemblyAttribute), false))
 					// if assembly contains NNTP commands
 					foreach (Type type in	assembly.GetTypes())
-						if (type.IsDefined(typeof(NntpCommandAttribute), false)&&
+						if (type.IsDefined(typeof(NntpCommandAttribute), false) &&
 								type.IsSubclassOf(typeof(Generic)) &&
 								!type.IsAbstract)
 						{
-							foreach(object attr in type.GetCustomAttributes(typeof(NntpCommandAttribute), true))
-								commandsTypes[((NntpCommandAttribute)attr).Name] = type;
+							foreach(NntpCommandAttribute attr in type.GetCustomAttributes(typeof(NntpCommandAttribute), false))
+								commandsTypes[attr.Name] = type;
 						}
 
 			// answers for commands during allowed states
@@ -113,7 +111,7 @@ namespace Rsdn.Nntp
 			this.dataProvider = dataProvider;
 			this.manager = manager;
 
-			sessionID = manager.Name + " " + client.RemoteEndPoint;
+			sessionID = string.Format("{0}({1})", manager.Name, client.RemoteEndPoint);
 
 			// Init client's command array
 			commands = new Hashtable();

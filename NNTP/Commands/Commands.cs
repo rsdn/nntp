@@ -18,36 +18,6 @@ namespace Rsdn.Nntp.Commands
 	/// See RFC  977 'Network News Transport Protocol'
 	/// See RFC 2980 'Common NNTP Extensions'
 	
-	using Util = Rsdn.Mime.Util;
-	
-	[AttributeUsage(AttributeTargets.Assembly, Inherited = false,
-		 AllowMultiple = false)]
-	public class NntpCommandsAssemblyAttribute : Attribute
-	{
-	}
-		
-	/// <summary>
-	/// Attribute for NNTP commands classes
-	/// </summary>
-	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Assembly, Inherited = false,
-			AllowMultiple = true)]
-	public class NntpCommandAttribute : Attribute
-	{
-		public NntpCommandAttribute(string commandName)
-		{
-			command = commandName;
-		}
-		protected string command;
-
-		internal string Name
-		{
-			get
-			{
-				return command;
-			}
-		}
-	}
-
 	/// <summary>
 	/// Generic NNTP client command
 	/// </summary>

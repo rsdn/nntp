@@ -9,8 +9,6 @@ using Rsdn.Mime;
 
 namespace Rsdn.Nntp
 {
-	using Util = Rsdn.Mime.Util;
-
 	/// <summary>
 	/// NNTP Response's codes
 	/// </summary>
@@ -144,7 +142,7 @@ namespace Rsdn.Nntp
 			try
 			{
 				StringBuilder result = new StringBuilder(Util.LineLength);
-				result.AppendFormat(answers[code] as string + Util.CRLF, parameters)
+				result.AppendFormat(answers[code] as string, parameters).Append(Util.CRLF)
 					.Append(ModifyTextResponse(reponsesBody));
 				return result.ToString();
 			}
