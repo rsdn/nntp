@@ -60,7 +60,8 @@ namespace Rsdn.Nntp.Commands
 						break;
 					case Session.States.MoreAuthRequired	:
 						session.Password	=	lastMatch.Groups["param"].Value;
-						if (session.DataProvider.Authentificate(session.Username, session.Password))
+						if (session.DataProvider.Authentificate(session.Username, session.Password,
+									((IPEndPoint)session.client.RemoteEndPoint).Address))
 						{
 							session.sessionState = Session.States.Normal;
 							result = new Response(NntpResponse.AuthentificationAccepted);

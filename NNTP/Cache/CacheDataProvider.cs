@@ -3,6 +3,7 @@ using System.Web;
 using System.Web.Caching;
 using AspCaching = System.Web.Caching;
 using System.Collections;
+using System.Net;
 
 using Rsdn.Nntp;
 
@@ -220,7 +221,7 @@ namespace Rsdn.Nntp.Cache
 
 		public abstract NewsGroup[] GetGroupList(DateTime startDate, string pattern);
 
-		public abstract bool Authentificate(string user, string pass);
+		public abstract bool Authentificate(string user, string pass, IPAddress ip);
 
 		public abstract void PostMessage(Rsdn.Mime.Message article);
 

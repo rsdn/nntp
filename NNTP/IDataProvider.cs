@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 
 using Rsdn.Mime;
 
@@ -89,8 +90,9 @@ namespace Rsdn.Nntp
 		/// </summary>
 		/// <param name="user">User name.</param>
 		/// <param name="pass">User password.</param>
+		/// <param name="ip">User's connection ip address.</param>
 		/// <returns>True if authentificated.</returns>
-		bool Authentificate(string user, string pass);
+		bool Authentificate(string user, string pass, IPAddress ip);
 
 		/// <summary>
 		/// Post message.

@@ -286,7 +286,26 @@ namespace Rsdn.RsdnNntp
     	throw new DataProviderException(DataProviderErrors.NotSupported);
     }
 
-    public override bool Authentificate(string user, string pass)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="user"></param>
+		/// <param name="pass"></param>
+		/// <param name="ip"></param>
+		/// <returns></returns>
+		public virtual auth_info RsdnAuthentificate(string user, string pass, IPAddress ip)
+		{
+			return webService.Authentication(user, pass);
+		}
+
+		/// <summary>
+		/// Authentificate user.
+		/// </summary>
+		/// <param name="user"></param>
+		/// <param name="pass"></param>
+		/// <param name="ip"></param>
+		/// <returns></returns>
+    public override bool Authentificate(string user, string pass, IPAddress ip)
     {
 			try
 			{
@@ -298,7 +317,7 @@ namespace Rsdn.RsdnNntp
 					return true;
 				}
 
-    		auth_info auth = webService.Authentication(user, pass);
+    		auth_info auth = RsdnAuthentificate(user, pass, ip);
     		if (auth.ok)
     		{
 					userInfo = webService.GetUserInfo(user, pass);
