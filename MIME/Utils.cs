@@ -16,20 +16,11 @@ namespace derIgel.MIME
 		/// maximum length of line
 		/// </summary>
 		public const int lineLength = 76;
-
-		/// <summary>
-		/// text in base64 encoding in specified text encoding without breaking in lines
-		/// </summary>
-		public static string Encode(string text, bool header, Encoding encoding)
-		{
-			return Encode(text, header, encoding, -1);
-		}
 			
 		/// <summary>
-		/// text in base64 encoding in specified text encoding with defined line's length
+		/// text in base64 encoding in specified text encoding
 		/// </summary>
-		public static string Encode(string text, bool header, Encoding encoding,
-			int lineLengthLimit)
+		public static string Encode(string text, bool header, Encoding encoding)
 		{
 			StringBuilder builder = new StringBuilder();
 			if (header)
@@ -37,10 +28,6 @@ namespace derIgel.MIME
 					Append(Convert.ToBase64String(encoding.GetBytes(text))).Append("?=");
 			else
 				builder.Append(Convert.ToBase64String(encoding.GetBytes(text)));
-
-			if ((lineLengthLimit > 0) && (builder.Length > lineLengthLimit))
-				for (int i = lineLengthLimit; i < builder.Length; i += lineLengthLimit + CRLF.Length)
-					builder.Insert(i, CRLF);
 			
 			return builder.ToString();
 		}

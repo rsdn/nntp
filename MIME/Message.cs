@@ -354,15 +354,16 @@ namespace derIgel.MIME
 					switch (transferEncoding)
 					{
 						case ContentTransferEncoding.Base64	:
-							// Encode & break in lines, if needed
-							if (body is byte[])
-								// TODO: trunc to line length!
-								writer.Write(Convert.ToBase64String((byte[])body).ToCharArray());
-							else
-								writer.Write(Util.Encode(body.ToString(), false, encoding,
-									Util.lineLength).ToCharArray());
+							// Encode in base64 
+							StringBuilder encodedString = new StringBuilder(Convert.ToBase64String(
+								(body is byte[]) ? (byte[])body : encoding.GetBytes(body.ToString())));
+							// break in lines
+							for (int i = Util.lineLength; i < encodedString.Length; i += Util.lineLength + Util.CRLF.Length)
+								encodedString.Insert(i, Util.CRLF);
+							writer.Write(encodedString.ToString().ToCharArray());
 							break;
 						case ContentTransferEncoding.QoutedPrintable :
+							// quoted printable encoding
 							writer.Write(Util.ToQuotedPrintableString(
 								(body is byte[]) ? (byte[])body : encoding.GetBytes(body.ToString())).ToCharArray());
 							break;
