@@ -248,7 +248,11 @@
             Инкапсулирует функции форматирования сообщений форума.
             </summary>
         </member>
-        <!-- Badly formed XML comment ignored for member "F:Rsdn.Framework.Formatting.Format.Forum.reDetecter" -->
+        <member name="F:Rsdn.Framework.Formatting.Format.Forum.reDetecter">
+            <summary>
+            Regex for detecting Re: and Re[number]: prefixes in subject at the start of the line
+            </summary>
+        </member>
         <member name="M:Rsdn.Framework.Formatting.Format.Forum.GetEditSubject(System.String)">
             <summary>
             Готовит поле 'тема' для редактирования.
