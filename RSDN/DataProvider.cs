@@ -105,6 +105,9 @@ namespace Rsdn.RsdnNntp
     	}		
     }
 
+		/// <summary>
+		/// Construct RSDN Data Provider
+		/// </summary>
     public RsdnDataProvider()
     {
     	webService = new Forum();
@@ -605,6 +608,9 @@ namespace Rsdn.RsdnNntp
     	DataProviderSettings rsdnSettings = settings as DataProviderSettings;
     	if (rsdnSettings != null)
     	{
+			// To fix authorization proxy bug use special middle chain
+			webService = new RsdnWebService(rsdnSettings);
+
     		webService.Url = rsdnSettings.Service;
 				// set proxy if necessary
 				switch (rsdnSettings.ProxyType)
