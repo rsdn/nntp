@@ -405,7 +405,7 @@ namespace Rsdn.RsdnNntp.Common
 		/// Set data provider's parameters from IUserInfo object.
 		/// </summary>
 		/// <param name="userInfo"></param>
-		protected void SetUserInfo(IUserInfo userInfo)
+		protected virtual void SetUserInfo(IUserInfo userInfo)
 		{
 			username = userInfo.Name;
 			password = userInfo.Password;

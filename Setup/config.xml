@@ -2,7 +2,7 @@
 <Settings xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <Name>RSDN.RU</Name>
   <DataProviderTypeName>Rsdn.RsdnNntp.Public.RsdnDataPublicProvider, RsdnDataPublicProvider</DataProviderTypeName>
-  <DataProviderSettings xsi:type="DataProviderSettings">
+  <DataProviderSettings xsi:type="RsdnDataPublicProviderSettings">
     <proxySettings />
     <Encoding>windows-1251</Encoding>
   </DataProviderSettings>

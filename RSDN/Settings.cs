@@ -15,15 +15,15 @@ namespace Rsdn.RsdnNntp.Public
 	/// Settings for RSDN Data Provider
 	/// </summary>
 	[Serializable]
-	public class DataProviderSettings : CacheDataProviderSettings, ICustomTypeDescriptor
+	[XmlType("RsdnDataPublicProviderSettings")]
+	public class DataProviderSettings : Rsdn.RsdnNntp.DataProviderSettings, ICustomTypeDescriptor
 	{
 		/// <summary>
 		/// Initialize settings.
 		/// </summary>
-		public DataProviderSettings()
+		public DataProviderSettings() : base()
 		{
 			serviceAddress = new Uri(defaultServiceAddress);
-			encoding = System.Text.Encoding.UTF8;
 		}
 
 		protected const string defaultServiceAddress = "http://rsdn.ru/ws/service.asmx";
@@ -102,37 +102,6 @@ namespace Rsdn.RsdnNntp.Public
 		{
 			get { return new ProxySettings(proxy); }
 			set	{ proxy = value.Proxy; }
-		}
-
-		protected System.Text.Encoding encoding;
-	
-		[Category("Others")]
-		[DefaultValue("utf-8")]
-		[Description("Output encoding,for example, utf-8 or windows-1251")]
-		public string Encoding
-		{
-			get
-			{
-				return encoding.HeaderName;
-			}
-			set
-			{
-				System.Text.Encoding enc = System.Text.Encoding.GetEncoding(value);
-				if (!enc.IsMailNewsDisplay)
-					throw new NotSupportedException(string.Format(
-						"{0} encoding is not suitable for news client.", enc.HeaderName));
-				encoding = enc;
-			}
-		}
-
-		[BrowsableAttribute(false)]
-		[XmlIgnore]
-		public System.Text.Encoding GetEncoding
-		{
-			get
-			{
-				return encoding;
-			}
 		}
 
 		protected bool enableHttpCompression = false;
