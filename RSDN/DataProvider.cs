@@ -221,7 +221,7 @@ namespace Rsdn.RsdnNntp
 			ProcessException(exception);
 		}	
 
-    	NewsArticle newsMessage = ToNNTPArticle(message, message.group, content);
+    	NewsArticle newsMessage = ToNNTPArticle(UpdateReferences(message), message.group, content);
 
     	return newsMessage;
     }
@@ -444,7 +444,7 @@ namespace Rsdn.RsdnNntp
 		/// <summary>
 		/// Deep of the references chain
 		/// </summary>
-		protected const int referencesDeep = 15;
+		protected const int referencesDeep = 7;
 
     /// <summary>
     /// Convert rsdn's message to MIME message
@@ -481,11 +481,16 @@ namespace Rsdn.RsdnNntp
     		{
     			references = referenceCache.GetReferences(int.Parse(message.id));
     		}
-    		// get message's parents with limitation of depth
-    		for (int i = Math.Min(references.Length - 1, referencesDeep); i > 0; i--)
+    		// get message's parents from the start and from the end with limitation of depth
+				for (int i = references.Length - 1;
+					(i >= references.Length - referencesDeep) && (i > 0); i--)
+					referencesString.AppendFormat("<{0}{1}> ", references[i], message.postfix);
+				for (int i = Math.Min(references.Length - referencesDeep - 1, referencesDeep); i > 0; i--)
     			referencesString.AppendFormat("<{0}{1}> ", references[i], message.postfix);
     		if (referencesString.Length > 0)
     			newsMessage["References"] = referencesString.ToString();
+				if (references.Length > 1)
+					newsMessage["In-Reply-To"] = string.Format("<{0}{1}> ", references[1], message.postfix);
     	}
 
     	if ((content == NewsArticle.Content.Body) ||
