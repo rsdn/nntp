@@ -193,7 +193,7 @@ namespace Rsdn.RsdnNntp
     }
 
     static protected readonly Regex messageIdNumber =
-    	new Regex(@"<(?<messageIdNumber>\d+)@\S+>", RegexOptions.Compiled);
+    	new Regex(@"<(?<messageIdNumber>\d+)@news.rsdn.ru>", RegexOptions.Compiled);
     public override NewsArticle GetNonCachedArticle(string messageID, NewsArticle.Content content)
     {
     	article message = null;
