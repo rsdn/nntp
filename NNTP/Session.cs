@@ -199,6 +199,7 @@ namespace Rsdn.Nntp
 			if (logger.IsInfoEnabled)
 				logger.Info(string.Format("Session started. Local end point {0}.", client.LocalEndPoint));
 
+			bool posting = false;
 			string delimeter;
 			Response result = null;
 			try
@@ -243,10 +244,16 @@ namespace Rsdn.Nntp
 					}
 					while (netStream.DataAvailable);
 
-					if (sessionState == States.PostWaiting)
-						delimeter = Util.CRLF + "." + Util.CRLF;
-					else
-						delimeter = Util.CRLF;
+					switch (sessionState)
+					{
+						case States.PostWaiting :
+						case States.TransferWaiting :
+							delimeter = Util.CRLF + "." + Util.CRLF;
+							break;
+						default:
+							delimeter = Util.CRLF;
+							break;
+					}
 
 					while (bufferString.ToString().IndexOf(delimeter) != -1)
 					{
@@ -269,18 +276,20 @@ namespace Rsdn.Nntp
 							switch (sessionState)
 							{
 								case States.PostWaiting	:
-									sessionState = States.Normal;
+								case States.TransferWaiting :
+
+									posting = true;
 									Message postingMessage = Message.Parse(commandString);
-									
+								
 									// add addtitional server headers
 									if (sender != null)
 										postingMessage["Sender"] = sender;
 									if (postingMessage["Path"] == null)
 										postingMessage["Path"] = "not-for-mail";
 									postingMessage["Path"] = FullHostname + "!" + postingMessage["Path"];
-									
+								
 									dataProvider.PostMessage(postingMessage);
-									result = new Response(NntpResponse.PostedOk);
+									result = new Response(sessionState == States.PostWaiting ? NntpResponse.PostedOk : NntpResponse.TransferOk);
 									break;
 								default	:
 									// get first word in upper case delimeted by space or tab characters 
@@ -350,7 +359,8 @@ namespace Rsdn.Nntp
 									logger.Warn(string.Format("{0} provider don't support {1} command.", dataProvider.GetType(), command));
 									break;
 								case DataProviderErrors.PostingFailed:
-									result = new Response(NntpResponse.PostingFailed);
+									result = new Response(
+										sessionState == States.TransferWaiting ? NntpResponse.TransferFailed :  NntpResponse.PostingFailed);
 									break;
 								case DataProviderErrors.ServiceUnaviable:
 									result = new Response(NntpResponse.ServiceDiscontinued);
@@ -366,17 +376,25 @@ namespace Rsdn.Nntp
 						{
 							result = new Response(NntpResponse.PostingFailed);
 						}
-						// not good....
+							// not good....
 						catch(Exception e)
 						{
 							if (logger.IsErrorEnabled)
 							{
 								logger.Error(
 									string.Format("Exception during processing command" +
-										" (selected group '{0}', last request '{1}').\n",
-										currentGroup, commandString), e);
+									" (selected group '{0}', last request '{1}').\n",
+									currentGroup, commandString), e);
 							}
 							result = new Response(NntpResponse.ProgramFault);
+						}
+						finally
+						{
+							if (posting)
+							{
+								sessionState = States.Normal;
+								posting = false;
+							}
 						}
 
 						Answer(result);
@@ -459,7 +477,33 @@ namespace Rsdn.Nntp
 		/// NNTP Session states
 		/// </summary>
 		[Flags]
-		public enum States {None = 0, Normal = 1, AuthRequired = 2, MoreAuthRequired = 4, PostWaiting = 8}
+		public enum States
+		{
+			/// <summary>
+			/// Not defined state.
+			/// </summary>
+			None = 0,
+			/// <summary>
+			/// Normal state.
+			/// </summary>
+			Normal = 1,
+			/// <summary>
+			/// Authorization is required.
+			/// </summary>
+			AuthRequired = 2,
+			/// <summary>
+			/// Additional information for authorization is required.
+			/// </summary>
+			MoreAuthRequired = 4,
+			/// <summary>
+			/// Waiting for post of message.
+			/// </summary>
+			PostWaiting = 8,
+			/// <summary>
+			/// Waiting for transfer of message.
+			/// </summary>
+			TransferWaiting = 16
+		}
 	
 		/// <summary>
 		/// State of current session

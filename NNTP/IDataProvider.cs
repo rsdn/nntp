@@ -92,6 +92,10 @@ namespace Rsdn.Nntp
 		/// <returns>True if authentificated.</returns>
 		bool Authentificate(string user, string pass);
 
+		/// <summary>
+		/// Post message.
+		/// </summary>
+		/// <param name="article"></param>
 		void PostMessage(Message article);
 
 		/// <summary>
@@ -114,5 +118,12 @@ namespace Rsdn.Nntp
 		/// </summary>
 		/// <param name="settings"></param>
 		void Config(object settings);
+
+		/// <summary>
+		/// Check if data provider want to get article.
+		/// </summary>
+		/// <param name="messageID"></param>
+		/// <returns></returns>
+		bool WantArticle(string messageID);
 	}
 }

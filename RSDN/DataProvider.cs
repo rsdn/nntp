@@ -720,5 +720,15 @@ namespace Rsdn.RsdnNntp
     		return identity;
     	}
     }
-  }
+  
+		/// <summary>
+		/// Check if provider wants specified article.
+		/// </summary>
+		/// <param name="messageID"></param>
+		/// <returns></returns>
+		public bool WantArticle(string messageID)
+		{
+			return false;
+		}
+	}
 }

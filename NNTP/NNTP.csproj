@@ -241,6 +241,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Commands\IHave.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Commands\Last.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

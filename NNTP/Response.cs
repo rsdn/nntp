@@ -28,8 +28,10 @@ namespace Rsdn.Nntp
 		Overview = 224,
 		ListOfArticlesByMessageID = 230,
 		ListOfArticles = 231,
+		TransferOk = 235,
 		PostedOk = 240,
 		AuthentificationAccepted = 281,
+		TransferArticle = 335,
 		SendArticle = 340,
 		MoreAuthentificationRequired = 381,
 		ServiceDiscontinued = 400,
@@ -43,6 +45,9 @@ namespace Rsdn.Nntp
 		NoPrevArticle = 422,
 		NoSuchArticleNumber = 423,
 		NoSuchArticle = 430,
+		ArticleNotWanted = 435,
+		TransferFailed = 436,
+		ArticleRejected = 437,
 		PostingFailed = 441,
 		AuthentificationRejected = 482,
 		AuthentificationRequired = 480,
@@ -82,8 +87,10 @@ namespace Rsdn.Nntp
 			answers[224] = "224 overview information follows";
 			answers[230] = "230 list of new articles by message-id follows";
 			answers[231] = "231 list of new newsgroup follows";
+			answers[235] = "235 article transferred ok";
 			answers[240] = "240 article posted ok";
 			answers[281] = "281 authentification accepted";
+			answers[335] = "335 send article to be transfered. End with <CR-LF>.<CR-LF>";
 			answers[340] = "340 send article to be posted. End with <CR-LF>.<CR-LF>";
 			answers[381] = "381 more authentification information required";
 			answers[400] = "400 service discontinued";
@@ -97,6 +104,9 @@ namespace Rsdn.Nntp
 			answers[422] = "422 no previous article in this group";
 			answers[423] = "423 no such article number in this group";
 			answers[430] = "430 no such article found";
+			answers[435] = "435 article not wanted - do not send it";
+			answers[436] = "436 transfer failed - try again later";
+			answers[437] = "437 article rejected - do not try again";
 			answers[440] = "440 posting not allowed";
 			answers[441] = "441 posting failed";
 			answers[480] = "480 authentification required";
