@@ -117,14 +117,23 @@ namespace Rsdn.Nntp
 			answers[503] = "503 program fault - command not performed";
 		}
 
+		public Response(string description, int code, object body, params object[] parameters)
+		{
+			this.code = code;
+			this.description = description;
+			this.parameters = parameters;
+			reponsesBody = body;
+		}
 		public Response(int code, object body, params object[] parameters)
 		{
 			this.code = code;
 			this.parameters = parameters;
 			reponsesBody = body;
 		}
+		public Response(string description, NntpResponse code, object body, params object[] parameters) :
+			this(description, (int)code, body, parameters)	{	}
 		public Response(NntpResponse code, object body, params object[] parameters) :
-			this((int)code, body, parameters)	{	}
+			this(null, code, body, parameters)	{	}
 		public Response(int code) : this(code, null) {}
 		public Response(NntpResponse code) : this(code, null) {}
 		public Response() : this(NntpResponse.NotRecognized) {} //default - error code 500 (not recognized command)
@@ -141,6 +150,11 @@ namespace Rsdn.Nntp
 		/// response parameters
 		/// </summary>
 		protected object[] parameters;
+		/// <summary>
+		/// Error description.
+		/// If null - get default description.
+		/// </summary>
+		string description;
 
 		/// <summary>
 		/// Get NNTP response as text
@@ -151,10 +165,23 @@ namespace Rsdn.Nntp
 		/// <returns></returns>
 		public static string GetResponse(int code, object reponsesBody, params object[] parameters)
 		{
+			return GetResponse(null, code, reponsesBody, parameters);
+		}
+
+		/// <summary>
+		/// Get NNTP response as text
+		/// </summary>
+		/// <param name="code"></param>
+		/// <param name="description"></param>
+		/// <param name="reponsesBody"></param>
+		/// <param name="parameters"></param>
+		/// <returns></returns>
+		public static string GetResponse(string description, int code, object reponsesBody, params object[] parameters)
+		{
 			try
 			{
 				StringBuilder result = new StringBuilder(Util.LineLength);
-				result.AppendFormat(answers[code] as string, parameters).Append(Util.CRLF);
+				result.AppendFormat(description != null ? description : answers[code] as string, parameters).Append(Util.CRLF);
 				if (reponsesBody != null)
 					result.Append(ModifyTextResponse(reponsesBody.ToString()));
 				return result.ToString();
@@ -181,7 +208,7 @@ namespace Rsdn.Nntp
 
 		public string GetResponse()
 		{
-			return GetResponse(code, reponsesBody, parameters);
+			return GetResponse(description, code, reponsesBody, parameters);
 		}
 
 		/// <summary>

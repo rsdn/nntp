@@ -77,7 +77,7 @@ namespace Rsdn.Nntp.Commands
 						output.Append(lastMatch.Groups["messageID"].Success ? article.MessageID : article.MessageNumbers[session.currentGroup]);
 						output.Append(' ').Append(Header.Unfold(article.EncodedHeader(header))).Append(Util.CRLF);
 					}
-				return new Response(NntpResponse.ArticleHeadRetrivied, output.ToString(), new object[]{null, null});
+				return new Response(NntpResponse.ArticleHeadRetrivied, output.ToString(), null, null);
 			}
 			else
 				return new Response(NntpResponse.NoSelectedArticle);
