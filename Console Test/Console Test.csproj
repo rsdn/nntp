@@ -78,6 +78,7 @@
                     Name = "log4net-net-1.1"
                     AssemblyName = "log4net-net-1.1"
                     HintPath = "..\libs\log4net-net-1.1.dll"
+                    Private = "False"
                 />
             </References>
         </Build>
