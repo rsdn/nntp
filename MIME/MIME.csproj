@@ -1,8 +1,8 @@
 <VisualStudioProject>
     <CSHARP
         ProjectType = "Local"
-        ProductVersion = "7.0.9466"
-        SchemaVersion = "1.0"
+        ProductVersion = "7.10.2292"
+        SchemaVersion = "2.0"
         ProjectGuid = "{3246EAC3-12D9-4396-A36F-C10DB122873D}"
     >
         <Build>
@@ -16,7 +16,10 @@
                 DefaultTargetSchema = "IE50"
                 DelaySign = "false"
                 OutputType = "Library"
+                PreBuildEvent = ""
+                PostBuildEvent = ""
                 RootNamespace = "Rsdn.Mime"
+                RunPostBuildEvent = "OnBuildSuccess"
                 StartupObject = ""
             >
                 <Config
@@ -30,8 +33,10 @@
                     DebugSymbols = "true"
                     FileAlignment = "4096"
                     IncrementalBuild = "true"
+                    NoStdLib = "false"
+                    NoWarn = ""
                     Optimize = "false"
-                    OutputPath = "..\bin\Debug\"
+                    OutputPath = "bin\Debug\"
                     RegisterForComInterop = "false"
                     RemoveIntegerChecks = "false"
                     TreatWarningsAsErrors = "false"
@@ -48,8 +53,10 @@
                     DebugSymbols = "false"
                     FileAlignment = "4096"
                     IncrementalBuild = "false"
+                    NoStdLib = "false"
+                    NoWarn = ""
                     Optimize = "true"
-                    OutputPath = "..\bin\Release\"
+                    OutputPath = "bin\Release\"
                     RegisterForComInterop = "false"
                     RemoveIntegerChecks = "false"
                     TreatWarningsAsErrors = "false"

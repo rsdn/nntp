@@ -1,8 +1,8 @@
 <VisualStudioProject>
     <CSHARP
         ProjectType = "Local"
-        ProductVersion = "7.0.9466"
-        SchemaVersion = "1.0"
+        ProductVersion = "7.10.2292"
+        SchemaVersion = "2.0"
         ProjectGuid = "{D40CDD65-2BFF-4556-9D97-25AEC2F27FF0}"
     >
         <Build>
@@ -16,7 +16,10 @@
                 DefaultTargetSchema = "IE50"
                 DelaySign = "false"
                 OutputType = "WinExe"
+                PreBuildEvent = ""
+                PostBuildEvent = ""
                 RootNamespace = "Rsdn.RsdnNntp"
+                RunPostBuildEvent = "OnBuildSuccess"
                 StartupObject = ""
             >
                 <Config
@@ -30,6 +33,8 @@
                     DebugSymbols = "true"
                     FileAlignment = "4096"
                     IncrementalBuild = "true"
+                    NoStdLib = "false"
+                    NoWarn = ""
                     Optimize = "false"
                     OutputPath = "..\bin\Debug\"
                     RegisterForComInterop = "false"
@@ -48,6 +53,8 @@
                     DebugSymbols = "false"
                     FileAlignment = "4096"
                     IncrementalBuild = "false"
+                    NoStdLib = "false"
+                    NoWarn = ""
                     Optimize = "true"
                     OutputPath = "..\bin\Release\"
                     RegisterForComInterop = "false"
@@ -86,7 +93,6 @@
                     Name = "NNTP"
                     Project = "{7C6A20CA-E859-41F5-8B2E-7411A63E8343}"
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
-                    Private = "False"
                 />
             </References>
         </Build>

@@ -1,8 +1,8 @@
 <VisualStudioProject>
     <CSHARP
         ProjectType = "Local"
-        ProductVersion = "7.0.9466"
-        SchemaVersion = "1.0"
+        ProductVersion = "7.10.2292"
+        SchemaVersion = "2.0"
         ProjectGuid = "{E2BA234B-F496-474F-BC39-DBF78ABB13A4}"
     >
         <Build>
@@ -16,7 +16,10 @@
                 DefaultTargetSchema = "IE50"
                 DelaySign = "false"
                 OutputType = "Library"
+                PreBuildEvent = ""
+                PostBuildEvent = ""
                 RootNamespace = "Rsdn.RsdnNntp"
+                RunPostBuildEvent = "OnBuildSuccess"
                 StartupObject = ""
             >
                 <Config
@@ -30,6 +33,8 @@
                     DebugSymbols = "true"
                     FileAlignment = "4096"
                     IncrementalBuild = "true"
+                    NoStdLib = "false"
+                    NoWarn = ""
                     Optimize = "false"
                     OutputPath = "..\bin\Debug\"
                     RegisterForComInterop = "false"
@@ -48,6 +53,8 @@
                     DebugSymbols = "false"
                     FileAlignment = "4096"
                     IncrementalBuild = "true"
+                    NoStdLib = "false"
+                    NoWarn = ""
                     Optimize = "true"
                     OutputPath = "..\bin\Release\"
                     RegisterForComInterop = "false"
@@ -78,18 +85,6 @@
                     HintPath = "RSDN.Format.dll"
                 />
                 <Reference
-                    Name = "NNTP"
-                    Project = "{7C6A20CA-E859-41F5-8B2E-7411A63E8343}"
-                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
-                    Private = "False"
-                />
-                <Reference
-                    Name = "MIME"
-                    Project = "{3246EAC3-12D9-4396-A36F-C10DB122873D}"
-                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
-                    Private = "False"
-                />
-                <Reference
                     Name = "System.Drawing"
                     AssemblyName = "System.Drawing"
                     HintPath = "C:\WINNT\Microsoft.NET\Framework\v1.0.3705\System.Drawing.dll"
@@ -108,6 +103,18 @@
                     Name = "System.Windows.Forms"
                     AssemblyName = "System.Windows.Forms"
                     HintPath = "C:\WINNT\Microsoft.NET\Framework\v1.0.3705\System.Windows.Forms.dll"
+                />
+                <Reference
+                    Name = "NNTP"
+                    Project = "{7C6A20CA-E859-41F5-8B2E-7411A63E8343}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                    Private = "True"
+                />
+                <Reference
+                    Name = "MIME"
+                    Project = "{3246EAC3-12D9-4396-A36F-C10DB122873D}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                    Private = "True"
                 />
             </References>
         </Build>
