@@ -59,8 +59,8 @@ namespace Rsdn.Nntp.Commands
 				StringBuilder textResponse = new StringBuilder();
 				foreach (NewsGroup group in groupList)
 					textResponse.AppendFormat("{0} {1} {2} {3}",
-						group.Name, group.LastArticleNumber, group.FirstArticleNumber,
-						group.PostingAllowed ? 'y' : 'n').Append(Util.CRLF);
+						group.Name, group.LastArticleNumber, group.FirstArticleNumber, group.PostingAllowed ? 'y' : 'n').
+						Append(Util.CRLF);
 				return new Response(NntpResponse.ListOfArticles, textResponse.ToString());
 			}
 			catch (ArgumentOutOfRangeException)
