@@ -307,7 +307,7 @@ namespace Rsdn.Mime
 		/// Get parameters, specified for field.
 		/// </summary>
 		/// <param name="fieldContent">Field content.</param>
-		/// <returns>Map of parameter names & their values.</returns>
+		/// <returns>Map of parameter names and their values.</returns>
 		public NameValueCollection GetFieldParameters(string fieldContent)
 		{
 			Match headerMatch = headerSplitter.Match(fieldContent);
@@ -322,7 +322,7 @@ namespace Rsdn.Mime
 		/// Get parameters, specified for field.
 		/// </summary>
 		/// <param name="fieldName">Header field name.</param>
-		/// <returns>Map of parameter names & their values.</returns>
+		/// <returns>Map of parameter names and their values.</returns>
 		public NameValueCollection GetHeaderFieldParameters(string fieldName)
 		{
 			return header[fieldName] == null ? null : GetFieldParameters(header[fieldName]);
