@@ -57,7 +57,7 @@ namespace Rsdn.Nntp.Commands
 			if (lastMatch.Groups["overview"].Success)
 				// overview format
 				foreach (string headerItem in headerItems)
-					textResponse.Append(headerItem).Append(Util.CRLF);
+					textResponse.Append(headerItem).Append(':').Append(Util.CRLF);
 			else
 			{
 				string pattern = null;
