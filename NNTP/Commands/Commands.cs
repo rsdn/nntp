@@ -3,13 +3,16 @@ using System.Text.RegularExpressions;
 using System.Net.Sockets;
 using derIgel.Utils;
 
+[assembly:derIgel.NNTP.Commands.NNTPCommand("")]
+
 namespace derIgel
 {
 	namespace NNTP
 	{
 		namespace Commands
 		{
-			[AttributeUsage(AttributeTargets.Class, Inherited = true, AllowMultiple = true)]
+			[AttributeUsage(AttributeTargets.Class | AttributeTargets.Assembly, Inherited = true,
+				 AllowMultiple = true)]
 			public class NNTPCommandAttribute : Attribute
 			{
 				public NNTPCommandAttribute(string commandName)
@@ -26,7 +29,7 @@ namespace derIgel
 					}
 				}
 			}
-		
+
 			/// <summary>
 			/// Generic NNTP client command
 			/// </summary>
@@ -34,7 +37,7 @@ namespace derIgel
 			{
 				public Generic(Session session)
 				{
-					this.syntaxisChecker = null;
+					syntaxisChecker = null;
 					this.session = session;
 				}
 
@@ -58,6 +61,22 @@ namespace derIgel
 				/// </summary>
 				protected Session session;
 				protected Match lastMatch;
+				protected Session.States allowedStates;
+				protected Session.States prohibitedStates;
+
+				public bool IsAllowed(Session.States state)
+				{
+					// not prohibited 
+					if ((prohibitedStates & state) == 0)
+						// if any states explixity allowed
+						if ((allowedStates ^ Session.States.None) != 0)
+							return (allowedStates & state) != 0;
+						else
+							// else implicity allowed
+							return true;
+
+					return false;
+				}
 			}
 
 			/// <summary>
@@ -66,9 +85,14 @@ namespace derIgel
 			[NNTPCommand("XOVER")]
 			public class Xover : Generic
 			{
+				protected static Regex XoverSyntaxisChecker =
+					new Regex(@"(?in)^XOVER([ \t]+(?<startNumber>\d+)([ \t]*(?<dash>-)[ \t]*(?<endNumber>\d+)?)?)?[ \t]*$",
+										RegexOptions.Compiled);
+
 				public Xover(Session session) : base(session)
 				{
-					syntaxisChecker = new Regex(@"(?i)^XOVER(( |\t)+(?<startNumber>\d+)(\-(?<endNumber>\d+))?)?( |\t)*$");
+					allowedStates = Session.States.Normal;
+					syntaxisChecker = XoverSyntaxisChecker;
 				}
 
 				protected override Response ProcessCommand()
@@ -78,10 +102,11 @@ namespace derIgel
 					{
 						int startNumber = Convert.ToInt32(lastMatch.Groups["startNumber"].Value);
 						int endNumber = startNumber;
-						if (lastMatch.Groups["endNumber"].Success)
-						{
-							endNumber = Convert.ToInt32(lastMatch.Groups["endNumber"].Value);
-						}
+						if (lastMatch.Groups["dash"].Success)
+							if (lastMatch.Groups["endNumber"].Success)
+								endNumber = Convert.ToInt32(lastMatch.Groups["endNumber"].Value);
+							else
+								endNumber = -1;
 						articleList = session.dataProvider.
 							GetArticleList(startNumber, endNumber, NewsArticle.Content.Header);
 					}
@@ -113,9 +138,14 @@ namespace derIgel
 			[NNTPCommand("STAT")]
 			public class ArticleHeadBodyStat : Generic
 			{
+				protected static Regex ArticleHeadBodyStatSyntaxisChecker =
+					new Regex(@"(?in)^(?<command>ARTICLE|HEAD|BODY|STAT)([ \t]+((?<messageID>\<\S+\>)|(?<messageNumber>\d+)))?[ \t]*$",
+										RegexOptions.Compiled);
+
 				public ArticleHeadBodyStat(Session session) : base(session)	
 				{
-					syntaxisChecker = new Regex(@"(?i)^(?<command>ARTICLE|HEAD|BODY|STAT)(( |\t)+((?<messageID><\S*>)|(?<messageNumber>\d+)))?( |\t)*$");
+					allowedStates = Session.States.Normal;
+					syntaxisChecker = ArticleHeadBodyStatSyntaxisChecker;
 				}
 
 				protected override Response ProcessCommand()
@@ -166,83 +196,18 @@ namespace derIgel
 				}
 			}
 
-//			/// <summary>
-//			/// ARTICLE client command
-//			/// </summary>
-//			[NNTPCommand("ARTICLE")]
-//			public class Article : BaseArticle
-//			{
-//				public Article(Session session) : base(session)
-//				{
-//					syntaxisChecker = new Regex(@"(?i)^ARTICLE( |\t)*((?<messageID><\S*>)|(?<messageNumber>[0-9]+))?( |\t)*$");
-//				}
-//
-//				protected override Response ProcessCommand()
-//				{
-//					return ProcessCommand(NewsArticle.Content.HeaderAndBody);
-//				}
-//			}
-//
-//			/// <summary>
-//			/// HEAD client command
-//			/// </summary>
-//			[NNTPCommand("HEAD")]
-//			public class Head : BaseArticle
-//			{
-//				public Head(Session session) : base(session)
-//				{
-//					syntaxisChecker = new Regex(@"(?i)^HEAD( |\t)*((?<messageID><\S*>)|(?<messageNumber>[0-9]+))?( |\t)*$");
-//				}
-//
-//				protected override Response ProcessCommand()
-//				{
-//					return ProcessCommand(NewsArticle.Content.Header);
-//				}
-//			}
-//
-//			/// <summary>
-//			/// BODY client command
-//			/// </summary>
-//			[NNTPCommand("BODY")]
-//			public class Body : BaseArticle
-//			{
-//				public Body(Session session) : base(session)
-//				{
-//					syntaxisChecker = new Regex(@"(?i)^BODY( |\t)*((?<messageID><\S*>)|(?<messageNumber>[0-9]+))?( |\t)*$");
-//				}
-//
-//				protected override Response ProcessCommand()
-//				{
-//					return ProcessCommand(NewsArticle.Content.Body);
-//				}
-//			}
-//
-//			/// <summary>
-//			/// STAT client command
-//			/// </summary>
-//			[NNTPCommand("STAT")]
-//			public class Stat : BaseArticle
-//			{
-//				public Stat(Session session) : base(session)
-//				{
-//					syntaxisChecker = new Regex(@"(?i)^STAT( |\t)*((?<messageID><\S*>)|(?<messageNumber>[0-9]+))?( |\t)*$");
-//				}
-//
-//				protected override Response ProcessCommand()
-//				{
-//					return ProcessCommand(NewsArticle.Content.None);
-//				}
-//			}
-
 			/// <summary>
 			/// NEXT client command
 			/// </summary>
 			[NNTPCommand("NEXT")]
 			public class Next : Generic
 			{
+				protected static Regex NextSyntaxisChecker= new Regex(@"(?in)^NEXT[ \t]*$", RegexOptions.Compiled);
+
 				public Next(Session session) : base(session)
 				{
-					syntaxisChecker = new Regex(@"(?i)^NEXT( |\t)*$");
+					allowedStates = Session.States.Normal;
+					syntaxisChecker = NextSyntaxisChecker;
 				}
 
 				protected override Response ProcessCommand()
@@ -259,9 +224,12 @@ namespace derIgel
 			[NNTPCommand("LAST")]
 			public class Last : Generic
 			{
+				protected static Regex LastSyntaxisChecker = new Regex(@"(?in)^LAST[ \t]*$", RegexOptions.Compiled);
+
 				public Last(Session session) : base(session)
 				{
-					syntaxisChecker = new Regex(@"(?i)^LAST( |\t)*$");
+					allowedStates = Session.States.Normal;
+					syntaxisChecker = LastSyntaxisChecker;
 				}
 
 				protected override Response ProcessCommand()
@@ -278,9 +246,13 @@ namespace derIgel
 			[NNTPCommand("GROUP")]
 			public class Group : Generic
 			{
+				protected static Regex GroupSyntaxisChecker = new Regex(@"(?in)^GROUP[ \t]+(?<groupName>\S+)[ \t]*$",
+					RegexOptions.Compiled);
+
 				public Group(Session session) : base(session)
 				{
-					syntaxisChecker = new	Regex(@"(?i)^GROUP( |\t)*(?<groupName>\S+)( |\t)*$");
+					allowedStates = Session.States.Normal;
+					syntaxisChecker = GroupSyntaxisChecker;
 				}
 
 				protected override Response ProcessCommand()
@@ -300,9 +272,12 @@ namespace derIgel
 			[NNTPCommand("LIST")]
 			public class List : Generic
 			{
+				protected static Regex ListSyntaxisChecker = new	Regex(@"(?in)^LIST[ \t]*$", RegexOptions.Compiled);
+
 				public List(Session session) : base(session)
 				{
-					syntaxisChecker = new	Regex(@"(?i)^LIST( |\t)*$");
+					allowedStates = Session.States.Normal;
+					syntaxisChecker = ListSyntaxisChecker;
 				}
 
 				protected override Response ProcessCommand()
@@ -323,10 +298,14 @@ namespace derIgel
 			[NNTPCommand("NEWGROUPS")]
 			public class NewGroups : Generic
 			{
+				protected static Regex NewGroupsSyntaxisChecker =
+					new	Regex(@"(?in)^NEWGROUPS[ \t]+(?<date>\d{6}[ \t]+\d{6})([ \t]+(?<timezone>GMT))?([ \t]+<(?<distributions>\w+(.\w+)*(,\w+(.\w+)*)*)>)?[ \t]*$",
+										RegexOptions.Compiled);
+
 				public NewGroups(Session session) : base(session)
 				{
-					syntaxisChecker =
-						new	Regex(@"(?i)^NEWGROUPS( |\t)+(?<date>[0-9][0-9][0-1][0-9][0-3][0-9]( |\t)+[0-2][0-9][0-5][0-9][0-5][0-9])( |\t)*(?<timezone>GMT)?( |\t)*(<(?<distributions>((\w+\.?)+,?)+)>)?( |\t)*$");
+					allowedStates = Session.States.Normal;
+					syntaxisChecker = NewGroupsSyntaxisChecker;
 				}
 
 				protected override Response ProcessCommand()
@@ -370,10 +349,14 @@ namespace derIgel
 			[NNTPCommand("NEWNEWS")]
 			public class NewNews : Generic
 			{
+				protected static Regex NewNewsSyntaxisChecker =
+					new	Regex(@"(?in)^NEWNEWS[ \t]+(?<newsgroups>\w+(.\w+)*(,\w+(.\w+)*)*)[ \t]+(?<date>\d{6}[ \t]+\d{6})([ \t]+(?<timezone>GMT))?([ \t]+<(?<distributions>\w+(.\w+)*(,\w+(.\w+)*)*)>)?[ \t]*$",
+										RegexOptions.Compiled);
+
 				public NewNews(Session session) : base(session)
 				{
-					syntaxisChecker =
-						new	Regex(@"(?i)^NEWNEWS( |\t)+(?<newsgroups>((\!?(\w+|\*)\.?)+,?)+)( |\t)+(?<date>[0-9][0-9][0-1][0-9][0-3][0-9]( |\t)+[0-2][0-9][0-5][0-9][0-5][0-9])( |\t)*(?<timezone>GMT)?( |\t)*(<(?<distributions>((\w+\.?)+,?)+)>)?( |\t)*$");
+					allowedStates = Session.States.Normal;
+					syntaxisChecker = NewNewsSyntaxisChecker;
 				}
 
 				protected override Response ProcessCommand()
@@ -421,9 +404,12 @@ namespace derIgel
 			[NNTPCommand("POST")]
 			public class Post : Generic
 			{
+				protected static Regex PostSyntaxisChecker = new	Regex(@"(?in)^POST[ \t]*$", RegexOptions.Compiled);
+
 				public Post(Session session) : base(session)
 				{
-					syntaxisChecker = new	Regex(@"(?i)^POST( |\t)*$");
+					allowedStates = Session.States.Normal;
+					syntaxisChecker = PostSyntaxisChecker;
 				}
 
 				protected override Response ProcessCommand()
@@ -439,9 +425,11 @@ namespace derIgel
 			[NNTPCommand("QUIT")]
 			public class Quit : Generic
 			{
+				protected static Regex QuitSyntaxisChecker = new Regex(@"(?in)^QUIT[ \t]*$", RegexOptions.Compiled);
+
 				public Quit(Session session) : base(session)
 				{
-					syntaxisChecker = new	Regex(@"(?i)^QUIT( |\t)*$");
+					syntaxisChecker = QuitSyntaxisChecker;
 				}
 
 				protected override Response ProcessCommand()
@@ -456,9 +444,11 @@ namespace derIgel
 			[NNTPCommand("SLAVE")]
 			public class Slave : Generic
 			{
+				protected static Regex SlaveSyntaxisChecker = new	Regex(@"(?in)^SLAVE[ \t]*$", RegexOptions.Compiled);
+
 				public Slave(Session session) : base(session)
 				{
-					syntaxisChecker = new	Regex(@"(?i)^SLAVE( |\t)*$");
+					syntaxisChecker = SlaveSyntaxisChecker;
 				}
 
 				protected override Response ProcessCommand()
@@ -473,9 +463,12 @@ namespace derIgel
 			[NNTPCommand("MODE")]
 			public class Mode : Generic
 			{
+				protected static Regex ModeSyntaxisChecker = new	Regex(@"(?in)^MODE[ \t]+(?<mode>READER|STREAM)[ \t]*$",
+					RegexOptions.Compiled);
+
 				public Mode(Session session) : base(session)
 				{
-					syntaxisChecker = new	Regex(@"(?i)^MODE( |\t)+(?<mode>READER|STREAM)( |\t)*$");
+					syntaxisChecker = ModeSyntaxisChecker;
 				}
 
 				protected override Response ProcessCommand()
@@ -483,7 +476,7 @@ namespace derIgel
 					Response result;
 					if (lastMatch.Groups["mode"].Value.ToUpper() == "READER")
 						// MODE READER
-						result = new Response(201);
+						result = new Response(session.dataProvider.PostingAllowed ? 200 : 201);
 					else
 						// MODE STREAM
 						result = new Response(500);
@@ -497,9 +490,13 @@ namespace derIgel
 			[NNTPCommand("AUTHINFO")]
 			public class AuthInfo : Generic
 			{
+				protected static Regex AuthInfoSyntaxisChecker = 
+					new	Regex(@"(?in)^AUTHINFO[ \t]+(?<mode>USER|PASS)[ \t]+(?<param>\w+)[ \t]*$",
+										RegexOptions.Compiled);
+
 				public AuthInfo(Session session) : base(session)
 				{
-					syntaxisChecker = new	Regex(@"(?i)^AUTHINFO( |\t)+(?<mode>USER|PASS)( |\t)*(?<param>\w+)( |\t)*$");
+					syntaxisChecker = AuthInfoSyntaxisChecker;
 				}
 
 				protected override Response ProcessCommand()
@@ -551,9 +548,11 @@ namespace derIgel
 			[NNTPCommand("HELP")]
 			public class Help : Generic
 			{
+				protected static Regex HelpSyntaxisChecker = new	Regex(@"(?in)^HELP[ \t]*$", RegexOptions.Compiled);
+
 				public Help(Session session) : base(session)
 				{
-					syntaxisChecker = new	Regex(@"(?i)^HELP( |\t)*$");
+					syntaxisChecker = HelpSyntaxisChecker;
 				}
 
 				protected override Response ProcessCommand()

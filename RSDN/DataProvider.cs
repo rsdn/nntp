@@ -5,6 +5,11 @@ using System.IO;
 using derIgel.NNTP;
 using System.Net;
 using derIgel.Mail;
+using System.Text.RegularExpressions;
+using System.Configuration;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.Serialization.Formatters;
+using System.Runtime.Serialization;
 
 namespace derIgel
 {
@@ -15,8 +20,39 @@ namespace derIgel
 		/// </summary>
 		public class RsdnDataProvider : derIgel.NNTP.DataProvider
 		{
+			/// <summary>
+			/// read cache at the start
+			/// </summary>
+			static RsdnDataProvider()
+			{
+				caheFileName = Assembly.GetExecutingAssembly().GetName().Name + ".cache";
+				if (File.Exists(caheFileName))
+				{
+					BinaryFormatter formatter = new BinaryFormatter();
+					formatter.AssemblyFormat = FormatterAssemblyStyle.Simple;
+					Stream stream = new FileStream(caheFileName, FileMode.Open, FileAccess.Read, FileShare.Read);
+					cache = (Cache) formatter.Deserialize(stream);
+					stream.Close();
+				}
+				else
+					cache = new Cache();
+			}
+
+			/// <summary>
+			/// Write cache at the end
+			/// </summary>
+			~RsdnDataProvider()
+			{
+				BinaryFormatter formatter = new BinaryFormatter();
+				formatter.AssemblyFormat = FormatterAssemblyStyle.Simple;
+				Stream stream = new FileStream(caheFileName, FileMode.Create, FileAccess.Write, FileShare.None);
+				formatter.Serialize(stream, cache);
+				stream.Close();
+			}
+
 			public RsdnDataProvider(NNTPSettings settings) : base(settings)
 			{
+				PostingAllowed = true;
 				webService = new Forum();
 				encoding = System.Text.Encoding.UTF8;
 				RsdnNntpSettings rsdnSettings = settings as RsdnNntpSettings;
@@ -25,10 +61,8 @@ namespace derIgel
 					webService.Url = ((RsdnNntpSettings)rsdnSettings).Service;
 					webService.Proxy = rsdnSettings.GetProxy;
 					encoding = rsdnSettings.GetEncoding;
+					cache.Capacity = rsdnSettings.CacheSize;
 				}
-					
-				startNumber = -1;
-				endNumber = -1;
 				Stream io = Assembly.GetExecutingAssembly().GetManifestResourceStream("derIgel.NNTP.Header.htm");
 				StreamReader reader = new StreamReader(io);
 				htmlMessageTemplate = reader.ReadToEnd();
@@ -39,33 +73,47 @@ namespace derIgel
 
 			public override NewsGroup GetGroup(string groupName)
 			{
+				group requestedGroup = null;
 				try
 				{
-					group requestedGroup = webService.GroupInfo(groupName, username, password);
-					currentGroup = groupName;
-					startNumber = requestedGroup.first;
-					endNumber = requestedGroup.last;
-					return new NewsGroup(groupName,	requestedGroup.first, requestedGroup.last,
-						requestedGroup.last - requestedGroup.first + 1, true);
+					requestedGroup = webService.GroupInfo(groupName, username, password);
 				}		
 				catch (System.Web.Services.Protocols.SoapException exception)
 				{
-					if (exception.Message.IndexOf("1 Incorrect group name") > 0)
-						throw new Exception(Errors.NoSuchGroup);
-					else
-						throw new DataProvider.Exception(DataProvider.Errors.UnknownError);
+					ProcessSoapException(exception);
 				}
+				currentGroup = groupName;
+				currentGroupArticleStartNumber = requestedGroup.first;
+				currentGroupArticleEndNumber = requestedGroup.last;
+				return new NewsGroup(groupName,	requestedGroup.first, requestedGroup.last,
+					requestedGroup.last - requestedGroup.first + 1, true);
 			}
 
 			public override NewsArticle GetArticle(int articleNumber, NewsArticle.Content content)
 			{
-				try
-				{
-					if (currentGroup == null)
-						throw new Exception(Errors.NoSelectedGroup);
+				if (currentGroup == null)
+					throw new Exception(Errors.NoSelectedGroup);
 
-					article message = webService.GetFormattedArticle(currentGroup, articleNumber,
-						username,	password);
+				NewsArticle newsMessage = null;
+				// synchronized access to cache
+				if (cache.Capacity > 0)
+					lock(cache)
+					{
+						newsMessage = cache[new Cache.NewsArticleIdentity(null, currentGroup, articleNumber)];
+					}
+
+				if (newsMessage == null)
+				{
+					article message = null;
+					try
+					{
+						message = webService.GetFormattedArticle(currentGroup, articleNumber,
+							username,	password);
+					}
+					catch (System.Web.Services.Protocols.SoapException exception)
+					{
+						ProcessSoapException(exception);
+					}	
 
 					if (message.error != null)
 						switch (Convert.ToInt32(message.error.Split(new char[]{'\t', ' '}, 2)[0]))
@@ -79,13 +127,16 @@ namespace derIgel
 						}
 
 					currentArticle = articleNumber;
-
-					return ToNNTPArticle(message, currentGroup, content);
+					newsMessage = ToNNTPArticle(message, currentGroup, content);
+					// synchronized access to cache
+					if (cache.Capacity > 0)
+						lock(cache)
+						{
+							cache[new Cache.NewsArticleIdentity(newsMessage.MessageID, currentGroup, articleNumber)] =
+								newsMessage;
+						}					
 				}
-				catch (System.Web.Services.Protocols.SoapException)
-				{
-					throw new DataProvider.Exception(DataProvider.Errors.UnknownError);
-				}	
+				return newsMessage;
 			}
 
 			public override NewsArticle GetArticle(string messageID, NewsArticle.Content content)
@@ -103,7 +154,8 @@ namespace derIgel
 				if (currentArticle == -1)
 					throw new Exception(Errors.NoSelectedArticle);
 
-				NewsArticle[] articleList = GetArticleList(currentArticle + 1, endNumber, NewsArticle.Content.Header);
+				NewsArticle[] articleList = GetArticleList(currentArticle + 1, currentGroupArticleEndNumber,
+					NewsArticle.Content.Header);
 		
 				if (articleList.Length == 0)
 					throw new Exception(Errors.NoNextArticle);
@@ -121,7 +173,8 @@ namespace derIgel
 				if (currentArticle == -1)
 					throw new Exception(Errors.NoSelectedArticle);
 
-				NewsArticle[] articleList = GetArticleList(startNumber, currentArticle - 1, NewsArticle.Content.Header);
+				NewsArticle[] articleList = GetArticleList(currentGroupArticleStartNumber,
+					currentArticle - 1,	NewsArticle.Content.Header);
 		
 				if (articleList.Length == 0)
 					throw new Exception(Errors.NoPrevArticle);
@@ -132,46 +185,47 @@ namespace derIgel
 
 			public override NewsGroup[] GetGroupList(DateTime startDate, string[] distributions)
 			{
+				// minimum date, supported by web service, is unknown...
+				// So take midnight of 30 december 1899
+				DateTime minDate = new DateTime(1899, 12, 30, 0, 0, 0, 0);
+				if (startDate < minDate)
+					startDate = minDate; 
+
+				group_list groupList = null;
 				try
 				{
-					// minimum date, supported by web service, is unknown...
-					// So take midnight of 30 december 1899
-					DateTime minDate = new DateTime(1899, 12, 30, 0, 0, 0, 0);
-					if (startDate < minDate)
-						startDate = minDate; 
-
-					group_list groupList;
 					groupList = webService.GetGroupList(username, password, startDate);
-					NewsGroup[] listOfGroups = new NewsGroup[groupList.groups.GetLength(0)];
-					for (int i = 0; i < groupList.groups.GetLength(0); i++)
-						listOfGroups[i] = new NewsGroup(groupList.groups[i].name, groupList.groups[i].first,
-							groupList.groups[i].last, groupList.groups[i].last - groupList.groups[i].first + 1,
-							false);
-					return listOfGroups;
-				}
-				catch (System.Web.Services.Protocols.SoapException)
+				}				
+				catch (System.Web.Services.Protocols.SoapException exception)
 				{
-					throw new DataProvider.Exception(DataProvider.Errors.UnknownError);
+					ProcessSoapException(exception);
 				}	
-
+				NewsGroup[] listOfGroups = new NewsGroup[groupList.groups.GetLength(0)];
+				for (int i = 0; i < groupList.groups.GetLength(0); i++)
+					listOfGroups[i] = new NewsGroup(groupList.groups[i].name, groupList.groups[i].first,
+						groupList.groups[i].last, groupList.groups[i].last - groupList.groups[i].first + 1,
+						true);
+				return listOfGroups;
 			}
 
-			public override NewsArticle[] GetArticleList(string[] newsgroups, System.DateTime date, string[] distributions)
+			public override NewsArticle[] GetArticleList(string[] newsgroups, System.DateTime date,
+				string[] distributions)
 			{
-				return new NewsArticle[0];
+				throw new Exception(Errors.NotSupported);
 			}
 
 			public override bool Authentificate(string user, string pass)
 			{
+				auth_info auth = null;
 				try
 				{
-					auth_info auth = webService.Authentication(user, pass);
-					return auth.ok;
+					auth = webService.Authentication(user, pass);
 				}
-				catch (System.Web.Services.Protocols.SoapException)
+				catch (System.Web.Services.Protocols.SoapException exception)
 				{
-					throw new DataProvider.Exception(DataProvider.Errors.UnknownError);
+					ProcessSoapException(exception);
 				}
+				return auth.ok;
 			}
 
 			protected NewsArticle ToNNTPArticle(article message, string newsgroup, NewsArticle.Content content)
@@ -222,34 +276,35 @@ namespace derIgel
 				if (this.currentGroup == null)
 					throw new Exception(Errors.NoSelectedGroup);
 
+				article_list articleList = null;
 				try
 				{
-					article_list articleList = webService.ArticleList(currentGroup, startNumber,
-						endNumber, username, password);
-
-					NewsArticle[] articleArray = new NewsArticle
-						[articleList.articles.GetLength(0)];
-
-					for (int i = 0; i <articleList.articles.GetLength(0); i++)
-						articleArray[i] =
-							ToNNTPArticle(articleList.articles[i], currentGroup, content);
-
-					return articleArray;
+					articleList = webService.ArticleList(currentGroup,
+						(startNumber == -1) ? currentGroupArticleStartNumber : startNumber,
+						(endNumber == -1) ? currentGroupArticleEndNumber : endNumber, username, password);
 				}
-				catch (System.Web.Services.Protocols.SoapException)
+				catch (System.Web.Services.Protocols.SoapException exception)
 				{
-					throw new DataProvider.Exception(DataProvider.Errors.UnknownError);
+					ProcessSoapException(exception);
 				}	
+
+				NewsArticle[] articleArray = new NewsArticle[articleList.articles.GetLength(0)];
+
+				for (int i = 0; i <articleList.articles.GetLength(0); i++)
+					articleArray[i] =
+						ToNNTPArticle(articleList.articles[i], currentGroup, content);
+
+				return articleArray;
 			}
 
 			/// <summary>
-			/// start article number for current griup
+			/// start article number for current group
 			/// </summary>
-			protected int startNumber;
+			protected int currentGroupArticleStartNumber = -1;
 			/// <summary>
-			/// end article number for current griup
+			/// end article number for current group
 			/// </summary>
-			protected int endNumber;
+			protected int currentGroupArticleEndNumber = -1;
 
 			public override void PostMessage(string text)
 			{
@@ -259,14 +314,36 @@ namespace derIgel
 					if (!result.ok)
 						throw new Exception(Errors.PostingFailed);
 				}
-				catch (System.Web.Services.Protocols.SoapException)
+				catch (System.Web.Services.Protocols.SoapException exception)
 				{
-					throw new DataProvider.Exception(DataProvider.Errors.UnknownError);
+					ProcessSoapException(exception);
 				}	
 			}
 
 			protected readonly string htmlMessageTemplate;
 			protected System.Text.Encoding encoding;
+			
+			/// <summary>
+			/// Cache
+			/// </summary>
+			static protected Cache cache;
+			/// <summary>
+			/// Cache filename
+			/// </summary>
+			static string caheFileName;
+
+			protected void ProcessSoapException(System.Web.Services.Protocols.SoapException exception)
+			{
+				switch (Regex.Match(exception.Message, @"^.+ ---> .+: (?<error>.+)").Groups["error"].Value)
+				{
+					case "1 Incorrect group name":
+						throw new Exception(Errors.NoSuchGroup);
+					case "2 Incorrect login name or password":
+						throw new Exception(Errors.NoPermission);
+					default:
+						throw new DataProvider.Exception(DataProvider.Errors.UnknownError);
+				}
+			}
 		}
 	}
 }

@@ -10,6 +10,7 @@ namespace derIgel.NNTP
 	/// <summary>
 	/// Newsgroup article
 	/// </summary>
+	[Serializable]
 	public class NewsArticle : derIgel.Mail.Message
 	{
 		public NewsArticle(string messageID, int messageNumber)
@@ -23,12 +24,13 @@ namespace derIgel.NNTP
 
 		public enum Content {None, Header, Body, HeaderAndBody }
 
+		public string MessageID
+		{
+			get { return this["Message-ID"]; }
+		}
 		public int Number
 		{
-			get
-			{
-				return messageNumber;
-			}
+			get	{	return messageNumber;	}
 		}
 
 		/// <summary>

@@ -9,6 +9,8 @@ using System.Threading;
 using System.Net.Sockets;
 using System.Reflection;
 using System.IO;
+using derIgel.Utils;
+using System.Configuration;
 
 namespace derIgel
 {
@@ -80,10 +82,9 @@ namespace derIgel
 		{
 			try
 			{
+				Directory.SetCurrentDirectory(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
 				RsdnNntpSettings serverSettings = (RsdnNntpSettings)
-					RsdnNntpSettings.Deseriazlize(
-						Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
-							"config.xml"),
+					RsdnNntpSettings.Deseriazlize(ConfigurationSettings.AppSettings["service.Config"],
 						typeof(RsdnNntpSettings));
 
 				nntpManager = new Manager(typeof(RsdnDataProvider),	serverSettings);
@@ -91,15 +92,7 @@ namespace derIgel
 			}
 			catch (Exception e)
 			{
-				string message = string.Empty;
-				Exception e1 = e;
-				do 
-				{
-					message += e1.Message + "\n";
-					e1 = e1.InnerException;
-				}
-				while (e1 != null);
-				EventLog.WriteEntry(message, EventLogEntryType.Error);
+				EventLog.WriteEntry(Util.ExpandException(e), EventLogEntryType.Error);
 				nntpManager = null;
 				// start timer, which will stop service in 1 sec
 				Timer timer = new Timer(new TimerCallback(Stop), null, 1000, Timeout.Infinite);

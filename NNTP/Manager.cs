@@ -5,6 +5,7 @@ using System.Threading;
 using System.Diagnostics;
 using System.Collections;
 using System.Configuration;
+using derIgel.Utils;
 
 namespace derIgel
 {
@@ -32,7 +33,7 @@ namespace derIgel
 
 				this.dataProviderType = dataProviderType;
 				this.settings = settings;
-
+				
 				stopEvent = new ManualResetEvent(true);
 				pauseEvent = new ManualResetEvent(false);
 				sessions = new ArrayList();
@@ -91,7 +92,9 @@ namespace derIgel
 					}
 					catch(Exception e)
 					{
-						System.Console.WriteLine(e.Message);
+						#if DEBUG
+							System.Console.WriteLine(Util.ExpandException(e));
+						#endif
 					}
 				}
 			}

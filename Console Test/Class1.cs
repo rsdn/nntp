@@ -3,6 +3,7 @@ using System.Diagnostics;
 using derIgel.NNTP;
 using System.Net.Sockets;
 using derIgel.Mail;
+using System.Threading;
 
 namespace ForumTest
 {
@@ -17,8 +18,6 @@ namespace ForumTest
 		[STAThread]
 		static void Main(string[] args)
 		{
-			Message message = new Message();
-			message.ContentType = "text/df; charset=\"\"; abra=cod";
 			try
 			{
 				RsdnNntpSettings serverSettings = (RsdnNntpSettings)
@@ -26,7 +25,9 @@ namespace ForumTest
 
 				Manager nntpManager = new Manager(typeof(RsdnDataProvider),	serverSettings);
 				nntpManager.Start();
-				while(true);
+				while(System.Console.In.Read() != 'e')
+					Thread.Sleep(1000);
+				nntpManager.Stop();
 			}
 			catch (Exception e)
 			{

@@ -84,6 +84,10 @@ namespace derIgel
 
 			protected internal string username = "";
 			protected internal string password = "";
+			/// <summary>
+			/// true, if posting allowed for this provider
+			/// </summary>
+			public bool PostingAllowed = false;
 		}
 	}
 }
