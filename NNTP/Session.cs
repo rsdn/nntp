@@ -369,7 +369,7 @@ namespace Rsdn.Nntp
 									result = new Response(NntpResponse.ProgramFault);
 									break;
 							}
-							logger.Warn("Data Provider Error", exception);
+							logger.Warn(string.Format("Data Provider Error ({0})", exception.Error), exception);
 						}
 						catch (MimeFormattingException)
 						{
