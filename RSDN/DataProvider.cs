@@ -238,11 +238,13 @@ namespace Rsdn.RsdnNntp.Public
     		throw new DataProviderException(DataProviderErrors.ServiceUnaviable, exception);
 
 			if (exception.Message.IndexOf("1 Incorrect group name.") >= 0)
-				throw new DataProviderException(DataProviderErrors.NoSuchGroup);
+				throw new DataProviderException(DataProviderErrors.NoSuchGroup, exception);
 			else if (exception.Message.IndexOf("2 Incorrect login name or password") >= 0)
-				throw new DataProviderException(DataProviderErrors.NoPermission);
+				throw new DataProviderException(DataProviderErrors.NoPermission, exception);
+			else if (exception.Message.IndexOf("WSE563") >= 0)
+				throw new DataProviderException(DataProviderErrors.NoPermission, exception);
 			else if (exception.Message.IndexOf("3 Article not found.") >= 0)
-				throw new DataProviderException(DataProviderErrors.NoSuchArticle);
+				throw new DataProviderException(DataProviderErrors.NoSuchArticle, exception);
 			else
 				throw exception;
 		}
