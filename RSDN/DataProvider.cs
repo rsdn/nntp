@@ -685,11 +685,11 @@ namespace Rsdn.RsdnNntp
 		/// <summary>
 		/// Detect [tagline] tag
 		/// </summary>
-    protected static Regex removeTagline = new Regex(@"(?is)\[tagline\].*?\[/tagline\]", RegexOptions.Compiled);
+    protected static Regex removeTagline = new Regex(@"(?is)(?<!\[)\[tagline\].*?\[[\\/]tagline\]", RegexOptions.Compiled);
 		/// <summary>
 		/// Detect [moderator] tag
 		/// </summary>
-    protected static Regex moderatorTagline = new Regex(@"(?is)\[moderator\].*?\[/moderator\]",
+    protected static Regex moderatorTagline = new Regex(@"(?is)(?<!\[)\[moderator\].*?\[[\\/]moderator\]",
     	RegexOptions.Compiled);
 
 		/// <summary>
