@@ -385,7 +385,7 @@ namespace Rsdn.RsdnNntp
     	{
     		newsMessage["Path"] = Session.FullHostname + "!not-for-mail";
     		if (message.author != "")
-    			newsMessage.From = string.Format("\"{0}\" <{1}>", message.author, "forum@rsdn.ru");
+    			newsMessage.From = string.Format("\"{0}\" <{1}@news.rsdn.ru>", message.author, message.authorid);
     		newsMessage.Date = message.date;
     		newsMessage.Subject = message.subject;
     		if ((message.authorid != null) && (int.Parse(message.authorid) != 0))
@@ -411,7 +411,13 @@ namespace Rsdn.RsdnNntp
     		switch (style)
     		{
     			case FormattingStyle.PlainText :
-    				newsMessage.Entities.Add(PrepareText(message.message));
+						StringBuilder plainMessage = new StringBuilder(PrepareText(message.message));
+						// for plain-text messages add some additional useful links
+						plainMessage.Append(Util.CRLF).Append(Util.CRLF).
+							Append("[purl]").Append(Util.CRLF).
+							AppendFormat("URL сообщения на сайте http://rsdn.ru/forum/?mid={0}", message.id).Append(Util.CRLF).
+							Append("[/purl]").Append(Util.CRLF);
+    				newsMessage.Entities.Add(plainMessage.ToString());
     				newsMessage.TransferEncoding = ContentTransferEncoding.Base64;
     				newsMessage.ContentType = string.Format("text/plain; charset=\"{0}\"", encoding.WebName);
     				break;
@@ -693,10 +699,10 @@ namespace Rsdn.RsdnNntp
     protected string PrepareText(string text)
     {
     	if (text == null)
-    		return null;
+    		return "";
     	else
   		return platformDependedBreak.Replace(
-				TextFormatter.RemoveTaglineTag(TextFormatter.RemoveModeratorTag(text)), Util.CRLF);
+				TextFormatter.RemoveTaglineTag(text), Util.CRLF);
     }
 
 		/// <summary>
