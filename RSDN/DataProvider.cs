@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using System.Configuration;
 using System.Text;
 using derIgel.MIME;
+using RSDN.Common;
 
 namespace derIgel.RsdnNntp
 {
@@ -102,7 +103,7 @@ namespace derIgel.RsdnNntp
 				article message = null;
 				try
 				{
-					message = webService.GetFormattedArticle(currentGroup, articleNumber,
+					message = webService.GetArticle(currentGroup, articleNumber,
 						username,	password);
 					if (message.error != null)
 						ProcessErrorMessage(message.error);
@@ -137,7 +138,7 @@ namespace derIgel.RsdnNntp
 				try
 				{
 					int mID = int.Parse(messageIdNumber.Match(messageID).Groups["messageIdNumber"].Value);
-					message = webService.GetFormattedArticleByID(mID , username,	password);
+					message = webService.GetArticleByID(mID , username,	password);
 					if (message.error != null)
 						ProcessErrorMessage(message.error);
 				}
@@ -232,7 +233,7 @@ namespace derIgel.RsdnNntp
 			{
 				auth = webService.Authentication(user, pass);
 				if (!auth.ok)
-					throw new DataProviderException(DataProviderErrors.PostingFailed);
+					throw new DataProviderException(DataProviderErrors.NoPermission);
 				username = user;
 				password = pass;
 			}
@@ -242,6 +243,8 @@ namespace derIgel.RsdnNntp
 			}
 			return auth.ok;
 		}
+
+		protected static readonly FormatMessage formatMessage = new FormatMessage();
 
 		protected NewsArticle ToNNTPArticle(article message, string newsgroup, NewsArticle.Content content)
 		{
@@ -265,17 +268,20 @@ namespace derIgel.RsdnNntp
 			if ((content == NewsArticle.Content.Body) ||
 				(content == NewsArticle.Content.HeaderAndBody))
 			{
+				Message plainTextBody = new Message();
+				plainTextBody.Entities.Add(PrepareText(message.message));
+				plainTextBody.TransferEncoding = ContentTransferEncoding.Base64;
+				plainTextBody.ContentType = string.Format("text/plain; charset=\"{0}\"", encoding.BodyName);
+
 				string htmlText = string.Format(htmlMessageTemplate, message.authorid, message.author,
-					message.gid, message.id, message.fmtmessage, message.userType, message.homePage);
+					message.gid, message.id,
+					(message.message != null) ? formatMessage.PrepareText(message.message, true) : null,
+					message.userType,
+					(message.homePage != null) ? formatMessage.PrepareText(message.homePage, true) : null);
 				Message htmlTextBody = new Message();
 				htmlTextBody.Entities.Add(htmlText);
 				htmlTextBody.TransferEncoding = ContentTransferEncoding.Base64;
 				htmlTextBody.ContentType = string.Format("text/html; charset=\"{0}\"", encoding.BodyName);
-
-				Message plainTextBody = new Message();
-				plainTextBody.Entities.Add(message.message);
-				plainTextBody.TransferEncoding = ContentTransferEncoding.Base64;
-				plainTextBody.ContentType = string.Format("text/plain; charset=\"{0}\"", encoding.BodyName);
 
 				newsMessage.Entities.Add(plainTextBody);
 				newsMessage.Entities.Add(htmlTextBody);
@@ -321,9 +327,9 @@ namespace derIgel.RsdnNntp
 		/// </summary>
 		protected int currentGroupArticleEndNumber = -1;
 
-		protected static readonly string serverID = "RSDN NNTP Server " + 
-			((AssemblyInformationalVersionAttribute)Attribute.GetCustomAttribute(Assembly.GetExecutingAssembly(),
-				typeof(AssemblyInformationalVersionAttribute))).InformationalVersion;
+		protected static readonly string serverID = Manager.GetProductTitle(Assembly.GetExecutingAssembly());
+
+		protected static Regex leadingSpaces = new Regex(@"(?m)^\s+", RegexOptions.Compiled);
 
 		public void PostMessage(Message message)
 		{
@@ -342,7 +348,8 @@ namespace derIgel.RsdnNntp
 				plainText.Append("[tagline]Posted via ").Append(serverID).Append("[/tagline]");
 
 				post_result result =
-					webService.PostUnicodeMessage(username, password, mid, group, message.Subject, plainText.ToString());
+					webService.PostUnicodeMessage(username, password, mid, group, message.Subject,
+					leadingSpaces.Replace(plainText.ToString(), ""));
 				if (!result.ok)
 					ProcessErrorMessage(result.error);
 			}
@@ -418,6 +425,21 @@ namespace derIgel.RsdnNntp
 				encoding = rsdnSettings.GetEncoding;
 				cache.Capacity = rsdnSettings.CacheSize;
 			}
+		}
+
+		protected static Regex removeTagline = new Regex(@"(?s)\[tagline\].*?\[/tagline\]", RegexOptions.Compiled);
+		protected static Regex moderatorTagline = new Regex(@"(?s)\[moderator\].*?\[/moderator\]",
+			RegexOptions.Compiled);
+
+		/// <summary>
+		/// remove unnecessary tags (tagline, moderator)
+		/// </summary>
+		protected string PrepareText(string text)
+		{
+			if (text == null)
+				return null;
+			else
+				return moderatorTagline.Replace(removeTagline.Replace(text, ""), "");
 		}
 	}
 }

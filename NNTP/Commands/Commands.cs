@@ -4,6 +4,8 @@ using System.Net.Sockets;
 using derIgel.NNTP;
 using System.Text;
 using derIgel.MIME;
+using System.Reflection;
+using System.Collections.Specialized;
 
 [assembly:derIgel.NNTP.Commands.NNTPCommand("")]
 
@@ -118,16 +120,12 @@ namespace derIgel.NNTP.Commands
 			}
 			StringBuilder output = new StringBuilder();
 			foreach (NewsArticle article in articleList)
-				output.AppendFormat("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}{8}",
-					article.Number,
-					article.EncodedHeader("Subject"),
-					article.EncodedHeader("From"),
-					article["Date"],
-					article["Message-ID"],
-					article["References"],
-					//disabled, since RsdnNntpDataProvider doesn't provide full text of article in this mode
-					/*article.GetBody().Length*/null,
-					null, Util.CRLF);
+			{
+				output.Append(article.Number);
+				foreach (string headerItem in List.headerItems)
+					output.Append('\t').Append(article.EncodedHeader(headerItem));
+				output.Append(Util.CRLF);
+			}
 			return new Response(224, Encoding.ASCII.GetBytes(output.ToString()));
 		}
 	}
@@ -268,14 +266,27 @@ namespace derIgel.NNTP.Commands
 	}
 
 	/// <summary>
-	/// LIST client command
+	/// LIST, LIST NEWGROUPS, & LIST OVERVIEW.FMT client's commands
 	/// </summary>
 	[NNTPCommand("LIST")]
 	public class List : Generic
 	{
-		protected static Regex ListSyntaxisChecker =
-			new	Regex(@"(?in)^LIST(?<wideFormat>[ \t]+NEWSGROUPS)?[ \t]*$", RegexOptions.Compiled);
+		public static readonly StringCollection headerItems = new StringCollection();
 
+		protected static Regex ListSyntaxisChecker =
+			new	Regex(@"(?in)^LIST([ \t]+((?<wideFormat>NEWSGROUPS)|(?<overview>OVERVIEW\.FMT)))?[ \t]*$",
+			RegexOptions.Compiled);
+
+		static List()
+		{
+			headerItems.Add("subject");
+			headerItems.Add("from");
+			headerItems.Add("date");
+			headerItems.Add("message-id");
+			headerItems.Add("references");
+			headerItems.Add("bytes");
+			headerItems.Add("lines");
+		}
 		public List(Session session) : base(session)
 		{
 			allowedStates = Session.States.Normal;
@@ -284,20 +295,27 @@ namespace derIgel.NNTP.Commands
 
 		protected override Response ProcessCommand()
 		{
-		
-			NewsGroup[] groupList = session.DataProvider.GetGroupList(new DateTime(), null);
 			StringBuilder textResponse = new StringBuilder();
-			if (!lastMatch.Groups["wideFormat"].Success)
-				// standart format
-				foreach (NewsGroup group in groupList)
-					textResponse.AppendFormat("{0} {1} {2} {3}{4}",
-						group.Name, group.LastArticleNumber, group.FirstArticleNumber,
-						group.PostingAllowed ? 'y' : 'n', Util.CRLF);
+			if (lastMatch.Groups["overview"].Success)
+				// overview format
+				foreach (string headerItem in headerItems)
+					textResponse.Append(headerItem).Append(Util.CRLF);
 			else
-				// wide format
-				foreach (NewsGroup group in groupList)
-					textResponse.AppendFormat("{0} {1}{2}",
-						group.Name, group.Description, Util.CRLF);
+			{
+				NewsGroup[] groupList = session.DataProvider.GetGroupList(new DateTime(), null);
+
+				if (lastMatch.Groups["wideFormat"].Success)
+					// wide format
+					foreach (NewsGroup group in groupList)
+						textResponse.AppendFormat("{0} {1}{2}",
+							group.Name, group.Description, Util.CRLF);
+				else
+					// standart format
+					foreach (NewsGroup group in groupList)
+						textResponse.AppendFormat("{0} {1} {2} {3}{4}",
+							group.Name, group.LastArticleNumber, group.FirstArticleNumber,
+							group.PostingAllowed ? 'y' : 'n', Util.CRLF);
+			}
 			return new Response(215, Encoding.ASCII.GetBytes(textResponse.ToString()));
 		}
 	}
@@ -582,8 +600,8 @@ namespace derIgel.NNTP.Commands
 		protected override Response ProcessCommand()
 		{
 			StringBuilder supportCommands = new StringBuilder();
-			supportCommands.Append("RSDN NNTP Sever support follow commands:").
-				Append(Util.CRLF);
+			supportCommands.Append(Manager.GetProductTitle(Assembly.GetExecutingAssembly())).Append(Util.CRLF).
+				Append("Support follow commands:").Append(Util.CRLF);
 			foreach (string command in session.commands.Keys)
 				supportCommands.AppendFormat("\t{0}{1}", command,Util.CRLF);
 			return new Response(100, Encoding.ASCII.GetBytes(supportCommands.ToString()));

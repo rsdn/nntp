@@ -71,9 +71,8 @@ namespace derIgel.RsdnNntp
 		{
 			base.Uninstall(savedState);
 
-			// remove statistics & cache files
+			// remove cache file
 			string installdir = Path.GetDirectoryName(Context.Parameters["assemblypath"]);
-			File.Delete(Path.Combine(installdir, "NNTP.stat"));
 			File.Delete(Path.Combine(installdir, "RsdnDataProvider.cache"));
 		}
 	}

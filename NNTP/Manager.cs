@@ -5,7 +5,7 @@ using System.Threading;
 using System.Diagnostics;
 using System.Collections;
 using System.Configuration;
-
+using System.Text;
 using System.Reflection;
 using System.IO;
 
@@ -19,26 +19,6 @@ namespace derIgel.NNTP
 	public class Manager : IDisposable
 	{
 		protected TextWriter errorOutput = System.Console.Error;
-
-		protected static Statistics stat;
-		protected static string statFilename;
-
-		static Manager()
-		{
-			statFilename = Assembly.GetExecutingAssembly().GetName().Name + ".stat";
-			if (File.Exists(statFilename))
-				stat = Statistics.Deserialize(statFilename);
-			else
-				stat = new Statistics();
-		}
-
-		/// <summary>
-		/// Write statistics at the end
-		/// </summary>
-		~Manager()
-		{
-			stat.Serialize(statFilename);
-		}
 
 		/// <summary>
 		/// sessions' perfomance counter
@@ -62,11 +42,6 @@ namespace derIgel.NNTP
 			this.dataProviderType = dataProviderType;
 			this.settings = settings;
 				
-			stat.fromMail = settings.FromMail;
-			stat.toMail = settings.ToMail;
-			stat.fromServer = settings.FromServer;
-			stat.interval = new TimeSpan(0, settings.IntervalMinutes, 0);
-
 			if (settings.ErrorOutputFilename != null)
 				errorOutput = new StreamWriter(settings.ErrorOutputFilename, false, System.Text.Encoding.ASCII);
 
@@ -140,7 +115,7 @@ namespace derIgel.NNTP
 					{
 						IDataProvider dataProvider = Activator.CreateInstance(dataProviderType) as IDataProvider;
 						dataProvider.Config(settings);
-						Session session = new Session(socket, dataProvider,	stopEvent, stat, errorOutput);
+						Session session = new Session(socket, dataProvider,	stopEvent, errorOutput);
 						session.Disposed += new EventHandler(SessionDisposedHandler);
 						sessions.Add(session);
 						ThreadPool.QueueUserWorkItem(new WaitCallback(session.Process), this);
@@ -232,6 +207,25 @@ namespace derIgel.NNTP
 		public int SessionsQuantity
 		{
 			get {return sessions.Count;	}
+		}
+
+		public static string GetProductTitle(Assembly assembly)
+		{
+			StringBuilder builder = new StringBuilder();
+			
+			AssemblyProductAttribute productName = (AssemblyProductAttribute)
+				Attribute.GetCustomAttribute(assembly, typeof(AssemblyProductAttribute));
+
+			AssemblyInformationalVersionAttribute productVersion = (AssemblyInformationalVersionAttribute)
+				Attribute.GetCustomAttribute(assembly, typeof(AssemblyInformationalVersionAttribute));
+
+			if (productName != null)
+				builder.Append(productName.Product).Append(" ");
+
+			if (productVersion != null)
+				builder.Append(productVersion.InformationalVersion);
+			
+			return builder.ToString();
 		}
 	}
 }

@@ -63,8 +63,8 @@ namespace derIgel.MIME
 		{
 			get
 			{
-				return Util.OnlyASCIISymbols(this[name]) ? this[name] :
-					Util.Encode(this[name], true, encoding);
+				return (this[name] == null) ? null : 
+					Util.OnlyASCIISymbols(this[name]) ? this[name] : Util.Encode(this[name], true, encoding);
 			}
 		}
 

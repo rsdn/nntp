@@ -89,6 +89,11 @@
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                     Private = "False"
                 />
+                <Reference
+                    Name = "RSDN.Format"
+                    AssemblyName = "RSDN.Format"
+                    HintPath = "RSDN.Format.dll"
+                />
             </References>
         </Build>
         <Files>

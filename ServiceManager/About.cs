@@ -32,11 +32,7 @@ namespace derIgel.RsdnNntp
 				Assembly.GetExecutingAssembly().GetManifestResourceStream("derIgel.RsdnNntp.About.rtf"),
 				RichTextBoxStreamType.RichText);
 
-			AssemblyInformationalVersionAttribute productVersion = (AssemblyInformationalVersionAttribute)
-				Attribute.GetCustomAttribute(Assembly.GetExecutingAssembly(),
-					typeof(AssemblyInformationalVersionAttribute));
-
-			titleLabel.Text += productVersion.InformationalVersion;
+			titleLabel.Text = derIgel.NNTP.Manager.GetProductTitle(Assembly.GetExecutingAssembly());
 
 			AddAssembly(Assembly.GetExecutingAssembly());
 			AddAssembly(Assembly.Load("RsdnNntpServer"));

@@ -20,7 +20,6 @@ namespace derIgel.NNTP
 	public class Session : IDisposable
 	{
 
-		protected Statistics stat;
 		protected TextWriter errorOutput = System.Console.Error;
 
 		static Session()
@@ -71,12 +70,10 @@ namespace derIgel.NNTP
 		/// </summary>
 		PerformanceCounter globalArticlesCounter;
 
-		public Session(Socket client, IDataProvider dataProvider, WaitHandle exitEvent, Statistics stat,
-			TextWriter errorOutput)
+		public Session(Socket client, IDataProvider dataProvider, WaitHandle exitEvent, TextWriter errorOutput)
 		{
 			sessionState = dataProvider.InitialSessionState;
 
-			this.stat = stat;
 			this.errorOutput = errorOutput;
 
 			this.exitEvent = exitEvent;
@@ -211,7 +208,6 @@ namespace derIgel.NNTP
 									// get first word in upper case delimeted by space or tab characters 
 									command = commandString.Split(new char[]{' ', '\t', '\r'}, 2)[0].ToUpper();
 
-									stat.AddStatistic(command);
 									requestsCounter.Increment();
 									globalRequestsCounter.Increment();
 
@@ -307,10 +303,7 @@ namespace derIgel.NNTP
 						{
 							badRequestsCounter.Increment();
 							globalBadRequestsCounter.Increment();
-							stat.AddError(result.Code, commandString);
 						}
-
-						stat.CheckSend();
 
 						switch(result.Code)
 						{
