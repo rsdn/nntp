@@ -66,17 +66,23 @@ namespace Rsdn.Nntp.Commands
 				articleList = new NewsArticle[1];
 				articleList[0] = session.DataProvider.GetArticle(session.currentArticle, session.currentGroup, NewsArticle.Content.Header);
 			}
-			StringBuilder output = new StringBuilder();
-			foreach (NewsArticle article in articleList)
+
+			if (articleList.Length > 0)
 			{
-				output.Append(ModifyArticle(article).MessageNumbers[session.currentGroup]);
-				foreach (string headerItem in List.headerItems)
-					// replace in *unfolded* header all non-good symbols to space
-					output.Append('\t').Append(article[headerItem] == null ? null :
-						Regex.Replace(Header.Unfold(article.EncodedHeader(headerItem)), @"\s", " "));
-				output.Append(Util.CRLF);
+				StringBuilder output = new StringBuilder();
+				foreach (NewsArticle article in articleList)
+				{
+					output.Append(ModifyArticle(article).MessageNumbers[session.currentGroup]);
+					foreach (string headerItem in List.headerItems)
+						// replace in *unfolded* header all non-good symbols to space
+						output.Append('\t').Append(article[headerItem] == null ? null :
+							Regex.Replace(Header.Unfold(article.EncodedHeader(headerItem)), @"\s", " "));
+					output.Append(Util.CRLF);
+				}
+				return new Response(NntpResponse.Overview, output.ToString());
 			}
-			return new Response(NntpResponse.Overview, output.ToString());
+			else
+				return new Response(NntpResponse.NoSelectedArticle);
 		}
 	}
 

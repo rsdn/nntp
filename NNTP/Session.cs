@@ -27,7 +27,7 @@ namespace Rsdn.Nntp
 		/// <summary>
 		/// Logger
 		/// </summary>
-		protected ILog logger;
+		protected internal ILog logger;
 
 		static Session()
 		{
