@@ -9,7 +9,7 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Net;
 
-[assembly:derIgel.NNTP.Commands.NNTPCommand("")]
+[assembly:derIgel.NNTP.Commands.NNTPCommandsAssembly()]
 
 namespace derIgel.NNTP.Commands
 {
@@ -18,6 +18,15 @@ namespace derIgel.NNTP.Commands
 	
 	using Util = derIgel.MIME.Util;
 	
+	[AttributeUsage(AttributeTargets.Assembly, Inherited = false,
+		 AllowMultiple = false)]
+	public class NNTPCommandsAssemblyAttribute : Attribute
+	{
+	}
+		
+	/// <summary>
+	/// Attribute for NNTP commands classes
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Assembly, Inherited = false,
 			AllowMultiple = true)]
 	public class NNTPCommandAttribute : Attribute

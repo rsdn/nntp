@@ -106,15 +106,14 @@ namespace derIgel.NNTP
 
 		public static NNTPSettings Deseriazlize(string filename)
 		{
-			/// Collect all data provider's types
-
 			ArrayList dataProviderTypes = new ArrayList();
 			
 			XmlDocument doc = new XmlDocument();
 			doc.Load(filename);
 
+			/// Collect all data provider's types
 			foreach (XmlNode dataProviderTypeNode in doc.DocumentElement.
-									SelectNodes("//Settings/DataProviderTypeName"))
+									SelectNodes("/Settings/DataProviderTypeName"))
 				dataProviderTypes.Add(((IDataProvider)Activator.CreateInstance(
 					Type.GetType(dataProviderTypeNode.InnerText, true))).GetConfigType());
 			

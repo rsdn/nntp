@@ -46,10 +46,10 @@ namespace derIgel.NNTP
 			commandsTypes = new Hashtable();
 			// initialize types for NNTP commands classes
 			foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
-				if (assembly.IsDefined(typeof(NNTPCommandAttribute), false))
+				if (assembly.IsDefined(typeof(NNTPCommandsAssemblyAttribute), false))
 					// if assembly contains NNTP commands
 					foreach (Type type in	assembly.GetTypes())
-						if (type.IsDefined(typeof(NNTPCommandAttribute), true)&&
+						if (type.IsDefined(typeof(NNTPCommandAttribute), false)&&
 								type.IsSubclassOf(typeof(Generic)) &&
 								!type.IsAbstract)
 						{
