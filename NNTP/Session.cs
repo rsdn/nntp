@@ -98,15 +98,22 @@ namespace Rsdn.Nntp
 		/// </summary>
 		protected Manager manager;
 
-		public Session(Socket client, IDataProvider dataProvider, WaitHandle exitEvent)
+		/// <summary>
+		/// Session ID (Server name + client remote IP endpoint)
+		/// </summary>
+		protected readonly string sessionID;
+
+		public Session(Socket client, IDataProvider dataProvider, Manager manager)
 		{
 			sessionState = dataProvider.InitialSessionState;
 
-			this.exitEvent = exitEvent;
 			commandBuffer = new byte[bufferSize];
 			this.client = client;
 			netStream = new NetworkStream(client);
 			this.dataProvider = dataProvider;
+			this.manager = manager;
+
+			sessionID = manager.Name + " " + client.RemoteEndPoint;
 
 			// Init client's command array
 			commands = new Hashtable();
@@ -179,16 +186,16 @@ namespace Rsdn.Nntp
 		/// </summary>
 		public void Process(Object obj)
 		{
-			Trace.WriteLineIf(tracing.TraceInfo, "Session started", client.ToString());
+			Trace.WriteLineIf(tracing.TraceInfo,
+				string.Format("Session started. Local end point {0}.", client.LocalEndPoint), sessionID);
 
-			manager = (Manager)obj;
 			string delimeter;
 			Response result = null;
 			try
 			{
 				// response OK
 				Answer(new Response(dataProvider.PostingAllowed ? NntpResponse.Ok : NntpResponse.OkNoPosting,
-					null, Manager.ServerID));
+					null, string.Format("{0} ({1})", manager.Name, Manager.ServerID)));
 
 				StringBuilder bufferString = new StringBuilder();
 				while (true)
@@ -197,7 +204,7 @@ namespace Rsdn.Nntp
 					{
 						IAsyncResult asyncResult = netStream.BeginRead(commandBuffer, 0, bufferSize, null, null);
 						switch (WaitHandle.WaitAny(
-							new WaitHandle[] {asyncResult.AsyncWaitHandle, exitEvent},
+							new WaitHandle[] {asyncResult.AsyncWaitHandle, manager.ExitEvent},
 							connectionTimeout, false))
 						{
 							case WaitHandle.WaitTimeout	:
@@ -240,7 +247,7 @@ namespace Rsdn.Nntp
 						bufferString.Remove(0, bufferString.ToString().IndexOf(delimeter) + delimeter.Length);
 						
 						// tracing
-						Trace.WriteLineIf(tracing.TraceInfo, commandString, client.RemoteEndPoint.ToString());
+						Trace.WriteLineIf(tracing.TraceInfo, commandString, sessionID);
 
 						// especialy for Outlook Express
 						// it send sometimes blank lines
@@ -347,7 +354,7 @@ namespace Rsdn.Nntp
 							Trace.WriteLineIf(tracing.TraceError,
 								string.Format("selected group '{0}', last request '{1}'\nError: {2}",
 								dataProvider.CurrentGroup, commandString, e.ToString()),
-								client.RemoteEndPoint.ToString());
+								sessionID);
 							result = new Response(NntpResponse.ProgramFault);
 						}
 
@@ -355,11 +362,11 @@ namespace Rsdn.Nntp
 
 						// tracing....
 						if (tracing.TraceVerbose)
-							Trace.Write(result, client.RemoteEndPoint.ToString());
+							Trace.Write(result, sessionID);
 						else if (tracing.TraceInfo)
 							// trace only first line
 							Trace.WriteLine(result.ToString().Split(new char[]{'\n', '\r'}, 2)[0],
-								client.RemoteEndPoint.ToString());
+								sessionID);
 
 						if (result.Code >= 400)
 							// result code indicates error
@@ -401,7 +408,7 @@ namespace Rsdn.Nntp
 			}
 			finally
 			{
-				Trace.WriteLineIf(tracing.TraceInfo, "Session finished", client.ToString());
+				Trace.WriteLineIf(tracing.TraceInfo, "Session finished", sessionID);
 				Dispose();
 			}
 		}
@@ -475,7 +482,6 @@ namespace Rsdn.Nntp
 
 		public event EventHandler Disposed;
 
-		protected WaitHandle exitEvent;
 		protected static Hashtable notAllowedStateAnswer;
 	}
 }

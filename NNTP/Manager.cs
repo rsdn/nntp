@@ -197,7 +197,7 @@ namespace Rsdn.Nntp
 					{
 						IDataProvider dataProvider = Activator.CreateInstance(settings.DataProviderType) as IDataProvider;
 						dataProvider.Config(settings.DataProviderSettings);
-						Session session = new Session(socket, dataProvider,	stopEvent);
+						Session session = new Session(socket, dataProvider,	this);
 						session.Disposed += new EventHandler(SessionDisposedHandler);
 						sessions.Add(session);
 						ThreadPool.QueueUserWorkItem(new WaitCallback(session.Process), this);
@@ -237,7 +237,13 @@ namespace Rsdn.Nntp
 		/// signalled when need to stop
 		/// </summary>
 		protected ManualResetEvent stopEvent;
-
+		/// <summary>
+		/// Signalled when need to stop. Use by child sessions.
+		/// </summary>
+		internal WaitHandle ExitEvent
+		{
+			get { return stopEvent; }
+		}
 		public void Pause()
 		{
 			paused = true;
@@ -323,6 +329,21 @@ namespace Rsdn.Nntp
 				builder.Append(productVersion.InformationalVersion);
 			
 			return builder.ToString();
+		}
+
+		/// <summary>
+		/// Server name
+		/// </summary>
+		public string Name
+		{
+			get
+			{
+				return settings.Name;
+			}
+			set
+			{
+				settings.Name = value;
+			}
 		}
 	}
 }
