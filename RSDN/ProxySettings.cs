@@ -6,6 +6,7 @@ using System.Net;
 using System.Xml.Serialization;
 using System.Text;
 using System.Security.Cryptography;
+using System.IO;
 
 namespace Rsdn.RsdnNntp
 {
@@ -50,41 +51,57 @@ namespace Rsdn.RsdnNntp
 		{
 			get
 			{
-				byte[] result = null;
 				if ((uriBuilder != null) && (uriBuilder.Password != ""))
 				{
-					RijndaelManaged myRijndael = new RijndaelManaged();
-					byte[] Key = myRijndael.Key;
-					Encoding.UTF8.GetBytes(Address, 0, Math.Min(Key.Length, Address.Length), Key, 0);
-					byte[] IV = myRijndael.IV;
-					Encoding.UTF8.GetBytes(Username, 0, Math.Min(IV.Length, Username.Length), IV, 0);
-					ICryptoTransform encryptor =
-						myRijndael.CreateEncryptor(Key, IV);
-					byte[] source = Encoding.UTF8.GetBytes(uriBuilder.Password);
-					result = encryptor.TransformFinalBlock(source, 0, source.Length);
-					encryptor.Dispose();
+					SymmetricAlgorithm cryptoAlgotithm = new RijndaelManaged();
+					SetKeys(cryptoAlgotithm);
+					MemoryStream result = new MemoryStream();
+					using (ICryptoTransform encryptor = cryptoAlgotithm.CreateEncryptor())
+						using (CryptoStream cryptoStream = new CryptoStream(result, encryptor, CryptoStreamMode.Write))
+						{
+							byte[] source = Encoding.UTF8.GetBytes(uriBuilder.Password);
+							cryptoStream.Write(source, 0, source.Length);
+							cryptoStream.FlushFinalBlock();
+						}
+					return result.ToArray();
 				}
-				return result;
+				else
+					return null;
 			}
 			set
 			{
-				byte[] result = value;
-				if (result.Length > 0)
+				if ((value != null) && (value.Length > 0) && (uriBuilder != null))
 				{
-					RijndaelManaged myRijndael = new RijndaelManaged();
-					byte[] Key = myRijndael.Key;
-					Encoding.UTF8.GetBytes(Address, 0, Math.Min(Key.Length, Address.Length), Key, 0);
-					byte[] IV = myRijndael.IV;
-					Encoding.UTF8.GetBytes(Username, 0, Math.Min(IV.Length, Username.Length), IV, 0);
-					ICryptoTransform decryptor =
-						myRijndael.CreateEncryptor(Key, IV);
-					result = decryptor.TransformFinalBlock(value, 0, value.Length);
-					decryptor.Dispose();
+					SymmetricAlgorithm cryptoAlgotithm = new RijndaelManaged();
+					SetKeys(cryptoAlgotithm);
+					MemoryStream source = new MemoryStream(value);
+					byte[] result = new byte[value.Length];
+					using (ICryptoTransform decryptor = cryptoAlgotithm.CreateDecryptor())
+						using (CryptoStream cryptoStream = new CryptoStream(source, decryptor, CryptoStreamMode.Read))
+						{
+							int count = cryptoStream.Read(result, 0, result.Length);
+							uriBuilder.Password = Encoding.UTF8.GetString(result, 0, count);
+						}
 				}
 
-				if (uriBuilder != null)
-					uriBuilder.Password = Encoding.UTF8.GetString(result);
 			}
+		}
+
+		/// <summary>
+		/// Genereate keys for encryption/decryption
+		/// </summary>
+		/// <param name="cryptoAlgotithm"></param>
+		private void SetKeys(SymmetricAlgorithm cryptoAlgotithm)
+		{
+			byte[] Key = new byte[cryptoAlgotithm.Key.Length];
+			byte[] addressBytes = Encoding.UTF8.GetBytes(Address);
+			Array.Copy(addressBytes, 0, Key, 0, Math.Min(Key.Length, addressBytes.Length));
+			cryptoAlgotithm.Key = Key;
+
+			byte[] IV = new byte[cryptoAlgotithm.IV.Length];
+			byte[] usernameBytes = Encoding.UTF8.GetBytes(Username);
+			Array.Copy(usernameBytes, 0, IV, 0, Math.Min(IV.Length, usernameBytes.Length));
+			cryptoAlgotithm.IV = IV;
 		}
 
 		[XmlIgnore]
