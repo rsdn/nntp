@@ -64,7 +64,13 @@ namespace Rsdn.Nntp.Cache
 		public TimeSpan SlidingExpiration
 		{
 			get { return slidingExpiration; }
-			set { slidingExpiration = value; }
+			set
+			{
+				if ((value < TimeSpan.Zero) || (value > TimeSpan.FromDays(365)))
+					throw new ArgumentOutOfRangeException("SlidingExpiration", value,
+						"The SlidingExpiration parameter is set to less than zero or more than one year.");
+				slidingExpiration = value;
+			}
 		}
 	}
 }
