@@ -362,6 +362,34 @@ namespace Rsdn.RsdnNntp.RsdnService {
             object[] results = this.EndInvoke(asyncResult);
             return ((link)(results[0]));
         }
+        
+        /// <remarks/>
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://rsdn.ru/ws/PostFile", RequestNamespace="http://rsdn.ru/ws/", ResponseNamespace="http://rsdn.ru/ws/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public string PostFile(string fileName, string contentType, [System.Xml.Serialization.XmlElementAttribute(DataType="base64Binary")] System.Byte[] content, string login, string psw) {
+            object[] results = this.Invoke("PostFile", new object[] {
+                        fileName,
+                        contentType,
+                        content,
+                        login,
+                        psw});
+            return ((string)(results[0]));
+        }
+        
+        /// <remarks/>
+        public System.IAsyncResult BeginPostFile(string fileName, string contentType, System.Byte[] content, string login, string psw, System.AsyncCallback callback, object asyncState) {
+            return this.BeginInvoke("PostFile", new object[] {
+                        fileName,
+                        contentType,
+                        content,
+                        login,
+                        psw}, callback, asyncState);
+        }
+        
+        /// <remarks/>
+        public string EndPostFile(System.IAsyncResult asyncResult) {
+            object[] results = this.EndInvoke(asyncResult);
+            return ((string)(results[0]));
+        }
     }
     
     /// <remarks/>

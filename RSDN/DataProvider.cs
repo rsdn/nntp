@@ -541,7 +541,7 @@ namespace Rsdn.RsdnNntp
     				
     				if (formatMessage.ProcessedImagesCount > 0 )
     				{
-    					newsMessage.ContentType = "multipart/related; type=multipart/alternative";
+    					newsMessage.ContentType = "multipart/related; type=\"multipart/alternative\"";
 
     					Message combineMessage = new Message(false);
     					combineMessage.ContentType = "multipart/alternative";
@@ -623,7 +623,7 @@ namespace Rsdn.RsdnNntp
 				// process attachments
 				if (true)
 				{
-					NameValueCollection processedFiles = new NameValueCollection();
+					StringBuilder processedFiles = new StringBuilder();
 					foreach (Message entity in message.Entities)
 					{
 						string disposition = entity.GetHeaderFieldValue("Content-Disposition");
@@ -633,7 +633,11 @@ namespace Rsdn.RsdnNntp
 								entity.GetHeaderFieldParameters("Content-Disposition")["filename"];
 
 							if (filename == null)
-								filename = Guid.NewGuid().ToString();
+							{
+								filename = entity.GetHeaderFieldParameters("Content-Type")["name"];
+								if (filename == null)
+									filename = Guid.NewGuid().ToString();
+							}
 
 							// post file ....
 							byte[] binaryFile = new byte[0];
@@ -652,34 +656,19 @@ namespace Rsdn.RsdnNntp
 								binaryFile = newBinaryFile;
 							}
 
-							FileInfo file = new FileInfo(
-								Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory),
-								filename));
+							processedFiles.Append(Util.CRLF).AppendFormat("[url={0}]{1} ({2})[/url]",
+								webService.PostFile(filename, string.Format("{0}/{1}",
+									entity.ContentTypeType, entity.ContentTypeSubtype), binaryFile,
+									username, password),
+								filename, Utils.BytesToString(binaryFile.Length));
 
-							if (file.Exists)
-								throw new DataProviderException(DataProviderErrors.PostingFailed,
-									"Attached file(s) already exists.");
-
-							using (FileStream stream = file.Create())
-							{
-								stream.Write(binaryFile, 0, binaryFile.Length);
-							}
-
-							//filename, 
-							//string.Format("{0}/{1}",
-							//entity.ContentTypeType, entity.ContentTypeSubtype), binaryFile
-							processedFiles[filename] = "file://" + file.FullName;
 						}
 					}
 
-					if (processedFiles.Count > 0)
+					if (processedFiles.Length > 0)
 					{
-						postingText.Append(Util.CRLF).Append("Attached files:");
-						foreach (string filename in processedFiles.AllKeys)
-						{
-							postingText.Append(Util.CRLF).
-								AppendFormat("[url={1}]{0}[/url]", filename, processedFiles[filename]);
-						}
+						postingText.Append(Util.CRLF).Append(Util.CRLF)
+							.Append("Приложенные файлы:").Append(processedFiles);
 					}
 				}
 
@@ -688,7 +677,7 @@ namespace Rsdn.RsdnNntp
     		
 				post_result result = 
 					webService.PostMessage(username, password, mid, group,
-						Utils.ProcessInvalidXmlCharacters(message.Subject),
+						Utils.ProcessInvalidXmlCharacters(Format.Forum.GetEditSubject(message.Subject)),
 						Utils.ProcessInvalidXmlCharacters(postingText.ToString()));
 
 				if (!result.ok)

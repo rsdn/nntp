@@ -340,5 +340,12 @@
             <param name="text">Input text.</param>
             <returns>Processed text.</returns>
         </member>
+        <member name="M:Rsdn.Framework.Common.Utils.BytesToString(System.Int64)">
+            <summary>
+            Converts a numeric value into a string that represents the number expressed as a size value in bytes, kilobytes, megabytes, or gigabytes, depending on the size.
+            </summary>
+            <param name="number">Numeric value to be converted.</param>
+            <returns>Converted text value of numeric value.</returns>
+        </member>
     </members>
 </doc>

@@ -248,12 +248,26 @@
             Инкапсулирует функции форматирования сообщений форума.
             </summary>
         </member>
+        <!-- Badly formed XML comment ignored for member "F:Rsdn.Framework.Formatting.Format.Forum.reDetecter" -->
         <member name="M:Rsdn.Framework.Formatting.Format.Forum.GetEditSubject(System.String)">
             <summary>
             Готовит поле 'тема' для редактирования.
             </summary>
             <param name="subj">Название темы.</param>
             <returns>Результат.</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Format.Forum.AdjustSubject(System.String,System.String)">
+            <summary>
+            Корректировка темы сообщения.
+            </summary>
+            <remarks>
+            Добавляет префикс '<b>Re</b>' к новой теме сообщения.
+            Для первого ответа в ветке добавляется префикс '<b>Re:</b>', 
+            для всех последующий '<b>Re[n]:</b>', где <b>n</b> - уровень вложенности.
+            </remarks>
+            <param name="oldSubject">Тема предыдущего сообщения.</param>
+            <param name="newSubject">Тема нового сообщения.</param>
+            <returns>Возвращает сообщение с добавленным префиксом 'Re'.</returns>
         </member>
         <member name="M:Rsdn.Framework.Formatting.Format.Forum.GetShortNick(System.String)">
             <summary>
