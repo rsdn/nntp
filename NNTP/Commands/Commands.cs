@@ -101,6 +101,9 @@ namespace derIgel.NNTP.Commands
 			return false;
 		}
 
+		protected static readonly string nntpID = Assembly.GetExecutingAssembly().GetName().Name + " " +
+			Assembly.GetExecutingAssembly().GetName().Version;
+
 		/// <summary>
 		/// add dditional headers specified by server
 		/// </summary>
@@ -112,7 +115,7 @@ namespace derIgel.NNTP.Commands
 			foreach (DictionaryEntry newsGroupNumber in article.MessageNumbers)
 				xref.Append(" ").Append(newsGroupNumber.Key).Append(":").Append(newsGroupNumber.Value);
 			article["Xref"] = xref.ToString();
-			article["X-Server"] = Manager.ServerID;
+			article["X-Server"] = string.Join("; ", new string[]{Manager.ServerID, nntpID, session.DataProvider.Identity});
 			return article;
 		}
 	}

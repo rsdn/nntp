@@ -589,5 +589,16 @@ namespace derIgel.RsdnNntp
 						text.Append(entity);
 			return text.ToString();
 		}
+
+		protected static readonly string identity = Assembly.GetExecutingAssembly().GetName().Name + " " +
+			Assembly.GetExecutingAssembly().GetName().Version;
+
+		public string Identity
+		{
+			get
+			{
+				return identity;
+			}
+		}
 	}
 }

@@ -8,6 +8,14 @@ namespace derIgel.NNTP
 	/// </summary>
 	public interface IDataProvider
 	{
+		/// <summary>
+		/// Data Provider's identification string (usually short name plus version)
+		/// </summary>
+		string Identity
+		{
+			get;
+		}
+
 		Type GetConfigType();
 
 		NewsArticle GetArticle(string originalMessageID,
