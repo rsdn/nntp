@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Runtime.Serialization;
 
 namespace Rsdn.RsdnNntp
 {
@@ -7,7 +8,7 @@ namespace Rsdn.RsdnNntp
 	/// Cache of messages' references
 	/// </summary>
 	[Serializable]
-	public class ReferenceCache
+	public class ReferenceCache : ISerializable
 	{
 		Hashtable identityTree = new Hashtable();
 		Hashtable identityList = new Hashtable();
@@ -64,6 +65,39 @@ namespace Rsdn.RsdnNntp
 				traverser = (identityTree[traverser] != null) ? (int)identityTree[traverser] : 0;
 			}
 			identityList[id] = identities.ToArray(typeof(int));
+		}
+
+		/// <summary>
+		/// Deserialzation
+		/// </summary>
+		/// <param name="info"></param>
+		/// <param name="context"></param>
+		public ReferenceCache(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
+		{
+			int[] identityTreeKeys = (int[])info.GetValue("identityTreeKeys", typeof(int[]));
+			int[] identityTreeValues = (int[])info.GetValue("identityTreeValues", typeof(int[]));
+			// restore tree
+			for (int i = 0; i < identityTreeKeys.Length; i++)
+				identityTree.Add(identityTreeKeys[i], identityTreeValues[i]);
+			// rebuild linear lists
+			for (int i = 0; i < identityTreeKeys.Length; i++)
+				BuildIdentityList(i);
+		}
+
+		/// <summary>
+		/// Serialization
+		/// </summary>
+		/// <param name="info"></param>
+		/// <param name="context"></param>
+		public void GetObjectData(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
+		{
+			int[] identityTreeKeys = new int[identityTree.Keys.Count];
+			identityTree.Keys.CopyTo(identityTreeKeys, 0);
+			info.AddValue("identityTreeKeys", identityTreeKeys, typeof(int[]));
+		
+			int[] identityTreeValues = new int[identityTree.Values.Count];
+			identityTree.Values.CopyTo(identityTreeValues, 0);
+			info.AddValue("identityTreeValues", identityTreeValues, typeof(int[]));
 		}
 	}
 }
