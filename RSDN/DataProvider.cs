@@ -306,8 +306,8 @@ namespace Rsdn.RsdnNntp.Public
     	DataProviderSettings rsdnSettings = settings as DataProviderSettings;
     	if (rsdnSettings != null)
     	{
-				webService = rsdnSettings.EnableHttpCompression ?
-					new CompressService() : new Service();
+			webService = rsdnSettings.EnableHttpCompression ?
+				new CompressService() : new Service();
 
     		serverSchemeAndName = rsdnSettings.ServiceUri.GetLeftPart(UriPartial.Authority);
 				serverName = rsdnSettings.ServiceUri.Host;
@@ -325,6 +325,8 @@ namespace Rsdn.RsdnNntp.Public
 					default:
 						break;
 				}
+
+				formatter.CanonicalRsdnHostName = serverName;
     	}
     }
 	}

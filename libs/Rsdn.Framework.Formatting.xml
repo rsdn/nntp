@@ -352,6 +352,25 @@
             </summary>
             <param name="imagePrefix">Префикс картинок.</param>
         </member>
+        <member name="M:Rsdn.Framework.Formatting.TextFormatter.#ctor(Rsdn.Framework.Formatting.TextFormatter.ProcessImagesDelegate)">
+            <summary>
+            Создаёт экземпляр класса <b>TextFormatter</b>
+            с указанным префиксом для картинок.
+            </summary>
+            <param name="imagesDelegate">Делегат для обработки картинок.
+            Если null - используется делегат по умолчанию <see cref="M:Rsdn.Framework.Formatting.TextFormatter.DefaultProcessImagesDelegate(Rsdn.Framework.Formatting.TextFormatter,System.Text.RegularExpressions.Match)"/>.
+            </param>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.TextFormatter.#ctor(System.String,Rsdn.Framework.Formatting.TextFormatter.ProcessImagesDelegate)">
+            <summary>
+            Создаёт экземпляр класса <b>TextFormatter</b>
+            с указанным префиксом для картинок.
+            </summary>
+            <param name="imagePrefix">Префикс картинок.</param>
+            <param name="imagesDelegate">Делегат для обработки картинок.
+            Если null - используется делегат по умолчанию <see cref="M:Rsdn.Framework.Formatting.TextFormatter.DefaultProcessImagesDelegate(Rsdn.Framework.Formatting.TextFormatter,System.Text.RegularExpressions.Match)"/>.
+            </param>
+        </member>
         <member name="F:Rsdn.Framework.Formatting.TextFormatter.codeFormatters">
             <summary>
             Ассоциативная таблица для раскраски кода.
@@ -390,6 +409,19 @@
         <member name="F:Rsdn.Framework.Formatting.TextFormatter.rxSmile08">
             <summary>
             Выражения для обработки смайликов.
+            </summary>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.TextFormatter.DefaultProcessImagesDelegate(Rsdn.Framework.Formatting.TextFormatter,System.Text.RegularExpressions.Match)">
+            <summary>
+            Делагат по умолчанию для обработки картинок.
+            </summary>
+            <param name="formatter">Форматтер.</param>
+            <param name="image">Регэксповское совпадение тэга [img].</param>
+            <returns>Обработанный тэг.</returns>
+        </member>
+        <member name="F:Rsdn.Framework.Formatting.TextFormatter.imagesDelegate">
+            <summary>
+            Делегат для обработки картинок.
             </summary>
         </member>
         <member name="F:Rsdn.Framework.Formatting.TextFormatter.imgTagRegex">
@@ -560,6 +592,11 @@
         <member name="P:Rsdn.Framework.Formatting.TextFormatter.CanonicalRsdnHostName">
             <summary>
             Canonical (common) name of RSDN to replace in all links to rsdn
+            </summary>
+        </member>
+        <member name="T:Rsdn.Framework.Formatting.TextFormatter.ProcessImagesDelegate">
+            <summary>
+            Тип делегата для обработки картинок (тэга [img])
             </summary>
         </member>
     </members>

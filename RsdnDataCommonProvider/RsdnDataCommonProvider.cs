@@ -430,6 +430,16 @@ namespace Rsdn.RsdnNntp.Common
 		/// </summary>
 		protected abstract IWebProxy Proxy { get; }
 
+		/// <summary>
+		/// RSDN text formatter.
+		/// </summary>
+		protected TextFormatter formatter = new TextFormatter();
+
+		/// <summary>
+		/// Image processor
+		/// </summary>
+		protected ImageProcessor imageProcessor = null;
+
     /// <summary>
     /// Convert rsdn's message to MIME message
     /// Also see rfc 2046, 2112, 2183, 2392, 2557
@@ -441,8 +451,8 @@ namespace Rsdn.RsdnNntp.Common
     protected NewsArticle ToNNTPArticle(IArticle message, string newsgroup,
 			NewsArticle.Content content)
     {
-			NntpTextFormatter formatMessage =
-				new NntpTextFormatter(serverName, Proxy, style);
+
+				//new NntpTextFormatter(serverName, Proxy, style);
 
 			NewsArticle newsMessage = new NewsArticle("<" + message.ID + message.Postfix + ">",
     		new string[]{newsgroup}, new int[]{message.Number}, content);
@@ -515,18 +525,18 @@ namespace Rsdn.RsdnNntp.Common
 
     				string htmlText = string.Format(htmlMessageTemplate, message.AuthorID,
 							message.Author, message.GroupID, message.ID,
-							formatMessage.Format(message.Message, message.Smile), userType,
-							formatMessage.Format(message.HomePage, message.Smile), encoding.WebName,
+							formatter.Format(message.Message, message.Smile), userType,
+							formatter.Format(message.HomePage, message.Smile), encoding.WebName,
 							Format.ReplaceTags(message.Subject), serverSchemeAndName,
 							(message.AuthorID != 0) ?
 								string.Format("href='/Users/Profile.aspx?uid={0}'", message.AuthorID) :
 								null,
-							formatMessage.Format(userInfo == null ? null : userInfo.Origin , true));
+							formatter.Format(userInfo == null ? null : userInfo.Origin , true));
     				htmlTextBody.Entities.Add(htmlText);
     				htmlTextBody.TransferEncoding = ContentTransferEncoding.Base64;
     				htmlTextBody.ContentType = string.Format("text/html; charset=\"{0}\"", encoding.WebName);
     				
-    				if (formatMessage.ProcessedImagesCount > 0 )
+    				if (imageProcessor != null && imageProcessor.ProcessedImagesCount > 0 )
     				{
     					newsMessage.ContentType = "multipart/related; type=\"multipart/alternative\"";
 
@@ -536,7 +546,7 @@ namespace Rsdn.RsdnNntp.Common
     					combineMessage.Entities.Add(htmlTextBody);
     					newsMessage.Entities.Add(combineMessage);
 
-    					foreach (Message img in formatMessage.GetProcessedImages())
+    					foreach (Message img in imageProcessor.GetProcessedImages())
    							newsMessage.Entities.Add(img);
     				}
     				else
@@ -757,6 +767,11 @@ namespace Rsdn.RsdnNntp.Common
     		encoding = rsdnSettings.GetEncoding;
     		if (rsdnSettings.Formatting != FormattingStyle.UserSettings)
 					style = rsdnSettings.Formatting;
+
+				if (style == FormattingStyle.HtmlInlineImages)
+					imageProcessor = new ImageProcessor(Proxy);
+				else
+					imageProcessor = null;
     	}
     }
 

@@ -109,6 +109,46 @@
             Number of last article in this group.
             </summary>
         </member>
+        <member name="T:Rsdn.RsdnNntp.ImageProcessor">
+            <summary>
+            Image processor
+            </summary>
+        </member>
+        <member name="F:Rsdn.RsdnNntp.ImageProcessor.logger">
+            <summary>
+            Logger 
+            </summary>
+        </member>
+        <member name="F:Rsdn.RsdnNntp.ImageProcessor.proxy">
+            <summary>
+            Web Proxy used to retrieve external resources.
+            </summary>
+        </member>
+        <member name="M:Rsdn.RsdnNntp.ImageProcessor.#ctor(System.Net.IWebProxy)">
+            <summary>
+            Message text formatter used to format nntp messages.
+            </summary>
+            <param name="proxy">Proxy to retrieve extrenal resources.</param>
+        </member>
+        <member name="M:Rsdn.RsdnNntp.ImageProcessor.GetProcessedImages">
+            <summary>
+            Array of processed during message formatting inline images.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Rsdn.RsdnNntp.ImageProcessor.ProcessImages(Rsdn.Framework.Formatting.TextFormatter,System.Text.RegularExpressions.Match)">
+            <summary>
+            Process image specified through [img] tag.
+            </summary>
+            <param name="formatter">Owning formatter.</param>
+            <param name="image">Iamge tag match.</param>
+            <returns>Processed tag.</returns>
+        </member>
+        <member name="P:Rsdn.RsdnNntp.ImageProcessor.ProcessedImagesCount">
+            <summary>
+            Number of processed inline images.
+            </summary>
+        </member>
         <member name="T:Rsdn.RsdnNntp.IUserInfo">
             <summary>
             Generic (common) user info.
@@ -137,62 +177,6 @@
         <member name="P:Rsdn.RsdnNntp.IUserInfo.MessageFormat">
             <summary>
             Preffred user's message format.
-            </summary>
-        </member>
-        <member name="T:Rsdn.RsdnNntp.NntpTextFormatter">
-            <summary>
-            RSDN NNTP text formatter
-            </summary>
-        </member>
-        <member name="F:Rsdn.RsdnNntp.NntpTextFormatter.logger">
-            <summary>
-            Logger 
-            </summary>
-        </member>
-        <member name="F:Rsdn.RsdnNntp.NntpTextFormatter.servername">
-            <summary>
-            Server name used in formatting messages.
-            </summary>
-        </member>
-        <member name="F:Rsdn.RsdnNntp.NntpTextFormatter.formattingStyle">
-            <summary>
-            Message's formatting style.
-            </summary>
-        </member>
-        <member name="F:Rsdn.RsdnNntp.NntpTextFormatter.proxy">
-            <summary>
-            Web Proxy used to retrieve external resources.
-            </summary>
-        </member>
-        <member name="M:Rsdn.RsdnNntp.NntpTextFormatter.#ctor(System.String,System.Net.IWebProxy,Rsdn.RsdnNntp.FormattingStyle)">
-            <summary>
-            Message text formatter used to format nntp messages.
-            </summary>
-            <param name="servername">Server name.</param>
-            <param name="proxy">Proxy to retrieve extrenal resources.</param>
-            <param name="formattingStyle">Neccessary format of messages.</param>
-        </member>
-        <member name="M:Rsdn.RsdnNntp.NntpTextFormatter.GetProcessedImages">
-            <summary>
-            Array of processed during message formatting inline images.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Rsdn.RsdnNntp.NntpTextFormatter.ProcessImages(System.Text.RegularExpressions.Match)">
-            <summary>
-            Process image specified through [img] tag.
-            </summary>
-            <param name="image"></param>
-            <returns></returns>
-        </member>
-        <member name="P:Rsdn.RsdnNntp.NntpTextFormatter.CanonicalRsdnHostName">
-            <summary>
-            Name of server used to format messages.
-            </summary>
-        </member>
-        <member name="P:Rsdn.RsdnNntp.NntpTextFormatter.ProcessedImagesCount">
-            <summary>
-            Number of processed inline images.
             </summary>
         </member>
         <member name="T:Rsdn.RsdnNntp.ReferenceCache">
@@ -458,6 +442,16 @@
             <summary>
             Result MIME messages' format.
             Default Html.
+            </summary>
+        </member>
+        <member name="F:Rsdn.RsdnNntp.Common.RsdnDataCommonProvider.formatter">
+            <summary>
+            RSDN text formatter.
+            </summary>
+        </member>
+        <member name="F:Rsdn.RsdnNntp.Common.RsdnDataCommonProvider.imageProcessor">
+            <summary>
+            Image processor
             </summary>
         </member>
         <member name="M:Rsdn.RsdnNntp.Common.RsdnDataCommonProvider.ToNNTPArticle(Rsdn.RsdnNntp.IArticle,System.String,Rsdn.Nntp.NewsArticle.Content)">

@@ -128,12 +128,12 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "IUserInfo.cs"
+                    RelPath = "ImageProcessor.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "NntpTextFormatter.cs"
+                    RelPath = "IUserInfo.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
