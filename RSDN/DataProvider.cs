@@ -301,13 +301,11 @@ namespace Rsdn.RsdnNntp.Public
     /// <param name="settings"></param>
     public override void Config(object settings)
     {
-			base.Config(settings);
-
     	DataProviderSettings rsdnSettings = settings as DataProviderSettings;
     	if (rsdnSettings != null)
     	{
-			webService = rsdnSettings.EnableHttpCompression ?
-				new CompressService() : new Service();
+				webService = rsdnSettings.EnableHttpCompression ?
+					new CompressService() : new Service();
 
     		serverSchemeAndName = rsdnSettings.ServiceUri.GetLeftPart(UriPartial.Authority);
 				serverName = rsdnSettings.ServiceUri.Host;
@@ -325,6 +323,8 @@ namespace Rsdn.RsdnNntp.Public
 					default:
 						break;
 				}
+
+				base.Config(settings);
 
 				formatter.CanonicalRsdnHostName = serverName;
     	}

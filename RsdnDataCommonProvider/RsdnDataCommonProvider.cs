@@ -773,6 +773,9 @@ namespace Rsdn.RsdnNntp.Common
 				else
 					imageProcessor = null;
     	}
+
+			if (imageProcessor != null)
+				formatter = new TextFormatter(imageProcessor.ProcessImagesDelegate);
     }
 
 		/// <summary>

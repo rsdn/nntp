@@ -33,6 +33,7 @@ namespace Rsdn.RsdnNntp
   	public ImageProcessor(IWebProxy proxy)
   	{
 			this.proxy = proxy;
+			ProcessImagesDelegate = new TextFormatter.ProcessImagesDelegate(ProcessImages);
   	}
 
   	NameValueCollection processedImagesIDs = new NameValueCollection();
@@ -60,7 +61,7 @@ namespace Rsdn.RsdnNntp
 		/// <param name="formatter">Owning formatter.</param>
 		/// <param name="image">Iamge tag match.</param>
 		/// <returns>Processed tag.</returns>
-  	public string ProcessImages(TextFormatter formatter, Match image)
+  	protected string ProcessImages(TextFormatter formatter, Match image)
   	{
 			WebResponse response = null;
 			try
@@ -100,5 +101,11 @@ namespace Rsdn.RsdnNntp
 
 			return formatter.ProcessImages(image);
   	}
-  }
+
+		/// <summary>
+		/// Delegate to process images.
+		/// </summary>
+		public TextFormatter.ProcessImagesDelegate ProcessImagesDelegate;
+
+	}
 }

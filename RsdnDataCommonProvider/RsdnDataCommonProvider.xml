@@ -144,6 +144,11 @@
             <param name="image">Iamge tag match.</param>
             <returns>Processed tag.</returns>
         </member>
+        <member name="F:Rsdn.RsdnNntp.ImageProcessor.ProcessImagesDelegate">
+            <summary>
+            Delegate to process images.
+            </summary>
+        </member>
         <member name="P:Rsdn.RsdnNntp.ImageProcessor.ProcessedImagesCount">
             <summary>
             Number of processed inline images.
