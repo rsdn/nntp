@@ -30,7 +30,7 @@ namespace Rsdn.Nntp.Commands
 		/// <returns>Server's NNTP response</returns>
 		protected override Response ProcessCommand()
 		{
-			return new Response(NntpResponse.Date, null, DateTime.UtcNow.ToString("yyyyMMddhhmmss"));
+			return new Response(NntpResponse.Date, null, DateTime.UtcNow.ToString("yyyyMMddHHmmss"));
 		}
 	}
 }
