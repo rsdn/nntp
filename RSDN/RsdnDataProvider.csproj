@@ -17,7 +17,7 @@
                 DelaySign = "false"
                 OutputType = "Library"
                 PreBuildEvent = ""
-                PostBuildEvent = ""
+                PostBuildEvent = "copy $(TargetPath) $(SolutionDir)$(OutDir)"
                 RootNamespace = "Rsdn.RsdnNntp"
                 RunPostBuildEvent = "OnBuildSuccess"
                 StartupObject = ""
@@ -131,12 +131,27 @@
                     AssemblyName = "Rsdn.Framework.Common"
                     HintPath = "..\libs\Rsdn.Framework.Common.dll"
                 />
+                <Reference
+                    Name = "ICSharpCode.SharpZipLib"
+                    AssemblyName = "ICSharpCode.SharpZipLib"
+                    HintPath = "..\libs\ICSharpCode.SharpZipLib.dll"
+                />
             </References>
         </Build>
         <Files>
             <Include>
                 <File
                     RelPath = "AssemblyInfo.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "CompressService.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "CompressWebResponse.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

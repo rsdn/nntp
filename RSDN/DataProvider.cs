@@ -711,8 +711,8 @@ namespace Rsdn.RsdnNntp
     	rsdnSettings = settings as DataProviderSettings;
     	if (rsdnSettings != null)
     	{
-			// To fix authorization proxy bug use special middle chain
-			webService = new Service();
+				webService = rsdnSettings.EnableHttpCompression ?
+					new CompressService() : new Service();
 
     		webService.Url = rsdnSettings.Service;
 				// set proxy if necessary

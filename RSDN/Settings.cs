@@ -179,6 +179,18 @@ namespace Rsdn.RsdnNntp
 			get { return formatting; }
 			set { formatting = value; }
 		}
+
+		protected bool enableHttpCompression = false;
+
+		[Category("Connections")]
+		[DefaultValue(false)]
+		[Description("Allow HTTP 1.1 compression")]
+		public bool EnableHttpCompression
+		{
+		  get { return enableHttpCompression; }
+			set { enableHttpCompression = true; }
+		}
+
 		#region ICustomTypeDescriptor Members
 
 		public TypeConverter GetConverter()
