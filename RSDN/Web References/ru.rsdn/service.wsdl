@@ -2,7 +2,32 @@
 <definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s0="http://rsdn.ru/ws/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" targetNamespace="http://rsdn.ru/ws/" xmlns="http://schemas.xmlsoap.org/wsdl/">
   <types>
     <s:schema elementFormDefault="qualified" targetNamespace="http://rsdn.ru/ws/">
-      <s:element name="GroupList">
+      <s:element name="PostMessage">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="login" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="psw" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="mid" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="group" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="subject" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="message" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="PostMessageResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="PostMessageResult" type="s0:post_result" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="post_result">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="error" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="ok" type="s:boolean" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="GetUserInfo">
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="0" maxOccurs="1" name="login" type="s:string" />
@@ -10,10 +35,73 @@
           </s:sequence>
         </s:complexType>
       </s:element>
-      <s:element name="GroupListResponse">
+      <s:element name="GetUserInfoResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="GroupListResult" type="s0:group_list" />
+            <s:element minOccurs="0" maxOccurs="1" name="GetUserInfoResult" type="s0:UserInfo" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="UserInfo">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="UserRole" type="s0:UserRole" />
+          <s:element minOccurs="1" maxOccurs="1" name="ID" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Password" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Email" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Nick" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="PublicEmail" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="RealName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="HomePage" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Specialization" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="SendMail" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="Flat" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="DefaultFlat" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="PageCount" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="Picture" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="WhereFrom" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Origin" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="IncorrectPassword" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="IP" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="PersonRate" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="TotalRate" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="StopMail" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsCrawler" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="AdminMessage" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="MessageFormat" type="s0:MessageFormat" />
+          <s:element minOccurs="1" maxOccurs="1" name="BanDate" type="s:dateTime" />
+        </s:sequence>
+      </s:complexType>
+      <s:simpleType name="UserRole">
+        <s:restriction base="s:string">
+          <s:enumeration value="Admin" />
+          <s:enumeration value="Moderator" />
+          <s:enumeration value="TeamMember" />
+          <s:enumeration value="User" />
+          <s:enumeration value="Anonym" />
+        </s:restriction>
+      </s:simpleType>
+      <s:simpleType name="MessageFormat">
+        <s:restriction base="s:string">
+          <s:enumeration value="None" />
+          <s:enumeration value="Text" />
+          <s:enumeration value="Html" />
+          <s:enumeration value="TextHtml" />
+        </s:restriction>
+      </s:simpleType>
+      <s:element name="GetGroupList">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="login" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="psw" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="dtc" type="s:dateTime" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetGroupListResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetGroupListResult" type="s0:group_list" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -39,22 +127,6 @@
           <s:element minOccurs="1" maxOccurs="1" name="last" type="s:int" />
         </s:sequence>
       </s:complexType>
-      <s:element name="GetGroupList">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="login" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="psw" type="s:string" />
-            <s:element minOccurs="1" maxOccurs="1" name="dtc" type="s:dateTime" />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
-      <s:element name="GetGroupListResponse">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="GetGroupListResult" type="s0:group_list" />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
       <s:element name="GroupInfo">
         <s:complexType>
           <s:sequence>
@@ -237,54 +309,19 @@
           <s:element minOccurs="0" maxOccurs="1" name="name" type="s:string" />
         </s:sequence>
       </s:complexType>
-      <s:element name="PostMIMEMessage">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="login" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="psw" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="message" type="s:string" />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
-      <s:element name="PostMIMEMessageResponse">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="PostMIMEMessageResult" type="s0:post_result" />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
-      <s:complexType name="post_result">
-        <s:sequence>
-          <s:element minOccurs="0" maxOccurs="1" name="error" type="s:string" />
-          <s:element minOccurs="1" maxOccurs="1" name="ok" type="s:boolean" />
-        </s:sequence>
-      </s:complexType>
-      <s:element name="PostUnicodeMessage">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="login" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="psw" type="s:string" />
-            <s:element minOccurs="1" maxOccurs="1" name="mid" type="s:int" />
-            <s:element minOccurs="0" maxOccurs="1" name="group" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="subject" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="message" type="s:string" />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
-      <s:element name="PostUnicodeMessageResponse">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="PostUnicodeMessageResult" type="s0:post_result" />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
     </s:schema>
   </types>
-  <message name="GroupListSoapIn">
-    <part name="parameters" element="s0:GroupList" />
+  <message name="PostMessageSoapIn">
+    <part name="parameters" element="s0:PostMessage" />
   </message>
-  <message name="GroupListSoapOut">
-    <part name="parameters" element="s0:GroupListResponse" />
+  <message name="PostMessageSoapOut">
+    <part name="parameters" element="s0:PostMessageResponse" />
+  </message>
+  <message name="GetUserInfoSoapIn">
+    <part name="parameters" element="s0:GetUserInfo" />
+  </message>
+  <message name="GetUserInfoSoapOut">
+    <part name="parameters" element="s0:GetUserInfoResponse" />
   </message>
   <message name="GetGroupListSoapIn">
     <part name="parameters" element="s0:GetGroupList" />
@@ -340,23 +377,16 @@
   <message name="GetLinkSoapOut">
     <part name="parameters" element="s0:GetLinkResponse" />
   </message>
-  <message name="PostMIMEMessageSoapIn">
-    <part name="parameters" element="s0:PostMIMEMessage" />
-  </message>
-  <message name="PostMIMEMessageSoapOut">
-    <part name="parameters" element="s0:PostMIMEMessageResponse" />
-  </message>
-  <message name="PostUnicodeMessageSoapIn">
-    <part name="parameters" element="s0:PostUnicodeMessage" />
-  </message>
-  <message name="PostUnicodeMessageSoapOut">
-    <part name="parameters" element="s0:PostUnicodeMessageResponse" />
-  </message>
-  <portType name="ForumSoap">
-    <operation name="GroupList">
-      <documentation>Obsolete.</documentation>
-      <input message="s0:GroupListSoapIn" />
-      <output message="s0:GroupListSoapOut" />
+  <portType name="ServiceSoap">
+    <operation name="PostMessage">
+      <documentation>Accepts Unicode formatted message postings.</documentation>
+      <input message="s0:PostMessageSoapIn" />
+      <output message="s0:PostMessageSoapOut" />
+    </operation>
+    <operation name="GetUserInfo">
+      <documentation>Get inforamtion about user.</documentation>
+      <input message="s0:GetUserInfoSoapIn" />
+      <output message="s0:GetUserInfoSoapOut" />
     </operation>
     <operation name="GetGroupList">
       <documentation>Returns a list of groups.</documentation>
@@ -403,21 +433,20 @@
       <input message="s0:GetLinkSoapIn" />
       <output message="s0:GetLinkSoapOut" />
     </operation>
-    <operation name="PostMIMEMessage">
-      <documentation>Accepts MIME formatted message postings.</documentation>
-      <input message="s0:PostMIMEMessageSoapIn" />
-      <output message="s0:PostMIMEMessageSoapOut" />
-    </operation>
-    <operation name="PostUnicodeMessage">
-      <documentation>Accepts Unicode formatted message postings.</documentation>
-      <input message="s0:PostUnicodeMessageSoapIn" />
-      <output message="s0:PostUnicodeMessageSoapOut" />
-    </operation>
   </portType>
-  <binding name="ForumSoap" type="s0:ForumSoap">
+  <binding name="ServiceSoap" type="s0:ServiceSoap">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
-    <operation name="GroupList">
-      <soap:operation soapAction="http://rsdn.ru/ws/GroupList" style="document" />
+    <operation name="PostMessage">
+      <soap:operation soapAction="http://rsdn.ru/ws/PostMessage" style="document" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+    <operation name="GetUserInfo">
+      <soap:operation soapAction="http://rsdn.ru/ws/GetUserInfo" style="document" />
       <input>
         <soap:body use="literal" />
       </input>
@@ -506,29 +535,11 @@
         <soap:body use="literal" />
       </output>
     </operation>
-    <operation name="PostMIMEMessage">
-      <soap:operation soapAction="http://rsdn.ru/ws/PostMIMEMessage" style="document" />
-      <input>
-        <soap:body use="literal" />
-      </input>
-      <output>
-        <soap:body use="literal" />
-      </output>
-    </operation>
-    <operation name="PostUnicodeMessage">
-      <soap:operation soapAction="http://rsdn.ru/ws/PostUnicodeMessage" style="document" />
-      <input>
-        <soap:body use="literal" />
-      </input>
-      <output>
-        <soap:body use="literal" />
-      </output>
-    </operation>
   </binding>
-  <service name="Forum">
-    <documentation>The service provides access to the RSDN forums. Desktop client for Outlook Express can be downloaded &lt;a href=http://www.rsdn.ru/?files/?Progs/desktop.xml&gt;right here&lt;/a&gt;.</documentation>
-    <port name="ForumSoap" binding="s0:ForumSoap">
-      <soap:address location="http://rsdn.ru/ws/forum.asmx" />
+  <service name="Service">
+    <documentation>The service provides access to the RSDN forums. </documentation>
+    <port name="ServiceSoap" binding="s0:ServiceSoap">
+      <soap:address location="http://rsdn.ru/ws/service.asmx" />
     </port>
   </service>
 </definitions>
