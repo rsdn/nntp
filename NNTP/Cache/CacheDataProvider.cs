@@ -1,6 +1,7 @@
 using System;
 using System.Web;
 using System.Web.Caching;
+using AspCaching = System.Web.Caching;
 using System.Collections;
 
 using Rsdn.Nntp;
@@ -20,7 +21,7 @@ namespace Rsdn.Nntp.Cache
 		/// <summary>
 		/// Cache storage object.
 		/// </summary>
-		protected static System.Web.Caching.Cache cache = HttpRuntime.Cache;
+		protected static AspCaching.Cache cache = HttpRuntime.Cache;
 
 		/// <summary>
 		/// Check if current content of article is suitable for need content.
@@ -77,10 +78,11 @@ namespace Rsdn.Nntp.Cache
 		/// <param name="article">Article.</param>
 		protected void PutInCache(NewsArticle article)
 		{
-			cache.Add(article.MessageID, article, null, DateTime.Now.Add(settings.AbsoluteExpiration),
+			cache.Add(article.MessageID, article, null, settings.AbsoluteExpiration == TimeSpan.Zero ?
+				AspCaching.Cache.NoAbsoluteExpiration : DateTime.Now.Add(settings.AbsoluteExpiration),
 				settings.SlidingExpiration, CacheItemPriority.AboveNormal, null);
 			CacheDependency dependecy =
-				new CacheDependency(null, new string[]{article.MessageID, "keepCache"});
+				new CacheDependency(null, new string[]{article.MessageID});
 			foreach (DictionaryEntry entry in article.MessageNumbers)
 			{
 				cache.Insert(entry.Key.ToString() + entry.Value.ToString(), article, dependecy);
