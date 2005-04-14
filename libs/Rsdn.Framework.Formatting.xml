@@ -330,6 +330,37 @@
             Get evaluated match by number
             </summary>
         </member>
+        <member name="T:Rsdn.Framework.Formatting.QueryBuilder">
+            <summary>
+            Summary description for QueryBuilder.
+            </summary>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.QueryBuilder.#ctor(System.String)">
+            <summary>
+            Construct <see cref="T:Rsdn.Framework.Formatting.QueryBuilder"/> object.
+            </summary>
+            <param name="queryString">Query string to parse.
+            May or may not start with '?' question symbol.</param>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.QueryBuilder.#ctor(System.String,System.Text.Encoding)">
+            <summary>
+            Construct <see cref="T:Rsdn.Framework.Formatting.QueryBuilder"/> object.
+            </summary>
+            <param name="queryString">Query string to parse.
+            May or may not start with '?' question symbol.</param>
+            <param name="encoding">Encoding to encode non-ascii symbols.</param>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.QueryBuilder.ToString">
+            <summary>
+            Convert to query string.
+            </summary>
+            <returns>String presentation of query parameters.</returns>
+        </member>
+        <member name="P:Rsdn.Framework.Formatting.QueryBuilder.Item(System.String)">
+            <summary>
+            Access to param's value by param name.
+            </summary>
+        </member>
         <member name="T:Rsdn.Framework.Formatting.TextFormatter">
             <summary>
             Форматирование сообщение и расцветка кода.
@@ -479,11 +510,6 @@
             <param name="urlAdsress">URL address.</param>
             <param name="urlName">URL name. May be or may be not different from URL address.</param>
             <returns>Formatted link for specified URL.</returns>
-        </member>
-        <member name="F:Rsdn.Framework.Formatting.TextFormatter.rsdnHostRegex">
-            <summary>
-            Regex for determining of RSDN host name.
-            </summary>
         </member>
         <member name="F:Rsdn.Framework.Formatting.TextFormatter.serverName">
             <summary>
