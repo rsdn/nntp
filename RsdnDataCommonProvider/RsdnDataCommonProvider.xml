@@ -344,6 +344,11 @@
             <param name="content">Necessary content of message.</param>
             <returns>Article.</returns>
         </member>
+        <member name="F:Rsdn.RsdnNntp.Common.RsdnDataCommonProvider.messageIdPostfix">
+            <summary>
+            Postfix for using id generation.
+            </summary>
+        </member>
         <member name="F:Rsdn.RsdnNntp.Common.RsdnDataCommonProvider.messageIdNumber">
             <summary>
             Regex to extract Message-IDs from rsdn post messages

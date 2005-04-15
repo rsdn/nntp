@@ -182,6 +182,9 @@ namespace Rsdn.RsdnNntp.Common
 					GetArticle(articleNumber, groupName)), groupName, content);
     }
 
+		/// <summary>
+		/// Postfix for using id generation.
+		/// </summary>
 		static protected readonly string messageIdPostfix = "@news.rsdn.ru";
 
 		/// <summary>
