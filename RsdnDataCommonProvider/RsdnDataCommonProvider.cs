@@ -473,10 +473,14 @@ namespace Rsdn.RsdnNntp.Common
 					referencesString.AppendFormat("<{0}{1}> ", references[i], message.Postfix);
 				for (int i = Math.Min(references.Length - referencesDeep - 1, referencesDeep); i > 0; i--)
     			referencesString.AppendFormat("<{0}{1}> ", references[i], message.Postfix);
-    		if (referencesString.Length > 0)
-    			newsMessage["References"] = referencesString.ToString();
+				if (referencesString.Length > 0)
+				{
+					// remove last space
+					referencesString.Length--;
+					newsMessage["References"] = referencesString.ToString();
+				}
 				if (references.Length > 1)
-					newsMessage["In-Reply-To"] = string.Format("<{0}{1}> ", references[1], message.Postfix);
+					newsMessage["In-Reply-To"] = string.Format("<{0}{1}>", references[1], message.Postfix);
     	}
 
     	if ((content == NewsArticle.Content.Body) ||
