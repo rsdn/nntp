@@ -26,7 +26,7 @@ namespace Rsdn.Nntp.Commands
 		/// Syntaxis checker for XHDR command.
 		/// </summary>
 		protected static Regex xhdrSyntaxisChecker =
-			new Regex(@"(?in)^XHDR[ \t]+(?<header>\w+)" + 
+			new Regex(@"(?in)^XHDR[ \t]+(?<header>\S+)" + 
 								@"([ \t]+((?<messageID><\S+>)|(?<startNumber>\d+)([ \t]*(?<dash>-)[ \t]*(?<endNumber>\d+)?)?))?[ \t]*$",
 								RegexOptions.Compiled);
 
