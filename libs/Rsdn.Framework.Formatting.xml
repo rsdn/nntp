@@ -420,7 +420,7 @@
         </member>
         <member name="M:Rsdn.Framework.Formatting.TextFormatter.#cctor">
             <summary>
-            Инициализация раскрасчиков кода.
+            Статическая инициализация форматтера.
             </summary>
         </member>
         <member name="M:Rsdn.Framework.Formatting.TextFormatter.PaintCode(System.Text.RegularExpressions.Match)">
@@ -490,6 +490,18 @@
             </summary>
             <param name="match">URL match.</param>
             <returns>Formatted URL.</returns>
+        </member>
+        <member name="F:Rsdn.Framework.Formatting.TextFormatter.hostFormatting">
+            <summary>
+            Map of host names and associated handlers.
+            </summary>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.TextFormatter.ProcessPartnerLink(System.Text.RegularExpressions.Match,Rsdn.Framework.Formatting.TextFormatter.URL@)">
+            <summary>
+            Process RSDN partneship links.
+            </summary>
+            <param name="urlMatch"></param>
+            <param name="url"></param>
         </member>
         <member name="M:Rsdn.Framework.Formatting.TextFormatter.FormatURLs(System.Text.RegularExpressions.Match,System.String,System.String)">
             <summary>
@@ -637,6 +649,43 @@
         <member name="T:Rsdn.Framework.Formatting.TextFormatter.ProcessImagesDelegate">
             <summary>
             Тип делегата для обработки картинок (тэга [img])
+            </summary>
+        </member>
+        <member name="T:Rsdn.Framework.Formatting.TextFormatter.ProcessUrlItself">
+            <summary>
+            Delegate to process URLs
+            </summary>
+        </member>
+        <member name="T:Rsdn.Framework.Formatting.TextFormatter.URL">
+            <summary>
+            Structure to contain necessary info about link for processing.
+            </summary>
+        </member>
+        <member name="F:Rsdn.Framework.Formatting.TextFormatter.URL.href">
+            <summary>
+            Address of link.
+            </summary>
+        </member>
+        <member name="F:Rsdn.Framework.Formatting.TextFormatter.URL.name">
+            <summary>
+            Name of link
+            </summary>
+        </member>
+        <member name="F:Rsdn.Framework.Formatting.TextFormatter.URL.title">
+            <summary>
+            Additional info for link
+            </summary>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.TextFormatter.URL.#ctor(System.String,System.String)">
+            <summary>
+            Create URL object.
+            </summary>
+            <param name="href">Adress of link</param>
+            <param name="name">Name of link</param>
+        </member>
+        <member name="T:Rsdn.Framework.Formatting.TextFormatter.ProcessUrl">
+            <summary>
+            Delegate to process URLs.
             </summary>
         </member>
     </members>
