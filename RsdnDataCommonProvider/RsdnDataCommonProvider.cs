@@ -644,7 +644,9 @@ namespace Rsdn.RsdnNntp.Common
 					foreach (Message entity in message.Entities)
 					{
 						string disposition = entity.GetHeaderFieldValue("Content-Disposition");
-						if ((disposition != null) && (disposition.ToLower().Equals("attachment")))
+						if ((disposition != null) &&
+							((disposition.ToLower() == "attachment") ||
+							(disposition.ToLower() == "inline")))
 						{
 							string filename =
 								entity.GetHeaderFieldParameters("Content-Disposition")["filename"];
