@@ -35,16 +35,20 @@ namespace Rsdn.RsdnNntp
 		/// Message text formatter used to format nntp messages.
 		/// </summary>
 		/// <param name="contentIdPostfix">Generated images' content-id postfix.</param>
+		/// <param name="maxSize">Maximum size of all attached images, 0 - not limit</param>
 		/// <param name="proxy">Proxy to retrieve extrenal resources.</param>
-  	public ImageProcessor(string contentIdPostfix, IWebProxy proxy)
+  	public ImageProcessor(string contentIdPostfix, long maxSize, IWebProxy proxy)
   	{
 			this.contentIdPostfix = contentIdPostfix;
+			this.maxSize = maxSize;
 			this.proxy = proxy;
 			ProcessImagesDelegate = new TextFormatter.ProcessImagesDelegate(ProcessImages);
   	}
 
   	NameValueCollection processedImagesIDs = new NameValueCollection();
 		ArrayList processedImages = new ArrayList();
+		private long processedImagesSize = 0;
+		private long maxSize = 0;
 
 		/// <summary>
 		/// Array of processed during message formatting inline images.
@@ -69,6 +73,7 @@ namespace Rsdn.RsdnNntp
 		{
 			processedImagesIDs.Clear();
 			processedImages.Clear();
+			processedImagesSize = 0;
 		}
 
 		/// <summary>
@@ -88,19 +93,26 @@ namespace Rsdn.RsdnNntp
 					WebRequest req = WebRequest.Create(image.Groups["url"].Value);
 					req.Proxy = proxy;
 					response = req.GetResponse();
-					Message imgPart = new Message(false);
-					imgPart.ContentType = response.ContentType;
-					imgContentID = string.Format("{0}{1}", Guid.NewGuid(), contentIdPostfix);
-					imgPart["Content-ID"] = string.Format("<{0}>", imgContentID);
-					imgPart["Content-Location"] = req.RequestUri.ToString();
-					imgPart["Content-Disposition"] = "inline";
-					imgPart.TransferEncoding = ContentTransferEncoding.Base64;
-					using (BinaryReader reader = new BinaryReader(response.GetResponseStream()))
+					if ((maxSize == 0) ||
+							(response.ContentLength + processedImagesSize <= maxSize))
 					{
-						imgPart.Entities.Add(reader.ReadBytes((int)response.ContentLength));
+						Message imgPart = new Message(false);
+						imgPart.ContentType = response.ContentType;
+						imgContentID = string.Format("{0}{1}", Guid.NewGuid(), contentIdPostfix);
+						imgPart["Content-ID"] = string.Format("<{0}>", imgContentID);
+						imgPart["Content-Location"] = req.RequestUri.ToString();
+						imgPart["Content-Disposition"] = "inline";
+						imgPart.TransferEncoding = ContentTransferEncoding.Base64;
+						using (BinaryReader reader = new BinaryReader(response.GetResponseStream()))
+						{
+							imgPart.Entities.Add(reader.ReadBytes((int)response.ContentLength));
+						}
+						processedImages.Add (imgPart);
+						processedImagesIDs[image.Groups["url"].Value] = imgContentID;
+						processedImagesSize += response.ContentLength;
 					}
-					processedImages.Add (imgPart);
-					processedImagesIDs[image.Groups["url"].Value] = imgContentID;
+					else
+						return formatter.ProcessImages(image);
 				}
 				return string.Format("<img border='0' src='{0}' />",
 					"cid:" + imgContentID);
@@ -108,14 +120,13 @@ namespace Rsdn.RsdnNntp
 			catch (Exception ex)
 			{
 				logger.Warn(string.Format("Image {0} not found.", image.Groups["url"].Value), ex);
+				return formatter.ProcessImages(image);
 			}
 			finally
 			{
 				if (response != null)
 					response.Close();
 			}
-
-			return formatter.ProcessImages(image);
   	}
 
 		/// <summary>

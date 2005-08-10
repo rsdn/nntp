@@ -129,11 +129,12 @@
             Images' Content-ID postfix
             </summary>
         </member>
-        <member name="M:Rsdn.RsdnNntp.ImageProcessor.#ctor(System.String,System.Net.IWebProxy)">
+        <member name="M:Rsdn.RsdnNntp.ImageProcessor.#ctor(System.String,System.Int64,System.Net.IWebProxy)">
             <summary>
             Message text formatter used to format nntp messages.
             </summary>
             <param name="contentIdPostfix">Generated images' content-id postfix.</param>
+            <param name="maxSize">Maximum size of all attached images, 0 - not limit</param>
             <param name="proxy">Proxy to retrieve extrenal resources.</param>
         </member>
         <member name="M:Rsdn.RsdnNntp.ImageProcessor.GetProcessedImages">
@@ -684,6 +685,11 @@
         <member name="P:Rsdn.RsdnNntp.DataProviderSettings.Formatting">
             <summary>
             Output format of messages (Text, Html &amp; etc).
+            </summary>
+        </member>
+        <member name="P:Rsdn.RsdnNntp.DataProviderSettings.MaxImagesSize">
+            <summary>
+            Maximum size of all attached images, o - no limit.
             </summary>
         </member>
     </members>

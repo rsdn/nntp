@@ -778,7 +778,8 @@ namespace Rsdn.RsdnNntp.Common
 					style = rsdnSettings.Formatting;
 
 				if (style == FormattingStyle.HtmlInlineImages)
-					imageProcessor = new ImageProcessor(messageIdPostfix, Proxy);
+					imageProcessor = new ImageProcessor(messageIdPostfix,
+						rsdnSettings.MaxImagesSize, Proxy);
 				else
 					imageProcessor = null;
     	}

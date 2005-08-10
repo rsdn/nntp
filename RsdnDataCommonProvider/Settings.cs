@@ -103,5 +103,18 @@ namespace Rsdn.RsdnNntp
 			get { return formatting; }
 			set { formatting = value; }
 		}
+
+		private long maxImagesSize;
+		/// <summary>
+		/// Maximum size of all attached images, o - no limit.
+		/// </summary>
+		[Category("Others")]
+		[DefaultValue(0)]
+		[Description("Maximum size of all attached images. 0 - no limit.")]
+		public long MaxImagesSize
+		{
+			get { return maxImagesSize; }
+			set { maxImagesSize = value; }
+		}
 	}
 }
