@@ -490,11 +490,6 @@ namespace Rsdn.RsdnNntp.Common
     		{
     			case FormattingStyle.PlainText :
 						StringBuilder plainMessage = new StringBuilder(PrepareText(message.Message));
-						// for plain-text messages add some additional useful links
-//						plainMessage.Append(Util.CRLF).Append(Util.CRLF).
-//							Append("[purl]").Append(Util.CRLF).
-//							AppendFormat("URL сообщения на сайте http://rsdn.ru/forum/?mid={0}", message.id).Append(Util.CRLF).
-//							Append("[/purl]").Append(Util.CRLF);
     				newsMessage.Entities.Add(plainMessage.ToString());
     				newsMessage.TransferEncoding = ContentTransferEncoding.Base64;
     				newsMessage.ContentType = string.Format("text/plain; charset=\"{0}\"", encoding.WebName);
@@ -516,16 +511,18 @@ namespace Rsdn.RsdnNntp.Common
 
 						IUserInfo userInfo = GetUserInfo(Format.ToInt(message.AuthorID));
 
+						string homePage = formatter.Format(message.HomePage, message.Smile);
+						string origin = formatter.Format(userInfo == null ? null : userInfo.Origin , true);
+						imageProcessor.ClearProcessedImages();
+
     				string htmlText = string.Format(htmlMessageTemplate, message.AuthorID,
 							message.Author, message.GroupID, message.ID,
 							formatter.Format(message.Message, message.Smile), userType,
-							formatter.Format(message.HomePage, message.Smile), encoding.WebName,
+							homePage, encoding.WebName,
 							Format.ReplaceTags(message.Subject), serverSchemeAndName,
 							(message.AuthorID != 0) ?
-								string.Format("href='/Users/Profile.aspx?uid={0}'", message.AuthorID) :
-								null,
-							formatter.Format(userInfo == null ? null : userInfo.Origin , true),
-							htmlReplyMarker);
+								string.Format("href='/Users/Profile.aspx?uid={0}'", message.AuthorID) : null,
+							origin, htmlReplyMarker);
     				htmlTextBody.Entities.Add(htmlText);
     				htmlTextBody.TransferEncoding = ContentTransferEncoding.Base64;
     				htmlTextBody.ContentType = string.Format("text/html; charset=\"{0}\"", encoding.WebName);

@@ -98,24 +98,24 @@ namespace Rsdn.RsdnNntp
 					{
 						Message imgPart = new Message(false);
 						imgPart.ContentType = response.ContentType;
-						imgContentID = string.Format("{0}{1}", Guid.NewGuid(), contentIdPostfix);
-						imgPart["Content-ID"] = string.Format("<{0}>", imgContentID);
-						imgPart["Content-Location"] = req.RequestUri.ToString();
+						Guid idGuid = Guid.NewGuid();
+						imgPart["Content-ID"] = string.Format("<{0}{1}>", idGuid, contentIdPostfix);
+						imgPart["Content-Location"] = imgContentID =
+							Format.EncodeAgainstXSS(image.Groups["url"].Value);
 						imgPart["Content-Disposition"] = "inline";
 						imgPart.TransferEncoding = ContentTransferEncoding.Base64;
 						using (BinaryReader reader = new BinaryReader(response.GetResponseStream()))
 						{
 							imgPart.Entities.Add(reader.ReadBytes((int)response.ContentLength));
 						}
-						processedImages.Add (imgPart);
+						processedImages.Add(imgPart);
 						processedImagesIDs[image.Groups["url"].Value] = imgContentID;
 						processedImagesSize += response.ContentLength;
 					}
 					else
 						return formatter.ProcessImages(image);
 				}
-				return string.Format("<img border='0' src='{0}' />",
-					"cid:" + imgContentID);
+				return string.Format("<img border='0' src='{0}' />", imgContentID);
 			}
 			catch (Exception ex)
 			{
