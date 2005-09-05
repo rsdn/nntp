@@ -89,7 +89,7 @@ namespace Rsdn.Nntp.Commands
 			ModifyArticle(article);
 			return new Response(responseCode, article,
 				// article retirived by messageID don't change "internal current pointer", so we may not have current group
-				lastMatch.Groups["messageID"].Success ? null : lastMatch.Groups["messageNumber"].Value,
+				lastMatch.Groups["messageID"].Success ? null : session.currentArticle.ToString(),
 				article["Message-ID"] != null ? article["Message-ID"] : "<0>");
 		}
 	}
