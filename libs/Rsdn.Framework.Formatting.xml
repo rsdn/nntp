@@ -356,10 +356,14 @@
             </summary>
             <returns>String presentation of query parameters.</returns>
         </member>
-        <member name="P:Rsdn.Framework.Formatting.QueryBuilder.Item(System.String)">
+        <member name="M:Rsdn.Framework.Formatting.QueryBuilder.ToString(System.Boolean)">
             <summary>
-            Access to param's value by param name.
+            Convert to query string.
             </summary>
+            <param name="withQuestionMark">
+            Include or not question mark in beginning of string presentation.
+            </param>
+            <returns>String presentation of query parameters.</returns>
         </member>
         <member name="T:Rsdn.Framework.Formatting.TextFormatter">
             <summary>
