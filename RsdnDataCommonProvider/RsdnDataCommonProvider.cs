@@ -506,7 +506,8 @@ namespace Rsdn.RsdnNntp.Common
 
 						string homePage = formatter.Format(message.HomePage, message.Smile);
 						string origin = formatter.Format(userInfo == null ? null : userInfo.Origin , true);
-						imageProcessor.ClearProcessedImages();
+						if (imageProcessor != null)
+							imageProcessor.ClearProcessedImages();
 
     				string htmlText = string.Format(htmlMessageTemplate, message.AuthorID,
 							message.Author, message.GroupID, message.ID,
