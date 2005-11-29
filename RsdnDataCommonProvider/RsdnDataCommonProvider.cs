@@ -265,14 +265,7 @@ namespace Rsdn.RsdnNntp.Common
 		/// <returns></returns>
     public override NewsGroup[] GetGroupList(DateTime startDate, string pattern)
     {
-    	IGroup[] groupList = cache["$group_list_cache$"] as IGroup[];
-			if (groupList == null)
-			{
-				groupList = GetGroupList(DateTime.MinValue);
-				// add group list to cache with 15 minitues sliding expiration
-				cache.Add("$group_list_cache$", groupList, null, Cache.NoAbsoluteExpiration,
-					new TimeSpan(0, 15, 0), CacheItemPriority.AboveNormal, null);
-			} 
+    	IGroup[] groupList = GetGroupList(DateTime.MinValue);
   
 			Regex checker = null;
 			if (pattern != null)
