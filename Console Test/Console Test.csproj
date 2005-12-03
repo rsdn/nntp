@@ -78,6 +78,7 @@
                     Name = "log4net"
                     AssemblyName = "log4net"
                     HintPath = "..\libs\log4net.dll"
+                    Private = "True"
                 />
                 <Reference
                     Name = "RsdnDataProvider"

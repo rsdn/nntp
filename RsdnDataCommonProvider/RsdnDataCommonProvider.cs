@@ -265,14 +265,7 @@ namespace Rsdn.RsdnNntp.Common
 		/// <returns></returns>
     public override NewsGroup[] GetGroupList(DateTime startDate, string pattern)
     {
-    	IGroup[] groupList = cache["$group_list_cache$"] as IGroup[];
-			if (groupList == null)
-			{
-				groupList = GetGroupList(DateTime.MinValue);
-				// add group list to cache with 15 minitues sliding expiration
-				cache.Add("$group_list_cache$", groupList, null, Cache.NoAbsoluteExpiration,
-					new TimeSpan(0, 15, 0), CacheItemPriority.AboveNormal, null);
-			} 
+    	IGroup[] groupList = GetGroupList(DateTime.MinValue);
   
 			Regex checker = null;
 			if (pattern != null)
@@ -513,7 +506,8 @@ namespace Rsdn.RsdnNntp.Common
 
 						string homePage = formatter.Format(message.HomePage, message.Smile);
 						string origin = formatter.Format(userInfo == null ? null : userInfo.Origin , true);
-						imageProcessor.ClearProcessedImages();
+						if (imageProcessor != null)
+							imageProcessor.ClearProcessedImages();
 
     				string htmlText = string.Format(htmlMessageTemplate, message.AuthorID,
 							message.Author, message.GroupID, message.ID,
