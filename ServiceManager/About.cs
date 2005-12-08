@@ -1,6 +1,6 @@
 using System;
 using System.Drawing;
-using System.Collections;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Reflection;
@@ -150,11 +150,11 @@ namespace Rsdn.RsdnNntp
 		protected void AddAssembly(Assembly assembly, TreeNodeCollection nodes)
 		{
 			TreeNode node = nodes.Add(assembly.FullName);
-			ArrayList insertedAssemblies = null;
-			if ((node.Parent == null) || ((node.Parent.Tag as ArrayList) == null))
-				node.Tag = insertedAssemblies = new ArrayList();
+      StringCollection insertedAssemblies = null;
+      if ((node.Parent == null) || ((node.Parent.Tag as StringCollection) == null))
+        node.Tag = insertedAssemblies = new StringCollection();
 			else
-				node.Tag = insertedAssemblies = (ArrayList)node.Parent.Tag;
+        node.Tag = insertedAssemblies = (StringCollection)node.Parent.Tag;
 
 			insertedAssemblies.Add(assembly.FullName);
 			foreach (AssemblyName referencedAssemblyName in assembly.GetReferencedAssemblies())
