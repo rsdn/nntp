@@ -297,15 +297,17 @@ namespace Rsdn.RsdnNntp.Public
 				// set proxy if necessary
 				switch (rsdnSettings.ProxyType)
 				{
-					case ProxyType.Default : 
-						break;
+					case ProxyType.Default :
+            webService.Proxy = WebRequest.DefaultWebProxy;
+            webService.Proxy.Credentials = CredentialCache.DefaultCredentials;
+            break;
 					case ProxyType.Explicit :
 						webService.Proxy = rsdnSettings.Proxy;
 						break;
-                    case ProxyType.None:
-                        webService.Proxy = null;
-                        break;
-                    default:
+          case ProxyType.None:
+            webService.Proxy = null;
+            break;
+          default:
 						break;
 				}
 
