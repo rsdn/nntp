@@ -2,7 +2,7 @@ using System;
 using System.Runtime.Serialization;
 using System.Collections.Specialized;
 using System.Text;
-using System.Collections;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace Rsdn.Mime
@@ -21,14 +21,15 @@ namespace Rsdn.Mime
 		/// <summary>
 		/// Hashtable for header identities' filters
 		/// </summary>
-		protected Hashtable filters;
+    protected IDictionary<string, SortedList<int, FilterHandler>> filters;
 
 		/// <summary>
 		/// Construct empty header.
 		/// </summary>
 		public Header() : base()
 		{
-			filters = CollectionsUtil.CreateCaseInsensitiveHashtable();
+      filters = new Dictionary<string, SortedList<int, FilterHandler>>(
+        StringComparer.InvariantCultureIgnoreCase);
 		}
 		   
 		/// <summary>
@@ -57,7 +58,7 @@ namespace Rsdn.Mime
 		{
 			string result = value;
 			if (filters[name] != null)
-				foreach (FilterHandler handler in ((SortedList)filters[name]).Values)
+				foreach (FilterHandler handler in filters[name].Values)
 					result = handler(name, result);
 
 			return result;
@@ -72,8 +73,8 @@ namespace Rsdn.Mime
 		public void AddFilter(string name, FilterHandler handler, int priority)
 		{
 			if (filters[name] == null)
-				filters[name] = new SortedList();
-			((SortedList)filters[name]).Add(priority, handler);
+        filters[name] = new SortedList<int, FilterHandler>();
+			filters[name].Add(priority, handler);
 		}
 
 		/// <summary>
@@ -93,7 +94,7 @@ namespace Rsdn.Mime
 		/// <param name="handler">Filter handler.</param>
 		public void RemoveFilter(string name, FilterHandler handler)
 		{
-			SortedList filterList = filters[name] as SortedList;
+			SortedList<int, FilterHandler> filterList = filters[name];
 			if (filterList != null)
 			{
 				int position = filterList.IndexOfValue(handler);
