@@ -9,7 +9,7 @@ using Plumbwork.Orange.Compression;
 using Rsdn.Framework.Common;
 using Rsdn.Nntp;
 using Rsdn.RsdnNntp.Common;
-using Rsdn.RsdnNntp.RsdnService;
+using Rsdn.RsdnNntp.Public.RsdnService;
 
 namespace Rsdn.RsdnNntp.Public
 {
