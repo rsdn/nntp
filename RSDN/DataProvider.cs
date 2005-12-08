@@ -298,13 +298,14 @@ namespace Rsdn.RsdnNntp.Public
 				switch (rsdnSettings.ProxyType)
 				{
 					case ProxyType.Default : 
-						webService.Proxy = WebProxy.GetDefaultProxy();
-						webService.Proxy.Credentials = CredentialCache.DefaultCredentials;
 						break;
 					case ProxyType.Explicit :
 						webService.Proxy = rsdnSettings.Proxy;
 						break;
-					default:
+                    case ProxyType.None:
+                        webService.Proxy = null;
+                        break;
+                    default:
 						break;
 				}
 

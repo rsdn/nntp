@@ -123,7 +123,8 @@ namespace Rsdn.Nntp
 					new CounterCreationData(bytesTotalCounterName,
 						"Total bytes",	PerformanceCounterType.NumberOfItems32));
 
-				PerformanceCounterCategory.Create(ServerCategoryName , "", perfomanceCountersCollection);
+				PerformanceCounterCategory.Create(ServerCategoryName , "",
+          PerformanceCounterCategoryType.MultiInstance, perfomanceCountersCollection);
 			}
 
 			// create global performance counters

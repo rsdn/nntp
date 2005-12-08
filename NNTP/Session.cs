@@ -35,7 +35,7 @@ namespace Rsdn.Nntp
 			try
 			{
 				Hostname = Dns.GetHostName();
-				FullHostname = Dns.Resolve(Hostname).HostName;
+				FullHostname = Dns.GetHostEntry(Hostname).HostName;
 			}
 			catch (SocketException)
 			{

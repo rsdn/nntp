@@ -53,7 +53,7 @@ namespace Rsdn.RsdnNntp
 
 			try
 			{
-				serverSettings = NntpSettings.Deseriazlize(ConfigurationSettings.AppSettings["settings.ConfigFile"]);
+                serverSettings = NntpSettings.Deseriazlize(ConfigurationManager.AppSettings["settings.ConfigFile"]);
 			}
 			catch (Exception)
 			{
@@ -61,8 +61,8 @@ namespace Rsdn.RsdnNntp
 			}
 
 			serviceManagementPath = new ManagementPath(string.Format(@"\\{0}\root\CIMV2:Win32_Service.Name=""{1}""",
-				ConfigurationSettings.AppSettings["service.Machine"],
-				ConfigurationSettings.AppSettings["service.Name"]));
+				ConfigurationManager.AppSettings["service.Machine"],
+                ConfigurationManager.AppSettings["service.Name"]));
 			
 
 			controlPanel = new ControlPanel(new Settings(serverSettings));

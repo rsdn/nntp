@@ -245,7 +245,7 @@ namespace Rsdn.RsdnNntp
 			{
 				applyButton.Enabled = false;
 				// write config file
-				settings.Serialize(ConfigurationSettings.AppSettings["settings.ConfigFile"]);
+                settings.Serialize(ConfigurationManager.AppSettings["settings.ConfigFile"]);
 				// change startup mode
 				((Notify)Owner).service.ChangeStartMode((settings.StartupMode == StartupType.Auto) ?
 					"Automatic" : settings.StartupMode.ToString());
@@ -256,7 +256,7 @@ namespace Rsdn.RsdnNntp
 			{
 				MessageBox.Show(this, "You don't have access rights for config.", "RSDN NNTP Manager",
 					MessageBoxButtons.OK,	MessageBoxIcon.Error);
-				Settings = new Settings(NntpSettings.Deseriazlize(ConfigurationSettings.AppSettings["service.Config"]));
+                Settings = new Settings(NntpSettings.Deseriazlize(ConfigurationManager.AppSettings["service.Config"]));
 				ShowAlert(false);
 			}
 			catch (ManagementException) { }

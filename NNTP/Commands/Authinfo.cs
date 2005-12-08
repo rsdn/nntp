@@ -68,7 +68,7 @@ namespace Rsdn.Nntp.Commands
 							string remoteHost = ((IPEndPoint)session.client.RemoteEndPoint).Address.ToString();
 							try
 							{
-								remoteHost = Dns.GetHostByAddress(remoteHost).HostName;
+								remoteHost = Dns.GetHostEntry(remoteHost).HostName;
 							}
 							catch (SocketException) {}
 							session.sender = session.Username + "@" + remoteHost;

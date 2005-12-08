@@ -3,7 +3,7 @@ using System.Configuration;
 using Rsdn.Nntp;
 using log4net;
 
-[assembly: log4net.Config.DOMConfigurator(Watch=true)]
+[assembly: log4net.Config.XmlConfigurator(Watch=true)]
 
 namespace ForumTest
 {
@@ -23,7 +23,7 @@ namespace ForumTest
 			try
 			{
         NntpSettings serverSettings =
-					NntpSettings.Deseriazlize(ConfigurationSettings.AppSettings["settings.ConfigFile"]);
+					NntpSettings.Deseriazlize(ConfigurationManager.AppSettings["settings.ConfigFile"]);
 
 				Manager nntpManager = new Manager(serverSettings);
 				nntpManager.Start();

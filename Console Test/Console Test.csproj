@@ -81,6 +81,7 @@
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
+    <Reference Include="System.configuration" />
     <ProjectReference Include="..\NNTP\NNTP.csproj">
       <Name>NNTP</Name>
       <Project>{7C6A20CA-E859-41F5-8B2E-7411A63E8343}</Project>
