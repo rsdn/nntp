@@ -57,7 +57,7 @@ namespace Rsdn.Mime
 		public string FilterHeaderIdentity(string name, string value)
 		{
 			string result = value;
-			if (filters[name] != null)
+			if (filters.ContainsKey(name))
 				foreach (FilterHandler handler in filters[name].Values)
 					result = handler(name, result);
 
@@ -72,7 +72,7 @@ namespace Rsdn.Mime
 		/// <param name="priority">Filter priority.</param>
 		public void AddFilter(string name, FilterHandler handler, int priority)
 		{
-			if (filters[name] == null)
+			if (!filters.ContainsKey(name))
         filters[name] = new SortedList<int, FilterHandler>();
 			filters[name].Add(priority, handler);
 		}
