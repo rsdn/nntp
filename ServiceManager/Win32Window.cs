@@ -14,8 +14,8 @@ namespace Win32Util
 	public class Win32Window
 	{
 		IntPtr window;
-		List<Win32Window> windowList = null;
-    static List<Win32Window> topLevelWindows = null;
+		IList<Win32Window> windowList = null;
+    static IList<Win32Window> topLevelWindows = null;
 
 		/// <summary>
 		/// Create a Win32Window
@@ -51,13 +51,13 @@ namespace Win32Util
 		/// <summary>
     /// The children of this window, as an List<Win32Window>
 		/// </summary>
-    public List<Win32Window> Children
+    public IList<Win32Window> Children
 		{
 			get
 			{
         windowList = new List<Win32Window>();
 				EnumChildWindows(window, new EnumWindowsProc(EnumerateChildProc), 0);
-        List<Win32Window> children = windowList;
+        IList<Win32Window> children = windowList;
 				windowList = null;
 				return children;
 			}
@@ -72,13 +72,13 @@ namespace Win32Util
 		/// <summary>
 		/// All top level windows 
 		/// </summary>
-    public static List<Win32Window> TopLevelWindows
+    public static IList<Win32Window> TopLevelWindows
 		{
 			get
 			{
         topLevelWindows = new List<Win32Window>();
 				EnumWindows(new EnumWindowsProc(EnumerateTopLevelProc), 0);
-        List<Win32Window> top = topLevelWindows;
+        IList<Win32Window> top = topLevelWindows;
 				topLevelWindows = null;
 				return top;
 			}
@@ -95,11 +95,11 @@ namespace Win32Util
 		/// </summary>
 		/// <param name="threadId">The thread id</param>
 		/// <returns></returns>
-    public static List<Win32Window> GetThreadWindows(int threadId)
+    public static IList<Win32Window> GetThreadWindows(int threadId)
 		{
       topLevelWindows = new List<Win32Window>();
 			EnumThreadWindows(threadId, new EnumWindowsProc(EnumerateThreadProc), 0);
-      List<Win32Window> windows = topLevelWindows;
+      IList<Win32Window> windows = topLevelWindows;
 			topLevelWindows = null;
 			return windows;
 		}

@@ -105,12 +105,12 @@ namespace Rsdn.Mime
 		/// <summary>
 		/// Message's entities
 		/// </summary>
-		protected List<object> entities;
+		protected IList<object> entities;
 
 		/// <summary>
 		/// Message's entities
 		/// </summary>
-    public List<object> Entities
+    public IList<object> Entities
 		{
 			get {return entities;}
 		}

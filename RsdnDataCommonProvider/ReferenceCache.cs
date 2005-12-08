@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace Rsdn.RsdnNntp
@@ -10,8 +10,8 @@ namespace Rsdn.RsdnNntp
 	[Serializable]
 	public class ReferenceCache : ISerializable
 	{
-		Hashtable identityTree = new Hashtable();
-		Hashtable identityList = new Hashtable();
+		Dictionary<int, int> identityTree = new Dictionary<int, int>();
+		IDictionary<int, int[]> identityList = new Dictionary<int, int[]>();
 
 		/// <summary>
 		/// Cache, to store message's references.
@@ -44,15 +44,15 @@ namespace Rsdn.RsdnNntp
 				return;
 
 			// get parent of removing element
-			int parentId = (int)identityTree[id];
+			int parentId = identityTree[id];
 			// remove element
 			identityTree.Remove(id);
 			identityList.Remove(id);
 			// change parent of child elements of removed element
-			ArrayList changedElements = new ArrayList();
+			IList<int> changedElements = new List<int>();
 			if (identityTree.ContainsValue(id))
-				foreach (object key in identityTree.Keys)
-					if ((int)identityTree[key] == id)
+				foreach (int key in identityTree.Keys)
+					if (identityTree[key] == id)
 					{
 						identityTree[key] = parentId;
 						changedElements.Add(key);
@@ -69,7 +69,7 @@ namespace Rsdn.RsdnNntp
 		/// <returns></returns>
 		public int[] GetReferences(int id)
 		{
-			return (identityList[id] != null) ?	(int[])identityList[id] : new int[0];
+			return (identityList[id] != null) ?	identityList[id] : new int[0];
 		}
 
 		/// <summary>
@@ -78,14 +78,14 @@ namespace Rsdn.RsdnNntp
 		/// <param name="id"></param>
 		protected void BuildIdentityList(int id)
 		{
-			ArrayList identities = new ArrayList();
+			List<int> identities = new List<int>();
 			int traverser = id;
 			while (traverser != 0)
 			{
 				identities.Add(traverser);
-				traverser = (identityTree[traverser] != null) ? (int)identityTree[traverser] : 0;
+				traverser = identityTree.ContainsKey(traverser) ? identityTree[traverser] : 0;
 			}
-			identityList[id] = identities.ToArray(typeof(int));
+			identityList[id] = identities.ToArray();
 		}
 
 		/// <summary>

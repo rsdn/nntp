@@ -3,7 +3,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Diagnostics;
-using System.Collections;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Text;
 using System.Reflection;
@@ -28,7 +28,8 @@ namespace Rsdn.Nntp
 		public const string GlobalInstanceName = "_All";
 		
 		/// global performance counters collection
-		protected static Hashtable globalPerformanceCounters = new Hashtable();
+		protected static IDictionary<string, PerformanceCounter> globalPerformanceCounters =
+      new Dictionary<string, PerformanceCounter>();
 		/// <summary>
 		/// Get specified global performance counter
 		/// </summary>
@@ -36,11 +37,12 @@ namespace Rsdn.Nntp
 		/// <returns>Specified counter</returns>
 		public static PerformanceCounter GetGlobalPerformanceCounter(string name)
 		{
-		  return (PerformanceCounter)globalPerformanceCounters[name];
+		  return globalPerformanceCounters[name];
 		}
 
 		/// instance performance counters collection
-		protected Hashtable performanceCounters = new Hashtable();
+    protected IDictionary<string, PerformanceCounter> performanceCounters =
+      new Dictionary<string, PerformanceCounter>();
 		/// <summary>
 		/// Get specified instance performance counter
 		/// </summary>
@@ -48,7 +50,7 @@ namespace Rsdn.Nntp
 		/// <returns>Specified counter</returns>
 		public PerformanceCounter GetPerformanceCounter(string name)
 		{
-			return (PerformanceCounter)performanceCounters[name];
+			return performanceCounters[name];
 		}
 
 		/// Connections performance counter
@@ -133,7 +135,8 @@ namespace Rsdn.Nntp
 		}
 
 #if PERFORMANCE_COUNTERS
-		private static void CreatePerformanceCounters(Hashtable store, string instanceName)
+    private static void CreatePerformanceCounters(
+      IDictionary<string, PerformanceCounter> store, string instanceName)
 		{
 			foreach (string counterName in performanceCountersNames)
 				store.Add(counterName,
@@ -154,7 +157,7 @@ namespace Rsdn.Nntp
 			logger = LogManager.GetLogger(settings.Name);
 
 			stopEvent = new ManualResetEvent(false);
-			sessions = new ArrayList();
+			sessions = new List<Session>();
 
 #if PERFORMANCE_COUNTERS
 			// create performance counters
@@ -316,7 +319,7 @@ namespace Rsdn.Nntp
 		/// <summary>
 		/// array contains references to child nntp sessions
 		/// </summary>
-		protected ArrayList sessions;
+		protected IList<Session> sessions;
 
 		/// <summary>
 		/// event, signalled when no child sessions
@@ -326,10 +329,10 @@ namespace Rsdn.Nntp
 		public void SessionDisposedHandler(object obj, EventArgs args)
 		{
 			// check to ensure taht we have that object
-			if (sessions.Contains(obj))
+			if (sessions.Contains((Session)obj))
 			{
 				// remove session from array
-				sessions.Remove(obj);
+				sessions.Remove((Session)obj);
 				// signal when there are no sessions
 				if (sessions.Count == 0)
 					noSessions.Set();

@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Net;
@@ -46,7 +46,7 @@ namespace Rsdn.RsdnNntp
   	}
 
   	NameValueCollection processedImagesIDs = new NameValueCollection();
-		ArrayList processedImages = new ArrayList();
+		List<Message> processedImages = new List<Message>();
 		private long processedImagesSize = 0;
 		private long maxSize = 0;
 
@@ -56,7 +56,7 @@ namespace Rsdn.RsdnNntp
 		/// <returns></returns>
   	public Message[] GetProcessedImages()
   	{
-			return (Message[])processedImages.ToArray(typeof(Message));
+			return processedImages.ToArray();
   	}
 		/// <summary>
 		/// Number of processed inline images.

@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Xml;
@@ -147,7 +147,7 @@ namespace Rsdn.Nntp
 		/// <returns></returns>
 		public static NntpSettings Deseriazlize(string filename)
 		{
-			ArrayList dataProviderTypes = new ArrayList();
+      List<Type> dataProviderTypes = new List<Type>();
 			
 			XmlDocument doc = new XmlDocument();
 			doc.Load(filename);
@@ -160,7 +160,7 @@ namespace Rsdn.Nntp
 			
 			// Deserialize settings with known types of data provider's config objects
 			XmlSerializer serializer = new XmlSerializer(typeof(NntpSettings), null,
-				(Type[])dataProviderTypes.ToArray(typeof(Type)), new XmlRootAttribute("Settings"), null);
+				dataProviderTypes.ToArray(), new XmlRootAttribute("Settings"), null);
 			
 			XmlReader fileReader = new XmlNodeReader(doc);
 

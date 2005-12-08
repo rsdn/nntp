@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 using System.Text;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Serialization.Formatters;
-using System.Collections;
+using System.Collections.Generic;
 using System.Web.Caching;
 
 using log4net;
@@ -271,7 +271,7 @@ namespace Rsdn.RsdnNntp.Common
 			if (pattern != null)
 				checker = new Regex(pattern);
 
-			ArrayList listOfGroups = new ArrayList(groupList.Length);
+			List<NewsGroup> listOfGroups = new List<NewsGroup>(groupList.Length);
     	foreach (IGroup currentGroup in groupList)
 				if (currentGroup.Created >= startDate &&
 						((checker == null) || (checker.IsMatch(currentGroup.Name))))
@@ -280,7 +280,7 @@ namespace Rsdn.RsdnNntp.Common
 						currentGroup.LastArticleNumber - currentGroup.FirstArticleNumber + 1,
 						true, currentGroup.Created));
 
-    	return (NewsGroup[])listOfGroups.ToArray(typeof(NewsGroup));
+    	return listOfGroups.ToArray();
     }
 
 		/// <summary>
@@ -299,22 +299,22 @@ namespace Rsdn.RsdnNntp.Common
 		/// <returns>List of articles.</returns>
     public override NewsArticle[] GetArticleList(System.DateTime date, string pattern)
     {
-			ArrayList groups = new ArrayList();
+			List<string> groups = new List<string>();
 
 			// get all appropriated groups
 			foreach (NewsGroup group in GetGroupList(DateTime.MinValue, pattern))
 				groups.Add(group.Name);
 
-			IArticle[] articleList = GetArticleList((string[])groups.ToArray(typeof(string)), date);
+			IArticle[] articleList = GetArticleList(groups.ToArray(), date);
 
-			ArrayList articles =  new ArrayList();
+      List<NewsArticle> articles = new List<NewsArticle>();
 
 			// process messages
 			foreach (IArticle message in articleList)
 				articles.Add(ToNNTPArticle(UpdateReferences(message), message.Group,
 					NewsArticle.Content.Header));
 
-			return (NewsArticle[])articles.ToArray(typeof(NewsArticle));
+			return articles.ToArray();
     }
 
 		/// <summary>

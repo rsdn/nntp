@@ -1,6 +1,6 @@
 using System;
 using System.Drawing;
-using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Reflection;
@@ -14,7 +14,7 @@ namespace Rsdn.Nntp
 	public class TypeEditorForm : System.Windows.Forms.Form
 	{
 		//
-		protected Hashtable types = new Hashtable();
+		protected IDictionary<string, IList<Type>> types = new Dictionary<string, IList<Type>>();
 		private System.Windows.Forms.OpenFileDialog openAssemblyDialog;
 		private System.Windows.Forms.Button selectFile;
 		private System.Windows.Forms.TextBox assemblyPath;
@@ -232,9 +232,9 @@ namespace Rsdn.Nntp
 					if (types[type.Namespace] == null)
 					{
 						namespacesCombo.Items.Add(type.Namespace);
-						types[type.Namespace] = new ArrayList();
+						types[type.Namespace] = new List<Type>();
 					}
-					((ArrayList)types[type.Namespace]).Add(type);
+					types[type.Namespace].Add(type);
 				}
 			if (namespacesCombo.Items.Count > 0)
 				namespacesCombo.SelectedIndex = 0;
@@ -249,7 +249,7 @@ namespace Rsdn.Nntp
 		{
 			typesCombo.BeginUpdate();
 			typesCombo.Items.Clear();
-			foreach (Type type in (IEnumerable)types[namespacesCombo.Text])
+			foreach (Type type in types[namespacesCombo.Text])
 			{
 				typesCombo.Items.Add(type);
 			}

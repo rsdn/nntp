@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Specialized;
 using System.Net;
 using System.ComponentModel;
 using System.Globalization;
@@ -19,9 +19,9 @@ namespace Rsdn.Nntp
 
 		public override System.ComponentModel.TypeConverter.StandardValuesCollection GetStandardValues(System.ComponentModel.ITypeDescriptorContext context)
 		{
-			ArrayList ipAddresses = new ArrayList();
-			ipAddresses.Add(IPAddress.Any);
-			ipAddresses.Add(IPAddress.Loopback);
+			StringCollection ipAddresses = new StringCollection();
+			ipAddresses.Add(IPAddress.Any.ToString());
+			ipAddresses.Add(IPAddress.Loopback.ToString());
 			foreach (NetworkAdapterConfiguration netConfig in NetworkAdapterConfiguration.GetInstances("IPEnabled=1"))
 				ipAddresses.AddRange(netConfig.IPAddress);
 				

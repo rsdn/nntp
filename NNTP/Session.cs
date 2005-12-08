@@ -2,7 +2,7 @@ using System;
 using System.Net.Sockets;
 using System.IO;
 using System.Text;
-using System.Collections;
+using System.Collections.Generic;
 using System.Threading;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -43,7 +43,7 @@ namespace Rsdn.Nntp
 				FullHostname = "";
 			}
 
-			commandsTypes = new Hashtable();
+      commandsTypes = new Dictionary<string, Type>();
 			// initialize types for NNTP commands classes
 			foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
 				if (assembly.IsDefined(typeof(NntpCommandsAssemblyAttribute), false))
@@ -59,7 +59,7 @@ namespace Rsdn.Nntp
 						}
 
 			// answers for commands during allowed states
-			notAllowedStateAnswer = new Hashtable();
+      notAllowedStateAnswer = new Dictionary<States, Response>();
 			notAllowedStateAnswer[States.AuthRequired] = new Response(NntpResponse.AuthentificationRequired);
 			notAllowedStateAnswer[States.MoreAuthRequired] = new Response(NntpResponse.MoreAuthentificationRequired);
 		}
@@ -113,10 +113,10 @@ namespace Rsdn.Nntp
 			logger = LogManager.GetLogger(manager.Name);
 
 			// Init client's command array
-			commands = new Hashtable();
-			foreach (DictionaryEntry entry in commandsTypes)
-				commands[entry.Key] = 
-					Activator.CreateInstance((Type)entry.Value, new Object[]{this});
+      commands = new Dictionary<string, Generic>();
+			foreach (KeyValuePair<string, Type> entry in commandsTypes)
+				commands[entry.Key] = (Generic)
+					Activator.CreateInstance(entry.Value, new Object[]{this});
 
 #if PERFORMANCE_COUNTERS_OLD
 			// create perfomance counters' category if necessary
@@ -159,7 +159,7 @@ namespace Rsdn.Nntp
 		/// </summary>
 		protected internal int currentArticle = -1;
 
-		protected static Hashtable commandsTypes;
+		protected static IDictionary<string, Type> commandsTypes;
 		public string Username;
 		public string Password;
 		protected internal string sender;
@@ -531,7 +531,7 @@ namespace Rsdn.Nntp
 		/// <summary>
 		/// Associative arrays of NNTP client commands
 		/// </summary>
-		protected internal Hashtable commands;
+		protected internal IDictionary<string, Generic> commands;
 
 		protected IDataProvider dataProvider;
 		public IDataProvider DataProvider
@@ -566,6 +566,6 @@ namespace Rsdn.Nntp
 
 		public event EventHandler Disposed;
 
-		protected static Hashtable notAllowedStateAnswer;
+		protected static IDictionary<States, Response> notAllowedStateAnswer;
 	}
 }
