@@ -21,7 +21,7 @@ namespace Rsdn.Nntp
 			StringBuilder newsGroupsHeader = new StringBuilder();
 			MessageID = messageID;
 
-			this._messageNumbers = new Dictionary<string, int>(newsGroups.Length);
+			_messageNumbers = new Dictionary<string, int>(newsGroups.Length);
 			for (int i = 0; i < newsGroups.Length; i++)
 			{
 				newsGroupsHeader.Append(newsGroups[i]).Append(" ");

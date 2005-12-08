@@ -182,7 +182,9 @@ namespace Rsdn.Nntp
 			{
 				StringBuilder result = new StringBuilder(Util.LineLength);
 				result.Append(code).Append(" ")
-					.AppendFormat(description != null ? description : answers[code] as string, parameters).Append(Util.CRLF);
+					.AppendFormat(description != null ? description :
+          answers.ContainsKey(code) ? answers[code] : string.Empty, parameters)
+          .Append(Util.CRLF);
 				if (reponsesBody != null)
 					result.Append(ModifyTextResponse(reponsesBody.ToString()));
 				return result.ToString();

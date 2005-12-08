@@ -317,11 +317,11 @@ namespace Rsdn.Nntp
 									requestsCounter.Increment();
 									globalRequestsCounter.Increment();
 #endif
-									Commands.Generic nntpCommand = commands[command] as Commands.Generic;
 									// check suppoting command
-									if (nntpCommand != null)
-									{	
-										if (nntpCommand.IsAllowed(sessionState))
+                  if (commands.ContainsKey(command))
+									{
+                    Commands.Generic nntpCommand = commands[command];
+                    if (nntpCommand.IsAllowed(sessionState))
 											result = nntpCommand.Process();
 										else
 										{

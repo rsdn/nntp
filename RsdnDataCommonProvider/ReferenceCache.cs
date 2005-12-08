@@ -69,7 +69,7 @@ namespace Rsdn.RsdnNntp
 		/// <returns></returns>
 		public int[] GetReferences(int id)
 		{
-			return (identityList[id] != null) ?	identityList[id] : new int[0];
+			return (identityList.ContainsKey(id)) ?	identityList[id] : new int[0];
 		}
 
 		/// <summary>
