@@ -335,6 +335,11 @@
             Summary description for QueryBuilder.
             </summary>
         </member>
+        <member name="M:Rsdn.Framework.Formatting.QueryBuilder.#ctor">
+            <summary>
+            Construct <see cref="T:Rsdn.Framework.Formatting.QueryBuilder"/> object.
+            </summary>
+        </member>
         <member name="M:Rsdn.Framework.Formatting.QueryBuilder.#ctor(System.String)">
             <summary>
             Construct <see cref="T:Rsdn.Framework.Formatting.QueryBuilder"/> object.
@@ -411,7 +416,7 @@
             Если null - используется делегат по умолчанию <see cref="M:Rsdn.Framework.Formatting.TextFormatter.DefaultProcessImagesDelegate(Rsdn.Framework.Formatting.TextFormatter,System.Text.RegularExpressions.Match)"/>.
             </param>
         </member>
-        <member name="F:Rsdn.Framework.Formatting.TextFormatter.codeFormatters">
+        <member name="F:Rsdn.Framework.Formatting.TextFormatter._codeFormatters">
             <summary>
             Ассоциативная таблица для раскраски кода.
             Ключ - имя тэга, значение - раскрасивальщик.
@@ -495,6 +500,18 @@
             <param name="match">URL match.</param>
             <returns>Formatted URL.</returns>
         </member>
+        <member name="F:Rsdn.Framework.Formatting.TextFormatter.schemeFormatting">
+            <summary>
+            Map of URI schemes and associated handlers.
+            </summary>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.TextFormatter.ProcessMsHelpLink(System.Text.RegularExpressions.Match,Rsdn.Framework.Formatting.TextFormatter.URL@)">
+            <summary>
+            Process local MSDN links (ms-help scheme).
+            </summary>
+            <param name="urlMatch">Input URL match</param>
+            <param name="url">Output formatted URL</param>
+        </member>
         <member name="F:Rsdn.Framework.Formatting.TextFormatter.hostFormatting">
             <summary>
             Map of host names and associated handlers.
@@ -516,6 +533,17 @@
             <param name="urlAdsress">URL address.</param>
             <param name="urlName">URL name. May be or may be not different from URL address.</param>
             <returns>Formatted link for specified URL.</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.TextFormatter.ProcessByCustomUrlFormatter(System.Object,System.Text.RegularExpressions.Match,System.String,System.String,Rsdn.Framework.Formatting.TextFormatter.URL@)">
+            <summary>
+            Process link by custom URL formatter.
+            </summary>
+            <param name="urlFormatter">URL formatter</param>
+            <param name="urlMatch">URL match</param>
+            <param name="urlAdsress">Link address</param>
+            <param name="urlName">Link name</param>
+            <param name="url">URL sctructure, contains output link info.</param>
+            <returns>Null - if need further processing, string - if processed by formatter itself.</returns>
         </member>
         <member name="M:Rsdn.Framework.Formatting.TextFormatter.FormatRsdnURLs(System.Text.RegularExpressions.Match,System.String,System.String)">
             <summary>

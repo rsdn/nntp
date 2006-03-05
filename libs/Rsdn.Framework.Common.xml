@@ -228,35 +228,6 @@
             <param name="defaultValue">Default value.</param>
             <returns>Result value.</returns>
         </member>
-        <member name="F:Rsdn.Framework.Common.ConfigManager.connectionStrings">
-            <summary>
-            This table caches connection strings which were already read.
-            </summary>
-        </member>
-        <member name="M:Rsdn.Framework.Common.ConfigManager.GetConnectionString(System.String)">
-            <summary>
-            Returns connection string for given configuration.
-            Connection string is read from 'appSettings' section of 
-            app.config file using 'ConnectionString.ConfigurationName' key, 
-            where 'ConfigurationName' is configString parameter of the method.
-            </summary>
-            <param name="configString">Configuration name.</param>
-            <returns>Connection string.</returns>
-        </member>
-        <member name="M:Rsdn.Framework.Common.ConfigManager.AddConnectionString(System.String,System.String)">
-            <summary>
-            Adds new connection string or replaces existing one.
-            </summary>
-            <param name="configString">Configuration string.</param>
-            <param name="connectionString">Connection string.</param>
-        </member>
-        <member name="M:Rsdn.Framework.Common.ConfigManager.GetDefaultConfiguration">
-            <summary>
-            Returns default configuration name.
-            Current implementation just returns key of first record of the cache table.
-            </summary>
-            <returns>Name of default configuration.</returns>
-        </member>
         <member name="T:Rsdn.Framework.Common.ConfigManagerException">
             <summary>
             Configuration manager exception class.
