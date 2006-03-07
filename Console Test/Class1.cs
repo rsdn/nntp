@@ -3,7 +3,7 @@ using System.Configuration;
 using Rsdn.Nntp;
 using log4net;
 
-[assembly: log4net.Config.DOMConfigurator(Watch=true)]
+[assembly: log4net.Config.XmlConfigurator(Watch=true)]
 
 namespace ForumTest
 {

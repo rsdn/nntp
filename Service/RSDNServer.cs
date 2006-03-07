@@ -9,7 +9,7 @@ using log4net;
 
 using Rsdn.Nntp;
 
-[assembly: log4net.Config.DOMConfigurator(Watch=true)]
+[assembly: log4net.Config.XmlConfigurator(Watch=true)]
 
 namespace Rsdn.RsdnNntp
 {
