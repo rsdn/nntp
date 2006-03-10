@@ -4,7 +4,7 @@ using System.Windows.Forms;
 using System.Windows.Forms.Design;
 using System.Net;
 
-namespace Rsdn.RsdnNntp.Public
+namespace Rsdn.RsdnNntp.Public.Editor
 {
 	/// <summary>
 	/// 

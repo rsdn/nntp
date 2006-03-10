@@ -7,6 +7,7 @@ using System.Net;
 using Rsdn.Nntp;
 using Rsdn.Nntp.Cache;
 using Rsdn.RsdnNntp.Public;
+using Rsdn.RsdnNntp.Public.Editor;
 
 namespace Rsdn.RsdnNntp.Public
 {

@@ -3,7 +3,7 @@ using System.Net;
 using System.ComponentModel;
 using System.Text;
 
-namespace Rsdn.RsdnNntp.Public
+namespace Rsdn.RsdnNntp.Public.Editor
 {
 	/// <summary>
 	/// Summary description for ProxyConverter.
