@@ -122,7 +122,7 @@ namespace Rsdn.Nntp
 			_client = client;
       netStream = new NetworkStream(client);
       if (certificate != null)
-			  netStream = new SslStream(netStream, false) ;
+        netStream = new SslStream(netStream, false);
 			_dataProvider = dataProvider;
 			_manager = manager;
 
@@ -184,14 +184,11 @@ namespace Rsdn.Nntp
 			Answer(new Response(code));
 		}
 
-    protected void AnswerWithSslCheck(NntpResponse code)
+    protected void AnswerWithCheck(NntpResponse code)
     {
-      SslStream sslStream = netStream as SslStream;
-      if (sslStream != null)
-      {
-        if (!sslStream.CanWrite)
-          return;
-      }
+      if (!netStream.CanWrite)
+        return;
+
       Answer(new Response(code));
     }
 
@@ -234,7 +231,7 @@ namespace Rsdn.Nntp
 			{
         WaitHandle startEvent;
         IAsyncResult sslAuthDone = null;
-        // TODO: SSL
+        // if SSL - start authentification
         if (netStream is SslStream)
         {
           SslStream sslStream = (SslStream)netStream;
@@ -265,12 +262,12 @@ namespace Rsdn.Nntp
 					{
             // timeout
             case WaitHandle.WaitTimeout:
-              AnswerWithSslCheck(NntpResponse.TimeOut);
+              AnswerWithCheck(NntpResponse.TimeOut);
 							return;
             // _manager.ExitEvent
             case 1 :
               // terminate session
-              AnswerWithSslCheck(NntpResponse.ServiceDiscontinued);
+              AnswerWithCheck(NntpResponse.ServiceDiscontinued);
               return;
             // startEvent
 						case 2 :
