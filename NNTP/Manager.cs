@@ -181,7 +181,7 @@ namespace Rsdn.Nntp
 				listeners[i] = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 				listeners[i].Bind(settings.Bindings[i].EndPoint);
 				listeners[i].Listen(listenConnections);
-				listeners[i].BeginAccept(new AsyncCallback(AcceptClient), listeners[i]);
+				listeners[i].BeginAccept(new AsyncCallback(AcceptClient), i);
 			}
 			stopEvent.Reset();
 
@@ -212,12 +212,18 @@ namespace Rsdn.Nntp
 
 				try
 				{
+          int bindingIndex = (int)ar.AsyncState;
+
+          // listen sockets already shutdowned
+          if (listeners.Length >= bindingIndex)
+            return;
+
 					// get listener socket
-					Socket listener = (Socket)ar.AsyncState;
+          Socket listener = listeners[bindingIndex];
 					// get client's socket
 					Socket socket = listener.EndAccept(ar);
 					// start listen for next client
-					listener.BeginAccept(new AsyncCallback(AcceptClient), listener);
+          listener.BeginAccept(new AsyncCallback(AcceptClient), bindingIndex);
 					if (paused)
 					{
 						Response.Answer(NntpResponse.ServiceUnaviable, socket);
@@ -228,7 +234,8 @@ namespace Rsdn.Nntp
 					{
 						IDataProvider dataProvider = Activator.CreateInstance(settings.DataProviderType) as IDataProvider;
 						dataProvider.Config(settings.DataProviderSettings);
-						Session session = new Session(socket, dataProvider,	this);
+						Session session =
+              new Session(socket, settings.Bindings[bindingIndex].Certificate, dataProvider,	this);
 						session.Disposed += new EventHandler(SessionDisposedHandler);
 						sessions.Add(session);
 						// reset event (now we have child sessions)
@@ -362,7 +369,7 @@ namespace Rsdn.Nntp
 			// listener socket do not need shutdown
 			foreach (Socket listener in listeners)
 				listener.Close();
-			listeners = null;
+			listeners = new Socket[0];
 		}
 
 		/// <summary>

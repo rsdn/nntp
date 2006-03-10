@@ -6,7 +6,7 @@ using System.Windows.Forms;
 using System.Reflection;
 using System.Diagnostics;
 
-namespace Rsdn.Nntp
+namespace Rsdn.Nntp.Editor
 {
 	/// <summary>
 	/// Summary description for TypeEditorForm.

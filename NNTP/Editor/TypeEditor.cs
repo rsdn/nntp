@@ -3,7 +3,7 @@ using System.Drawing.Design;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
-namespace Rsdn.Nntp
+namespace Rsdn.Nntp.Editor
 {
 	/// <summary>
 	/// 

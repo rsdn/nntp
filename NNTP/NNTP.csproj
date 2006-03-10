@@ -92,6 +92,7 @@
     <Reference Include="System.Management">
       <Name>System.Management</Name>
     </Reference>
+    <Reference Include="System.Security" />
     <Reference Include="System.Web">
       <Name>System.Web</Name>
     </Reference>
@@ -114,9 +115,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="AssemblyInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="BindingsConverter.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Cache\CacheDataProvider.cs">
@@ -185,10 +183,20 @@
     <Compile Include="Commands\XOver.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Errors.cs">
-      <SubType>Code</SubType>
+    <Compile Include="Editor\BindingsConverter.cs" />
+    <Compile Include="Editor\CertificateConverter.cs" />
+    <Compile Include="Editor\CertificateEditor.cs" />
+    <Compile Include="Editor\IPAddressConverter.cs" />
+    <Compile Include="Editor\ServerEndPointConverter.cs" />
+    <Compile Include="Editor\TypeClassConverter.cs" />
+    <Compile Include="Editor\TypeEditor.cs" />
+    <Compile Include="Editor\TypeEditorForm.cs">
+      <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ICorThreadPool.cs">
+    <Compile Include="Editor\Win32_NetworkAdapterConfiguration.CS">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Errors.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="IDataProvider.cs">
@@ -215,23 +223,13 @@
     <Compile Include="Settings.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="TypeClassConverter.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="TypeEditor.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="TypeEditorForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Win32_NetworkAdapterConfiguration.CS">
-      <SubType>Component</SubType>
-    </Compile>
-    <EmbeddedResource Include="TypeEditorForm.resx">
+    <EmbeddedResource Include="Editor\TypeEditorForm.resx">
       <DependentUpon>TypeEditorForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Win32_NetworkAdapterConfiguration.resx">
+    <EmbeddedResource Include="Editor\Win32_NetworkAdapterConfiguration.resx">
       <DependentUpon>Win32_NetworkAdapterConfiguration.CS</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

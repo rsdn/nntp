@@ -4,6 +4,8 @@ using System.ComponentModel;
 using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
+using System.Threading;
+using Rsdn.Nntp.Editor;
 
 namespace Rsdn.Nntp
 {
@@ -175,19 +177,19 @@ namespace Rsdn.Nntp
 		/// Thread Pool's size
 		/// </summary>
 		[DefaultValue(25)]
-		public uint ThreadPoolSize
+		public int ThreadPoolSize
 		{
 			get
 			{
 				int workerThreads, competitionPortThreads;
-				System.Threading.ThreadPool.GetMaxThreads(out workerThreads, out competitionPortThreads);
-				return (uint)workerThreads;
+				ThreadPool.GetMaxThreads(out workerThreads, out competitionPortThreads);
+				return workerThreads;
 			}
 			set
 			{
 				int workerThreads, competitionPortThreads;
-				System.Threading.ThreadPool.GetMaxThreads(out workerThreads, out competitionPortThreads);
-				CLRThreadPool.Controller.SetMaxThreads(value, (uint)competitionPortThreads);
+				ThreadPool.GetMaxThreads(out workerThreads, out competitionPortThreads);
+				ThreadPool.SetMaxThreads(value, competitionPortThreads);
 			}
 		}
 	}	
