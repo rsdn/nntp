@@ -52,7 +52,7 @@ namespace Rsdn.RsdnNntp
 
 			try
 			{
-                serverSettings = NntpSettings.Deseriazlize(ConfigurationManager.AppSettings["settings.ConfigFile"]);
+        serverSettings = NntpSettings.Deseriazlize(ConfigurationManager.AppSettings["settings.ConfigFile"]);
 			}
 			catch (Exception)
 			{
@@ -218,7 +218,7 @@ namespace Rsdn.RsdnNntp
 
 		internal protected void RefreshStatus()
 		{
-				RefreshStatus(this, EventArgs.Empty);
+		  RefreshStatus(this, EventArgs.Empty);
 		}
 
 		/// <summary>

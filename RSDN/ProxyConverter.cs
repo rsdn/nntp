@@ -16,9 +16,9 @@ namespace Rsdn.RsdnNntp.Public
 
 		public override object ConvertTo(System.ComponentModel.ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, System.Type destinationType)
 		{
-			if (value is WebProxy && destinationType == typeof(string))
+			if ((value is WebProxy) && (destinationType == typeof(string)))
 			{
-				return ((WebProxy)value).Address.ToString();
+				return Convert.ToString(((WebProxy)value).Address);
 			}
 			else
 				return base.ConvertTo(context, culture, value, destinationType);
