@@ -215,7 +215,7 @@ namespace Rsdn.Nntp
           int bindingIndex = (int)ar.AsyncState;
 
           // listen sockets already shutdowned
-          if (listeners.Length >= bindingIndex)
+          if (listeners.Length <= bindingIndex)
             return;
 
 					// get listener socket
