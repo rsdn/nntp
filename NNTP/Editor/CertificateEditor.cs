@@ -29,9 +29,12 @@ namespace Rsdn.Nntp.Editor
 
         // find a certificate that is suited for server authentication
         X509Certificate2Collection appropriateCertificates = localStore.Certificates
-          .Find(X509FindType.FindByApplicationPolicy, "1.3.6.1.5.5.7.3.1", false);
+          .Find(X509FindType.FindByApplicationPolicy, "1.3.6.1.5.5.7.3.1", false)
+          .Find(X509FindType.FindByKeyUsage, X509KeyUsageFlags.DataEncipherment, false);
         X509Certificate2Collection collection =
-          X509Certificate2UI.SelectFromCollection(appropriateCertificates, "Title", "message",
+          X509Certificate2UI.SelectFromCollection(appropriateCertificates,
+            "Select certificate",
+            "Select certificate which will be used for SSL connection authentification and encryption.",
             X509SelectionFlag.SingleSelection);
 
         if (collection.Count > 0)
