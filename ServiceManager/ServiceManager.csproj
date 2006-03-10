@@ -128,9 +128,11 @@
     <EmbeddedResource Include="App.ico" />
     <EmbeddedResource Include="ControlPanel.resx">
       <DependentUpon>ControlPanel.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Notify.resx">
       <DependentUpon>Notify.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Paused.ico" />
     <EmbeddedResource Include="Started.ico" />
