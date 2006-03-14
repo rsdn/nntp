@@ -1,6 +1,6 @@
 using System;
 using Rsdn.Framework.Formatting;
-using Rsdn.RsdnNntp.RsdnService;
+using Rsdn.RsdnNntp.Public.RsdnService;
 
 namespace Rsdn.RsdnNntp.Public
 {

@@ -2,7 +2,7 @@ using System;
 using System.Net.Sockets;
 using System.IO;
 using System.Text;
-using System.Collections;
+using System.Collections.Generic;
 using System.Threading;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -12,6 +12,9 @@ using log4net;
 
 using Rsdn.Mime;
 using Rsdn.Nntp.Commands;
+using System.Net.Security;
+using System.Security.Authentication;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Rsdn.Nntp
 {
@@ -35,7 +38,7 @@ namespace Rsdn.Nntp
 			try
 			{
 				Hostname = Dns.GetHostName();
-				FullHostname = Dns.Resolve(Hostname).HostName;
+				FullHostname = Dns.GetHostEntry(Hostname).HostName;
 			}
 			catch (SocketException)
 			{
@@ -43,7 +46,7 @@ namespace Rsdn.Nntp
 				FullHostname = "";
 			}
 
-			commandsTypes = new Hashtable();
+      commandsTypes = new Dictionary<string, Type>();
 			// initialize types for NNTP commands classes
 			foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
 				if (assembly.IsDefined(typeof(NntpCommandsAssemblyAttribute), false))
@@ -59,7 +62,7 @@ namespace Rsdn.Nntp
 						}
 
 			// answers for commands during allowed states
-			notAllowedStateAnswer = new Hashtable();
+      notAllowedStateAnswer = new Dictionary<States, Response>();
 			notAllowedStateAnswer[States.AuthRequired] = new Response(NntpResponse.AuthentificationRequired);
 			notAllowedStateAnswer[States.MoreAuthRequired] = new Response(NntpResponse.MoreAuthentificationRequired);
 		}
@@ -94,29 +97,40 @@ namespace Rsdn.Nntp
 		/// <summary>
 		/// Manager (parent) object
 		/// </summary>
-		protected Manager manager;
+		protected Manager _manager;
 		public Manager Manager
 		{
-			get { return manager; }
+			get { return _manager; }
 		}
 
-		public Session(Socket client, IDataProvider dataProvider, Manager manager)
+    /// <summary>
+    /// Create user session
+    /// </summary>
+    /// <param name="client">Established client's socket</param>
+    /// <param name="certificate">Certificate for SSL connection, NULL - if no SSL.</param>
+    /// <param name="dataProvider">Data Provider</param>
+    /// <param name="manager">Sessions' manager.</param>
+		public Session(Socket client, X509Certificate2 certificate, IDataProvider dataProvider, Manager manager)
 		{
-			sessionState = dataProvider.InitialSessionState;
+      logger = LogManager.GetLogger(manager.Name);
 
-			commandBuffer = new byte[bufferSize];
-			this.client = client;
-			netStream = new NetworkStream(client);
-			this.dataProvider = dataProvider;
-			this.manager = manager;
+      sessionState = dataProvider.InitialSessionState;
 
-			logger = LogManager.GetLogger(manager.Name);
+      commandBuffer = new byte[bufferSize];
+
+      _certificate = certificate;
+			_client = client;
+      netStream = new NetworkStream(client);
+      if (certificate != null)
+        netStream = new SslStream(netStream, false);
+			_dataProvider = dataProvider;
+			_manager = manager;
 
 			// Init client's command array
-			commands = new Hashtable();
-			foreach (DictionaryEntry entry in commandsTypes)
-				commands[entry.Key] = 
-					Activator.CreateInstance((Type)entry.Value, new Object[]{this});
+      commands = new Dictionary<string, Generic>();
+			foreach (KeyValuePair<string, Type> entry in commandsTypes)
+				commands[entry.Key] = (Generic)
+					Activator.CreateInstance(entry.Value, new Object[]{this});
 
 #if PERFORMANCE_COUNTERS_OLD
 			// create perfomance counters' category if necessary
@@ -159,7 +173,7 @@ namespace Rsdn.Nntp
 		/// </summary>
 		protected internal int currentArticle = -1;
 
-		protected static Hashtable commandsTypes;
+		protected static IDictionary<string, Type> commandsTypes;
 		public string Username;
 		public string Password;
 		protected internal string sender;
@@ -169,6 +183,14 @@ namespace Rsdn.Nntp
 		{
 			Answer(new Response(code));
 		}
+
+    protected void AnswerWithCheck(NntpResponse code)
+    {
+      if (!netStream.CanWrite)
+        return;
+
+      Answer(new Response(code));
+    }
 
 		protected void Answer(NntpResponse code)
 		{
@@ -180,13 +202,13 @@ namespace Rsdn.Nntp
 			byte[] bytes = Util.StringToBytes(response.GetResponse());
 			netStream.Write(bytes, 0, bytes.Length);
 #if PERFORMANCE_COUNTERS
-			manager.GetPerformanceCounter(Manager.bytesSentPerSecCounterName).IncrementBy(bytes.Length);
+			_manager.GetPerformanceCounter(Manager.bytesSentPerSecCounterName).IncrementBy(bytes.Length);
 			Manager.GetGlobalPerformanceCounter(Manager.bytesSentPerSecCounterName).IncrementBy(bytes.Length);
-			manager.GetPerformanceCounter(Manager.bytesSentCounterName).IncrementBy(bytes.Length);
+			_manager.GetPerformanceCounter(Manager.bytesSentCounterName).IncrementBy(bytes.Length);
 			Manager.GetGlobalPerformanceCounter(Manager.bytesSentCounterName).IncrementBy(bytes.Length);
-			manager.GetPerformanceCounter(Manager.bytesTotalPerSecCounterName).IncrementBy(bytes.Length);
+			_manager.GetPerformanceCounter(Manager.bytesTotalPerSecCounterName).IncrementBy(bytes.Length);
 			Manager.GetGlobalPerformanceCounter(Manager.bytesTotalPerSecCounterName).IncrementBy(bytes.Length);
-			manager.GetPerformanceCounter(Manager.bytesTotalCounterName).IncrementBy(bytes.Length);
+			_manager.GetPerformanceCounter(Manager.bytesTotalCounterName).IncrementBy(bytes.Length);
 			Manager.GetGlobalPerformanceCounter(Manager.bytesTotalCounterName).IncrementBy(bytes.Length);
 #endif
 		}
@@ -197,61 +219,96 @@ namespace Rsdn.Nntp
 		public void Process(Object obj)
 		{
 			// Set nested device context for current client
-			NDC.Push(client.RemoteEndPoint.ToString());
+			NDC.Push(_client.RemoteEndPoint.ToString());
 
 			if (logger.IsInfoEnabled)
-				logger.Info(string.Format("Session started. Local end point {0}.", client.LocalEndPoint));
+				logger.Info(string.Format("Session started. Local end point {0}.", _client.LocalEndPoint));
 
 			bool posting = false;
 			string delimeter;
 			Response result = null;
 			try
 			{
-				// response OK
-				Answer(new Response(dataProvider.PostingAllowed ?
-					NntpResponse.Ok : NntpResponse.OkNoPosting, null,
-						string.Format("{0} ({1}; {2})",
-						manager.Name, Manager.ServerID, dataProvider.Identity)));
+        WaitHandle startEvent;
+        IAsyncResult sslAuthDone = null;
+        // if SSL - start authentification
+        if (netStream is SslStream)
+        {
+          SslStream sslStream = (SslStream)netStream;
+          sslAuthDone = sslStream.BeginAuthenticateAsServer(_certificate, false,
+            SslProtocols.Ssl2 | SslProtocols.Ssl3 | SslProtocols.Tls, false, null, sslStream);
+          startEvent = sslAuthDone.AsyncWaitHandle;
+        }
+        else
+        {
+          startEvent = new AutoResetEvent(true);
+        }
 
 				StringBuilder bufferString = new StringBuilder();
+
+        IAsyncResult asyncResult = null;
+        WaitHandle[] eventsWaitTable =
+          new WaitHandle[] { new ManualResetEvent(false), _manager.ExitEvent, startEvent};
+        bool firstPass = true;
+
 				while (true)
 				{
-					do
+          if (!firstPass)
+          {
+            asyncResult = netStream.BeginRead(commandBuffer, 0, bufferSize, null, null);
+            eventsWaitTable[0] = asyncResult.AsyncWaitHandle;
+          }
+					switch (WaitHandle.WaitAny(eventsWaitTable, connectionTimeout, false))
 					{
-						IAsyncResult asyncResult = netStream.BeginRead(commandBuffer, 0, bufferSize, null, null);
-						switch (WaitHandle.WaitAny(
-							new WaitHandle[] {asyncResult.AsyncWaitHandle, manager.ExitEvent},
-							connectionTimeout, false))
-						{
-							case WaitHandle.WaitTimeout	:
-								// timeout
-								Answer(NntpResponse.TimeOut);
-								return;
-							case 1	:
-								// terminate session
-								Answer(NntpResponse.ServiceDiscontinued);
-								return;
-						}
-						int receivedBytes = netStream.EndRead(asyncResult);
-						if (receivedBytes  > 0)
-						{
-							bufferString.Append(Util.BytesToString(commandBuffer, receivedBytes));
-#if PERFORMANCE_COUNTERS
-							manager.GetPerformanceCounter(Manager.bytesReceivedPerSecCounterName).IncrementBy(receivedBytes);
-							Manager.GetGlobalPerformanceCounter(Manager.bytesReceivedPerSecCounterName).IncrementBy(receivedBytes);
-							manager.GetPerformanceCounter(Manager.bytesReceivedCounterName).IncrementBy(receivedBytes);
-							Manager.GetGlobalPerformanceCounter(Manager.bytesReceivedCounterName).IncrementBy(receivedBytes);
-							manager.GetPerformanceCounter(Manager.bytesTotalPerSecCounterName).IncrementBy(receivedBytes);
-							Manager.GetGlobalPerformanceCounter(Manager.bytesTotalPerSecCounterName).IncrementBy(receivedBytes);
-							manager.GetPerformanceCounter(Manager.bytesTotalCounterName).IncrementBy(receivedBytes);
-							Manager.GetGlobalPerformanceCounter(Manager.bytesTotalCounterName).IncrementBy(receivedBytes);
-#endif
-						}
-						else
-							// stream is closed
+            // timeout
+            case WaitHandle.WaitTimeout:
+              AnswerWithCheck(NntpResponse.TimeOut);
 							return;
-					}
-					while (netStream.DataAvailable);
+            // _manager.ExitEvent
+            case 1 :
+              // terminate session
+              AnswerWithCheck(NntpResponse.ServiceDiscontinued);
+              return;
+            // startEvent
+						case 2 :
+							// complete ssl authentification, if necessary
+              if (sslAuthDone != null)
+                ((SslStream)sslAuthDone.AsyncState).EndAuthenticateAsServer(sslAuthDone);
+
+              // response OK
+              Answer(new Response(_dataProvider.PostingAllowed ?
+                NntpResponse.Ok : NntpResponse.OkNoPosting, null,
+                  string.Format("{0} ({1}; {2})",
+                  _manager.Name, Manager.ServerID, _dataProvider.Identity)));
+
+              // first pass finished
+              firstPass = false;
+              eventsWaitTable = new WaitHandle[] { null, _manager.ExitEvent };
+              continue;
+
+             // data is ready
+            default :
+              int receivedBytes = netStream.EndRead(asyncResult);
+
+              if (receivedBytes  > 0)
+					    {
+						    bufferString.Append(Util.BytesToString(commandBuffer, receivedBytes));
+    #if PERFORMANCE_COUNTERS
+						    _manager.GetPerformanceCounter(Manager.bytesReceivedPerSecCounterName).IncrementBy(receivedBytes);
+						    Manager.GetGlobalPerformanceCounter(Manager.bytesReceivedPerSecCounterName).IncrementBy(receivedBytes);
+						    _manager.GetPerformanceCounter(Manager.bytesReceivedCounterName).IncrementBy(receivedBytes);
+						    Manager.GetGlobalPerformanceCounter(Manager.bytesReceivedCounterName).IncrementBy(receivedBytes);
+						    _manager.GetPerformanceCounter(Manager.bytesTotalPerSecCounterName).IncrementBy(receivedBytes);
+						    Manager.GetGlobalPerformanceCounter(Manager.bytesTotalPerSecCounterName).IncrementBy(receivedBytes);
+						    _manager.GetPerformanceCounter(Manager.bytesTotalCounterName).IncrementBy(receivedBytes);
+						    Manager.GetGlobalPerformanceCounter(Manager.bytesTotalCounterName).IncrementBy(receivedBytes);
+    #endif
+                break;
+					    }
+					    else
+						    // stream is closed
+						    return;
+          }
 
 					switch (sessionState)
 					{
@@ -300,7 +357,7 @@ namespace Rsdn.Nntp
 											postingMessage["Path"] = "not-for-mail";
 										postingMessage["Path"] = FullHostname + "!" + postingMessage["Path"];
 								
-										dataProvider.PostMessage(postingMessage);
+										_dataProvider.PostMessage(postingMessage);
 										result = new Response(sessionState == States.PostWaiting ? NntpResponse.PostedOk : NntpResponse.TransferOk);
 									}
 									catch (MimeFormattingException ex)
@@ -317,11 +374,11 @@ namespace Rsdn.Nntp
 									requestsCounter.Increment();
 									globalRequestsCounter.Increment();
 #endif
-									Commands.Generic nntpCommand = commands[command] as Commands.Generic;
 									// check suppoting command
-									if (nntpCommand != null)
-									{	
-										if (nntpCommand.IsAllowed(sessionState))
+                  if (commands.ContainsKey(command))
+									{
+                    Commands.Generic nntpCommand = commands[command];
+                    if (nntpCommand.IsAllowed(sessionState))
 											result = nntpCommand.Process();
 										else
 										{
@@ -337,11 +394,6 @@ namespace Rsdn.Nntp
 									}
 									break;
 							}
-						}
-						catch (Response.ParamsException exception)
-						{
-							result = new Response(NntpResponse.ProgramFault, null, exception.Message);
-							logger.Error("Parameters are invalid", exception);
 						}
 						catch (DataProviderException exception)
 						{
@@ -375,7 +427,7 @@ namespace Rsdn.Nntp
 									break;
 								case DataProviderErrors.NotSupported:
 									result = new Response(NntpResponse.NotRecognized);
-									logger.Warn(string.Format("{0} provider don't support {1} command.", dataProvider.GetType(), command));
+									logger.Warn(string.Format("{0} provider don't support {1} command.", _dataProvider.GetType(), command));
 									break;
 								case DataProviderErrors.PostingFailed:
 									result = new Response(sessionState == States.TransferWaiting ?
@@ -395,16 +447,18 @@ namespace Rsdn.Nntp
 							}
 							logger.Warn(string.Format("Data Provider Error ({0})", exception.Error), exception);
 						}
+            catch (AuthenticationException authException)
+            {
+              logger.Warn("SSL authentification error", authException);
+              return;
+            }
 						// not good....
 						catch(Exception e)
 						{
-							if (logger.IsErrorEnabled)
-							{
-								logger.Error(
-									string.Format("Exception during processing command" +
-									" (selected group '{0}', last request '{1}').\n",
-									currentGroup, commandString), e);
-							}
+							logger.Error(
+								string.Format("Exception during processing command" +
+								" (selected group '{0}', last request '{1}').\n",
+								currentGroup, commandString), e);
 							result = new Response(NntpResponse.ProgramFault, null, e.Message);
 						}
 						finally
@@ -450,9 +504,10 @@ namespace Rsdn.Nntp
 					}
 				}
 			}
-			catch (IOException)
+			catch (IOException ioException)
 			{
 				// network error
+        logger.Warn("Network error", ioException); 
 			}
 			catch (Exception e)
 			{
@@ -470,11 +525,22 @@ namespace Rsdn.Nntp
 		/// <summary>
 		/// network client
 		/// </summary>
-		protected internal Socket client;
+		protected Socket _client;
+    /// <summary>
+    /// Client's endpoint
+    /// </summary>
+    public EndPoint RemoteEndPoint
+    {
+      get { return _client.RemoteEndPoint;  }
+    }
+    /// <summary>
+    /// Server vertificate using for SSL authentification
+    /// </summary>
+    protected X509Certificate _certificate;
 		/// <summary>
 		/// network stream for client's session
 		/// </summary>
-		protected NetworkStream netStream;
+		protected Stream netStream;
 		/// <summary>
 		/// size of commandBuffer
 		/// </summary>
@@ -531,12 +597,12 @@ namespace Rsdn.Nntp
 		/// <summary>
 		/// Associative arrays of NNTP client commands
 		/// </summary>
-		protected internal Hashtable commands;
+		protected internal IDictionary<string, Generic> commands;
 
-		protected IDataProvider dataProvider;
+		protected IDataProvider _dataProvider;
 		public IDataProvider DataProvider
 		{
-			get {return dataProvider;}
+			get {return _dataProvider;}
 		}
 		/// <summary>
 		/// connection timeout interval in milliseconds (5 min)
@@ -549,15 +615,15 @@ namespace Rsdn.Nntp
 		public void Dispose()
 		{
 			// break circular connection
-			manager = null;
+			_manager = null;
 			// free data provider
-			dataProvider.Dispose();
+			_dataProvider.Dispose();
 
 			netStream.Close();
-			if (client.Connected)
+			if (_client.Connected)
 			{
-				client.Shutdown(SocketShutdown.Both);
-				client.Close();
+				_client.Shutdown(SocketShutdown.Both);
+				_client.Close();
 			}
 			
 			if (Disposed != null)
@@ -566,6 +632,6 @@ namespace Rsdn.Nntp
 
 		public event EventHandler Disposed;
 
-		protected static Hashtable notAllowedStateAnswer;
+		protected static IDictionary<States, Response> notAllowedStateAnswer;
 	}
 }

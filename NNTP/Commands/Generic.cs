@@ -2,7 +2,7 @@ using System;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace Rsdn.Nntp.Commands
 {
@@ -106,7 +106,7 @@ namespace Rsdn.Nntp.Commands
 		protected virtual NewsArticle ModifyArticle(NewsArticle article)
 		{
 			StringBuilder xref = new StringBuilder(Session.Hostname);
-			foreach (DictionaryEntry newsGroupNumber in article.MessageNumbers)
+			foreach (KeyValuePair<string, int> newsGroupNumber in article.MessageNumbers)
 				xref.Append(" ").Append(newsGroupNumber.Key).Append(":").Append(newsGroupNumber.Value);
 			article["Xref"] = xref.ToString();
 			article["X-Server"] = string.Join("; ", new string[]{Manager.ServerID, nntpID, session.DataProvider.Identity});

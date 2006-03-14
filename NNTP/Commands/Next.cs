@@ -39,7 +39,7 @@ namespace Rsdn.Nntp.Commands
 
 			NewsArticle article = session.DataProvider.GetNextArticle(session.currentArticle, session.currentGroup);
 
-			session.currentArticle = (int)article.MessageNumbers[session.currentGroup];
+			session.currentArticle = article.MessageNumbers[session.currentGroup];
 
 			return new Response(NntpResponse.ArticleNothingRetrivied, null,
 				article.MessageNumbers[session.currentGroup], article["Message-ID"]);

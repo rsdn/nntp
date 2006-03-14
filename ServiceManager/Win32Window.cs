@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Drawing;
@@ -14,8 +14,8 @@ namespace Win32Util
 	public class Win32Window
 	{
 		IntPtr window;
-		ArrayList windowList = null;
-		static ArrayList topLevelWindows = null;
+		IList<Win32Window> windowList = null;
+    static IList<Win32Window> topLevelWindows = null;
 
 		/// <summary>
 		/// Create a Win32Window
@@ -49,15 +49,15 @@ namespace Win32Util
 		}
 
 		/// <summary>
-		/// The children of this window, as an ArrayList
+    /// The children of this window, as an List<Win32Window>
 		/// </summary>
-		public ArrayList Children
+    public IList<Win32Window> Children
 		{
 			get
 			{
-				windowList = new ArrayList();
+        windowList = new List<Win32Window>();
 				EnumChildWindows(window, new EnumWindowsProc(EnumerateChildProc), 0);
-				ArrayList children = windowList;
+        IList<Win32Window> children = windowList;
 				windowList = null;
 				return children;
 			}
@@ -72,13 +72,13 @@ namespace Win32Util
 		/// <summary>
 		/// All top level windows 
 		/// </summary>
-		public static ArrayList TopLevelWindows
+    public static IList<Win32Window> TopLevelWindows
 		{
 			get
 			{
-				topLevelWindows = new ArrayList();
+        topLevelWindows = new List<Win32Window>();
 				EnumWindows(new EnumWindowsProc(EnumerateTopLevelProc), 0);
-				ArrayList top = topLevelWindows;
+        IList<Win32Window> top = topLevelWindows;
 				topLevelWindows = null;
 				return top;
 			}
@@ -95,11 +95,11 @@ namespace Win32Util
 		/// </summary>
 		/// <param name="threadId">The thread id</param>
 		/// <returns></returns>
-		public static ArrayList GetThreadWindows(int threadId)
+    public static IList<Win32Window> GetThreadWindows(int threadId)
 		{
-			topLevelWindows = new ArrayList();
+      topLevelWindows = new List<Win32Window>();
 			EnumThreadWindows(threadId, new EnumWindowsProc(EnumerateThreadProc), 0);
-			ArrayList windows = topLevelWindows;
+      IList<Win32Window> windows = topLevelWindows;
 			topLevelWindows = null;
 			return windows;
 		}

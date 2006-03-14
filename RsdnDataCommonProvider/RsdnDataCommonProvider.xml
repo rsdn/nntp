@@ -4,247 +4,70 @@
         <name>RsdnDataCommonProvider</name>
     </assembly>
     <members>
-        <member name="T:Rsdn.RsdnNntp.IArticle">
+        <member name="T:Rsdn.RsdnNntp.FormattingStyle">
             <summary>
-            Generic (common) article interface.
+            MIME message formatting style
             </summary>
         </member>
-        <member name="P:Rsdn.RsdnNntp.IArticle.ID">
+        <member name="F:Rsdn.RsdnNntp.FormattingStyle.UserSettings">
             <summary>
-            Message ID.
+            Get preffered style from user settings at RSDN.RU
             </summary>
         </member>
-        <member name="P:Rsdn.RsdnNntp.IArticle.ParentID">
+        <member name="F:Rsdn.RsdnNntp.FormattingStyle.PlainText">
             <summary>
-            Message's parent ID.
+            Only plain text.
             </summary>
         </member>
-        <member name="P:Rsdn.RsdnNntp.IArticle.Postfix">
+        <member name="F:Rsdn.RsdnNntp.FormattingStyle.Html">
             <summary>
-            Server postfix for generate message's IDs.
+            HTML and plain text.
             </summary>
         </member>
-        <member name="P:Rsdn.RsdnNntp.IArticle.Number">
+        <member name="F:Rsdn.RsdnNntp.FormattingStyle.HtmlInlineImages">
             <summary>
-            Message number in group.
+            HTML with inline images and plain text.
             </summary>
         </member>
-        <member name="P:Rsdn.RsdnNntp.IArticle.Author">
+        <member name="T:Rsdn.RsdnNntp.DataProviderSettings">
             <summary>
-            Author.
+            Settings for RSDN Data Provider
             </summary>
         </member>
-        <member name="P:Rsdn.RsdnNntp.IArticle.AuthorID">
+        <member name="M:Rsdn.RsdnNntp.DataProviderSettings.#ctor">
             <summary>
-            Author ID.
+            Initialize settings.
             </summary>
         </member>
-        <member name="P:Rsdn.RsdnNntp.IArticle.Subject">
+        <member name="F:Rsdn.RsdnNntp.DataProviderSettings.encoding">
             <summary>
-            Message's subject.
+            Output encoding for messages.
             </summary>
         </member>
-        <member name="P:Rsdn.RsdnNntp.IArticle.Date">
+        <member name="F:Rsdn.RsdnNntp.DataProviderSettings.formatting">
             <summary>
-            Message's date.
+            Output format of messages (Text, Html &amp; etc).
             </summary>
         </member>
-        <member name="P:Rsdn.RsdnNntp.IArticle.Message">
+        <member name="P:Rsdn.RsdnNntp.DataProviderSettings.Encoding">
             <summary>
-            Message's text.
+            Output encoding for messages.
             </summary>
         </member>
-        <member name="P:Rsdn.RsdnNntp.IArticle.HomePage">
+        <member name="P:Rsdn.RsdnNntp.DataProviderSettings.GetEncoding">
             <summary>
-            Author's home page.
+            Output encoding for messages.
             </summary>
         </member>
-        <member name="P:Rsdn.RsdnNntp.IArticle.Smile">
+        <member name="P:Rsdn.RsdnNntp.DataProviderSettings.Formatting">
             <summary>
-            Format or not smiles in message.
+            Output format of messages (Text, Html &amp; etc).
             </summary>
         </member>
-        <member name="P:Rsdn.RsdnNntp.IArticle.UserType">
+        <member name="P:Rsdn.RsdnNntp.DataProviderSettings.MaxImagesSize">
             <summary>
-            Author's user type.
+            Maximum size of all attached images, o - no limit.
             </summary>
-        </member>
-        <member name="P:Rsdn.RsdnNntp.IArticle.UserColor">
-            <summary>
-            Author's user color.
-            </summary>
-        </member>
-        <member name="P:Rsdn.RsdnNntp.IArticle.Group">
-            <summary>
-            Message's group name.
-            </summary>
-        </member>
-        <member name="P:Rsdn.RsdnNntp.IArticle.GroupID">
-            <summary>
-            Message's group id.
-            </summary>
-        </member>
-        <member name="T:Rsdn.RsdnNntp.IGroup">
-            <summary>
-            Generic (common) group info.
-            </summary>
-        </member>
-        <member name="P:Rsdn.RsdnNntp.IGroup.Created">
-            <summary>
-            Time, when group was created.
-            </summary>
-        </member>
-        <member name="P:Rsdn.RsdnNntp.IGroup.Name">
-            <summary>
-            Group name.
-            </summary>
-        </member>
-        <member name="P:Rsdn.RsdnNntp.IGroup.FirstArticleNumber">
-            <summary>
-            Number of first article in this group.
-            </summary>
-        </member>
-        <member name="P:Rsdn.RsdnNntp.IGroup.LastArticleNumber">
-            <summary>
-            Number of last article in this group.
-            </summary>
-        </member>
-        <member name="T:Rsdn.RsdnNntp.ImageProcessor">
-            <summary>
-            Image processor
-            </summary>
-        </member>
-        <member name="F:Rsdn.RsdnNntp.ImageProcessor.logger">
-            <summary>
-            Logger 
-            </summary>
-        </member>
-        <member name="F:Rsdn.RsdnNntp.ImageProcessor.proxy">
-            <summary>
-            Web Proxy used to retrieve external resources.
-            </summary>
-        </member>
-        <member name="F:Rsdn.RsdnNntp.ImageProcessor.contentIdPostfix">
-            <summary>
-            Images' Content-ID postfix
-            </summary>
-        </member>
-        <member name="M:Rsdn.RsdnNntp.ImageProcessor.#ctor(System.String,System.Int64,System.Net.IWebProxy)">
-            <summary>
-            Message text formatter used to format nntp messages.
-            </summary>
-            <param name="contentIdPostfix">Generated images' content-id postfix.</param>
-            <param name="maxSize">Maximum size of all attached images, 0 - not limit</param>
-            <param name="proxy">Proxy to retrieve extrenal resources.</param>
-        </member>
-        <member name="M:Rsdn.RsdnNntp.ImageProcessor.GetProcessedImages">
-            <summary>
-            Array of processed during message formatting inline images.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Rsdn.RsdnNntp.ImageProcessor.ClearProcessedImages">
-            <summary>
-            Clear all processed images.
-            </summary>
-        </member>
-        <member name="M:Rsdn.RsdnNntp.ImageProcessor.ProcessImages(Rsdn.Framework.Formatting.TextFormatter,System.Text.RegularExpressions.Match)">
-            <summary>
-            Process image specified through [img] tag.
-            </summary>
-            <param name="formatter">Owning formatter.</param>
-            <param name="image">Iamge tag match.</param>
-            <returns>Processed tag.</returns>
-        </member>
-        <member name="F:Rsdn.RsdnNntp.ImageProcessor.ProcessImagesDelegate">
-            <summary>
-            Delegate to process images.
-            </summary>
-        </member>
-        <member name="P:Rsdn.RsdnNntp.ImageProcessor.ProcessedImagesCount">
-            <summary>
-            Number of processed inline images.
-            </summary>
-        </member>
-        <member name="T:Rsdn.RsdnNntp.IUserInfo">
-            <summary>
-            Generic (common) user info.
-            </summary>
-        </member>
-        <member name="P:Rsdn.RsdnNntp.IUserInfo.ID">
-            <summary>
-            User ID.
-            </summary>
-        </member>
-        <member name="P:Rsdn.RsdnNntp.IUserInfo.Origin">
-            <summary>
-            User's origin.
-            </summary>
-        </member>
-        <member name="P:Rsdn.RsdnNntp.IUserInfo.Name">
-            <summary>
-            User name.
-            </summary>
-        </member>
-        <member name="P:Rsdn.RsdnNntp.IUserInfo.Password">
-            <summary>
-            User password.
-            </summary>
-        </member>
-        <member name="P:Rsdn.RsdnNntp.IUserInfo.MessageFormat">
-            <summary>
-            Preffred user's message format.
-            </summary>
-        </member>
-        <member name="T:Rsdn.RsdnNntp.ReferenceCache">
-            <summary>
-            Cache of messages' references
-            </summary>
-        </member>
-        <member name="M:Rsdn.RsdnNntp.ReferenceCache.#ctor">
-            <summary>
-            Cache, to store message's references.
-            </summary>
-        </member>
-        <member name="M:Rsdn.RsdnNntp.ReferenceCache.AddReference(System.Int32,System.Int32)">
-            <summary>
-            Add message's reference to cache.
-            </summary>
-            <param name="id"></param>
-            <param name="parentId"></param>
-        </member>
-        <member name="M:Rsdn.RsdnNntp.ReferenceCache.RemoveReference(System.Int32)">
-            <summary>
-            Remove message's references from cache.
-            </summary>
-            <param name="id"></param>
-        </member>
-        <member name="M:Rsdn.RsdnNntp.ReferenceCache.GetReferences(System.Int32)">
-            <summary>
-            Get message's references.
-            </summary>
-            <param name="id"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Rsdn.RsdnNntp.ReferenceCache.BuildIdentityList(System.Int32)">
-            <summary>
-            Build/Rebuild message's references tree.
-            </summary>
-            <param name="id"></param>
-        </member>
-        <member name="M:Rsdn.RsdnNntp.ReferenceCache.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
-            <summary>
-            Deserialzation
-            </summary>
-            <param name="info"></param>
-            <param name="context"></param>
-        </member>
-        <member name="M:Rsdn.RsdnNntp.ReferenceCache.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
-            <summary>
-            Serialization
-            </summary>
-            <param name="info"></param>
-            <param name="context"></param>
         </member>
         <member name="T:Rsdn.RsdnNntp.Common.RsdnDataCommonProvider">
             <summary>
@@ -627,69 +450,246 @@
             Posting are allowed or not for this data provider 
             </summary>
         </member>
-        <member name="T:Rsdn.RsdnNntp.FormattingStyle">
+        <member name="T:Rsdn.RsdnNntp.ImageProcessor">
             <summary>
-            MIME message formatting style
+            Image processor
             </summary>
         </member>
-        <member name="F:Rsdn.RsdnNntp.FormattingStyle.UserSettings">
+        <member name="F:Rsdn.RsdnNntp.ImageProcessor.logger">
             <summary>
-            Get preffered style from user settings at RSDN.RU
+            Logger 
             </summary>
         </member>
-        <member name="F:Rsdn.RsdnNntp.FormattingStyle.PlainText">
+        <member name="F:Rsdn.RsdnNntp.ImageProcessor.proxy">
             <summary>
-            Only plain text.
+            Web Proxy used to retrieve external resources.
             </summary>
         </member>
-        <member name="F:Rsdn.RsdnNntp.FormattingStyle.Html">
+        <member name="F:Rsdn.RsdnNntp.ImageProcessor.contentIdPostfix">
             <summary>
-            HTML and plain text.
+            Images' Content-ID postfix
             </summary>
         </member>
-        <member name="F:Rsdn.RsdnNntp.FormattingStyle.HtmlInlineImages">
+        <member name="M:Rsdn.RsdnNntp.ImageProcessor.#ctor(System.String,System.Int64,System.Net.IWebProxy)">
             <summary>
-            HTML with inline images and plain text.
+            Message text formatter used to format nntp messages.
+            </summary>
+            <param name="contentIdPostfix">Generated images' content-id postfix.</param>
+            <param name="maxSize">Maximum size of all attached images, 0 - not limit</param>
+            <param name="proxy">Proxy to retrieve extrenal resources.</param>
+        </member>
+        <member name="M:Rsdn.RsdnNntp.ImageProcessor.GetProcessedImages">
+            <summary>
+            Array of processed during message formatting inline images.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Rsdn.RsdnNntp.ImageProcessor.ClearProcessedImages">
+            <summary>
+            Clear all processed images.
             </summary>
         </member>
-        <member name="T:Rsdn.RsdnNntp.DataProviderSettings">
+        <member name="M:Rsdn.RsdnNntp.ImageProcessor.ProcessImages(Rsdn.Framework.Formatting.TextFormatter,System.Text.RegularExpressions.Match)">
             <summary>
-            Settings for RSDN Data Provider
+            Process image specified through [img] tag.
+            </summary>
+            <param name="formatter">Owning formatter.</param>
+            <param name="image">Iamge tag match.</param>
+            <returns>Processed tag.</returns>
+        </member>
+        <member name="F:Rsdn.RsdnNntp.ImageProcessor.ProcessImagesDelegate">
+            <summary>
+            Delegate to process images.
             </summary>
         </member>
-        <member name="M:Rsdn.RsdnNntp.DataProviderSettings.#ctor">
+        <member name="P:Rsdn.RsdnNntp.ImageProcessor.ProcessedImagesCount">
             <summary>
-            Initialize settings.
+            Number of processed inline images.
             </summary>
         </member>
-        <member name="F:Rsdn.RsdnNntp.DataProviderSettings.encoding">
+        <member name="T:Rsdn.RsdnNntp.IArticle">
             <summary>
-            Output encoding for messages.
+            Generic (common) article interface.
             </summary>
         </member>
-        <member name="F:Rsdn.RsdnNntp.DataProviderSettings.formatting">
+        <member name="P:Rsdn.RsdnNntp.IArticle.ID">
             <summary>
-            Output format of messages (Text, Html &amp; etc).
+            Message ID.
             </summary>
         </member>
-        <member name="P:Rsdn.RsdnNntp.DataProviderSettings.Encoding">
+        <member name="P:Rsdn.RsdnNntp.IArticle.ParentID">
             <summary>
-            Output encoding for messages.
+            Message's parent ID.
             </summary>
         </member>
-        <member name="P:Rsdn.RsdnNntp.DataProviderSettings.GetEncoding">
+        <member name="P:Rsdn.RsdnNntp.IArticle.Postfix">
             <summary>
-            Output encoding for messages.
+            Server postfix for generate message's IDs.
             </summary>
         </member>
-        <member name="P:Rsdn.RsdnNntp.DataProviderSettings.Formatting">
+        <member name="P:Rsdn.RsdnNntp.IArticle.Number">
             <summary>
-            Output format of messages (Text, Html &amp; etc).
+            Message number in group.
             </summary>
         </member>
-        <member name="P:Rsdn.RsdnNntp.DataProviderSettings.MaxImagesSize">
+        <member name="P:Rsdn.RsdnNntp.IArticle.Author">
             <summary>
-            Maximum size of all attached images, o - no limit.
+            Author.
+            </summary>
+        </member>
+        <member name="P:Rsdn.RsdnNntp.IArticle.AuthorID">
+            <summary>
+            Author ID.
+            </summary>
+        </member>
+        <member name="P:Rsdn.RsdnNntp.IArticle.Subject">
+            <summary>
+            Message's subject.
+            </summary>
+        </member>
+        <member name="P:Rsdn.RsdnNntp.IArticle.Date">
+            <summary>
+            Message's date.
+            </summary>
+        </member>
+        <member name="P:Rsdn.RsdnNntp.IArticle.Message">
+            <summary>
+            Message's text.
+            </summary>
+        </member>
+        <member name="P:Rsdn.RsdnNntp.IArticle.HomePage">
+            <summary>
+            Author's home page.
+            </summary>
+        </member>
+        <member name="P:Rsdn.RsdnNntp.IArticle.Smile">
+            <summary>
+            Format or not smiles in message.
+            </summary>
+        </member>
+        <member name="P:Rsdn.RsdnNntp.IArticle.UserType">
+            <summary>
+            Author's user type.
+            </summary>
+        </member>
+        <member name="P:Rsdn.RsdnNntp.IArticle.UserColor">
+            <summary>
+            Author's user color.
+            </summary>
+        </member>
+        <member name="P:Rsdn.RsdnNntp.IArticle.Group">
+            <summary>
+            Message's group name.
+            </summary>
+        </member>
+        <member name="P:Rsdn.RsdnNntp.IArticle.GroupID">
+            <summary>
+            Message's group id.
+            </summary>
+        </member>
+        <member name="T:Rsdn.RsdnNntp.ReferenceCache">
+            <summary>
+            Cache of messages' references
+            </summary>
+        </member>
+        <member name="M:Rsdn.RsdnNntp.ReferenceCache.#ctor">
+            <summary>
+            Cache, to store message's references.
+            </summary>
+        </member>
+        <member name="M:Rsdn.RsdnNntp.ReferenceCache.AddReference(System.Int32,System.Int32)">
+            <summary>
+            Add message's reference to cache.
+            </summary>
+            <param name="id"></param>
+            <param name="parentId"></param>
+        </member>
+        <member name="M:Rsdn.RsdnNntp.ReferenceCache.RemoveReference(System.Int32)">
+            <summary>
+            Remove message's references from cache.
+            </summary>
+            <param name="id"></param>
+        </member>
+        <member name="M:Rsdn.RsdnNntp.ReferenceCache.GetReferences(System.Int32)">
+            <summary>
+            Get message's references.
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Rsdn.RsdnNntp.ReferenceCache.BuildIdentityList(System.Int32)">
+            <summary>
+            Build/Rebuild message's references tree.
+            </summary>
+            <param name="id"></param>
+        </member>
+        <member name="M:Rsdn.RsdnNntp.ReferenceCache.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Deserialzation
+            </summary>
+            <param name="info"></param>
+            <param name="context"></param>
+        </member>
+        <member name="M:Rsdn.RsdnNntp.ReferenceCache.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Serialization
+            </summary>
+            <param name="info"></param>
+            <param name="context"></param>
+        </member>
+        <member name="T:Rsdn.RsdnNntp.IGroup">
+            <summary>
+            Generic (common) group info.
+            </summary>
+        </member>
+        <member name="P:Rsdn.RsdnNntp.IGroup.Created">
+            <summary>
+            Time, when group was created.
+            </summary>
+        </member>
+        <member name="P:Rsdn.RsdnNntp.IGroup.Name">
+            <summary>
+            Group name.
+            </summary>
+        </member>
+        <member name="P:Rsdn.RsdnNntp.IGroup.FirstArticleNumber">
+            <summary>
+            Number of first article in this group.
+            </summary>
+        </member>
+        <member name="P:Rsdn.RsdnNntp.IGroup.LastArticleNumber">
+            <summary>
+            Number of last article in this group.
+            </summary>
+        </member>
+        <member name="T:Rsdn.RsdnNntp.IUserInfo">
+            <summary>
+            Generic (common) user info.
+            </summary>
+        </member>
+        <member name="P:Rsdn.RsdnNntp.IUserInfo.ID">
+            <summary>
+            User ID.
+            </summary>
+        </member>
+        <member name="P:Rsdn.RsdnNntp.IUserInfo.Origin">
+            <summary>
+            User's origin.
+            </summary>
+        </member>
+        <member name="P:Rsdn.RsdnNntp.IUserInfo.Name">
+            <summary>
+            User name.
+            </summary>
+        </member>
+        <member name="P:Rsdn.RsdnNntp.IUserInfo.Password">
+            <summary>
+            User password.
+            </summary>
+        </member>
+        <member name="P:Rsdn.RsdnNntp.IUserInfo.MessageFormat">
+            <summary>
+            Preffred user's message format.
             </summary>
         </member>
     </members>

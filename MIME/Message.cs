@@ -1,7 +1,7 @@
 using System;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 
@@ -84,7 +84,7 @@ namespace Rsdn.Mime
 		public Message(bool useDefaultHeaders)
 		{
 			// initialize entities array
-			entities = new ArrayList();
+			entities = new List<object>();
 
 			// initialize header and internal filters for it
 			header = new Header();
@@ -105,11 +105,12 @@ namespace Rsdn.Mime
 		/// <summary>
 		/// Message's entities
 		/// </summary>
-		protected ArrayList entities;
+		protected IList<object> entities;
+
 		/// <summary>
 		/// Message's entities
 		/// </summary>
-		public ArrayList Entities
+    public IList<object> Entities
 		{
 			get {return entities;}
 		}

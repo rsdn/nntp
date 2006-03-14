@@ -4,105 +4,10 @@
         <name>Rsdn.Framework.Common</name>
     </assembly>
     <members>
-        <member name="T:Rsdn.Framework.Common.IRsdnObject">
+        <member name="T:Rsdn.Framework.Common.ConfigManagerException">
             <summary>
-            Common RSDN interface.
+            Configuration manager exception class.
             </summary>
-        </member>
-        <member name="T:Rsdn.Framework.Common.RsdnObject">
-            <summary>
-            The base class for simple objects.
-            </summary>
-        </member>
-        <member name="T:Rsdn.Framework.Common.RsdnDisposableObject">
-            <summary>
-            The base class for simple disposable objects.
-            </summary>
-        </member>
-        <member name="T:Rsdn.Framework.Common.DisposableObject">
-            <summary>
-            Base class for classes that need to be disposed.
-            </summary>
-        </member>
-        <member name="M:Rsdn.Framework.Common.DisposableObject.Finalize">
-            <summary>
-            Clean up all resources.
-            </summary>
-        </member>
-        <member name="M:Rsdn.Framework.Common.DisposableObject.Dispose">
-            <summary>
-            Clean up all resources and delete object from the finalization queue.
-            </summary>
-        </member>
-        <member name="M:Rsdn.Framework.Common.DisposableObject.Close">
-            <summary>
-            Synonym of the Dispose method.
-            </summary>
-        </member>
-        <member name="M:Rsdn.Framework.Common.DisposableObject.Reopen">
-            <summary>
-            Must be called if object reopen any resources to return the object in the finalization queue.
-            </summary>
-        </member>
-        <member name="M:Rsdn.Framework.Common.DisposableObject.Dispose(System.Boolean)">
-            <summary>
-            Can be overridden in child classes.
-            </summary>
-            <param name="disposing">Equal 'true' if is called from Dispose method, otherwise from destructor</param>
-        </member>
-        <member name="M:Rsdn.Framework.Common.DisposableObject.DisposeFields(System.Object)">
-            <summary>
-            Scans all fields of the object and call DisposeObject method if it's needed.
-            This method can be used outside of the class.
-            </summary>
-            <param name="obj">Disposing object.</param>
-        </member>
-        <member name="M:Rsdn.Framework.Common.DisposableObject.DisposeObject(System.Object)">
-            <summary>
-            Disposes a member in appropriate way.
-            </summary>
-            <param name="member">Disposing member.</param>
-        </member>
-        <member name="T:Rsdn.Framework.Common.RsdnMbrObject">
-            <summary>
-            The base class for MBR objects.
-            </summary>
-        </member>
-        <member name="T:Rsdn.Framework.Common.RsdnDisposableMbrObject">
-            <summary>
-            The base class for MBR disposable objects.
-            </summary>
-        </member>
-        <member name="T:Rsdn.Framework.Common.DisposableMbrObject">
-            <summary>
-            Base class for MBR classes that need to be disposed.
-            </summary>
-        </member>
-        <member name="M:Rsdn.Framework.Common.DisposableMbrObject.Finalize">
-            <summary>
-            Clean up all resources.
-            </summary>
-        </member>
-        <member name="M:Rsdn.Framework.Common.DisposableMbrObject.Dispose">
-            <summary>
-            Clean up all resources and delete object from the finalization queue.
-            </summary>
-        </member>
-        <member name="M:Rsdn.Framework.Common.DisposableMbrObject.Close">
-            <summary>
-            Synonym of the Dispose method.
-            </summary>
-        </member>
-        <member name="M:Rsdn.Framework.Common.DisposableMbrObject.Reopen">
-            <summary>
-            Must be called if object reopen any resources to return the object in the finalization queue.
-            </summary>
-        </member>
-        <member name="M:Rsdn.Framework.Common.DisposableMbrObject.Dispose(System.Boolean)">
-            <summary>
-            Can be overridden in child classes.
-            </summary>
-            <param name="disposing">Equal 'true' if is called from Dispose method, otherwise from destructor</param>
         </member>
         <member name="T:Rsdn.Framework.Common.RsdnException">
             <summary>
@@ -163,10 +68,40 @@
             RSDN specific error codes.
             </summary>
         </member>
+        <member name="M:Rsdn.Framework.Common.ConfigManagerException.#ctor">
+            <summary>
+            Initializes a new instance of the ConfigManagerException class.
+            </summary>
+        </member>
+        <member name="M:Rsdn.Framework.Common.ConfigManagerException.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the ConfigManagerException class 
+            with the specified error message.
+            </summary>
+            <param name="message">The message to display to the client when the exception is thrown.</param>
+        </member>
+        <member name="M:Rsdn.Framework.Common.ConfigManagerException.#ctor(System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the ConfigManagerException class 
+            with the specified error message and InnerException property.
+            </summary>
+            <param name="message">The message to display to the client when the exception is thrown.</param>
+            <param name="innerException">The InnerException, if any, that threw the current exception.</param>
+        </member>
         <member name="T:Rsdn.Framework.Common.ConfigManager">
             <summary>
             Provides access to configuration settings.
             This class cannot be inherited.
+            </summary>
+        </member>
+        <member name="T:Rsdn.Framework.Common.RsdnMbrObject">
+            <summary>
+            The base class for MBR objects.
+            </summary>
+        </member>
+        <member name="T:Rsdn.Framework.Common.IRsdnObject">
+            <summary>
+            Common RSDN interface.
             </summary>
         </member>
         <member name="M:Rsdn.Framework.Common.ConfigManager.#ctor">
@@ -227,36 +162,6 @@
             <param name="key">Name of the key.</param>
             <param name="defaultValue">Default value.</param>
             <returns>Result value.</returns>
-        </member>
-        <member name="T:Rsdn.Framework.Common.ConfigManagerException">
-            <summary>
-            Configuration manager exception class.
-            </summary>
-        </member>
-        <member name="M:Rsdn.Framework.Common.ConfigManagerException.#ctor">
-            <summary>
-            Initializes a new instance of the ConfigManagerException class.
-            </summary>
-        </member>
-        <member name="M:Rsdn.Framework.Common.ConfigManagerException.#ctor(System.String)">
-            <summary>
-            Initializes a new instance of the ConfigManagerException class 
-            with the specified error message.
-            </summary>
-            <param name="message">The message to display to the client when the exception is thrown.</param>
-        </member>
-        <member name="M:Rsdn.Framework.Common.ConfigManagerException.#ctor(System.String,System.Exception)">
-            <summary>
-            Initializes a new instance of the ConfigManagerException class 
-            with the specified error message and InnerException property.
-            </summary>
-            <param name="message">The message to display to the client when the exception is thrown.</param>
-            <param name="innerException">The InnerException, if any, that threw the current exception.</param>
-        </member>
-        <member name="T:Rsdn.Framework.Common.UsingAttribute">
-            <summary>
-            Is applied to any members that should be disposed automatically. 
-            </summary>
         </member>
         <member name="T:Rsdn.Framework.Common.Utils">
             <summary>
@@ -338,6 +243,101 @@
             <param name="username">Username</param>
             <param name="password">Password</param>
             <returns>Hash of password</returns>
+        </member>
+        <member name="T:Rsdn.Framework.Common.RsdnObject">
+            <summary>
+            The base class for simple objects.
+            </summary>
+        </member>
+        <member name="T:Rsdn.Framework.Common.RsdnDisposableObject">
+            <summary>
+            The base class for simple disposable objects.
+            </summary>
+        </member>
+        <member name="T:Rsdn.Framework.Common.DisposableObject">
+            <summary>
+            Base class for classes that need to be disposed.
+            </summary>
+        </member>
+        <member name="M:Rsdn.Framework.Common.DisposableObject.Finalize">
+            <summary>
+            Clean up all resources.
+            </summary>
+        </member>
+        <member name="M:Rsdn.Framework.Common.DisposableObject.Dispose">
+            <summary>
+            Clean up all resources and delete object from the finalization queue.
+            </summary>
+        </member>
+        <member name="M:Rsdn.Framework.Common.DisposableObject.Close">
+            <summary>
+            Synonym of the Dispose method.
+            </summary>
+        </member>
+        <member name="M:Rsdn.Framework.Common.DisposableObject.Reopen">
+            <summary>
+            Must be called if object reopen any resources to return the object in the finalization queue.
+            </summary>
+        </member>
+        <member name="M:Rsdn.Framework.Common.DisposableObject.Dispose(System.Boolean)">
+            <summary>
+            Can be overridden in child classes.
+            </summary>
+            <param name="disposing">Equal 'true' if is called from Dispose method, otherwise from destructor</param>
+        </member>
+        <member name="M:Rsdn.Framework.Common.DisposableObject.DisposeFields(System.Object)">
+            <summary>
+            Scans all fields of the object and call DisposeObject method if it's needed.
+            This method can be used outside of the class.
+            </summary>
+            <param name="obj">Disposing object.</param>
+        </member>
+        <member name="M:Rsdn.Framework.Common.DisposableObject.DisposeObject(System.Object)">
+            <summary>
+            Disposes a member in appropriate way.
+            </summary>
+            <param name="member">Disposing member.</param>
+        </member>
+        <member name="T:Rsdn.Framework.Common.RsdnDisposableMbrObject">
+            <summary>
+            The base class for MBR disposable objects.
+            </summary>
+        </member>
+        <member name="T:Rsdn.Framework.Common.DisposableMbrObject">
+            <summary>
+            Base class for MBR classes that need to be disposed.
+            </summary>
+        </member>
+        <member name="M:Rsdn.Framework.Common.DisposableMbrObject.Finalize">
+            <summary>
+            Clean up all resources.
+            </summary>
+        </member>
+        <member name="M:Rsdn.Framework.Common.DisposableMbrObject.Dispose">
+            <summary>
+            Clean up all resources and delete object from the finalization queue.
+            </summary>
+        </member>
+        <member name="M:Rsdn.Framework.Common.DisposableMbrObject.Close">
+            <summary>
+            Synonym of the Dispose method.
+            </summary>
+        </member>
+        <member name="M:Rsdn.Framework.Common.DisposableMbrObject.Reopen">
+            <summary>
+            Must be called if object reopen any resources to return the object in the finalization queue.
+            </summary>
+        </member>
+        <member name="M:Rsdn.Framework.Common.DisposableMbrObject.Dispose(System.Boolean)">
+            <summary>
+            Can be overridden in child classes.
+            </summary>
+            <param name="disposing">Equal 'true' if is called from Dispose method, otherwise from destructor</param>
+        </member>
+        <member name="T:Rsdn.Framework.Common.UsingAttribute">
+            <summary>
+            Is applied to any members that should be disposed automatically. 
+            </summary>
         </member>
     </members>
 </doc>

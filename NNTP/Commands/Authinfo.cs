@@ -61,14 +61,14 @@ namespace Rsdn.Nntp.Commands
 					case Session.States.MoreAuthRequired	:
 						session.Password	=	lastMatch.Groups["param"].Value;
 						if (session.DataProvider.Authentificate(session.Username, session.Password,
-									((IPEndPoint)session.client.RemoteEndPoint).Address))
+									((IPEndPoint)session.RemoteEndPoint).Address))
 						{
 							session.sessionState = Session.States.Normal;
 							result = new Response(NntpResponse.AuthentificationAccepted);
-							string remoteHost = ((IPEndPoint)session.client.RemoteEndPoint).Address.ToString();
+							string remoteHost = ((IPEndPoint)session.RemoteEndPoint).Address.ToString();
 							try
 							{
-								remoteHost = Dns.GetHostByAddress(remoteHost).HostName;
+								remoteHost = Dns.GetHostEntry(remoteHost).HostName;
 							}
 							catch (SocketException) {}
 							session.sender = session.Username + "@" + remoteHost;

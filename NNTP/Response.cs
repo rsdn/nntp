@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -71,7 +71,7 @@ namespace Rsdn.Nntp
 		// Init NNTP Server's answer array
 		static Response()
 		{
-			answers = new Hashtable();
+			answers = new Dictionary<int, string>();
 			answers[100] = "help text follows";
 			answers[111] = "{0}";
 			answers[200] = "{0} -- posting allowed";
@@ -141,7 +141,7 @@ namespace Rsdn.Nntp
 		/// <summary>
 		/// Associative arrays of NNTP server answers
 		/// </summary>
-		static protected Hashtable answers;
+		static protected IDictionary<int, string> answers;
 		/// <summary>
 		/// response code
 		/// </summary>
@@ -182,7 +182,9 @@ namespace Rsdn.Nntp
 			{
 				StringBuilder result = new StringBuilder(Util.LineLength);
 				result.Append(code).Append(" ")
-					.AppendFormat(description != null ? description : answers[code] as string, parameters).Append(Util.CRLF);
+					.AppendFormat(description != null ? description :
+          answers.ContainsKey(code) ? answers[code] : string.Empty, parameters)
+          .Append(Util.CRLF);
 				if (reponsesBody != null)
 					result.Append(ModifyTextResponse(reponsesBody.ToString()));
 				return result.ToString();

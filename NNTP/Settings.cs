@@ -1,9 +1,11 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
+using System.Threading;
+using Rsdn.Nntp.Editor;
 
 namespace Rsdn.Nntp
 {
@@ -147,7 +149,7 @@ namespace Rsdn.Nntp
 		/// <returns></returns>
 		public static NntpSettings Deseriazlize(string filename)
 		{
-			ArrayList dataProviderTypes = new ArrayList();
+      List<Type> dataProviderTypes = new List<Type>();
 			
 			XmlDocument doc = new XmlDocument();
 			doc.Load(filename);
@@ -160,7 +162,7 @@ namespace Rsdn.Nntp
 			
 			// Deserialize settings with known types of data provider's config objects
 			XmlSerializer serializer = new XmlSerializer(typeof(NntpSettings), null,
-				(Type[])dataProviderTypes.ToArray(typeof(Type)), new XmlRootAttribute("Settings"), null);
+				dataProviderTypes.ToArray(), new XmlRootAttribute("Settings"), null);
 			
 			XmlReader fileReader = new XmlNodeReader(doc);
 
@@ -175,19 +177,19 @@ namespace Rsdn.Nntp
 		/// Thread Pool's size
 		/// </summary>
 		[DefaultValue(25)]
-		public uint ThreadPoolSize
+		public int ThreadPoolSize
 		{
 			get
 			{
 				int workerThreads, competitionPortThreads;
-				System.Threading.ThreadPool.GetMaxThreads(out workerThreads, out competitionPortThreads);
-				return (uint)workerThreads;
+				ThreadPool.GetMaxThreads(out workerThreads, out competitionPortThreads);
+				return workerThreads;
 			}
 			set
 			{
 				int workerThreads, competitionPortThreads;
-				System.Threading.ThreadPool.GetMaxThreads(out workerThreads, out competitionPortThreads);
-				CLRThreadPool.Controller.SetMaxThreads(value, (uint)competitionPortThreads);
+				ThreadPool.GetMaxThreads(out workerThreads, out competitionPortThreads);
+				ThreadPool.SetMaxThreads(value, competitionPortThreads);
 			}
 		}
 	}	

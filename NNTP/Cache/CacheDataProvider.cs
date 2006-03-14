@@ -1,8 +1,7 @@
 using System;
 using System.Web;
 using System.Web.Caching;
-using AspCaching = System.Web.Caching;
-using System.Collections;
+using System.Collections.Generic;
 using System.Net;
 
 using Rsdn.Nntp;
@@ -22,7 +21,7 @@ namespace Rsdn.Nntp.Cache
 		/// <summary>
 		/// Cache storage object.
 		/// </summary>
-		protected static AspCaching.Cache cache = HttpRuntime.Cache;
+    protected static System.Web.Caching.Cache cache = HttpRuntime.Cache;
 
 		/// <summary>
 		/// Check if current content of article is suitable for need content.
@@ -91,13 +90,13 @@ namespace Rsdn.Nntp.Cache
 		{
 			cache.Add(article.MessageID + cacheSalt, article, null,
 				settings.AbsoluteExpiration == TimeSpan.Zero ?
-					AspCaching.Cache.NoAbsoluteExpiration : DateTime.Now.Add(settings.AbsoluteExpiration),
+          System.Web.Caching.Cache.NoAbsoluteExpiration : DateTime.Now.Add(settings.AbsoluteExpiration),
 				settings.SlidingExpiration, CacheItemPriority.AboveNormal, null);
 			CacheDependency dependecy =
 				new CacheDependency(null, new string[]{article.MessageID + cacheSalt});
-			foreach (DictionaryEntry entry in article.MessageNumbers)
+			foreach (KeyValuePair<string, int> entry in article.MessageNumbers)
 			{
-				cache.Insert(entry.Key.ToString() + entry.Value.ToString() + cacheSalt,
+				cache.Insert(entry.Key + entry.Value.ToString() + cacheSalt,
 					article, dependecy);
 			}
 		}

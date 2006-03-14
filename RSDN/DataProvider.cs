@@ -9,7 +9,7 @@ using Plumbwork.Orange.Compression;
 using Rsdn.Framework.Common;
 using Rsdn.Nntp;
 using Rsdn.RsdnNntp.Common;
-using Rsdn.RsdnNntp.RsdnService;
+using Rsdn.RsdnNntp.Public.RsdnService;
 
 namespace Rsdn.RsdnNntp.Public
 {
@@ -297,14 +297,17 @@ namespace Rsdn.RsdnNntp.Public
 				// set proxy if necessary
 				switch (rsdnSettings.ProxyType)
 				{
-					case ProxyType.Default : 
-						webService.Proxy = WebProxy.GetDefaultProxy();
-						webService.Proxy.Credentials = CredentialCache.DefaultCredentials;
-						break;
+					case ProxyType.Default :
+            webService.Proxy = WebRequest.DefaultWebProxy;
+            webService.Proxy.Credentials = CredentialCache.DefaultCredentials;
+            break;
 					case ProxyType.Explicit :
 						webService.Proxy = rsdnSettings.Proxy;
 						break;
-					default:
+          case ProxyType.None:
+            webService.Proxy = null;
+            break;
+          default:
 						break;
 				}
 

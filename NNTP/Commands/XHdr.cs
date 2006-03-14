@@ -74,7 +74,8 @@ namespace Rsdn.Nntp.Commands
 				foreach (NewsArticle article in articleList)
 					if (article[header] != null)
 					{
-						output.Append(lastMatch.Groups["messageID"].Success ? article.MessageID : article.MessageNumbers[session.currentGroup]);
+						output.Append(lastMatch.Groups["messageID"].Success ?
+              article.MessageID : article.MessageNumbers[session.currentGroup].ToString());
 						output.Append(' ').Append(Header.Unfold(article.EncodedHeader(header))).Append(Util.CRLF);
 					}
 				return new Response(NntpResponse.ArticleHeadRetrivied, output.ToString(), null, null);

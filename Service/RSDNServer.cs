@@ -96,7 +96,7 @@ namespace Rsdn.RsdnNntp
 					Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
 
 				nntpManager = new Manager(
-					NntpSettings.Deseriazlize(ConfigurationSettings.AppSettings["settings.ConfigFile"]));
+					NntpSettings.Deseriazlize(ConfigurationManager.AppSettings["settings.ConfigFile"]));
 				nntpManager.Start();
 			}
 			catch (Exception e)

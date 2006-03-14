@@ -1,6 +1,5 @@
 using System;
-using System.Collections;
-using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -22,21 +21,21 @@ namespace Rsdn.Nntp
 			StringBuilder newsGroupsHeader = new StringBuilder();
 			MessageID = messageID;
 
-			this.messageNumbers = CollectionsUtil.CreateCaseInsensitiveHashtable(newsGroups.Length);
+			_messageNumbers = new Dictionary<string, int>(newsGroups.Length);
 			for (int i = 0; i < newsGroups.Length; i++)
 			{
 				newsGroupsHeader.Append(newsGroups[i]).Append(" ");
-				this.messageNumbers[newsGroups[i]] = messageNumbers[i];
+				_messageNumbers[newsGroups[i]] = messageNumbers[i];
 			}
 			
 			this["Newsgroups"] = newsGroupsHeader.ToString();
 			Contents = content;
 		}
 
-		protected	Hashtable messageNumbers;
-		public Hashtable MessageNumbers
+		protected	IDictionary<string, int> _messageNumbers;
+    public IDictionary<string, int> MessageNumbers
 		{
-			get { return messageNumbers; }
+			get { return _messageNumbers; }
 		}
 
 		public enum Content {None, Header, Body, HeaderAndBody }

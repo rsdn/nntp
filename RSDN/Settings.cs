@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Xml.Serialization;
@@ -8,6 +7,7 @@ using System.Net;
 using Rsdn.Nntp;
 using Rsdn.Nntp.Cache;
 using Rsdn.RsdnNntp.Public;
+using Rsdn.RsdnNntp.Public.Editor;
 
 namespace Rsdn.RsdnNntp.Public
 {

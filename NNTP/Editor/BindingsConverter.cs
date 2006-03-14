@@ -2,7 +2,7 @@ using System;
 using System.ComponentModel;
 using System.Text;
 
-namespace Rsdn.Nntp
+namespace Rsdn.Nntp.Editor
 {
 	/// <summary>
 	/// Converter for array of ServerEndPoint class instances (server bindings).

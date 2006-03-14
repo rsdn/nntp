@@ -2,19 +2,17 @@ using System;
 using System.Drawing.Design;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
+using System.Net;
 
-namespace Rsdn.Nntp
+namespace Rsdn.RsdnNntp.Public.Editor
 {
 	/// <summary>
 	/// 
 	/// </summary>
-	public class TypeEditor : UITypeEditor
+	public class ProxyEditor : UITypeEditor
 	{
-		public TypeEditor()
+		public ProxyEditor()
 		{
-			// 
-			// TODO: Add constructor logic here
-			//
 		}
 
 		public override UITypeEditorEditStyle GetEditStyle(System.ComponentModel.ITypeDescriptorContext context)
@@ -30,10 +28,10 @@ namespace Rsdn.Nntp
 			if (service == null)
 				return null;
 			
-			TypeEditorForm editorForm = new TypeEditorForm(value as Type, typeof(IDataProvider));
-			if (service.ShowDialog(editorForm) == DialogResult.OK)
+			ProxyEditorForm proxyEditor = new ProxyEditorForm(value as WebProxy);
+			if (service.ShowDialog(proxyEditor) == DialogResult.OK)
 			{
-				return editorForm.SelectedType;
+				return proxyEditor.Proxy;
 			}
 			else
 				return value;

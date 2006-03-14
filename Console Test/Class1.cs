@@ -23,7 +23,7 @@ namespace ForumTest
 			try
 			{
         NntpSettings serverSettings =
-					NntpSettings.Deseriazlize(ConfigurationSettings.AppSettings["settings.ConfigFile"]);
+					NntpSettings.Deseriazlize(ConfigurationManager.AppSettings["settings.ConfigFile"]);
 
 				Manager nntpManager = new Manager(serverSettings);
 				nntpManager.Start();

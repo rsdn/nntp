@@ -7,9 +7,9 @@ namespace Rsdn.RsdnNntp.Public
 	/// </summary>
 	public class UserInfo : IUserInfo
 	{
-		protected Rsdn.RsdnNntp.RsdnService.UserInfo serviceUserInfo;
+		protected Rsdn.RsdnNntp.Public.RsdnService.UserInfo serviceUserInfo;
 
-		public UserInfo(Rsdn.RsdnNntp.RsdnService.UserInfo serviceUserInfo)
+		public UserInfo(Rsdn.RsdnNntp.Public.RsdnService.UserInfo serviceUserInfo)
 		{
 			this.serviceUserInfo = serviceUserInfo;
 		}
@@ -38,10 +38,10 @@ namespace Rsdn.RsdnNntp.Public
 			{
 				switch (serviceUserInfo.MessageFormat)
 				{
-					case Rsdn.RsdnNntp.RsdnService.MessageFormat.Text :
+					case Rsdn.RsdnNntp.Public.RsdnService.MessageFormat.Text :
 						return FormattingStyle.PlainText;
-					case Rsdn.RsdnNntp.RsdnService.MessageFormat.Html :
-					case Rsdn.RsdnNntp.RsdnService.MessageFormat.TextHtml :
+                    case Rsdn.RsdnNntp.Public.RsdnService.MessageFormat.Html:
+                    case Rsdn.RsdnNntp.Public.RsdnService.MessageFormat.TextHtml:
 					default :
 						return FormattingStyle.Html;
 				}

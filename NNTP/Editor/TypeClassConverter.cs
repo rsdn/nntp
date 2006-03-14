@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel;
 
-namespace Rsdn.Nntp
+namespace Rsdn.Nntp.Editor
 {
 	/// <summary>
 	/// Summary description for TypeConverter.
@@ -16,7 +16,7 @@ namespace Rsdn.Nntp
 		{
 			if (destinationType == typeof(string))
 			{
-				return ((Type)value).AssemblyQualifiedName;
+        return (value == null) ? null : ((Type)value).AssemblyQualifiedName;
 			}
 			else
 				return base.ConvertTo(context, culture, value, destinationType);

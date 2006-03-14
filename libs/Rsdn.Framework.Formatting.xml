@@ -4,61 +4,6 @@
         <name>Rsdn.Framework.Formatting</name>
     </assembly>
     <members>
-        <member name="T:Rsdn.Framework.Formatting.CodeFormatter">
-            <summary>
-            Класс, для раскраски исходников
-            Загружает правила раскраски из xml-файла
-            </summary>
-        </member>
-        <member name="F:Rsdn.Framework.Formatting.CodeFormatter.xmlSchemas">
-            <summary>
-            Source XML validating schemas (XSD)
-            </summary>
-        </member>
-        <member name="F:Rsdn.Framework.Formatting.CodeFormatter.colorerRegex">
-            <summary>
-            Регулярное выражение, используемое при расераске.
-            Получается после преобразования исходных данных.
-            </summary>
-        </member>
-        <member name="F:Rsdn.Framework.Formatting.CodeFormatter.groupNames">
-            <summary>
-            Массив имен именованых групп в регулярном выражении
-            Используется при поиске имени группы по ее номеру
-            </summary>
-        </member>
-        <member name="F:Rsdn.Framework.Formatting.CodeFormatter.countGroups">
-            <summary>
-            Число групп в регулярном выражении
-            </summary>
-        </member>
-        <member name="M:Rsdn.Framework.Formatting.CodeFormatter.#ctor(System.IO.Stream)">
-            <summary>
-            Создание экземпляра раскрасивальщика.
-            </summary>
-            <param name="xmlSource">Исходный xml-поток</param>
-        </member>
-        <member name="M:Rsdn.Framework.Formatting.CodeFormatter.#ctor(System.IO.Stream,System.Text.RegularExpressions.RegexOptions)">
-            <summary>
-            Создание экземпляра раскрасивальщика с дополнительными опциями для регулярного выражения.
-            </summary>
-            <param name="xmlSource">Исходный xml-поток</param>
-            <param name="options">Regex опции</param>
-        </member>
-        <member name="M:Rsdn.Framework.Formatting.CodeFormatter.Transform(System.String)">
-            <summary>
-            Преобразование текста раскрасивальщиком
-            </summary>
-            <param name="sourceText">Исходный текст</param>
-            <returns>Преобразованный текст</returns>
-        </member>
-        <member name="M:Rsdn.Framework.Formatting.CodeFormatter.ReplaceEvaluator(System.Text.RegularExpressions.Match)">
-            <summary>
-            Функция обработки найденного выражения во время трансформации
-            </summary>
-            <param name="match">Соответсвие</param>
-            <returns>Обработанное соответсвие</returns>
-        </member>
         <member name="T:Rsdn.Framework.Formatting.Format">
             <summary>
             Инкапсулирует функции форматирования.
@@ -296,79 +241,6 @@
             <param name="nick">Автор ссобщения.</param>
             <param name="moderator">== true, если пользователь - модератор.</param>
             <returns>Обработанное сообщение</returns>
-        </member>
-        <member name="T:Rsdn.Framework.Formatting.Matcher">
-            <summary>
-            Helper class for counting of matches.
-            </summary>
-        </member>
-        <member name="M:Rsdn.Framework.Formatting.Matcher.#ctor(System.String)">
-            <summary>
-            Class constructor
-            </summary>
-            <param name="pattern">Match replacement pattern</param>
-        </member>
-        <member name="M:Rsdn.Framework.Formatting.Matcher.Match(System.Text.RegularExpressions.Match)">
-            <summary>
-            Match evaluator
-            </summary>
-            <param name="match">Match</param>
-            <returns>Replacement string</returns>
-        </member>
-        <member name="M:Rsdn.Framework.Formatting.Matcher.Reset">
-            <summary>
-            Reset evaluator
-            </summary>
-        </member>
-        <member name="P:Rsdn.Framework.Formatting.Matcher.Count">
-            <summary>
-            Get count of matches
-            </summary>
-        </member>
-        <member name="P:Rsdn.Framework.Formatting.Matcher.Item(System.Int32)">
-            <summary>
-            Get evaluated match by number
-            </summary>
-        </member>
-        <member name="T:Rsdn.Framework.Formatting.QueryBuilder">
-            <summary>
-            Summary description for QueryBuilder.
-            </summary>
-        </member>
-        <member name="M:Rsdn.Framework.Formatting.QueryBuilder.#ctor">
-            <summary>
-            Construct <see cref="T:Rsdn.Framework.Formatting.QueryBuilder"/> object.
-            </summary>
-        </member>
-        <member name="M:Rsdn.Framework.Formatting.QueryBuilder.#ctor(System.String)">
-            <summary>
-            Construct <see cref="T:Rsdn.Framework.Formatting.QueryBuilder"/> object.
-            </summary>
-            <param name="queryString">Query string to parse.
-            May or may not start with '?' question symbol.</param>
-        </member>
-        <member name="M:Rsdn.Framework.Formatting.QueryBuilder.#ctor(System.String,System.Text.Encoding)">
-            <summary>
-            Construct <see cref="T:Rsdn.Framework.Formatting.QueryBuilder"/> object.
-            </summary>
-            <param name="queryString">Query string to parse.
-            May or may not start with '?' question symbol.</param>
-            <param name="encoding">Encoding to encode non-ascii symbols.</param>
-        </member>
-        <member name="M:Rsdn.Framework.Formatting.QueryBuilder.ToString">
-            <summary>
-            Convert to query string.
-            </summary>
-            <returns>String presentation of query parameters.</returns>
-        </member>
-        <member name="M:Rsdn.Framework.Formatting.QueryBuilder.ToString(System.Boolean)">
-            <summary>
-            Convert to query string.
-            </summary>
-            <param name="withQuestionMark">
-            Include or not question mark in beginning of string presentation.
-            </param>
-            <returns>String presentation of query parameters.</returns>
         </member>
         <member name="T:Rsdn.Framework.Formatting.TextFormatter">
             <summary>
@@ -718,6 +590,153 @@
         <member name="T:Rsdn.Framework.Formatting.TextFormatter.ProcessUrl">
             <summary>
             Delegate to process URLs.
+            </summary>
+        </member>
+        <member name="T:Rsdn.Framework.Formatting.CodeFormatter">
+            <summary>
+            Класс, для раскраски исходников
+            Загружает правила раскраски из xml-файла
+            </summary>
+        </member>
+        <member name="F:Rsdn.Framework.Formatting.CodeFormatter.xmlSchemas">
+            <summary>
+            Source XML validating schemas (XSD)
+            </summary>
+        </member>
+        <member name="F:Rsdn.Framework.Formatting.CodeFormatter.colorerRegex">
+            <summary>
+            Регулярное выражение, используемое при расераске.
+            Получается после преобразования исходных данных.
+            </summary>
+        </member>
+        <member name="F:Rsdn.Framework.Formatting.CodeFormatter.groupNames">
+            <summary>
+            Массив имен именованых групп в регулярном выражении
+            Используется при поиске имени группы по ее номеру
+            </summary>
+        </member>
+        <member name="F:Rsdn.Framework.Formatting.CodeFormatter.countGroups">
+            <summary>
+            Число групп в регулярном выражении
+            </summary>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.CodeFormatter.#ctor(System.IO.Stream)">
+            <summary>
+            Создание экземпляра раскрасивальщика.
+            </summary>
+            <param name="xmlSource">Исходный xml-поток</param>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.CodeFormatter.#ctor(System.IO.Stream,System.Text.RegularExpressions.RegexOptions)">
+            <summary>
+            Создание экземпляра раскрасивальщика с дополнительными опциями для регулярного выражения.
+            </summary>
+            <param name="xmlSource">Исходный xml-поток</param>
+            <param name="options">Regex опции</param>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.CodeFormatter.Transform(System.String)">
+            <summary>
+            Преобразование текста раскрасивальщиком
+            </summary>
+            <param name="sourceText">Исходный текст</param>
+            <returns>Преобразованный текст</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.CodeFormatter.ReplaceEvaluator(System.Text.RegularExpressions.Match)">
+            <summary>
+            Функция обработки найденного выражения во время трансформации
+            </summary>
+            <param name="match">Соответсвие</param>
+            <returns>Обработанное соответсвие</returns>
+        </member>
+        <member name="T:Rsdn.Framework.Formatting.QueryBuilder">
+            <summary>
+            Summary description for QueryBuilder.
+            </summary>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.QueryBuilder.#ctor">
+            <summary>
+            Construct <see cref="T:Rsdn.Framework.Formatting.QueryBuilder"/> object.
+            </summary>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.QueryBuilder.#ctor(Rsdn.Framework.Formatting.QueryBuilder)">
+            <summary>
+            Construct <see cref="T:Rsdn.Framework.Formatting.QueryBuilder"/> object.
+            </summary>
+            <param name="queryBuilder">Existing <see cref="T:Rsdn.Framework.Formatting.QueryBuilder"/> object.</param>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.QueryBuilder.#ctor(System.Collections.Specialized.NameValueCollection)">
+            <summary>
+            Construct <see cref="T:Rsdn.Framework.Formatting.QueryBuilder"/> object.
+            </summary>
+            <param name="queryCollection">query parameters collection.</param>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.QueryBuilder.#ctor(System.Collections.Specialized.NameValueCollection,System.Text.Encoding)">
+            <summary>
+            Construct <see cref="T:Rsdn.Framework.Formatting.QueryBuilder"/> object.
+            </summary>
+            <param name="queryCollection">query parameters collection.</param>
+            <param name="encoding">Encoding to encode non-ascii symbols.</param>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.QueryBuilder.#ctor(System.String)">
+            <summary>
+            Construct <see cref="T:Rsdn.Framework.Formatting.QueryBuilder"/> object.
+            </summary>
+            <param name="queryString">Query string to parse.
+            May or may not start with '?' question symbol.</param>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.QueryBuilder.#ctor(System.String,System.Text.Encoding)">
+            <summary>
+            Construct <see cref="T:Rsdn.Framework.Formatting.QueryBuilder"/> object.
+            </summary>
+            <param name="queryString">Query string to parse.
+            May or may not start with '?' question symbol.</param>
+            <param name="encoding">Encoding to encode non-ascii symbols.</param>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.QueryBuilder.ToString">
+            <summary>
+            Convert to query string.
+            </summary>
+            <returns>String presentation of query parameters.</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.QueryBuilder.ToString(System.Boolean)">
+            <summary>
+            Convert to query string.
+            </summary>
+            <param name="withQuestionMark">
+            Include or not question mark in beginning of string presentation.
+            </param>
+            <returns>String presentation of query parameters.</returns>
+        </member>
+        <member name="T:Rsdn.Framework.Formatting.Matcher">
+            <summary>
+            Helper class for counting of matches.
+            </summary>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Matcher.#ctor(System.String)">
+            <summary>
+            Class constructor
+            </summary>
+            <param name="pattern">Match replacement pattern</param>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Matcher.Match(System.Text.RegularExpressions.Match)">
+            <summary>
+            Match evaluator
+            </summary>
+            <param name="match">Match</param>
+            <returns>Replacement string</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Matcher.Reset">
+            <summary>
+            Reset evaluator
+            </summary>
+        </member>
+        <member name="P:Rsdn.Framework.Formatting.Matcher.Count">
+            <summary>
+            Get count of matches
+            </summary>
+        </member>
+        <member name="P:Rsdn.Framework.Formatting.Matcher.Item(System.Int32)">
+            <summary>
+            Get evaluated match by number
             </summary>
         </member>
     </members>

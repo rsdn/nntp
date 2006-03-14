@@ -1,5 +1,5 @@
 using System;
-using Rsdn.RsdnNntp.RsdnService;
+using Rsdn.RsdnNntp.Public.RsdnService;
 
 namespace Rsdn.RsdnNntp.Public
 {
