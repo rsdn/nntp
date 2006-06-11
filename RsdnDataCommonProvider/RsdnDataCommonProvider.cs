@@ -445,7 +445,8 @@ namespace Rsdn.RsdnNntp.Common
     	{
     		newsMessage["Path"] = Session.FullHostname + "!not-for-mail";
 				newsMessage.From =string.Format("\"{0}\" <{1}@users.rsdn.ru>",
-					message.Author.Length == 0 ? "Аноним" : message.Author, message.AuthorID);
+					string.IsNullOrEmpty(message.Author) ? "Аноним " + message.UserType : message.Author,
+					message.AuthorID);
 					
     		newsMessage.Date = message.Date;
     		newsMessage.Subject = message.Subject;
@@ -510,7 +511,7 @@ namespace Rsdn.RsdnNntp.Common
 							imageProcessor.ClearProcessedImages();
 
     				string htmlText = string.Format(htmlMessageTemplate, message.AuthorID,
-							message.Author, message.GroupID, message.ID,
+							string.IsNullOrEmpty(message.Author) ? "Аноним" : message.Author, message.GroupID, message.ID,
 							formatter.Format(message.Message, message.Smile), userType,
 							homePage, encoding.WebName,
 							Format.ReplaceTags(message.Subject), serverSchemeAndName,
