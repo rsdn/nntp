@@ -27,6 +27,9 @@ namespace Rsdn.Nntp
 				newsGroupsHeader.Append(newsGroups[i]).Append(" ");
 				_messageNumbers[newsGroups[i]] = messageNumbers[i];
 			}
+			// remove last space, if exists
+			if (newsGroupsHeader.Length > 0)
+				newsGroupsHeader.Length--;
 			
 			this["Newsgroups"] = newsGroupsHeader.ToString();
 			Contents = content;
