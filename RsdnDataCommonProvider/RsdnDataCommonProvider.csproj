@@ -84,9 +84,11 @@
       <Name>Rsdn.Framework.Formatting</Name>
       <HintPath>..\libs\Rsdn.Framework.Formatting.dll</HintPath>
     </Reference>
+    <Reference Include="StringTemplate, Version=3.0.1.21733, Culture=neutral, PublicKeyToken=beee492b52c41e85, processorArchitecture=MSIL" />
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
+    <Reference Include="System.Data" />
     <Reference Include="System.Web">
       <Name>System.Web</Name>
     </Reference>
@@ -109,6 +111,7 @@
       <Link>ProductInfo.cs</Link>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="TemplateArticle.cs" />
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -133,7 +136,10 @@
     <Compile Include="Settings.cs">
       <SubType>Code</SubType>
     </Compile>
-    <EmbeddedResource Include="Header.htm" />
+    <Compile Include="TemplateLogger.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="HtmlEmailTemplate.st" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

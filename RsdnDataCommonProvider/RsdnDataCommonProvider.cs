@@ -10,20 +10,21 @@ using System.Runtime.Serialization.Formatters;
 using System.Collections.Generic;
 using System.Web.Caching;
 
-using log4net;
 using Rsdn.Framework.Common;
 using Rsdn.Framework.Formatting;
-
 using Rsdn.Mime;
 using Rsdn.Nntp;
 using Rsdn.Nntp.Cache;
+
+using log4net;
+using Antlr.StringTemplate;
 
 namespace Rsdn.RsdnNntp.Common
 {
   /// <summary>
   /// RSDN Data Provider
   /// </summary>
-  public abstract class RsdnDataCommonProvider : CacheDataProvider
+	public abstract class RsdnDataCommonProvider : CacheDataProvider
   {
     /// <summary>
     /// Cache of refeneces of messages
@@ -59,12 +60,11 @@ namespace Rsdn.RsdnNntp.Common
     	}
 
 			// load message template
-			using (StreamReader reader = new StreamReader(Assembly.GetExecutingAssembly().
-							 GetManifestResourceStream("Rsdn.RsdnNntp.Header.htm"), Encoding.GetEncoding("windows-1251"), true))
-			{
-				htmlMessageTemplate = reader.ReadToEnd();
-			}
-    }
+			template = new StringTemplateGroup("format",
+				new EmbeddedResourceTemplateLoader(Assembly.GetExecutingAssembly(),
+					typeof(TemplateArticle).Namespace),
+				null, new TemplateLogger(logger), null);
+		}
 
     /// <summary>
     /// Save caches at the end of work
@@ -496,29 +496,25 @@ namespace Rsdn.RsdnNntp.Common
     				plainTextBody.ContentType = string.Format("text/plain; charset=\"{0}\"", encoding.WebName);
 
     				Message htmlTextBody = new Message(false);
-						string userType = "";
-						if (message.UserType != null && message.UserType.Length > 0)
-						{
-							userType = string.Format("<span style=\"color: #{0:x6}; font-size: smaller;\">{1}</span>",
-								message.UserColor, message.UserType);
-						}
-
 						IUserInfo userInfo = GetUserInfo(Format.ToInt(message.AuthorID));
 
-						string homePage = formatter.Format(message.HomePage, message.Smile);
-						string origin = formatter.Format(userInfo == null ? null : userInfo.Origin , true);
 						if (imageProcessor != null)
 							imageProcessor.ClearProcessedImages();
 
-    				string htmlText = string.Format(htmlMessageTemplate, message.AuthorID,
-							string.IsNullOrEmpty(message.Author) ? "Аноним" : message.Author, message.GroupID, message.ID,
-							formatter.Format(message.Message, message.Smile), userType,
-							homePage, encoding.WebName,
-							Format.ReplaceTags(message.Subject), serverSchemeAndName,
-							(message.AuthorID != 0) ?
-								string.Format("href='/Users/Profile.aspx?uid={0}'", message.AuthorID) : null,
-							origin, htmlReplyMarker);
-    				htmlTextBody.Entities.Add(htmlText);
+						StringTemplate htmlMessage = template.GetInstanceOf("HtmlEmailTemplate");
+						htmlMessage.SetAttribute("message", new TemplateArticle(message));
+						htmlMessage.SetAttribute("text",
+							formatter.Format(message.Message, message.Smile));
+						htmlMessage.SetAttribute("homepage",
+							formatter.Format(message.HomePage, message.Smile));
+						htmlMessage.SetAttribute("origin",
+							formatter.Format(userInfo == null ? null : userInfo.Origin, true));
+						htmlMessage.SetAttribute("encoding", encoding);
+						htmlMessage.SetAttribute("subject", Format.ReplaceTags(message.Subject));
+						htmlMessage.SetAttribute("server", serverSchemeAndName);
+						htmlMessage.SetAttribute("replyMarker", htmlReplyMarker);
+
+    				htmlTextBody.Entities.Add(htmlMessage.ToString());
     				htmlTextBody.TransferEncoding = ContentTransferEncoding.Base64;
     				htmlTextBody.ContentType = string.Format("text/html; charset=\"{0}\"", encoding.WebName);
     				
@@ -704,9 +700,9 @@ namespace Rsdn.RsdnNntp.Common
     }
 
   	/// <summary>
-		/// Template to transform formatted text to html message
+		/// Templates to format message
 		/// </summary>
-    protected static readonly string htmlMessageTemplate;
+    protected static readonly StringTemplateGroup template;
 		/// <summary>
 		/// Message encoding
 		/// </summary>

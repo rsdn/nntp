@@ -353,9 +353,9 @@
             </summary>
             <param name="message"></param>
         </member>
-        <member name="F:Rsdn.RsdnNntp.Common.RsdnDataCommonProvider.htmlMessageTemplate">
+        <member name="F:Rsdn.RsdnNntp.Common.RsdnDataCommonProvider.template">
             <summary>
-            Template to transform formatted text to html message
+            Templates to format message
             </summary>
         </member>
         <member name="F:Rsdn.RsdnNntp.Common.RsdnDataCommonProvider.encoding">
