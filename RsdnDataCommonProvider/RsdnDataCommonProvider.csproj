@@ -84,7 +84,9 @@
       <Name>Rsdn.Framework.Formatting</Name>
       <HintPath>..\libs\Rsdn.Framework.Formatting.dll</HintPath>
     </Reference>
-    <Reference Include="StringTemplate, Version=3.0.1.21733, Culture=neutral, PublicKeyToken=beee492b52c41e85, processorArchitecture=MSIL" />
+    <Reference Include="StringTemplate">
+      <HintPath>..\libs\StringTemplate.dll</HintPath>
+    </Reference>
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
