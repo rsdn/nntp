@@ -213,107 +213,161 @@ namespace Rsdn.Nntp
 #endif
 		}
 
+		public void Process(Object obj)
+		{
+			NDC.Push(_client.RemoteEndPoint.ToString());
+			try
+			{
+				logger.Info(string.Format("Session started. Local end point {0}.", _client.LocalEndPoint));
+
+				// if SSL - start authentification
+				if (netStream is SslStream)
+				{
+					SslStream sslStream = (SslStream)netStream;
+					sslStream.BeginAuthenticateAsServer(_certificate, false,
+						SslProtocols.Ssl2 | SslProtocols.Ssl3 | SslProtocols.Tls, false, SslAuthDone, sslStream);
+				}
+				else
+				{
+					Start();
+				}
+			}
+			catch (AuthenticationException ex)
+			{
+				logger.Error("SSL auth failed", ex);
+				SessionEnd();
+			}
+			catch (IOException ioException)
+			{
+				// network error
+				logger.Warn("Network error", ioException);
+				SessionEnd();
+			}
+			catch (Exception e)
+			{
+				// something wrong......
+				logger.Fatal("Fatal error", e);
+				SessionEnd();
+			}
+			finally
+			{
+				NDC.Pop();
+			}
+		}
+
+		protected void SslAuthDone(IAsyncResult async)
+		{
+			NDC.Push(_client.RemoteEndPoint.ToString());
+			try
+			{
+				((SslStream)async.AsyncState).EndAuthenticateAsServer(async);
+				Start();
+			}
+			catch (AuthenticationException ex)
+			{
+				logger.Error("SSL auth failed", ex);
+				SessionEnd();
+			}
+			catch (IOException ioException)
+			{
+				// network error
+				logger.Warn("Network error", ioException);
+				SessionEnd();
+			}
+			catch (Exception e)
+			{
+				// something wrong......
+				logger.Fatal("Fatal error", e);
+				SessionEnd();
+			}
+			finally
+			{
+				NDC.Pop();
+			}
+		}
+
+		protected void Start()
+		{
+			// response OK
+			Answer(new Response(_dataProvider.PostingAllowed ?
+				NntpResponse.Ok : NntpResponse.OkNoPosting, null,
+					string.Format("{0} ({1}; {2})",
+					_manager.Name, Manager.ServerID, _dataProvider.Identity)));
+
+			sessionState = States.Normal;
+
+			IAsyncResult readAsync =
+				netStream.BeginRead(commandBuffer, 0, bufferSize, null, null);
+			ThreadPool.RegisterWaitForSingleObject(readAsync.AsyncWaitHandle,
+				ProcessData, readAsync, connectionTimeout, true);
+			ThreadPool.RegisterWaitForSingleObject(_manager.ExitEvent, ProcessData, null, -1, true);
+		}
+
+		private void SessionEnd()
+		{
+			using (NDC.Push(_client.RemoteEndPoint.ToString()))
+			{
+				logger.Info("Session finished");
+				Dispose();
+			}
+		}
+
+		private StringBuilder bufferString = new StringBuilder();
+
 		/// <summary>
 		/// Process client
 		/// </summary>
-		public void Process(Object obj)
+		protected void ProcessData(Object obj, bool timeout)
 		{
-			// Set nested device context for current client
-			NDC.Push(_client.RemoteEndPoint.ToString());
-
-			if (logger.IsInfoEnabled)
-				logger.Info(string.Format("Session started. Local end point {0}.", _client.LocalEndPoint));
-
-			bool posting = false;
-			string delimeter;
-			Response result = null;
-			try
+			lock (bufferString)
 			{
-        WaitHandle startEvent;
-        IAsyncResult sslAuthDone = null;
-        // if SSL - start authentification
-        if (netStream is SslStream)
-        {
-          SslStream sslStream = (SslStream)netStream;
-          sslAuthDone = sslStream.BeginAuthenticateAsServer(_certificate, false,
-            SslProtocols.Ssl2 | SslProtocols.Ssl3 | SslProtocols.Tls, false, null, sslStream);
-          startEvent = sslAuthDone.AsyncWaitHandle;
-        }
-        else
-        {
-          startEvent = new AutoResetEvent(true);
-        }
+				NDC.Push(_client.RemoteEndPoint.ToString());
 
-				StringBuilder bufferString = new StringBuilder();
-
-        IAsyncResult asyncResult = null;
-        WaitHandle[] eventsWaitTable =
-          new WaitHandle[] { new ManualResetEvent(false), _manager.ExitEvent, startEvent};
-        bool firstPass = true;
-
-				while (true)
+				try
 				{
-          if (!firstPass)
-          {
-            asyncResult = netStream.BeginRead(commandBuffer, 0, bufferSize, null, null);
-            eventsWaitTable[0] = asyncResult.AsyncWaitHandle;
-          }
-					switch (WaitHandle.WaitAny(eventsWaitTable, connectionTimeout, false))
+					if (timeout)
 					{
-            // timeout
-            case WaitHandle.WaitTimeout:
-              AnswerWithCheck(NntpResponse.TimeOut);
-							return;
-            // _manager.ExitEvent
-            case 1 :
-              // terminate session
-              AnswerWithCheck(NntpResponse.ServiceDiscontinued);
-              return;
-            // startEvent
-						case 2 :
-							// complete ssl authentification, if necessary
-              if (sslAuthDone != null)
-                ((SslStream)sslAuthDone.AsyncState).EndAuthenticateAsServer(sslAuthDone);
+						AnswerWithCheck(NntpResponse.TimeOut);
+						SessionEnd();
+						return;
+					}
 
-              // response OK
-              Answer(new Response(_dataProvider.PostingAllowed ?
-                NntpResponse.Ok : NntpResponse.OkNoPosting, null,
-                  string.Format("{0} ({1}; {2})",
-                  _manager.Name, Manager.ServerID, _dataProvider.Identity)));
+					if (obj == null)
+					{
+						// terminate session
+						AnswerWithCheck(NntpResponse.ServiceDiscontinued);
+						SessionEnd();
+						return;
+					}
 
-              // first pass finished
-              firstPass = false;
-              eventsWaitTable = new WaitHandle[] { null, _manager.ExitEvent };
-              continue;
+					string delimeter;
+					Response result = null;
 
-             // data is ready
-            default :
-              int receivedBytes = netStream.EndRead(asyncResult);
+					int receivedBytes = netStream.EndRead((IAsyncResult)obj);
 
-              if (receivedBytes  > 0)
-					    {
-						    bufferString.Append(Util.BytesToString(commandBuffer, receivedBytes));
-    #if PERFORMANCE_COUNTERS
-						    _manager.GetPerformanceCounter(Manager.bytesReceivedPerSecCounterName).IncrementBy(receivedBytes);
-						    Manager.GetGlobalPerformanceCounter(Manager.bytesReceivedPerSecCounterName).IncrementBy(receivedBytes);
-						    _manager.GetPerformanceCounter(Manager.bytesReceivedCounterName).IncrementBy(receivedBytes);
-						    Manager.GetGlobalPerformanceCounter(Manager.bytesReceivedCounterName).IncrementBy(receivedBytes);
-						    _manager.GetPerformanceCounter(Manager.bytesTotalPerSecCounterName).IncrementBy(receivedBytes);
-						    Manager.GetGlobalPerformanceCounter(Manager.bytesTotalPerSecCounterName).IncrementBy(receivedBytes);
-						    _manager.GetPerformanceCounter(Manager.bytesTotalCounterName).IncrementBy(receivedBytes);
-						    Manager.GetGlobalPerformanceCounter(Manager.bytesTotalCounterName).IncrementBy(receivedBytes);
-    #endif
-                break;
-					    }
-					    else
-						    // stream is closed
-						    return;
-          }
+					if (receivedBytes == 0)
+					{
+						// stream is closed
+						SessionEnd();
+					}
+
+					bufferString.Append(Util.BytesToString(commandBuffer, receivedBytes));
+
+#if PERFORMANCE_COUNTERS
+					_manager.GetPerformanceCounter(Manager.bytesReceivedPerSecCounterName).IncrementBy(receivedBytes);
+					Manager.GetGlobalPerformanceCounter(Manager.bytesReceivedPerSecCounterName).IncrementBy(receivedBytes);
+					_manager.GetPerformanceCounter(Manager.bytesReceivedCounterName).IncrementBy(receivedBytes);
+					Manager.GetGlobalPerformanceCounter(Manager.bytesReceivedCounterName).IncrementBy(receivedBytes);
+					_manager.GetPerformanceCounter(Manager.bytesTotalPerSecCounterName).IncrementBy(receivedBytes);
+					Manager.GetGlobalPerformanceCounter(Manager.bytesTotalPerSecCounterName).IncrementBy(receivedBytes);
+					_manager.GetPerformanceCounter(Manager.bytesTotalCounterName).IncrementBy(receivedBytes);
+					Manager.GetGlobalPerformanceCounter(Manager.bytesTotalCounterName).IncrementBy(receivedBytes);
+#endif
 
 					switch (sessionState)
 					{
-						case States.PostWaiting :
-						case States.TransferWaiting :
+						case States.PostWaiting:
+						case States.TransferWaiting:
 							delimeter = Util.CRLF + "." + Util.CRLF;
 							break;
 						default:
@@ -328,7 +382,7 @@ namespace Rsdn.Nntp
 
 						// remove retrivied command from buffer
 						bufferString.Remove(0, bufferString.ToString().IndexOf(delimeter) + delimeter.Length);
-						
+
 						// debug tracing
 						logger.Debug(commandString);
 
@@ -341,22 +395,21 @@ namespace Rsdn.Nntp
 						{
 							switch (sessionState)
 							{
-								case States.PostWaiting	:
-								case States.TransferWaiting :
+								case States.PostWaiting:
+								case States.TransferWaiting:
 									try
 									{
-										posting = true;
 										string message = Response.DemodifyTextResponse(commandString);
 										Message postingMessage = Message.Parse(message, true, true,
 											new Regex("(?i)Subject"));
-								
+
 										// add addtitional server headers
 										if (sender != null)
 											postingMessage["Sender"] = sender;
 										if (postingMessage["Path"] == null)
 											postingMessage["Path"] = "not-for-mail";
 										postingMessage["Path"] = FullHostname + "!" + postingMessage["Path"];
-								
+
 										_dataProvider.PostMessage(postingMessage);
 										result = new Response(sessionState == States.PostWaiting ? NntpResponse.PostedOk : NntpResponse.TransferOk);
 									}
@@ -366,19 +419,19 @@ namespace Rsdn.Nntp
 											ex.Message);
 									}
 									break;
-								default	:
+								default:
 									// get first word in upper case delimeted by space or tab characters 
-									command = commandString.Split(new char[]{' ', '\t', '\r'}, 2)[0].ToUpper();
+									command = commandString.Split(new char[] { ' ', '\t', '\r' }, 2)[0].ToUpper();
 
 #if PERFORMANCE_COUNTERS_OLD
-									requestsCounter.Increment();
-									globalRequestsCounter.Increment();
+								requestsCounter.Increment();
+								globalRequestsCounter.Increment();
 #endif
 									// check suppoting command
-                  if (commands.ContainsKey(command))
+									if (commands.ContainsKey(command))
 									{
-                    Commands.Generic nntpCommand = commands[command];
-                    if (nntpCommand.IsAllowed(sessionState))
+										Commands.Generic nntpCommand = commands[command];
+										if (nntpCommand.IsAllowed(sessionState))
 											result = nntpCommand.Process();
 										else
 										{
@@ -431,7 +484,7 @@ namespace Rsdn.Nntp
 									break;
 								case DataProviderErrors.PostingFailed:
 									result = new Response(sessionState == States.TransferWaiting ?
-										NntpResponse.TransferFailed :  NntpResponse.PostingFailed, null,
+										NntpResponse.TransferFailed : NntpResponse.PostingFailed, null,
 										exception.Message);
 									break;
 								case DataProviderErrors.ServiceUnaviable:
@@ -447,13 +500,13 @@ namespace Rsdn.Nntp
 							}
 							logger.Warn(string.Format("Data Provider Error ({0})", exception.Error), exception);
 						}
-            catch (AuthenticationException authException)
-            {
-              logger.Warn("SSL authentification error", authException);
-              return;
-            }
+						catch (AuthenticationException authException)
+						{
+							logger.Warn("SSL authentification error", authException);
+							return;
+						}
 						// not good....
-						catch(Exception e)
+						catch (Exception e)
 						{
 							logger.Error(
 								string.Format("Exception during processing command" +
@@ -463,10 +516,12 @@ namespace Rsdn.Nntp
 						}
 						finally
 						{
-							if (posting)
+							switch (sessionState)
 							{
-								sessionState = States.Normal;
-								posting = false;
+								case States.PostWaiting :
+								case States.TransferWaiting :
+									sessionState = States.Normal;
+									break;
 							}
 						}
 
@@ -476,49 +531,55 @@ namespace Rsdn.Nntp
 						logger.Debug(result);
 
 						if (result.Code >= 400)
-							// result code indicates error
+						// result code indicates error
 						{
 #if PERFORMANCE_COUNTERS_OLD
-							badRequestsCounter.Increment();
-							globalBadRequestsCounter.Increment();
+						badRequestsCounter.Increment();
+						globalBadRequestsCounter.Increment();
 #endif
 						}
 
-						switch((NntpResponse)result.Code)
+						switch ((NntpResponse)result.Code)
 						{
-							case NntpResponse.ArticleHeadBodyRetrivied :
-							case NntpResponse.ArticleHeadRetrivied :
-							case NntpResponse.ArticleBodyRetrivied :
-							case NntpResponse.ArticleNothingRetrivied :
+							case NntpResponse.ArticleHeadBodyRetrivied:
+							case NntpResponse.ArticleHeadRetrivied:
+							case NntpResponse.ArticleBodyRetrivied:
+							case NntpResponse.ArticleNothingRetrivied:
 #if PERFORMANCE_COUNTERS_OLD
-								articlesCounter.Increment();
-								globalArticlesCounter.Increment();
+							articlesCounter.Increment();
+							globalArticlesCounter.Increment();
 #endif
 								break;
-							case NntpResponse.Bye : // quit
-							case NntpResponse.ServiceDiscontinued : // service disctontined
-							case NntpResponse.ServiceUnaviable : // service unaviable
-							case NntpResponse.TimeOut : // timeout
+							case NntpResponse.Bye: // quit
+							case NntpResponse.ServiceDiscontinued: // service disctontined
+							case NntpResponse.ServiceUnaviable: // service unaviable
+							case NntpResponse.TimeOut: // timeout
 								return;
 						}
 					}
+
+					// read more data
+					IAsyncResult readAsync =
+						netStream.BeginRead(commandBuffer, 0, bufferSize, null, null);
+					ThreadPool.RegisterWaitForSingleObject(readAsync.AsyncWaitHandle,
+						ProcessData, readAsync, connectionTimeout, true);
 				}
-			}
-			catch (IOException ioException)
-			{
-				// network error
-        logger.Warn("Network error", ioException); 
-			}
-			catch (Exception e)
-			{
-				// something wrong......
-				logger.Fatal("Fatal error", e);
-			}
-			finally
-			{
-				logger.Info("Session finished");
-				NDC.Pop();
-				Dispose();
+				catch (IOException ioException)
+				{
+					// network error
+					logger.Warn("Network error", ioException);
+					SessionEnd();
+				}
+				catch (Exception e)
+				{
+					// something wrong......
+					logger.Fatal("Fatal error", e);
+					SessionEnd();
+				}
+				finally
+				{
+					NDC.Pop();
+				}
 			}
 		}
 
@@ -593,7 +654,7 @@ namespace Rsdn.Nntp
 		/// <summary>
 		/// State of current session
 		/// </summary>
-		protected internal States sessionState = States.Normal;
+		protected internal States sessionState = States.None;
 		/// <summary>
 		/// Associative arrays of NNTP client commands
 		/// </summary>

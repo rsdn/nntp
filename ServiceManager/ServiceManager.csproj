@@ -123,6 +123,7 @@
     </Compile>
     <EmbeddedResource Include="About.resx">
       <DependentUpon>About.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="About.rtf" />
     <EmbeddedResource Include="App.ico" />
@@ -139,6 +140,7 @@
     <EmbeddedResource Include="Stopped.ico" />
     <EmbeddedResource Include="Win32_Service.resx">
       <DependentUpon>Win32_Service.CS</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <Content Include="alert.ico" />
     <None Include="app.config" />

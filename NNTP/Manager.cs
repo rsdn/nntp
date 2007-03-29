@@ -204,68 +204,63 @@ namespace Rsdn.Nntp
 		/// </summary>
 		protected void AcceptClient(IAsyncResult ar)
 		{
-			lock (this)
+			try
 			{
-				// if we are stopped
-				//if (stopEvent.WaitOne(0, false))
-				//	return;
+        int bindingIndex = (int)ar.AsyncState;
 
-				try
+        // listen sockets already shutdowned
+        if (listeners.Length <= bindingIndex)
+          return;
+
+				// get listener socket
+        Socket listener = listeners[bindingIndex];
+				// get client's socket
+				Socket socket = listener.EndAccept(ar);
+				// start listen for next client
+        listener.BeginAccept(new AsyncCallback(AcceptClient), bindingIndex);
+				if (paused)
 				{
-          int bindingIndex = (int)ar.AsyncState;
-
-          // listen sockets already shutdowned
-          if (listeners.Length <= bindingIndex)
-            return;
-
-					// get listener socket
-          Socket listener = listeners[bindingIndex];
-					// get client's socket
-					Socket socket = listener.EndAccept(ar);
-					// start listen for next client
-          listener.BeginAccept(new AsyncCallback(AcceptClient), bindingIndex);
-					if (paused)
-					{
-						Response.Answer(NntpResponse.ServiceUnaviable, socket);
-						socket.Shutdown(SocketShutdown.Both);
-						socket.Close();
-					}
-					else
-					{
-						IDataProvider dataProvider = Activator.CreateInstance(settings.DataProviderType) as IDataProvider;
-						dataProvider.Config(settings.DataProviderSettings);
-						Session session =
-              new Session(socket, settings.Bindings[bindingIndex].Certificate, dataProvider,	this);
-						session.Disposed += new EventHandler(SessionDisposedHandler);
-						sessions.Add(session);
-						// reset event (now we have child sessions)
-						noSessions.Reset();
-						ThreadPool.QueueUserWorkItem(new WaitCallback(session.Process), this);
+					Response.Answer(NntpResponse.ServiceUnaviable, socket);
+					socket.Shutdown(SocketShutdown.Both);
+					socket.Close();
+				}
+				else
+				{
+					IDataProvider dataProvider = Activator.CreateInstance(settings.DataProviderType) as IDataProvider;
+					dataProvider.Config(settings.DataProviderSettings);
+					Session session =
+            new Session(socket, settings.Bindings[bindingIndex].Certificate, dataProvider,	this);
+					session.Disposed += new EventHandler(SessionDisposedHandler);
+					sessions.Add(session);
+					// reset event (now we have child sessions)
+					noSessions.Reset();
 
 #if PERFORMANCE_COUNTERS
-						// set connections counter
-						PerformanceCounter connectionsCounter =
-							GetPerformanceCounter(connectionsCounterName);
-						connectionsCounter.Increment();
-					  GetGlobalPerformanceCounter(connectionsCounterName).Increment();
+					// set connections counter
+					PerformanceCounter connectionsCounter =
+						GetPerformanceCounter(connectionsCounterName);
+					connectionsCounter.Increment();
+				  GetGlobalPerformanceCounter(connectionsCounterName).Increment();
 
-						// set max connections counter
-						PerformanceCounter maxConnectionsCounter =
-							GetPerformanceCounter(maxConnectionsCounterName);
-						if (connectionsCounter.RawValue > maxConnectionsCounter.RawValue)
-							maxConnectionsCounter.RawValue = connectionsCounter.RawValue;
+					// set max connections counter
+					PerformanceCounter maxConnectionsCounter =
+						GetPerformanceCounter(maxConnectionsCounterName);
+					if (connectionsCounter.RawValue > maxConnectionsCounter.RawValue)
+						maxConnectionsCounter.RawValue = connectionsCounter.RawValue;
 
-						// set global max connections counter
-						PerformanceCounter globalMaxConnectionsCounter =
-						  GetGlobalPerformanceCounter(maxConnectionsCounterName);
-						if (maxConnectionsCounter.RawValue > globalMaxConnectionsCounter.RawValue)
-							globalMaxConnectionsCounter.RawValue = maxConnectionsCounter.RawValue;
+					// set global max connections counter
+					PerformanceCounter globalMaxConnectionsCounter =
+					  GetGlobalPerformanceCounter(maxConnectionsCounterName);
+					if (maxConnectionsCounter.RawValue > globalMaxConnectionsCounter.RawValue)
+						globalMaxConnectionsCounter.RawValue = maxConnectionsCounter.RawValue;
 #endif
-					}
+
+					session.Process(this);
+
 				}
-				// socket is closed
-				catch(ObjectDisposedException) {}
 			}
+			// socket is closed
+			catch(ObjectDisposedException) {}
 		}
 
 		/// <summary>
