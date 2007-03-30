@@ -120,6 +120,8 @@ namespace Rsdn.Nntp
 
       _certificate = certificate;
 			_client = client;
+    	_clientID = client.RemoteEndPoint.ToString();
+
       netStream = new NetworkStream(client);
       if (certificate != null)
         netStream = new SslStream(netStream, false);
@@ -213,40 +215,57 @@ namespace Rsdn.Nntp
 #endif
 		}
 
-		public void Process(Object obj)
+		public void Process(Object origObj)
 		{
-			NDC.Push(_client.RemoteEndPoint.ToString());
+			ExceptionHandler(
+				(WaitCallback)delegate(Object obj)
+				{
+					logger.InfoFormat("Session started. Local end point {0}.",
+						_client.LocalEndPoint);
+
+					// if SSL - start authentification
+					if (netStream is SslStream)
+					{
+						SslStream sslStream = (SslStream)netStream;
+						sslStream.BeginAuthenticateAsServer(_certificate, false,
+							SslProtocols.Ssl2 | SslProtocols.Ssl3 | SslProtocols.Tls, false, SslAuthDone, sslStream);
+					}
+					else
+					{
+						Start();
+					}
+				}, origObj);
+		}
+
+		private void ExceptionHandler(Delegate method, params object[] parameters)
+		{
+			NDC.Push(_clientID);
 			try
 			{
-				logger.Info(string.Format("Session started. Local end point {0}.", _client.LocalEndPoint));
-
-				// if SSL - start authentification
-				if (netStream is SslStream)
+				if (method is WaitOrTimerCallback)
 				{
-					SslStream sslStream = (SslStream)netStream;
-					sslStream.BeginAuthenticateAsServer(_certificate, false,
-						SslProtocols.Ssl2 | SslProtocols.Ssl3 | SslProtocols.Tls, false, SslAuthDone, sslStream);
+					((WaitOrTimerCallback)method)(parameters[0], (bool)parameters[1]);
+				}
+				else if (method is WaitCallback)
+				{
+					((WaitCallback)method)(parameters[0]);
+				}
+				else if (method is AsyncCallback)
+				{
+					((AsyncCallback)method)((IAsyncResult)parameters[0]);
 				}
 				else
-				{
-					Start();
-				}
+					method.DynamicInvoke(parameters);
 			}
-			catch (AuthenticationException ex)
+			catch (TargetInvocationException targetEx)
 			{
-				logger.Error("SSL auth failed", ex);
+				ExceptionHandlerInfo(
+					(targetEx.InnerException != null) ? targetEx.InnerException : targetEx);
 				SessionEnd();
 			}
-			catch (IOException ioException)
+			catch (Exception ex)
 			{
-				// network error
-				logger.Warn("Network error", ioException);
-				SessionEnd();
-			}
-			catch (Exception e)
-			{
-				// something wrong......
-				logger.Fatal("Fatal error", e);
+				ExceptionHandlerInfo(ex);
 				SessionEnd();
 			}
 			finally
@@ -255,35 +274,32 @@ namespace Rsdn.Nntp
 			}
 		}
 
-		protected void SslAuthDone(IAsyncResult async)
+		private void ExceptionHandlerInfo(Exception exception)
 		{
-			NDC.Push(_client.RemoteEndPoint.ToString());
-			try
+			if (exception is AuthenticationException)
 			{
-				((SslStream)async.AsyncState).EndAuthenticateAsServer(async);
-				Start();
+				logger.WarnFormat("SSL auth failed: {0}", exception.Message);
 			}
-			catch (AuthenticationException ex)
-			{
-				logger.Error("SSL auth failed", ex);
-				SessionEnd();
-			}
-			catch (IOException ioException)
+			else if ((exception is IOException) || (exception is SocketException))
 			{
 				// network error
-				logger.Warn("Network error", ioException);
-				SessionEnd();
+				logger.WarnFormat("Network error: {0}", exception.Message);
 			}
-			catch (Exception e)
+			else
 			{
 				// something wrong......
-				logger.Fatal("Fatal error", e);
-				SessionEnd();
+				logger.Fatal("Fatal error", exception);
 			}
-			finally
-			{
-				NDC.Pop();
-			}
+		}
+
+		protected void SslAuthDone(IAsyncResult origAsync)
+		{
+			ExceptionHandler((AsyncCallback)
+				delegate(IAsyncResult async)
+				{
+					((SslStream)async.AsyncState).EndAuthenticateAsServer(async);
+					Start();
+				}, origAsync);
 		}
 
 		protected void Start()
@@ -300,16 +316,14 @@ namespace Rsdn.Nntp
 				netStream.BeginRead(commandBuffer, 0, bufferSize, null, null);
 			ThreadPool.RegisterWaitForSingleObject(readAsync.AsyncWaitHandle,
 				ProcessData, readAsync, connectionTimeout, true);
-			ThreadPool.RegisterWaitForSingleObject(_manager.ExitEvent, ProcessData, null, -1, true);
+			ThreadPool.RegisterWaitForSingleObject(_manager.ExitEvent,
+				ProcessData, null, -1, true);
 		}
 
 		private void SessionEnd()
 		{
-			using (NDC.Push(_client.RemoteEndPoint.ToString()))
-			{
-				logger.Info("Session finished");
-				Dispose();
-			}
+			logger.Info("Session finished");
+			Dispose();
 		}
 
 		private StringBuilder bufferString = new StringBuilder();
@@ -317,270 +331,265 @@ namespace Rsdn.Nntp
 		/// <summary>
 		/// Process client
 		/// </summary>
-		protected void ProcessData(Object obj, bool timeout)
+		protected void ProcessData(Object origObj, bool origTimeout)
 		{
-			lock (bufferString)
-			{
-				NDC.Push(_client.RemoteEndPoint.ToString());
-
-				try
+			ExceptionHandler((WaitOrTimerCallback)
+				delegate(Object obj, bool timeout)
 				{
-					if (timeout)
+					lock (bufferString)
 					{
-						AnswerWithCheck(NntpResponse.TimeOut);
-						SessionEnd();
-						return;
-					}
-
-					if (obj == null)
-					{
-						// terminate session
-						AnswerWithCheck(NntpResponse.ServiceDiscontinued);
-						SessionEnd();
-						return;
-					}
-
-					string delimeter;
-					Response result = null;
-
-					int receivedBytes = netStream.EndRead((IAsyncResult)obj);
-
-					if (receivedBytes == 0)
-					{
-						// stream is closed
-						SessionEnd();
-					}
-
-					bufferString.Append(Util.BytesToString(commandBuffer, receivedBytes));
-
-#if PERFORMANCE_COUNTERS
-					_manager.GetPerformanceCounter(Manager.bytesReceivedPerSecCounterName).IncrementBy(receivedBytes);
-					Manager.GetGlobalPerformanceCounter(Manager.bytesReceivedPerSecCounterName).IncrementBy(receivedBytes);
-					_manager.GetPerformanceCounter(Manager.bytesReceivedCounterName).IncrementBy(receivedBytes);
-					Manager.GetGlobalPerformanceCounter(Manager.bytesReceivedCounterName).IncrementBy(receivedBytes);
-					_manager.GetPerformanceCounter(Manager.bytesTotalPerSecCounterName).IncrementBy(receivedBytes);
-					Manager.GetGlobalPerformanceCounter(Manager.bytesTotalPerSecCounterName).IncrementBy(receivedBytes);
-					_manager.GetPerformanceCounter(Manager.bytesTotalCounterName).IncrementBy(receivedBytes);
-					Manager.GetGlobalPerformanceCounter(Manager.bytesTotalCounterName).IncrementBy(receivedBytes);
-#endif
-
-					switch (sessionState)
-					{
-						case States.PostWaiting:
-						case States.TransferWaiting:
-							delimeter = Util.CRLF + "." + Util.CRLF;
-							break;
-						default:
-							delimeter = Util.CRLF;
-							break;
-					}
-
-					while (bufferString.ToString().IndexOf(delimeter) != -1)
-					{
-						// get command string till delimeter
-						commandString = bufferString.ToString().Substring(0, bufferString.ToString().IndexOf(delimeter));
-
-						// remove retrivied command from buffer
-						bufferString.Remove(0, bufferString.ToString().IndexOf(delimeter) + delimeter.Length);
-
-						// debug tracing
-						logger.Debug(commandString);
-
-						// especialy for Outlook Express
-						// it send sometimes blank lines
-						if (commandString == string.Empty)
-							continue;
-
-						try
+						if (timeout)
 						{
-							switch (sessionState)
-							{
-								case States.PostWaiting:
-								case States.TransferWaiting:
-									try
-									{
-										string message = Response.DemodifyTextResponse(commandString);
-										Message postingMessage = Message.Parse(message, true, true,
-											new Regex("(?i)Subject"));
-
-										// add addtitional server headers
-										if (sender != null)
-											postingMessage["Sender"] = sender;
-										if (postingMessage["Path"] == null)
-											postingMessage["Path"] = "not-for-mail";
-										postingMessage["Path"] = FullHostname + "!" + postingMessage["Path"];
-
-										_dataProvider.PostMessage(postingMessage);
-										result = new Response(sessionState == States.PostWaiting ? NntpResponse.PostedOk : NntpResponse.TransferOk);
-									}
-									catch (MimeFormattingException ex)
-									{
-										throw new DataProviderException(DataProviderErrors.PostingFailed,
-											ex.Message);
-									}
-									break;
-								default:
-									// get first word in upper case delimeted by space or tab characters 
-									command = commandString.Split(new char[] { ' ', '\t', '\r' }, 2)[0].ToUpper();
-
-#if PERFORMANCE_COUNTERS_OLD
-								requestsCounter.Increment();
-								globalRequestsCounter.Increment();
-#endif
-									// check suppoting command
-									if (commands.ContainsKey(command))
-									{
-										Commands.Generic nntpCommand = commands[command];
-										if (nntpCommand.IsAllowed(sessionState))
-											result = nntpCommand.Process();
-										else
-										{
-											result = notAllowedStateAnswer[sessionState] as Response;
-											if (result == null)
-												result = new Response(NntpResponse.NotAllowed); // command not allowed
-										}
-									}
-									else
-									{
-										result = new Response(NntpResponse.NotRecognized); // no such command
-										logger.Warn(string.Format("Command not recognized ({0}).", commandString));
-									}
-									break;
-							}
-						}
-						catch (DataProviderException exception)
-						{
-							switch (exception.Error)
-							{
-								case DataProviderErrors.NoSuchGroup:
-									// Assume that exception's message contains not founded group name
-									result = new Response(NntpResponse.NoSuchGroup, null, exception.Message);
-									break;
-								case DataProviderErrors.NoSelectedGroup:
-									result = new Response(NntpResponse.NoSelectedGroup);
-									break;
-								case DataProviderErrors.NoSelectedArticle:
-									result = new Response(NntpResponse.NoSelectedArticle);
-									break;
-								case DataProviderErrors.NoNextArticle:
-									result = new Response(NntpResponse.NoNextArticle);
-									break;
-								case DataProviderErrors.NoPrevArticle:
-									result = new Response(NntpResponse.NoPrevArticle);
-									break;
-								case DataProviderErrors.NoSuchArticleNumber:
-									result = new Response(NntpResponse.NoSuchArticleNumber);
-									break;
-								case DataProviderErrors.NoSuchArticle:
-									result = new Response(NntpResponse.NoSuchArticle);
-									break;
-								case DataProviderErrors.NoPermission:
-									result = new Response(NntpResponse.NoPermission);
-									sessionState = States.AuthRequired;
-									break;
-								case DataProviderErrors.NotSupported:
-									result = new Response(NntpResponse.NotRecognized);
-									logger.Warn(string.Format("{0} provider don't support {1} command.", _dataProvider.GetType(), command));
-									break;
-								case DataProviderErrors.PostingFailed:
-									result = new Response(sessionState == States.TransferWaiting ?
-										NntpResponse.TransferFailed : NntpResponse.PostingFailed, null,
-										exception.Message);
-									break;
-								case DataProviderErrors.ServiceUnaviable:
-									result = new Response(NntpResponse.ServiceDiscontinued);
-									break;
-								case DataProviderErrors.Timeout:
-									result = new Response(NntpResponse.TimeOut);
-									break;
-								default:
-									// Unknown data provider error
-									result = new Response(NntpResponse.ProgramFault, null, exception.Message);
-									break;
-							}
-							logger.Warn(string.Format("Data Provider Error ({0})", exception.Error), exception);
-						}
-						catch (AuthenticationException authException)
-						{
-							logger.Warn("SSL authentification error", authException);
+							AnswerWithCheck(NntpResponse.TimeOut);
+							SessionEnd();
 							return;
 						}
-						// not good....
-						catch (Exception e)
+
+						if (obj == null)
 						{
-							logger.Error(
-								string.Format("Exception during processing command" +
-								" (selected group '{0}', last request '{1}').\n",
-								currentGroup, commandString), e);
-							result = new Response(NntpResponse.ProgramFault, null, e.Message);
+							// terminate session
+							AnswerWithCheck(NntpResponse.ServiceDiscontinued);
+							SessionEnd();
+							return;
 						}
-						finally
+
+						int receivedBytes;
+						try
 						{
-							switch (sessionState)
+							receivedBytes = netStream.EndRead((IAsyncResult) obj);
+						}
+						// okay only in this place (can't cancel async read)
+						catch (ObjectDisposedException)
+						{
+							SessionEnd();
+							return;
+						}
+
+						if (receivedBytes == 0)
+						{
+							// stream is closed
+							SessionEnd();
+							return;
+						}
+
+						bufferString.Append(Util.BytesToString(commandBuffer, receivedBytes));
+
+#if PERFORMANCE_COUNTERS
+						_manager.GetPerformanceCounter(Manager.bytesReceivedPerSecCounterName).IncrementBy(receivedBytes);
+						Manager.GetGlobalPerformanceCounter(Manager.bytesReceivedPerSecCounterName).IncrementBy(receivedBytes);
+						_manager.GetPerformanceCounter(Manager.bytesReceivedCounterName).IncrementBy(receivedBytes);
+						Manager.GetGlobalPerformanceCounter(Manager.bytesReceivedCounterName).IncrementBy(receivedBytes);
+						_manager.GetPerformanceCounter(Manager.bytesTotalPerSecCounterName).IncrementBy(receivedBytes);
+						Manager.GetGlobalPerformanceCounter(Manager.bytesTotalPerSecCounterName).IncrementBy(receivedBytes);
+						_manager.GetPerformanceCounter(Manager.bytesTotalCounterName).IncrementBy(receivedBytes);
+						Manager.GetGlobalPerformanceCounter(Manager.bytesTotalCounterName).IncrementBy(receivedBytes);
+#endif
+						string delimeter;
+						Response result = null;
+
+						switch (sessionState)
+						{
+							case States.PostWaiting:
+							case States.TransferWaiting:
+								delimeter = Util.CRLF + "." + Util.CRLF;
+								break;
+							default:
+								delimeter = Util.CRLF;
+								break;
+						}
+
+						while (bufferString.ToString().IndexOf(delimeter) != -1)
+						{
+							// get command string till delimeter
+							commandString = bufferString.ToString().Substring(0, bufferString.ToString().IndexOf(delimeter));
+
+							// remove retrivied command from buffer
+							bufferString.Remove(0, bufferString.ToString().IndexOf(delimeter) + delimeter.Length);
+
+							// debug tracing
+							logger.Debug(commandString);
+
+							// especialy for Outlook Express
+							// it send sometimes blank lines
+							if (commandString == string.Empty)
+								continue;
+
+							try
 							{
-								case States.PostWaiting :
-								case States.TransferWaiting :
-									sessionState = States.Normal;
+								switch (sessionState)
+								{
+									case States.PostWaiting:
+									case States.TransferWaiting:
+										try
+										{
+											string message = Response.DemodifyTextResponse(commandString);
+											Message postingMessage = Message.Parse(message, true, true,
+												new Regex("(?i)Subject"));
+
+											// add addtitional server headers
+											if (sender != null)
+												postingMessage["Sender"] = sender;
+											if (postingMessage["Path"] == null)
+												postingMessage["Path"] = "not-for-mail";
+											postingMessage["Path"] = FullHostname + "!" + postingMessage["Path"];
+
+											_dataProvider.PostMessage(postingMessage);
+											result = new Response(sessionState == States.PostWaiting ? NntpResponse.PostedOk : NntpResponse.TransferOk);
+										}
+										catch (MimeFormattingException ex)
+										{
+											throw new DataProviderException(DataProviderErrors.PostingFailed,
+												ex.Message);
+										}
+										sessionState = States.Normal;
+										break;
+									default:
+										// get first word in upper case delimeted by space or tab characters 
+										command = commandString.Split(new char[] { ' ', '\t', '\r' }, 2)[0].ToUpper();
+
+#if PERFORMANCE_COUNTERS_OLD
+									requestsCounter.Increment();
+									globalRequestsCounter.Increment();
+#endif
+										// check suppoting command
+										if (commands.ContainsKey(command))
+										{
+											Commands.Generic nntpCommand = commands[command];
+											if (nntpCommand.IsAllowed(sessionState))
+												result = nntpCommand.Process();
+											else
+											{
+												result = notAllowedStateAnswer[sessionState] as Response;
+												if (result == null)
+													result = new Response(NntpResponse.NotAllowed); // command not allowed
+											}
+										}
+										else
+										{
+											result = new Response(NntpResponse.NotRecognized); // no such command
+											logger.ErrorFormat("Command not recognized ({0}).", commandString);
+										}
+										break;
+								}
+							}
+							catch (DataProviderException exception)
+							{
+								switch (exception.Error)
+								{
+									case DataProviderErrors.NoSuchGroup:
+										// Assume that exception's message contains not founded group name
+										result = new Response(NntpResponse.NoSuchGroup, null, exception.Message);
+										break;
+									case DataProviderErrors.NoSelectedGroup:
+										result = new Response(NntpResponse.NoSelectedGroup);
+										break;
+									case DataProviderErrors.NoSelectedArticle:
+										result = new Response(NntpResponse.NoSelectedArticle);
+										break;
+									case DataProviderErrors.NoNextArticle:
+										result = new Response(NntpResponse.NoNextArticle);
+										break;
+									case DataProviderErrors.NoPrevArticle:
+										result = new Response(NntpResponse.NoPrevArticle);
+										break;
+									case DataProviderErrors.NoSuchArticleNumber:
+										result = new Response(NntpResponse.NoSuchArticleNumber);
+										break;
+									case DataProviderErrors.NoSuchArticle:
+										result = new Response(NntpResponse.NoSuchArticle);
+										break;
+									case DataProviderErrors.NoPermission:
+										result = new Response(NntpResponse.NoPermission);
+										sessionState = States.AuthRequired;
+										break;
+									case DataProviderErrors.NotSupported:
+										result = new Response(NntpResponse.NotRecognized);
+										logger.WarnFormat("{0} provider don't support {1} command.",
+											_dataProvider.GetType(), command);
+										break;
+									case DataProviderErrors.PostingFailed:
+										result = new Response(sessionState == States.TransferWaiting ?
+											NntpResponse.TransferFailed : NntpResponse.PostingFailed, null,
+											exception.Message);
+										break;
+									case DataProviderErrors.ServiceUnaviable:
+										result = new Response(NntpResponse.ServiceDiscontinued);
+										break;
+									case DataProviderErrors.Timeout:
+										result = new Response(NntpResponse.TimeOut);
+										break;
+									default:
+										// Unknown data provider error
+										result = new Response(NntpResponse.ProgramFault, null, exception.Message);
+										break;
+								}
+								logger.WarnFormat("Data Provider Error ({0}): {1}",
+									exception.Error, exception.Message);
+							}
+							catch (AuthenticationException authException)
+							{
+								logger.WarnFormat("SSL auth error: ", authException.Message);
+								SessionEnd();
+								return;
+							}
+							// not good....
+							catch (Exception e)
+							{
+								logger.Error(
+									string.Format("Exception during processing command" +
+									" (selected group '{0}', last request '{1}').\n",
+									currentGroup, commandString), e);
+								result = new Response(NntpResponse.ProgramFault, null, e.Message);
+							}
+
+							Answer(result);
+
+							// debug tracing
+							logger.Debug(result);
+
+							// result code indicates error
+							if (result.Code >= 400)
+							{
+								switch (sessionState)
+								{
+									case States.PostWaiting:
+									case States.TransferWaiting:
+										sessionState = States.Normal;
+										break;
+								}
+#if PERFORMANCE_COUNTERS_OLD
+							badRequestsCounter.Increment();
+							globalBadRequestsCounter.Increment();
+#endif
+							}
+
+							switch ((NntpResponse)result.Code)
+							{
+								case NntpResponse.ArticleHeadBodyRetrivied:
+								case NntpResponse.ArticleHeadRetrivied:
+								case NntpResponse.ArticleBodyRetrivied:
+								case NntpResponse.ArticleNothingRetrivied:
+#if PERFORMANCE_COUNTERS_OLD
+								articlesCounter.Increment();
+								globalArticlesCounter.Increment();
+#endif
 									break;
+								case NntpResponse.Bye: // quit
+								case NntpResponse.ServiceDiscontinued: // service disctontined
+								case NntpResponse.ServiceUnaviable: // service unaviable
+								case NntpResponse.TimeOut: // timeout
+									SessionEnd();
+									return;
 							}
 						}
 
-						Answer(result);
-
-						// debug tracing
-						logger.Debug(result);
-
-						if (result.Code >= 400)
-						// result code indicates error
-						{
-#if PERFORMANCE_COUNTERS_OLD
-						badRequestsCounter.Increment();
-						globalBadRequestsCounter.Increment();
-#endif
-						}
-
-						switch ((NntpResponse)result.Code)
-						{
-							case NntpResponse.ArticleHeadBodyRetrivied:
-							case NntpResponse.ArticleHeadRetrivied:
-							case NntpResponse.ArticleBodyRetrivied:
-							case NntpResponse.ArticleNothingRetrivied:
-#if PERFORMANCE_COUNTERS_OLD
-							articlesCounter.Increment();
-							globalArticlesCounter.Increment();
-#endif
-								break;
-							case NntpResponse.Bye: // quit
-							case NntpResponse.ServiceDiscontinued: // service disctontined
-							case NntpResponse.ServiceUnaviable: // service unaviable
-							case NntpResponse.TimeOut: // timeout
-								return;
-						}
+						// read more data
+						IAsyncResult readAsync =
+							netStream.BeginRead(commandBuffer, 0, bufferSize, null, null);
+						ThreadPool.RegisterWaitForSingleObject(readAsync.AsyncWaitHandle,
+							ProcessData, readAsync, connectionTimeout, true);
 					}
-
-					// read more data
-					IAsyncResult readAsync =
-						netStream.BeginRead(commandBuffer, 0, bufferSize, null, null);
-					ThreadPool.RegisterWaitForSingleObject(readAsync.AsyncWaitHandle,
-						ProcessData, readAsync, connectionTimeout, true);
-				}
-				catch (IOException ioException)
-				{
-					// network error
-					logger.Warn("Network error", ioException);
-					SessionEnd();
-				}
-				catch (Exception e)
-				{
-					// something wrong......
-					logger.Fatal("Fatal error", e);
-					SessionEnd();
-				}
-				finally
-				{
-					NDC.Pop();
-				}
-			}
+				}, origObj, origTimeout);
 		}
 
 		/// <summary>
@@ -594,6 +603,9 @@ namespace Rsdn.Nntp
     {
       get { return _client.RemoteEndPoint;  }
     }
+
+		private string _clientID;
+
     /// <summary>
     /// Server vertificate using for SSL authentification
     /// </summary>
