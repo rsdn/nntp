@@ -21,21 +21,22 @@ namespace Rsdn.Mime
 		/// <summary>
 		/// Hashtable for header identities' filters
 		/// </summary>
-    protected IDictionary<string, SortedList<int, FilterHandler>> filters;
+		protected IDictionary<string, SortedList<int, FilterHandler>> filters;
 
 		/// <summary>
 		/// Construct empty header.
 		/// </summary>
-		public Header() : base()
+		public Header()
 		{
-      filters = new Dictionary<string, SortedList<int, FilterHandler>>(
-        StringComparer.InvariantCultureIgnoreCase);
+			filters = new Dictionary<string, SortedList<int, FilterHandler>>(
+			  StringComparer.InvariantCultureIgnoreCase);
 		}
-		   
+
 		/// <summary>
 		/// Constructor for deserializing of the object
 		/// </summary>
-		protected Header(SerializationInfo info, StreamingContext context) : base(info, context)
+		protected Header(SerializationInfo info, StreamingContext context)
+			: base(info, context)
 		{
 		}
 
@@ -44,8 +45,8 @@ namespace Rsdn.Mime
 		/// </summary>
 		public new string this[string name]
 		{
-			get	{return base[name]; }
-			set {base[name] = FilterHeaderIdentity(name, DecodeHeaderFieldValue(value));}
+			get { return base[name]; }
+			set { base[name] = FilterHeaderIdentity(name, DecodeHeaderFieldValue(value)); }
 		}
 
 		/// <summary>
@@ -73,7 +74,7 @@ namespace Rsdn.Mime
 		public void AddFilter(string name, FilterHandler handler, int priority)
 		{
 			if (!filters.ContainsKey(name))
-        filters[name] = new SortedList<int, FilterHandler>();
+				filters[name] = new SortedList<int, FilterHandler>();
 			filters[name].Add(priority, handler);
 		}
 
@@ -104,16 +105,6 @@ namespace Rsdn.Mime
 		}
 
 		/// <summary>
-		/// Text encoding for Non-ASCII characters
-		/// </summary>
-		protected Encoding encoding;
-
-		/// <summary>
-		/// MIME Encoding for Non-ASCII characters
-		/// </summary>
-		protected ContentTransferEncoding mimeEncoding;
-
-		/// <summary>
 		/// Regular expressions for mime header folding
 		/// </summary>
 		protected static readonly Regex headerFolding =
@@ -136,23 +127,16 @@ namespace Rsdn.Mime
 			{
 				if (this[name] == null)
 					return null;
-				
-				this.encoding = encoding;
-				this.mimeEncoding = mimeEncoding;
 
-				return headerFolding.Replace(nonAsciiReplace.Replace(this[name], new MatchEvaluator(NonAsciiReplacer)),
+				MatchEvaluator nonAsciiReplacer = delegate(Match match)
+				{
+					return mimeEncoding == ContentTransferEncoding.Unknown? match.Value:
+							Util.Encode(match.Value, encoding, mimeEncoding, true, false);
+				};
+
+				return headerFolding.Replace(nonAsciiReplace.Replace(this[name], nonAsciiReplacer),
 					string.Format("$1{0}$2", Util.CRLF));
 			}
-		}
-
-		/// <summary>
-		/// Encode Non-ASCII character sequence with defined MIME and Text encodings.
-		/// </summary>
-		/// <param name="match"></param>
-		/// <returns></returns>
-		protected string NonAsciiReplacer(Match match)
-		{
-			return Util.Encode(match.Value, encoding, mimeEncoding, true, false);
 		}
 
 		/// <summary>
@@ -160,7 +144,7 @@ namespace Rsdn.Mime
 		/// </summary>
 		public string this[string name, Encoding encoding]
 		{
-			get	{ return this[name, encoding, ContentTransferEncoding.QoutedPrintable]; }
+			get { return this[name, encoding, ContentTransferEncoding.QoutedPrintable]; }
 		}
 
 		/// <summary>
@@ -168,9 +152,15 @@ namespace Rsdn.Mime
 		/// </summary>
 		public string Encode(Encoding encoding, ContentTransferEncoding mimeEncoding)
 		{
-			StringBuilder builder = new StringBuilder();
+			StringBuilder builder = new StringBuilder(512);
 			foreach (string key in AllKeys)
-				builder.AppendFormat("{0}: {1}", key, this[key, encoding, mimeEncoding]).Append(Util.CRLF);
+			{
+				builder
+					.Append(key)
+					.Append(": ")
+					.Append(this[key, encoding, mimeEncoding])
+					.Append(Util.CRLF);
+			}
 			return builder.ToString();
 		}
 
@@ -181,7 +171,7 @@ namespace Rsdn.Mime
 		{
 			return Encode(encoding, ContentTransferEncoding.QoutedPrintable);
 		}
-			
+
 		/// <summary>
 		/// Regular expression for detect encoded parts
 		/// </summary>
@@ -217,13 +207,13 @@ namespace Rsdn.Mime
 			switch (encodedMatch.Groups["encoding"].Value.ToUpper())
 			{
 				//quoted-printable
-				case "Q" :
+				case "Q":
 					// Underscore in Q-encoded header means space. See RFC #...
 					result = result.Replace("_", " ");
 					return Encoding.GetEncoding(encodedMatch.Groups["charset"].Value).GetString(
 						Util.FromQuotedPrintableString(result));
-					// base64
-				case "B" :
+				// base64
+				case "B":
 					return Encoding.GetEncoding(encodedMatch.Groups["charset"].Value).GetString(
 						Convert.FromBase64String(result));
 			}
