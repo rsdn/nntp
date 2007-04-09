@@ -29,7 +29,7 @@ namespace Rsdn.Nntp
 		
 		/// global performance counters collection
 		protected static IDictionary<string, PerformanceCounter> globalPerformanceCounters =
-      new Dictionary<string, PerformanceCounter>();
+			new Dictionary<string, PerformanceCounter>();
 		/// <summary>
 		/// Get specified global performance counter
 		/// </summary>
@@ -37,12 +37,12 @@ namespace Rsdn.Nntp
 		/// <returns>Specified counter</returns>
 		public static PerformanceCounter GetGlobalPerformanceCounter(string name)
 		{
-		  return globalPerformanceCounters[name];
+			return globalPerformanceCounters[name];
 		}
 
 		/// instance performance counters collection
-    protected IDictionary<string, PerformanceCounter> performanceCounters =
-      new Dictionary<string, PerformanceCounter>();
+		protected IDictionary<string, PerformanceCounter> performanceCounters =
+			new Dictionary<string, PerformanceCounter>();
 		/// <summary>
 		/// Get specified instance performance counter
 		/// </summary>
@@ -74,7 +74,7 @@ namespace Rsdn.Nntp
 			{
 				connectionsCounterName,
 				maxConnectionsCounterName,
-			  bytesReceivedPerSecCounterName,
+				bytesReceivedPerSecCounterName,
 				bytesReceivedCounterName,
 				bytesSentPerSecCounterName,
 				bytesSentCounterName,
@@ -125,8 +125,8 @@ namespace Rsdn.Nntp
 					new CounterCreationData(bytesTotalCounterName,
 						"Total bytes",	PerformanceCounterType.NumberOfItems32));
 
-				PerformanceCounterCategory.Create(ServerCategoryName , "",
-          PerformanceCounterCategoryType.MultiInstance, perfomanceCountersCollection);
+				PerformanceCounterCategory.Create(ServerCategoryName, "",
+					PerformanceCounterCategoryType.MultiInstance, perfomanceCountersCollection);
 			}
 
 			// create global performance counters
@@ -135,8 +135,8 @@ namespace Rsdn.Nntp
 		}
 
 #if PERFORMANCE_COUNTERS
-    private static void CreatePerformanceCounters(
-      IDictionary<string, PerformanceCounter> store, string instanceName)
+		private static void CreatePerformanceCounters(
+			IDictionary<string, PerformanceCounter> store, string instanceName)
 		{
 			foreach (string counterName in performanceCountersNames)
 				store.Add(counterName,
@@ -198,7 +198,7 @@ namespace Rsdn.Nntp
 			}
 		}
 
-		
+
 		/// <summary>
 		/// Accept incoming connections
 		/// </summary>
@@ -206,18 +206,18 @@ namespace Rsdn.Nntp
 		{
 			try
 			{
-        int bindingIndex = (int)ar.AsyncState;
+				int bindingIndex = (int)ar.AsyncState;
 
-        // listen sockets already shutdowned
-        if (listeners.Length <= bindingIndex)
-          return;
+				// listen sockets already shutdowned
+				if (listeners.Length <= bindingIndex)
+					return;
 
 				// get listener socket
-        Socket listener = listeners[bindingIndex];
+				Socket listener = listeners[bindingIndex];
 				// get client's socket
 				Socket socket = listener.EndAccept(ar);
 				// start listen for next client
-        listener.BeginAccept(new AsyncCallback(AcceptClient), bindingIndex);
+				listener.BeginAccept(new AsyncCallback(AcceptClient), bindingIndex);
 				if (paused)
 				{
 					Response.Answer(NntpResponse.ServiceUnaviable, socket);
@@ -226,10 +226,10 @@ namespace Rsdn.Nntp
 				}
 				else
 				{
-					IDataProvider dataProvider = Activator.CreateInstance(settings.DataProviderType) as IDataProvider;
+					IDataProvider dataProvider = (IDataProvider)Activator.CreateInstance(settings.DataProviderType);
 					dataProvider.Config(settings.DataProviderSettings);
 					Session session =
-            new Session(socket, settings.Bindings[bindingIndex].Certificate, dataProvider,	this);
+						new Session(socket, settings.Bindings[bindingIndex].Certificate, dataProvider, this);
 					session.Disposed += new EventHandler(SessionDisposedHandler);
 					sessions.Add(session);
 					// reset event (now we have child sessions)
@@ -240,7 +240,7 @@ namespace Rsdn.Nntp
 					PerformanceCounter connectionsCounter =
 						GetPerformanceCounter(connectionsCounterName);
 					connectionsCounter.Increment();
-				  GetGlobalPerformanceCounter(connectionsCounterName).Increment();
+					GetGlobalPerformanceCounter(connectionsCounterName).Increment();
 
 					// set max connections counter
 					PerformanceCounter maxConnectionsCounter =
@@ -250,7 +250,7 @@ namespace Rsdn.Nntp
 
 					// set global max connections counter
 					PerformanceCounter globalMaxConnectionsCounter =
-					  GetGlobalPerformanceCounter(maxConnectionsCounterName);
+						GetGlobalPerformanceCounter(maxConnectionsCounterName);
 					if (maxConnectionsCounter.RawValue > globalMaxConnectionsCounter.RawValue)
 						globalMaxConnectionsCounter.RawValue = maxConnectionsCounter.RawValue;
 #endif
@@ -259,8 +259,11 @@ namespace Rsdn.Nntp
 
 				}
 			}
-			// socket is closed
-			catch(ObjectDisposedException) {}
+			// The socket is closed.
+			catch (ObjectDisposedException) { }
+
+			// The socket was closed before its connection was accepted.
+			catch (SocketException) { }
 		}
 
 		/// <summary>
@@ -341,7 +344,7 @@ namespace Rsdn.Nntp
 
 #if PERFORMANCE_COUNTERS
 				GetPerformanceCounter(connectionsCounterName).Decrement();
-			  GetGlobalPerformanceCounter(connectionsCounterName).Decrement();
+				GetGlobalPerformanceCounter(connectionsCounterName).Decrement();
 #endif
 			}
 		}
@@ -359,7 +362,7 @@ namespace Rsdn.Nntp
 		/// <summary>
 		/// free resources (end all child sessions) 
 		/// </summary>
- 		public void Dispose()
+		public void Dispose()
 		{
 			// listener socket do not need shutdown
 			foreach (Socket listener in listeners)
@@ -372,7 +375,7 @@ namespace Rsdn.Nntp
 		/// </summary>
 		public int SessionsQuantity
 		{
-			get {return sessions.Count;	}
+			get { return sessions.Count; }
 		}
 
 		/// <summary>
@@ -388,7 +391,7 @@ namespace Rsdn.Nntp
 		public static string GetProductTitle(Assembly assembly)
 		{
 			StringBuilder builder = new StringBuilder();
-			
+
 			AssemblyProductAttribute productName = (AssemblyProductAttribute)
 				Attribute.GetCustomAttribute(assembly, typeof(AssemblyProductAttribute));
 
@@ -400,7 +403,7 @@ namespace Rsdn.Nntp
 
 			if (productVersion != null)
 				builder.Append(productVersion.InformationalVersion);
-			
+
 			return builder.ToString();
 		}
 
@@ -409,14 +412,8 @@ namespace Rsdn.Nntp
 		/// </summary>
 		public string Name
 		{
-			get
-			{
-				return settings.Name;
-			}
-			set
-			{
-				settings.Name = value;
-			}
+			get { return settings.Name; }
+			set { settings.Name = value; }
 		}
 	}
 }
