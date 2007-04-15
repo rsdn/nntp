@@ -103,6 +103,11 @@ namespace Rsdn.Nntp
 			get { return _manager; }
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		private int _pauseOnError;
+
     /// <summary>
     /// Create user session
     /// </summary>
@@ -111,6 +116,20 @@ namespace Rsdn.Nntp
     /// <param name="dataProvider">Data Provider</param>
     /// <param name="manager">Sessions' manager.</param>
 		public Session(Socket client, X509Certificate2 certificate, IDataProvider dataProvider, Manager manager)
+			: this(client, certificate, dataProvider, manager, 500)
+		{
+		}
+
+		/// <summary>
+    /// Create user session
+    /// </summary>
+    /// <param name="client">Established client's socket</param>
+    /// <param name="certificate">Certificate for SSL connection, NULL - if no SSL.</param>
+    /// <param name="dataProvider">Data Provider</param>
+    /// <param name="manager">Sessions' manager.</param>
+		/// <param name="pauseOnError">Начальная пауза после ошибки, если ноль - нет паузы
+		/// <remarks>Пауза нарастающая, после каждой ошибки увелеичение на 25%</remarks></param>
+		public Session(Socket client, X509Certificate2 certificate, IDataProvider dataProvider, Manager manager, int pauseOnError)
 		{
       logger = LogManager.GetLogger(manager.Name);
 
@@ -121,6 +140,7 @@ namespace Rsdn.Nntp
       _certificate = certificate;
 			_client = client;
     	_clientID = client.RemoteEndPoint.ToString();
+			_pauseOnError = pauseOnError;
 
       netStream = new NetworkStream(client);
       if (certificate != null)
@@ -561,6 +581,15 @@ namespace Rsdn.Nntp
 							badRequestsCounter.Increment();
 							globalBadRequestsCounter.Increment();
 #endif
+								// pause on error, if enabled
+								if (_pauseOnError > 0)
+								{
+									Thread.Sleep(_pauseOnError);
+									// врядли кто-нибудь дождётся паузы,
+									// когда int близок к максимальному значению -
+									// так что переполнение не проверяем.
+									_pauseOnError = (int)(_pauseOnError * 1.25);
+								}
 							}
 
 							switch ((NntpResponse)result.Code)
