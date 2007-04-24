@@ -104,9 +104,10 @@ namespace Rsdn.Nntp
 		}
 
 		/// <summary>
-		/// 
+		/// Текущая пауза при ошибке
 		/// </summary>
-		private int _pauseOnError;
+		private int _errorPauseDuration;
+		private Timer _errorPauseTimer;
 
     /// <summary>
     /// Create user session
@@ -115,8 +116,9 @@ namespace Rsdn.Nntp
     /// <param name="certificate">Certificate for SSL connection, NULL - if no SSL.</param>
     /// <param name="dataProvider">Data Provider</param>
     /// <param name="manager">Sessions' manager.</param>
+    /// <remarks>By default - starting error pause 100msec</remarks>
 		public Session(Socket client, X509Certificate2 certificate, IDataProvider dataProvider, Manager manager)
-			: this(client, certificate, dataProvider, manager, 500)
+			: this(client, certificate, dataProvider, manager, 100)
 		{
 		}
 
@@ -128,7 +130,7 @@ namespace Rsdn.Nntp
     /// <param name="dataProvider">Data Provider</param>
     /// <param name="manager">Sessions' manager.</param>
 		/// <param name="pauseOnError">Начальная пауза после ошибки, если ноль - нет паузы
-		/// <remarks>Пауза нарастающая, после каждой ошибки увелеичение на 25%</remarks></param>
+		/// <remarks>Пауза нарастающая, после каждой ошибки увелеичение на 20%</remarks></param>
 		public Session(Socket client, X509Certificate2 certificate, IDataProvider dataProvider, Manager manager, int pauseOnError)
 		{
       logger = LogManager.GetLogger(manager.Name);
@@ -140,7 +142,8 @@ namespace Rsdn.Nntp
       _certificate = certificate;
 			_client = client;
     	_clientID = client.RemoteEndPoint.ToString();
-			_pauseOnError = pauseOnError;
+			_errorPauseDuration = pauseOnError;
+			_errorPauseTimer = new Timer(AfterErrorPause);
 
       netStream = new NetworkStream(client);
       if (certificate != null)
@@ -310,6 +313,22 @@ namespace Rsdn.Nntp
 				// something wrong......
 				logger.Fatal("Fatal error", exception);
 			}
+		}
+
+		protected void AfterErrorPause(object origState)
+		{
+			ExceptionHandler((WaitCallback)
+				delegate(object state)
+     		{
+					// if we still have unprocessed comannds after error - 
+					// do not read new data - process those first
+     			int dataToRead = bufferString.Length > 0 ? 0 : bufferSize;
+					// read more data
+					IAsyncResult readAsync =
+						netStream.BeginRead(commandBuffer, 0, dataToRead, null, null);
+					ThreadPool.RegisterWaitForSingleObject(readAsync.AsyncWaitHandle,
+						ProcessData, readAsync, connectionTimeout, true);
+     		}, origState);
 		}
 
 		protected void SslAuthDone(IAsyncResult origAsync)
@@ -581,15 +600,6 @@ namespace Rsdn.Nntp
 							badRequestsCounter.Increment();
 							globalBadRequestsCounter.Increment();
 #endif
-								// pause on error, if enabled
-								if (_pauseOnError > 0)
-								{
-									Thread.Sleep(_pauseOnError);
-									// врядли кто-нибудь дождётся паузы,
-									// когда int близок к максимальному значению -
-									// так что переполнение не проверяем.
-									_pauseOnError = (int)(_pauseOnError * 1.25);
-								}
 							}
 
 							switch ((NntpResponse)result.Code)
@@ -609,6 +619,17 @@ namespace Rsdn.Nntp
 								case NntpResponse.TimeOut: // timeout
 									SessionEnd();
 									return;
+							}
+
+							// pause on error, if necesary and enabled
+							if ((result.Code >= 400) && (_errorPauseDuration > 0))
+							{
+								_errorPauseTimer.Change(_errorPauseDuration, Timeout.Infinite);
+								// врядли кто-нибудь дождётся паузы,
+								// когда int близок к максимальному значению -
+								// так что переполнение не проверяем.
+								_errorPauseDuration = (int)(_errorPauseDuration * 1.2);
+								return;
 							}
 						}
 
