@@ -31,7 +31,7 @@ namespace Rsdn.Nntp.Commands
 		protected override Response ProcessCommand()
 		{
 			Response result;
-			if (lastMatch.Groups["mode"].Value.ToUpper() == "READER")
+			if ("READER".Equals(lastMatch.Groups["mode"].Value, StringComparison.OrdinalIgnoreCase))
 				// MODE READER
 				result = new Response(session.DataProvider.PostingAllowed ?
 					NntpResponse.Ok : NntpResponse.OkNoPosting, null,

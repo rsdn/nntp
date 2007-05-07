@@ -545,12 +545,12 @@ namespace Rsdn.Mime
 							body = Util.StringToBytes(headerAndBodyMatch.Groups["body"].Value);
 							break;
 					}
-					
-					if (message.type == "text")
-						// if content type is 'text' - interpet body as text
+
+					// if content type is 'text' - interpet body as text
+					if ("text".Equals(message.type, StringComparison.OrdinalIgnoreCase))
 						message.entities.Add(message.encoding.GetString(body));
+					// otherwise (content type is not 'text') - interpet body as byte array
 					else
-						// otherwise (content type is not 'text') - interpet body as byte array
 						message.entities.Add(body);
 					break;
 			}
@@ -571,7 +571,7 @@ namespace Rsdn.Mime
 			// delimeter
 			builder.Append(Util.CRLF);
 
-			bool multipart = (type == "multipart");
+			bool multipart = "multipart".Equals(type, StringComparison.OrdinalIgnoreCase);
 			if (multipart)
 				builder.Append("This is a multi-part message in MIME format.").Append(Util.CRLF);
 

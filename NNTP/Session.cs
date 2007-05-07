@@ -450,7 +450,7 @@ namespace Rsdn.Nntp
 
 							// especialy for Outlook Express
 							// it send sometimes blank lines
-							if (commandString == string.Empty)
+							if (string.IsNullOrEmpty(commandString))
 								continue;
 
 							try

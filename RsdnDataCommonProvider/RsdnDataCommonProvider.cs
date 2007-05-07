@@ -625,16 +625,15 @@ namespace Rsdn.RsdnNntp.Common
     		
 				// process attachments
 				if (true &&
-						(string.Compare(message.ContentTypeType, "multipart", true,
-							CultureInfo.InvariantCulture) == 0))
+						"multipart".Equals(message.ContentTypeType, StringComparison.OrdinalIgnoreCase))
 				{
 					StringBuilder processedFiles = new StringBuilder();
 					foreach (Message entity in message.Entities)
 					{
 						string disposition = entity.GetHeaderFieldValue("Content-Disposition");
-						if ((disposition != null) &&
-							((disposition.ToLower() == "attachment") ||
-							(disposition.ToLower() == "inline")))
+						if (!string.IsNullOrEmpty(disposition) &&
+								("attachment".Equals(disposition, StringComparison.OrdinalIgnoreCase) ||
+									"inline".Equals(disposition, StringComparison.OrdinalIgnoreCase)))
 						{
 							string filename =
 								entity.GetHeaderFieldParameters("Content-Disposition")["filename"];
@@ -810,8 +809,9 @@ namespace Rsdn.RsdnNntp.Common
     internal StringBuilder GetPlainTextFromMessage(Message message)
     {
     	StringBuilder text = new StringBuilder();
-    	if ((message.ContentTypeType == "text") && (message.ContentTypeSubtype == "plain") ||
-    			(message.ContentTypeType == "multipart"))
+    	if ("text".Equals(message.ContentTypeType, StringComparison.OrdinalIgnoreCase) &&
+					("plain".Equals(message.ContentTypeSubtype, StringComparison.OrdinalIgnoreCase)) ||
+						"multipart".Equals(message.ContentTypeSubtype, StringComparison.OrdinalIgnoreCase))
     		foreach (object entity in message.Entities)
     			if (entity is Message)
     				text.Append(GetPlainTextFromMessage((Message)entity));

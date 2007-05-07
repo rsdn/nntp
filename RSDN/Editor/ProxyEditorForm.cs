@@ -252,7 +252,7 @@ namespace Rsdn.RsdnNntp.Public.Editor
 		private void okButton_Click(object sender, System.EventArgs e)
 		{
 			((NetworkCredential)proxy.Credentials).UserName = username.Text;
-			if (password2.Text == password.Text)
+			if (password2.Text.Equals(password.Text, StringComparison.Ordinal))
 			{
 				((NetworkCredential)proxy.Credentials).Password = password.Text;
 				DialogResult = DialogResult.OK;

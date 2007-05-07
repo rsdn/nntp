@@ -34,7 +34,7 @@ namespace Rsdn.Nntp.Commands
 		protected override Response ProcessCommand()
 		{
 			Response result = null;
-			if (lastMatch.Groups["mode"].Value.ToUpper() == "USER")
+			if ("USER".Equals(lastMatch.Groups["mode"].Value, StringComparison.OrdinalIgnoreCase))
 				// AUTHINFO USER
 				switch (session.sessionState)
 				{

@@ -43,7 +43,7 @@ namespace Rsdn.Nntp.Editor
     {
       if (value is string)
       {
-        if ((string)value == "")
+        if (string.IsNullOrEmpty((string)value))
           return null;
         else
           throw new ArgumentException("Wrong certificate!", "value");

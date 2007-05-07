@@ -29,7 +29,7 @@ namespace Rsdn.Mime
 		public Header()
 		{
 			filters = new Dictionary<string, SortedList<int, FilterHandler>>(
-			  StringComparer.InvariantCultureIgnoreCase);
+			  StringComparer.OrdinalIgnoreCase);
 		}
 
 		/// <summary>

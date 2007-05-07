@@ -46,7 +46,7 @@ namespace Rsdn.Nntp
 			get { return name; }
 			set
 			{
-				if (value == null || value == "")
+				if (string.IsNullOrEmpty(value))
 					throw new ArgumentException("Name can't be empty");
 				name = value;
 			}
