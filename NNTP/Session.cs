@@ -349,8 +349,6 @@ namespace Rsdn.Nntp
 					string.Format("{0} ({1}; {2})",
 					_manager.Name, Manager.ServerID, _dataProvider.Identity)));
 
-			sessionState = States.Normal;
-
 			IAsyncResult readAsync =
 				netStream.BeginRead(commandBuffer, 0, bufferSize, null, null);
 			ThreadPool.RegisterWaitForSingleObject(readAsync.AsyncWaitHandle,
