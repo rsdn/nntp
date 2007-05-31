@@ -11,7 +11,7 @@
 		<table cellspacing="0" width="100%" border="0">
 			<tr>
 				<td class="s" nowrap="nowrap" style="font-weight: normal;">
-					From:&nbsp;<a $if(message.AuthorID)$href="/Users/Profile.aspx?uid=$message.AuthorID$$endif$" target="_blank"><b>$if(message.Author)$$message.Author$$else$Аноним$endif$</b></a>$if(message.UserType)$&nbsp;<small><span style="color: $message.UserColorWeb$; font-size: smaller;">$message.UserType$</span>$endif$</small>
+					From:&nbsp;<a $if(message.AuthorID)$href="/Users/$message.AuthorID$.aspx$endif$" target="_blank"><b>$if(message.Author)$$message.Author$$else$Аноним$endif$</b></a>$if(message.UserType)$&nbsp;<small><span style="color: $message.UserColorWeb$; font-size: smaller;">$message.UserType$</span>$endif$</small>
 				</td>
 				<td style="display: none">$replyMarker$</td>
 				<td class="s" nowrap="nowrap" align="center" width="100%">$homepage$</td>
