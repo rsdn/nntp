@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
@@ -149,7 +150,7 @@ namespace Rsdn.Nntp
 		/// <returns></returns>
 		public static NntpSettings Deseriazlize(string filename)
 		{
-      List<Type> dataProviderTypes = new List<Type>();
+			List<Type> dataProviderTypes = new List<Type>();
 			
 			XmlDocument doc = new XmlDocument();
 			doc.Load(filename);
@@ -192,5 +193,25 @@ namespace Rsdn.Nntp
 				ThreadPool.SetMaxThreads(value, competitionPortThreads);
 			}
 		}
-	}	
+
+		/// <summary>
+		/// Process affinity mask.
+		/// </summary>
+		[DefaultValue(-1)]
+		public Int64 AffinityMask
+		{
+			get { return (long)Process.GetCurrentProcess().ProcessorAffinity; }
+			set { Process.GetCurrentProcess().ProcessorAffinity = (IntPtr)value; }
+		}
+
+		/// <summary>
+		/// Process priority.
+		/// </summary>
+		[DefaultValue(ProcessPriorityClass.Normal)]
+		public ProcessPriorityClass Priority
+		{
+			get { return Process.GetCurrentProcess().PriorityClass; }
+			set { Process.GetCurrentProcess().PriorityClass = value; }
+		}
+	}
 }
