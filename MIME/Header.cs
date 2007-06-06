@@ -114,7 +114,7 @@ namespace Rsdn.Mime
 		/// regular expression for replacing non-ascii symbols
 		/// </summary>
 		protected static readonly Regex nonAsciiReplace =
-			new Regex(@"\s*(?<quote>"")?\s*((?=(?(quote)[^""]*[^\x00-\x7F].*?""|\S*[^\x00-\x7F]\S*))\S+\s*)+(?(quote)"")",
+			new Regex(@"\s*"".*?[^\x00-\x7F].*?""\s*|(\s*\S*[^\x00-\x7F]\S*\s*)+",
 				RegexOptions.Compiled);
 
 		/// <summary>
