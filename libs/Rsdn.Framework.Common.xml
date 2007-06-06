@@ -244,14 +244,9 @@
             <param name="password">Password</param>
             <returns>Hash of password</returns>
         </member>
-        <member name="T:Rsdn.Framework.Common.RsdnObject">
+        <member name="T:Rsdn.Framework.Common.UsingAttribute">
             <summary>
-            The base class for simple objects.
-            </summary>
-        </member>
-        <member name="T:Rsdn.Framework.Common.RsdnDisposableObject">
-            <summary>
-            The base class for simple disposable objects.
+            Is applied to any members that should be disposed automatically. 
             </summary>
         </member>
         <member name="T:Rsdn.Framework.Common.DisposableObject">
@@ -298,11 +293,6 @@
             </summary>
             <param name="member">Disposing member.</param>
         </member>
-        <member name="T:Rsdn.Framework.Common.RsdnDisposableMbrObject">
-            <summary>
-            The base class for MBR disposable objects.
-            </summary>
-        </member>
         <member name="T:Rsdn.Framework.Common.DisposableMbrObject">
             <summary>
             Base class for MBR classes that need to be disposed.
@@ -334,9 +324,19 @@
             </summary>
             <param name="disposing">Equal 'true' if is called from Dispose method, otherwise from destructor</param>
         </member>
-        <member name="T:Rsdn.Framework.Common.UsingAttribute">
+        <member name="T:Rsdn.Framework.Common.RsdnObject">
             <summary>
-            Is applied to any members that should be disposed automatically. 
+            The base class for simple objects.
+            </summary>
+        </member>
+        <member name="T:Rsdn.Framework.Common.RsdnDisposableObject">
+            <summary>
+            The base class for simple disposable objects.
+            </summary>
+        </member>
+        <member name="T:Rsdn.Framework.Common.RsdnDisposableMbrObject">
+            <summary>
+            The base class for MBR disposable objects.
             </summary>
         </member>
     </members>

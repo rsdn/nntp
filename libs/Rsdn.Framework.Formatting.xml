@@ -218,6 +218,36 @@
             <param name="newSubject">Тема нового сообщения.</param>
             <returns>Возвращает сообщение с добавленным префиксом 'Re'.</returns>
         </member>
+        <member name="M:Rsdn.Framework.Formatting.Format.Forum.GetSubjectDeep(System.String)">
+            <summary>
+            Возвращает уровень вложенности темы сообщения.
+            </summary>
+            <param name="subject">Тема сообщения</param>
+            <returns>Уровень вложенности.</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Format.Forum.GetRePrefix(System.Int32)">
+            <summary>
+            Возвращает префикс темы сообщения.
+            </summary>
+            <remarks>
+            Для первого ответа в ветке префикс '<b>Re:</b>', 
+            для всех последующий '<b>Re[n]:</b>', где <b>n</b> - уровень вложенности.
+            </remarks>
+            <param name="level">Уровень вложенности сообщения.</param>
+            <returns>Префикс.</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Format.Forum.AdjustSubject(System.Int32,System.String)">
+            <summary>
+            Корректировка темы сообщения.
+            </summary>
+            <remarks>
+            Корректирует уровень вложенности сообщения (Re[xxx])
+            относительно нового корня.
+            </remarks>
+            <param name="level">Уровень вложенности корневого сообщения.</param>
+            <param name="subject">Тема сообщения.</param>
+            <returns>Откорректированная тема сообщения.</returns>
+        </member>
         <member name="M:Rsdn.Framework.Formatting.Format.Forum.GetShortNick(System.String)">
             <summary>
             Возвращает сокращения для заданного ника.
@@ -377,24 +407,31 @@
             Map of URI schemes and associated handlers.
             </summary>
         </member>
-        <member name="M:Rsdn.Framework.Formatting.TextFormatter.ProcessMsHelpLink(System.Text.RegularExpressions.Match,Rsdn.Framework.Formatting.TextFormatter.URL@)">
+        <member name="M:Rsdn.Framework.Formatting.TextFormatter.ProcessMsHelpLink(System.Text.RegularExpressions.Match,System.Web.UI.HtmlControls.HtmlAnchor)">
             <summary>
             Process local MSDN links (ms-help scheme).
             </summary>
             <param name="urlMatch">Input URL match</param>
-            <param name="url">Output formatted URL</param>
+            <param name="link">Output formatted URL</param>
         </member>
         <member name="F:Rsdn.Framework.Formatting.TextFormatter.hostFormatting">
             <summary>
             Map of host names and associated handlers.
             </summary>
         </member>
-        <member name="M:Rsdn.Framework.Formatting.TextFormatter.ProcessPartnerLink(System.Text.RegularExpressions.Match,Rsdn.Framework.Formatting.TextFormatter.URL@)">
+        <member name="M:Rsdn.Framework.Formatting.TextFormatter.ProcessAmazonLink(System.Text.RegularExpressions.Match,System.Web.UI.HtmlControls.HtmlAnchor)">
+            <summary>
+            Process Amazon.com links
+            </summary>
+            <param name="urlMatch"></param>
+            <param name="link"></param>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.TextFormatter.ProcessPartnerLink(System.Text.RegularExpressions.Match,System.Web.UI.HtmlControls.HtmlAnchor)">
             <summary>
             Process RSDN partneship links.
             </summary>
             <param name="urlMatch"></param>
-            <param name="url"></param>
+            <param name="link"></param>
         </member>
         <member name="M:Rsdn.Framework.Formatting.TextFormatter.FormatURLs(System.Text.RegularExpressions.Match,System.String,System.String)">
             <summary>
@@ -406,26 +443,21 @@
             <param name="urlName">URL name. May be or may be not different from URL address.</param>
             <returns>Formatted link for specified URL.</returns>
         </member>
-        <member name="M:Rsdn.Framework.Formatting.TextFormatter.ProcessByCustomUrlFormatter(System.Object,System.Text.RegularExpressions.Match,System.String,System.String,Rsdn.Framework.Formatting.TextFormatter.URL@)">
+        <member name="M:Rsdn.Framework.Formatting.TextFormatter.RenderControl(System.Web.UI.Control)">
             <summary>
-            Process link by custom URL formatter.
+            Render server control to string
             </summary>
-            <param name="urlFormatter">URL formatter</param>
-            <param name="urlMatch">URL match</param>
-            <param name="urlAdsress">Link address</param>
-            <param name="urlName">Link name</param>
-            <param name="url">URL sctructure, contains output link info.</param>
-            <returns>Null - if need further processing, string - if processed by formatter itself.</returns>
+            <param name="control">Control</param>
+            <returns>Rendered control</returns>
         </member>
-        <member name="M:Rsdn.Framework.Formatting.TextFormatter.FormatRsdnURLs(System.Text.RegularExpressions.Match,System.String,System.String)">
+        <member name="M:Rsdn.Framework.Formatting.TextFormatter.FormatRsdnURLs(System.Text.RegularExpressions.Match,System.Web.UI.HtmlControls.HtmlAnchor)">
             <summary>
             Format RSDN URLs to hyperlinks.
             Used in both, explicitly &amp; implicitly specified links.
             </summary>
             <param name="urlMatch">Regex match with URL address.</param>
-            <param name="urlAdsress">URL address.</param>
-            <param name="urlName">URL name. May be or may be not different from URL address.</param>
-            <returns>Formatted link for specified URL.</returns>
+            <param name="link">HtmlLink, initialized by default</param>
+            <returns>true - processed by formatter itself, no further processing</returns>
         </member>
         <member name="F:Rsdn.Framework.Formatting.TextFormatter.serverName">
             <summary>
@@ -494,7 +526,7 @@
             Process RSDN link tag
             </summary>
             <param name="name">Regexp match with RSDN link tag</param>
-            <returns>Formatted link value</returns>
+            <returns>Formatted link</returns>
         </member>
         <member name="F:Rsdn.Framework.Formatting.TextFormatter.TrimArray">
             <summary>
