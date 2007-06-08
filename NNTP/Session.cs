@@ -303,7 +303,9 @@ namespace Rsdn.Nntp
 			{
 				logger.WarnFormat("SSL auth failed: {0}", exception.Message);
 			}
-			else if ((exception is IOException) || (exception is SocketException))
+			else if ((exception is IOException) || (exception is SocketException)
+				// after canceling of async request
+				|| (exception is ObjectDisposedException))
 			{
 				// network error
 				logger.WarnFormat("Network error: {0}", exception.Message);
