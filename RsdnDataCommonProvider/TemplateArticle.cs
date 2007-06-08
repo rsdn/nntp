@@ -37,6 +37,11 @@ namespace Rsdn.RsdnNntp
 			get { return _article.Number; }
 		}
 
+		public bool IsAuthorEmpty
+		{
+			get { return string.IsNullOrEmpty(_article.Author); }
+		}
+
 		public string Author
 		{
 			get { return _article.Author; }
@@ -45,6 +50,14 @@ namespace Rsdn.RsdnNntp
 		public int AuthorID
 		{
 			get { return _article.AuthorID; }
+		}
+
+		public bool IsAnonymous
+		{
+			get
+			{
+				return _article.AuthorID == 0;
+			}
 		}
 
 		public string Subject
@@ -70,6 +83,11 @@ namespace Rsdn.RsdnNntp
 		public bool Smile
 		{
 			get { return _article.Smile; }
+		}
+
+		public bool IsUserTypeEmpty
+		{
+			get { return string.IsNullOrEmpty(_article.UserType); }
 		}
 
 		public string UserType
