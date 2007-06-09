@@ -63,6 +63,11 @@
             The error code.
             </summary>
         </member>
+        <member name="P:Rsdn.Framework.Common.RsdnException.ErrorCodeEx">
+            <summary>
+            The error code of <see cref="T:Rsdn.Framework.Common.RsdnException.ErrorCodes"/>.
+            </summary>
+        </member>
         <member name="T:Rsdn.Framework.Common.RsdnException.ErrorCodes">
             <summary>
             RSDN specific error codes.

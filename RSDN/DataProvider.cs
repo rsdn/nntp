@@ -10,6 +10,9 @@ using Rsdn.Framework.Common;
 using Rsdn.Nntp;
 using Rsdn.RsdnNntp.Common;
 using Rsdn.RsdnNntp.Public.RsdnService;
+using System.Web.Services.Protocols;
+using System.Collections.Generic;
+using System.Xml;
 
 namespace Rsdn.RsdnNntp.Public
 {
@@ -142,7 +145,7 @@ namespace Rsdn.RsdnNntp.Public
 			}	
 			catch (Exception exception)
 			{
-
+				webService.RequestSoapContext.Security.Clear();
 				ProcessException(exception);
 				return null;
 			}	
@@ -228,6 +231,28 @@ namespace Rsdn.RsdnNntp.Public
 			}	
   	}
 
+  	public const string ErrorsNamespace = "http://rsdn.ru/ws2/errors/";
+
+		protected static IDictionary<XmlQualifiedName, DataProviderErrors> soapErrors; 
+
+		static RsdnDataPublicProvider()
+		{
+			soapErrors = new Dictionary<XmlQualifiedName, DataProviderErrors>();
+			soapErrors.Add(
+				new XmlQualifiedName("FailedAuthentication",
+					"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"),
+				DataProviderErrors.NoPermission);
+			soapErrors.Add(new XmlQualifiedName(
+				RsdnException.ErrorCodes.NoSuchMessage.ToString(), ErrorsNamespace),
+				DataProviderErrors.NoSuchArticle);
+			soapErrors.Add(new XmlQualifiedName(
+				RsdnException.ErrorCodes.NoSuchGroup.ToString(), ErrorsNamespace),
+				DataProviderErrors.NoSuchGroup);
+			soapErrors.Add(new XmlQualifiedName(
+				RsdnException.ErrorCodes.BadLogin.ToString(), ErrorsNamespace),
+				DataProviderErrors.NoPermission);
+		}
+
     /// <summary>
     /// Process exception raised during request to data provider
     /// </summary>
@@ -239,17 +264,19 @@ namespace Rsdn.RsdnNntp.Public
 				// System.Net.WebException (connection problems)
     		throw new DataProviderException(DataProviderErrors.ServiceUnaviable, exception);
 
-			if (exception.Message.IndexOf("1 Incorrect group name.") >= 0)
-				throw new DataProviderException(DataProviderErrors.NoSuchGroup, exception);
-			else if (exception.Message.IndexOf("2 Incorrect login name or password") >= 0)
-				throw new DataProviderException(DataProviderErrors.NoPermission, exception);
-			else if (exception.Message.IndexOf("WSE563") >= 0)
-				throw new DataProviderException(DataProviderErrors.NoPermission, exception);
-			else if (exception.Message.IndexOf("3 Article not found.") >= 0)
-				throw new DataProviderException(DataProviderErrors.NoSuchArticle, exception);
+			if (exception is SoapException)
+			{
+				SoapException soapEx = (SoapException) exception;
+				if (soapErrors.ContainsKey(soapEx.Code))
+				{
+					throw new DataProviderException(soapErrors[soapEx.Code], exception);
+				}
+				else
+					throw exception;
+			}
 			else
 				throw exception;
-		}
+    }
 
 		/// <summary>
 		/// Identity of assembly for information purposes
