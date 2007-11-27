@@ -36,12 +36,6 @@ Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup", "Setup\Setup.vdproj
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Console Test", "Console Test\Console Test.csproj", "{3512427B-A32E-4C8A-BF0A-7AF2DD1B3B54}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RsdnDataCommonProvider", "RsdnDataCommonProvider\RsdnDataCommonProvider.csproj", "{A6ACE0D8-88D2-4306-AFB6-7A3EDD509D28}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
@@ -86,10 +80,6 @@ Global
 		{D40CDD65-2BFF-4556-9D97-25AEC2F27FF0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0F624B40-157B-4634-84CC-69D436CE4E15}.Debug|Any CPU.ActiveCfg = Debug
 		{0F624B40-157B-4634-84CC-69D436CE4E15}.Release|Any CPU.ActiveCfg = Release
-		{3512427B-A32E-4C8A-BF0A-7AF2DD1B3B54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3512427B-A32E-4C8A-BF0A-7AF2DD1B3B54}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3512427B-A32E-4C8A-BF0A-7AF2DD1B3B54}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3512427B-A32E-4C8A-BF0A-7AF2DD1B3B54}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A6ACE0D8-88D2-4306-AFB6-7A3EDD509D28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A6ACE0D8-88D2-4306-AFB6-7A3EDD509D28}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A6ACE0D8-88D2-4306-AFB6-7A3EDD509D28}.Release|Any CPU.ActiveCfg = Release|Any CPU
