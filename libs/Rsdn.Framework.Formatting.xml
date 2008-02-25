@@ -4,6 +4,65 @@
         <name>Rsdn.Framework.Formatting</name>
     </assembly>
     <members>
+        <member name="T:Rsdn.Framework.Formatting.QueryBuilder">
+            <summary>
+            Summary description for QueryBuilder.
+            </summary>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.QueryBuilder.#ctor">
+            <summary>
+            Construct <see cref="T:Rsdn.Framework.Formatting.QueryBuilder"/> object.
+            </summary>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.QueryBuilder.#ctor(Rsdn.Framework.Formatting.QueryBuilder)">
+            <summary>
+            Construct <see cref="T:Rsdn.Framework.Formatting.QueryBuilder"/> object.
+            </summary>
+            <param name="queryBuilder">Existing <see cref="T:Rsdn.Framework.Formatting.QueryBuilder"/> object.</param>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.QueryBuilder.#ctor(System.Collections.Specialized.NameValueCollection)">
+            <summary>
+            Construct <see cref="T:Rsdn.Framework.Formatting.QueryBuilder"/> object.
+            </summary>
+            <param name="queryCollection">query parameters collection.</param>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.QueryBuilder.#ctor(System.Collections.Specialized.NameValueCollection,System.Text.Encoding)">
+            <summary>
+            Construct <see cref="T:Rsdn.Framework.Formatting.QueryBuilder"/> object.
+            </summary>
+            <param name="queryCollection">query parameters collection.</param>
+            <param name="encoding">Encoding to encode non-ascii symbols.</param>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.QueryBuilder.#ctor(System.String)">
+            <summary>
+            Construct <see cref="T:Rsdn.Framework.Formatting.QueryBuilder"/> object.
+            </summary>
+            <param name="queryString">Query string to parse.
+            May or may not start with '?' question symbol.</param>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.QueryBuilder.#ctor(System.String,System.Text.Encoding)">
+            <summary>
+            Construct <see cref="T:Rsdn.Framework.Formatting.QueryBuilder"/> object.
+            </summary>
+            <param name="queryString">Query string to parse.
+            May or may not start with '?' question symbol.</param>
+            <param name="encoding">Encoding to encode non-ascii symbols.</param>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.QueryBuilder.ToString">
+            <summary>
+            Convert to query string.
+            </summary>
+            <returns>String presentation of query parameters.</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.QueryBuilder.ToString(System.Boolean)">
+            <summary>
+            Convert to query string.
+            </summary>
+            <param name="withQuestionMark">
+            Include or not question mark in beginning of string presentation.
+            </param>
+            <returns>String presentation of query parameters.</returns>
+        </member>
         <member name="T:Rsdn.Framework.Formatting.Format">
             <summary>
             Инкапсулирует функции форматирования.
@@ -76,6 +135,90 @@
             Top level RSDN domain name
             </summary>
         </member>
+        <member name="T:Rsdn.Framework.Formatting.Format.Forum">
+            <summary>
+            Инкапсулирует функции форматирования сообщений форума.
+            </summary>
+        </member>
+        <member name="F:Rsdn.Framework.Formatting.Format.Forum.reDetecter">
+            <summary>
+            Regex for detecting Re: and Re[number]: prefixes in subject at the start of the line
+            </summary>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Format.Forum.GetEditSubject(System.String)">
+            <summary>
+            Готовит поле 'тема' для редактирования.
+            </summary>
+            <param name="subj">Название темы.</param>
+            <returns>Результат.</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Format.Forum.AdjustSubject(System.String,System.String)">
+            <summary>
+            Корректировка темы сообщения.
+            </summary>
+            <remarks>
+            Добавляет префикс '<b>Re</b>' к новой теме сообщения.
+            Для первого ответа в ветке добавляется префикс '<b>Re:</b>', 
+            для всех последующий '<b>Re[n]:</b>', где <b>n</b> - уровень вложенности.
+            </remarks>
+            <param name="oldSubject">Тема предыдущего сообщения.</param>
+            <param name="newSubject">Тема нового сообщения.</param>
+            <returns>Возвращает сообщение с добавленным префиксом 'Re'.</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Format.Forum.GetSubjectDeep(System.String)">
+            <summary>
+            Возвращает уровень вложенности темы сообщения.
+            </summary>
+            <param name="subject">Тема сообщения</param>
+            <returns>Уровень вложенности.</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Format.Forum.GetRePrefix(System.Int32)">
+            <summary>
+            Возвращает префикс темы сообщения.
+            </summary>
+            <remarks>
+            Для первого ответа в ветке префикс '<b>Re:</b>', 
+            для всех последующий '<b>Re[n]:</b>', где <b>n</b> - уровень вложенности.
+            </remarks>
+            <param name="level">Уровень вложенности сообщения.</param>
+            <returns>Префикс.</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Format.Forum.AdjustSubject(System.Int32,System.String)">
+            <summary>
+            Корректировка темы сообщения.
+            </summary>
+            <remarks>
+            Корректирует уровень вложенности сообщения (Re[xxx])
+            относительно нового корня.
+            </remarks>
+            <param name="level">Уровень вложенности корневого сообщения.</param>
+            <param name="subject">Тема сообщения.</param>
+            <returns>Откорректированная тема сообщения.</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Format.Forum.GetShortNick(System.String)">
+            <summary>
+            Возвращает сокращения для заданного ника.
+            </summary>
+            <param name="nick">Ник.</param>
+            <returns>Сокращение.</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Format.Forum.GetEditMessage(System.String,System.String)">
+            <summary>
+            Готовит сообщение к цитированию.
+            </summary>
+            <param name="msg">Сообщение.</param>
+            <param name="nick">Автор ссобщения.</param>
+            <returns>Обработанное сообщение</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Format.Forum.GetEditMessage(System.String,System.String,System.Boolean)">
+            <summary>
+            Готовит сообщение к цитированию.
+            </summary>
+            <param name="msg">Сообщение.</param>
+            <param name="nick">Автор ссобщения.</param>
+            <param name="moderator">== true, если пользователь - модератор.</param>
+            <returns>Обработанное сообщение</returns>
+        </member>
         <member name="T:Rsdn.Framework.Formatting.Format.Date">
             <summary>
             Инкапсулирует функции форматирования даты.
@@ -91,6 +234,27 @@
             Конструктор объекта.
             </summary>
             <param name="dateTime">Дата.</param>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Format.Date.GetClientTimeZoneOffset">
+            <summary>
+            Get client time zone's offset in minutes from HttpContext
+            </summary>
+            <remarks>If HttpContext is absent, no offset is provided</remarks>
+            <returns></returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Format.Date.CorrectToServerTime(System.DateTime)">
+            <summary>
+            Correct client time to server time.
+            </summary>
+            <param name="clientTime">Client time.</param>
+            <returns>Server time.</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Format.Date.CorrectToClientTime(System.DateTime)">
+            <summary>
+            Correct server time to client timezone's time
+            </summary>
+            <param name="serverTime">Server time</param>
+            <returns>Corrected time</returns>
         </member>
         <member name="M:Rsdn.Framework.Formatting.Format.Date.Correct(System.DateTime,System.Double)">
             <summary>
@@ -188,89 +352,38 @@
             <param name="dateTime">Заданная дата.</param>
             <returns>Начало месяца.</returns>
         </member>
-        <member name="T:Rsdn.Framework.Formatting.Format.Forum">
+        <member name="T:Rsdn.Framework.Formatting.Matcher">
             <summary>
-            Инкапсулирует функции форматирования сообщений форума.
+            Helper class for counting of matches.
             </summary>
         </member>
-        <member name="F:Rsdn.Framework.Formatting.Format.Forum.reDetecter">
+        <member name="M:Rsdn.Framework.Formatting.Matcher.#ctor(System.String)">
             <summary>
-            Regex for detecting Re: and Re[number]: prefixes in subject at the start of the line
+            Class constructor
+            </summary>
+            <param name="pattern">Match replacement pattern</param>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Matcher.Match(System.Text.RegularExpressions.Match)">
+            <summary>
+            Match evaluator
+            </summary>
+            <param name="match">Match</param>
+            <returns>Replacement string</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Matcher.Reset">
+            <summary>
+            Reset evaluator
             </summary>
         </member>
-        <member name="M:Rsdn.Framework.Formatting.Format.Forum.GetEditSubject(System.String)">
+        <member name="P:Rsdn.Framework.Formatting.Matcher.Count">
             <summary>
-            Готовит поле 'тема' для редактирования.
+            Get count of matches
             </summary>
-            <param name="subj">Название темы.</param>
-            <returns>Результат.</returns>
         </member>
-        <member name="M:Rsdn.Framework.Formatting.Format.Forum.AdjustSubject(System.String,System.String)">
+        <member name="P:Rsdn.Framework.Formatting.Matcher.Item(System.Int32)">
             <summary>
-            Корректировка темы сообщения.
+            Get evaluated match by number
             </summary>
-            <remarks>
-            Добавляет префикс '<b>Re</b>' к новой теме сообщения.
-            Для первого ответа в ветке добавляется префикс '<b>Re:</b>', 
-            для всех последующий '<b>Re[n]:</b>', где <b>n</b> - уровень вложенности.
-            </remarks>
-            <param name="oldSubject">Тема предыдущего сообщения.</param>
-            <param name="newSubject">Тема нового сообщения.</param>
-            <returns>Возвращает сообщение с добавленным префиксом 'Re'.</returns>
-        </member>
-        <member name="M:Rsdn.Framework.Formatting.Format.Forum.GetSubjectDeep(System.String)">
-            <summary>
-            Возвращает уровень вложенности темы сообщения.
-            </summary>
-            <param name="subject">Тема сообщения</param>
-            <returns>Уровень вложенности.</returns>
-        </member>
-        <member name="M:Rsdn.Framework.Formatting.Format.Forum.GetRePrefix(System.Int32)">
-            <summary>
-            Возвращает префикс темы сообщения.
-            </summary>
-            <remarks>
-            Для первого ответа в ветке префикс '<b>Re:</b>', 
-            для всех последующий '<b>Re[n]:</b>', где <b>n</b> - уровень вложенности.
-            </remarks>
-            <param name="level">Уровень вложенности сообщения.</param>
-            <returns>Префикс.</returns>
-        </member>
-        <member name="M:Rsdn.Framework.Formatting.Format.Forum.AdjustSubject(System.Int32,System.String)">
-            <summary>
-            Корректировка темы сообщения.
-            </summary>
-            <remarks>
-            Корректирует уровень вложенности сообщения (Re[xxx])
-            относительно нового корня.
-            </remarks>
-            <param name="level">Уровень вложенности корневого сообщения.</param>
-            <param name="subject">Тема сообщения.</param>
-            <returns>Откорректированная тема сообщения.</returns>
-        </member>
-        <member name="M:Rsdn.Framework.Formatting.Format.Forum.GetShortNick(System.String)">
-            <summary>
-            Возвращает сокращения для заданного ника.
-            </summary>
-            <param name="nick">Ник.</param>
-            <returns>Сокращение.</returns>
-        </member>
-        <member name="M:Rsdn.Framework.Formatting.Format.Forum.GetEditMessage(System.String,System.String)">
-            <summary>
-            Готовит сообщение к цитированию.
-            </summary>
-            <param name="msg">Сообщение.</param>
-            <param name="nick">Автор ссобщения.</param>
-            <returns>Обработанное сообщение</returns>
-        </member>
-        <member name="M:Rsdn.Framework.Formatting.Format.Forum.GetEditMessage(System.String,System.String,System.Boolean)">
-            <summary>
-            Готовит сообщение к цитированию.
-            </summary>
-            <param name="msg">Сообщение.</param>
-            <param name="nick">Автор ссобщения.</param>
-            <param name="moderator">== true, если пользователь - модератор.</param>
-            <returns>Обработанное сообщение</returns>
         </member>
         <member name="T:Rsdn.Framework.Formatting.TextFormatter">
             <summary>
@@ -443,6 +556,14 @@
             <param name="urlName">URL name. May be or may be not different from URL address.</param>
             <returns>Formatted link for specified URL.</returns>
         </member>
+        <member name="M:Rsdn.Framework.Formatting.TextFormatter.AddClass(System.Web.UI.HtmlControls.HtmlAnchor,System.String)">
+            <summary>
+            Add css class to HtmlAnchor
+            </summary>
+            <param name="link"></param>
+            <param name="className"></param>
+            <returns></returns>
+        </member>
         <member name="M:Rsdn.Framework.Formatting.TextFormatter.RenderControl(System.Web.UI.Control)">
             <summary>
             Render server control to string
@@ -521,17 +642,46 @@
             Detect dashes.
             </summary>
         </member>
+        <member name="M:Rsdn.Framework.Formatting.TextFormatter.ProcessRsdnLinkAsAnchor(System.Text.RegularExpressions.Match)">
+            <summary>
+            Process RSDN link tag
+            </summary>
+            <param name="name">Regexp match with RSDN link tag</param>
+            <returns>Formatted link as HtmlAnchor</returns>
+        </member>
         <member name="M:Rsdn.Framework.Formatting.TextFormatter.ProcessRsdnLink(System.Text.RegularExpressions.Match)">
             <summary>
             Process RSDN link tag
             </summary>
             <param name="name">Regexp match with RSDN link tag</param>
-            <returns>Formatted link</returns>
+            <returns>Formatted link as plain string (by default calls ProcessRsdnLinkAsAnchor)</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.TextFormatter.ProcessEmailLink(System.Text.RegularExpressions.Match)">
+            <summary>
+            Process email link.
+            </summary>
+            <param name="match">Email match</param>
+            <returns>Formatted result</returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.TextFormatter.FormatEmail(System.String)">
+            <summary>
+            Format email address
+            </summary>
+            <param name="email"></param>
+            <returns></returns>
         </member>
         <member name="F:Rsdn.Framework.Formatting.TextFormatter.TrimArray">
             <summary>
             Массив символов для отсечения ведущих и концевых пробельных строк сообщений.
             </summary>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.TextFormatter.Format(System.String)">
+            <summary>
+            Форматирование текста.
+            <b>НЕПОТОКОБЕЗОПАСНЫЙ!</b>
+            </summary>
+            <param name="txt">Исходный текст.</param>
+            <returns>Сформатированный текст.</returns>
         </member>
         <member name="M:Rsdn.Framework.Formatting.TextFormatter.Format(System.String,System.Boolean)">
             <summary>
@@ -678,98 +828,6 @@
             </summary>
             <param name="match">Соответсвие</param>
             <returns>Обработанное соответсвие</returns>
-        </member>
-        <member name="T:Rsdn.Framework.Formatting.QueryBuilder">
-            <summary>
-            Summary description for QueryBuilder.
-            </summary>
-        </member>
-        <member name="M:Rsdn.Framework.Formatting.QueryBuilder.#ctor">
-            <summary>
-            Construct <see cref="T:Rsdn.Framework.Formatting.QueryBuilder"/> object.
-            </summary>
-        </member>
-        <member name="M:Rsdn.Framework.Formatting.QueryBuilder.#ctor(Rsdn.Framework.Formatting.QueryBuilder)">
-            <summary>
-            Construct <see cref="T:Rsdn.Framework.Formatting.QueryBuilder"/> object.
-            </summary>
-            <param name="queryBuilder">Existing <see cref="T:Rsdn.Framework.Formatting.QueryBuilder"/> object.</param>
-        </member>
-        <member name="M:Rsdn.Framework.Formatting.QueryBuilder.#ctor(System.Collections.Specialized.NameValueCollection)">
-            <summary>
-            Construct <see cref="T:Rsdn.Framework.Formatting.QueryBuilder"/> object.
-            </summary>
-            <param name="queryCollection">query parameters collection.</param>
-        </member>
-        <member name="M:Rsdn.Framework.Formatting.QueryBuilder.#ctor(System.Collections.Specialized.NameValueCollection,System.Text.Encoding)">
-            <summary>
-            Construct <see cref="T:Rsdn.Framework.Formatting.QueryBuilder"/> object.
-            </summary>
-            <param name="queryCollection">query parameters collection.</param>
-            <param name="encoding">Encoding to encode non-ascii symbols.</param>
-        </member>
-        <member name="M:Rsdn.Framework.Formatting.QueryBuilder.#ctor(System.String)">
-            <summary>
-            Construct <see cref="T:Rsdn.Framework.Formatting.QueryBuilder"/> object.
-            </summary>
-            <param name="queryString">Query string to parse.
-            May or may not start with '?' question symbol.</param>
-        </member>
-        <member name="M:Rsdn.Framework.Formatting.QueryBuilder.#ctor(System.String,System.Text.Encoding)">
-            <summary>
-            Construct <see cref="T:Rsdn.Framework.Formatting.QueryBuilder"/> object.
-            </summary>
-            <param name="queryString">Query string to parse.
-            May or may not start with '?' question symbol.</param>
-            <param name="encoding">Encoding to encode non-ascii symbols.</param>
-        </member>
-        <member name="M:Rsdn.Framework.Formatting.QueryBuilder.ToString">
-            <summary>
-            Convert to query string.
-            </summary>
-            <returns>String presentation of query parameters.</returns>
-        </member>
-        <member name="M:Rsdn.Framework.Formatting.QueryBuilder.ToString(System.Boolean)">
-            <summary>
-            Convert to query string.
-            </summary>
-            <param name="withQuestionMark">
-            Include or not question mark in beginning of string presentation.
-            </param>
-            <returns>String presentation of query parameters.</returns>
-        </member>
-        <member name="T:Rsdn.Framework.Formatting.Matcher">
-            <summary>
-            Helper class for counting of matches.
-            </summary>
-        </member>
-        <member name="M:Rsdn.Framework.Formatting.Matcher.#ctor(System.String)">
-            <summary>
-            Class constructor
-            </summary>
-            <param name="pattern">Match replacement pattern</param>
-        </member>
-        <member name="M:Rsdn.Framework.Formatting.Matcher.Match(System.Text.RegularExpressions.Match)">
-            <summary>
-            Match evaluator
-            </summary>
-            <param name="match">Match</param>
-            <returns>Replacement string</returns>
-        </member>
-        <member name="M:Rsdn.Framework.Formatting.Matcher.Reset">
-            <summary>
-            Reset evaluator
-            </summary>
-        </member>
-        <member name="P:Rsdn.Framework.Formatting.Matcher.Count">
-            <summary>
-            Get count of matches
-            </summary>
-        </member>
-        <member name="P:Rsdn.Framework.Formatting.Matcher.Item(System.Int32)">
-            <summary>
-            Get evaluated match by number
-            </summary>
         </member>
     </members>
 </doc>
