@@ -1,13 +1,10 @@
 using System;
-using System.Net;
-using System.Net.Sockets;
-using System.Threading;
-using System.Diagnostics;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Text;
+using System.Diagnostics;
+using System.Net.Sockets;
 using System.Reflection;
-using System.IO;
+using System.Text;
+using System.Threading;
 using log4net;
 
 namespace Rsdn.Nntp
@@ -94,7 +91,7 @@ namespace Rsdn.Nntp
 			// create performance counters' category if necessary
 			if (!PerformanceCounterCategory.Exists(ServerCategoryName ))
 			{
-				CounterCreationDataCollection perfomanceCountersCollection = new CounterCreationDataCollection();
+				var perfomanceCountersCollection = new CounterCreationDataCollection();
 
 				// connections
 				perfomanceCountersCollection.Add(
@@ -138,7 +135,7 @@ namespace Rsdn.Nntp
 		private static void CreatePerformanceCounters(
 			IDictionary<string, PerformanceCounter> store, string instanceName)
 		{
-			foreach (string counterName in performanceCountersNames)
+			foreach (var counterName in performanceCountersNames)
 				store.Add(counterName,
 					new PerformanceCounter(ServerCategoryName, counterName, instanceName, false));
 		}
@@ -176,7 +173,7 @@ namespace Rsdn.Nntp
 		public void Start()
 		{
 			listeners = new Socket[settings.Bindings.Length];
-			for (int i = 0; i < settings.Bindings.Length; i++)
+			for (var i = 0; i < settings.Bindings.Length; i++)
 			{
 				listeners[i] = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 				listeners[i].Bind(settings.Bindings[i].EndPoint);
@@ -188,8 +185,8 @@ namespace Rsdn.Nntp
 			// trace start message
 			if (logger.IsInfoEnabled)
 			{
-				StringBuilder startInfo = new StringBuilder("Server started. Listen on ");
-				for (int i = 0; i < listeners.Length; i++)
+				var startInfo = new StringBuilder("Server started. Listen on ");
+				for (var i = 0; i < listeners.Length; i++)
 				{
 					if (i > 0) startInfo.Append(',');
 					startInfo.Append(listeners[i].LocalEndPoint);
@@ -206,16 +203,16 @@ namespace Rsdn.Nntp
 		{
 			try
 			{
-				int bindingIndex = (int)ar.AsyncState;
+				var bindingIndex = (int)ar.AsyncState;
 
 				// listen sockets already shutdowned
 				if (listeners.Length <= bindingIndex)
 					return;
 
 				// get listener socket
-				Socket listener = listeners[bindingIndex];
+				var listener = listeners[bindingIndex];
 				// get client's socket
-				Socket socket = listener.EndAccept(ar);
+				var socket = listener.EndAccept(ar);
 				// start listen for next client
 				listener.BeginAccept(new AsyncCallback(AcceptClient), bindingIndex);
 				if (paused)
@@ -226,30 +223,30 @@ namespace Rsdn.Nntp
 				}
 				else
 				{
-					IDataProvider dataProvider = (IDataProvider)Activator.CreateInstance(settings.DataProviderType);
+					var dataProvider = (IDataProvider)Activator.CreateInstance(settings.DataProviderType);
 					dataProvider.Config(settings.DataProviderSettings);
-					Session session =
+					var session =
 						new Session(socket, settings.Bindings[bindingIndex].Certificate, dataProvider, this);
-					session.Disposed += new EventHandler(SessionDisposedHandler);
+					session.Disposed += SessionDisposedHandler;
 					sessions.Add(session);
 					// reset event (now we have child sessions)
 					noSessions.Reset();
 
 #if PERFORMANCE_COUNTERS
 					// set connections counter
-					PerformanceCounter connectionsCounter =
+					var connectionsCounter =
 						GetPerformanceCounter(connectionsCounterName);
 					connectionsCounter.Increment();
 					GetGlobalPerformanceCounter(connectionsCounterName).Increment();
 
 					// set max connections counter
-					PerformanceCounter maxConnectionsCounter =
+					var maxConnectionsCounter =
 						GetPerformanceCounter(maxConnectionsCounterName);
 					if (connectionsCounter.RawValue > maxConnectionsCounter.RawValue)
 						maxConnectionsCounter.RawValue = connectionsCounter.RawValue;
 
 					// set global max connections counter
-					PerformanceCounter globalMaxConnectionsCounter =
+					var globalMaxConnectionsCounter =
 						GetGlobalPerformanceCounter(maxConnectionsCounterName);
 					if (maxConnectionsCounter.RawValue > globalMaxConnectionsCounter.RawValue)
 						globalMaxConnectionsCounter.RawValue = maxConnectionsCounter.RawValue;
@@ -274,7 +271,7 @@ namespace Rsdn.Nntp
 		/// <summary>
 		/// signalled when need to pause
 		/// </summary>
-		protected bool paused = false;
+		protected bool paused;
 		/// <summary>
 		/// signalled when need to stop
 		/// </summary>
@@ -365,7 +362,7 @@ namespace Rsdn.Nntp
 		public void Dispose()
 		{
 			// listener socket do not need shutdown
-			foreach (Socket listener in listeners)
+			foreach (var listener in listeners)
 				listener.Close();
 			listeners = new Socket[0];
 		}
@@ -381,7 +378,7 @@ namespace Rsdn.Nntp
 		/// <summary>
 		/// Common server identification string
 		/// </summary>
-		public static readonly string ServerID = Manager.GetProductTitle(Assembly.GetExecutingAssembly());
+		public static readonly string ServerID = GetProductTitle(Assembly.GetExecutingAssembly());
 
 		/// <summary>
 		/// Get product's title from assembly (AssemblyProduct + AssemblyInformationalVersion)
@@ -390,12 +387,12 @@ namespace Rsdn.Nntp
 		/// <returns>Title if assembly</returns>
 		public static string GetProductTitle(Assembly assembly)
 		{
-			StringBuilder builder = new StringBuilder();
+			var builder = new StringBuilder();
 
-			AssemblyProductAttribute productName = (AssemblyProductAttribute)
+			var productName = (AssemblyProductAttribute)
 				Attribute.GetCustomAttribute(assembly, typeof(AssemblyProductAttribute));
 
-			AssemblyInformationalVersionAttribute productVersion = (AssemblyInformationalVersionAttribute)
+			var productVersion = (AssemblyInformationalVersionAttribute)
 				Attribute.GetCustomAttribute(assembly, typeof(AssemblyInformationalVersionAttribute));
 
 			if (productName != null)

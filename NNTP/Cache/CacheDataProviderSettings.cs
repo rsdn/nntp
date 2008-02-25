@@ -25,10 +25,6 @@ namespace Rsdn.Nntp.Cache
 	[Serializable]
 	public class CacheDataProviderSettings
 	{
-		public CacheDataProviderSettings()
-		{
-		}
-
 		protected CacheType cacheType = CacheType.None;
 
 		[DefaultValue(CacheType.None)]

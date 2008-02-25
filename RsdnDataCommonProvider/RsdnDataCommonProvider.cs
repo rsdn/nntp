@@ -1,23 +1,20 @@
 using System;
-using System.Globalization;
-using System.Reflection;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Text.RegularExpressions;
-using System.Text;
-using System.Runtime.Serialization.Formatters.Binary;
+using System.Reflection;
 using System.Runtime.Serialization.Formatters;
-using System.Collections.Generic;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Web.Caching;
-
+using Antlr.StringTemplate;
+using log4net;
 using Rsdn.Framework.Common;
 using Rsdn.Framework.Formatting;
 using Rsdn.Mime;
 using Rsdn.Nntp;
 using Rsdn.Nntp.Cache;
-
-using log4net;
-using Antlr.StringTemplate;
 
 namespace Rsdn.RsdnNntp.Common
 {
@@ -40,8 +37,8 @@ namespace Rsdn.RsdnNntp.Common
 		/// <summary>
 		/// Logger 
 		/// </summary>
-		private static ILog logger =
-			log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		private static readonly ILog logger =
+			LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
     /// <summary>
     /// Global initialization
@@ -83,8 +80,10 @@ namespace Rsdn.RsdnNntp.Common
     /// <returns>deserialized object</returns>
     protected static object Deserialize(string filename)
     {
-    	BinaryFormatter formatter = new BinaryFormatter();
-    	formatter.AssemblyFormat = FormatterAssemblyStyle.Simple;
+    	var formatter = new BinaryFormatter
+      {
+      	AssemblyFormat = FormatterAssemblyStyle.Simple
+      };
     	using (Stream stream = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read))
     	{
     		return formatter.Deserialize(stream);
@@ -98,8 +97,10 @@ namespace Rsdn.RsdnNntp.Common
     /// <param name="filename">name of file to save</param>
     protected static void Serialize(object obj, string filename)
     {
-    	BinaryFormatter formatter = new BinaryFormatter();
-    	formatter.AssemblyFormat = FormatterAssemblyStyle.Simple;
+    	var formatter = new BinaryFormatter
+      {
+      	AssemblyFormat = FormatterAssemblyStyle.Simple
+      };
     	using (Stream stream = new FileStream(filename, FileMode.Create,
     						FileAccess.Write, FileShare.None))
     	{
@@ -110,9 +111,9 @@ namespace Rsdn.RsdnNntp.Common
 		/// <summary>
 		/// Construct RSDN Data Provider
 		/// </summary>
-    public RsdnDataCommonProvider() : base()
-    {
-    	encoding = System.Text.Encoding.UTF8;
+		protected RsdnDataCommonProvider()
+		{
+    	encoding = Encoding.UTF8;
 			formatter = new TextFormatter();
     }
 
@@ -130,7 +131,7 @@ namespace Rsdn.RsdnNntp.Common
 		/// <returns>Specified group.</returns>
     public override NewsGroup GetGroup(string groupName)
     {
-			IGroup requestedGroup = InternalGetGroup(groupName);
+			var requestedGroup = InternalGetGroup(groupName);
     	currentGroupArticleStartNumber = requestedGroup.FirstArticleNumber;
     	return new NewsGroup(groupName,
 				requestedGroup.FirstArticleNumber, requestedGroup.LastArticleNumber,
@@ -204,8 +205,8 @@ namespace Rsdn.RsdnNntp.Common
     {
 			try
 			{
-				int _messageID = int.Parse(messageIdNumber.Match(messageID).Groups["messageIdNumber"].Value);
-				IArticle message = GetArticle(_messageID);
+				var _messageID = int.Parse(messageIdNumber.Match(messageID).Groups["messageIdNumber"].Value);
+				var message = GetArticle(_messageID);
 				return ToNNTPArticle(UpdateReferences(message), message.Group, content);
 			}
 			catch (FormatException)
@@ -223,7 +224,7 @@ namespace Rsdn.RsdnNntp.Common
 		/// <returns>Next article's IDs.</returns>
     public override NewsArticle GetNextArticle(int messageNumber, string groupName)
     {
-    	NewsArticle[] articleList = GetArticleList(messageNumber + 1, int.MaxValue,
+    	var articleList = GetArticleList(messageNumber + 1, int.MaxValue,
     		groupName, NewsArticle.Content.Header);
   
     	if (articleList.Length == 0)
@@ -241,7 +242,7 @@ namespace Rsdn.RsdnNntp.Common
 		/// <returns>Previous article's IDs.</returns>
     public override NewsArticle GetPrevArticle(int messageNumber, string groupName)
     {
-    	NewsArticle[] articleList = GetArticleList(currentGroupArticleStartNumber,
+    	var articleList = GetArticleList(currentGroupArticleStartNumber,
     		messageNumber - 1,	groupName, NewsArticle.Content.Header);
   
     	if (articleList.Length == 0)
@@ -265,14 +266,14 @@ namespace Rsdn.RsdnNntp.Common
 		/// <returns></returns>
     public override NewsGroup[] GetGroupList(DateTime startDate, string pattern)
     {
-    	IGroup[] groupList = GetGroupList(DateTime.MinValue);
+    	var groupList = GetGroupList(DateTime.MinValue);
   
 			Regex checker = null;
 			if (pattern != null)
 				checker = new Regex(pattern);
 
-			List<NewsGroup> listOfGroups = new List<NewsGroup>(groupList.Length);
-    	foreach (IGroup currentGroup in groupList)
+			var listOfGroups = new List<NewsGroup>(groupList.Length);
+    	foreach (var currentGroup in groupList)
 				if (currentGroup.Created >= startDate &&
 						((checker == null) || (checker.IsMatch(currentGroup.Name))))
 					listOfGroups.Add(new NewsGroup(currentGroup.Name,
@@ -297,20 +298,20 @@ namespace Rsdn.RsdnNntp.Common
 		/// <param name="date">Start date.</param>
 		/// <param name="pattern">Group name pattern.</param>
 		/// <returns>List of articles.</returns>
-    public override NewsArticle[] GetArticleList(System.DateTime date, string pattern)
+    public override NewsArticle[] GetArticleList(DateTime date, string pattern)
     {
-			List<string> groups = new List<string>();
+			var groups = new List<string>();
 
 			// get all appropriated groups
-			foreach (NewsGroup group in GetGroupList(DateTime.MinValue, pattern))
+			foreach (var group in GetGroupList(DateTime.MinValue, pattern))
 				groups.Add(group.Name);
 
-			IArticle[] articleList = GetArticleList(groups.ToArray(), date);
+			var articleList = GetArticleList(groups.ToArray(), date);
 
-      List<NewsArticle> articles = new List<NewsArticle>();
+      var articles = new List<NewsArticle>();
 
 			// process messages
-			foreach (IArticle message in articleList)
+			foreach (var message in articleList)
 				articles.Add(ToNNTPArticle(UpdateReferences(message), message.Group,
 					NewsArticle.Content.Header));
 
@@ -335,9 +336,9 @@ namespace Rsdn.RsdnNntp.Common
 		/// <returns></returns>
     public override bool Authentificate(string user, string pass, IPAddress ip)
     {
-			string cacheKey = user + pass;
+			var cacheKey = user + pass;
 			// if in cache - auth ok
-			IUserInfo userInfo = cache[cacheKey] as IUserInfo;
+			var userInfo = cache[cacheKey] as IUserInfo;
 			if (userInfo != null)
 			{
 				SetUserInfo(userInfo);
@@ -345,21 +346,19 @@ namespace Rsdn.RsdnNntp.Common
 			}
 
 			userInfo = InternalAuthentificate(user, pass, ip);
-    	if (userInfo != null)
-    	{
-				// Put user information to cache for 1 hour.
-				cache.Add(cacheKey, userInfo, null, Cache.NoAbsoluteExpiration,
-					new TimeSpan(1, 0, 0), CacheItemPriority.AboveNormal, null);
-				cache.Insert("userId$" + userInfo.ID, userInfo,
-					new CacheDependency(null, new string[]{cacheKey}));
-
-				SetUserInfo(userInfo);
-				return true;
-    	}
-    	else
-    	{
+			if (userInfo == null)
+			{
 				return false;
-    	}
+			}
+
+			// Put user information to cache for 1 hour.
+			cache.Add(cacheKey, userInfo, null, Cache.NoAbsoluteExpiration,
+			          new TimeSpan(1, 0, 0), CacheItemPriority.AboveNormal, null);
+			cache.Insert("userId$" + userInfo.ID, userInfo,
+			             new CacheDependency(null, new[]{cacheKey}));
+
+			SetUserInfo(userInfo);
+			return true;
     }
 
 		/// <summary>
@@ -376,7 +375,7 @@ namespace Rsdn.RsdnNntp.Common
 		/// <returns>User info.</returns>
 		protected IUserInfo GetUserInfo(int id)
 		{
-			IUserInfo userInfo = cache.Get("userId$" + id) as IUserInfo;
+			var userInfo = cache.Get("userId$" + id) as IUserInfo;
 			if (userInfo == null)
 			{
 				userInfo = GetUserInfoByID(id);
@@ -422,7 +421,7 @@ namespace Rsdn.RsdnNntp.Common
 		/// <summary>
 		/// Image processor
 		/// </summary>
-		protected ImageProcessor imageProcessor = null;
+		protected ImageProcessor imageProcessor;
 
     /// <summary>
     /// Convert rsdn's message to MIME message
@@ -435,10 +434,10 @@ namespace Rsdn.RsdnNntp.Common
     protected NewsArticle ToNNTPArticle(IArticle message, string newsgroup,
 			NewsArticle.Content content)
     {
-			NewsArticle newsMessage =
+			var newsMessage =
 				new NewsArticle(string.Format("<{0}{1}>", message.ID, message.Postfix),
-    			new string[]{newsgroup}, new int[]{message.Number}, content);
-    	newsMessage.HeaderEncoding = encoding;
+    			new[]{newsgroup}, new[]{message.Number}, content)
+				{ HeaderEncoding = encoding };
 
     	if ((content == NewsArticle.Content.Header) ||
     		(content == NewsArticle.Content.HeaderAndBody))
@@ -455,17 +454,17 @@ namespace Rsdn.RsdnNntp.Common
 				newsMessage["X-MessageID"] = message.ID.ToString();
     		
     		// build refences
-    		StringBuilder referencesString = new StringBuilder();
+    		var referencesString = new StringBuilder();
     		int[] references;
     		lock (referenceCache)
     		{
     			references = referenceCache.GetReferences(message.ID);
     		}
     		// get message's parents from the start and from the end with limitation of depth
-				for (int i = references.Length - 1;
+				for (var i = references.Length - 1;
 					(i >= references.Length - referencesDeep) && (i > 0); i--)
 					referencesString.AppendFormat("<{0}{1}> ", references[i], message.Postfix);
-				for (int i = Math.Min(references.Length - referencesDeep - 1, referencesDeep); i > 0; i--)
+				for (var i = Math.Min(references.Length - referencesDeep - 1, referencesDeep); i > 0; i--)
     			referencesString.AppendFormat("<{0}{1}> ", references[i], message.Postfix);
 				if (referencesString.Length > 0)
 				{
@@ -483,25 +482,25 @@ namespace Rsdn.RsdnNntp.Common
     		switch (style)
     		{
     			case FormattingStyle.PlainText :
-						StringBuilder plainMessage = new StringBuilder(PrepareText(message.Message));
+						var plainMessage = new StringBuilder(PrepareText(message.Message));
     				newsMessage.Entities.Add(plainMessage.ToString());
     				newsMessage.TransferEncoding = ContentTransferEncoding.Base64;
     				newsMessage.ContentType = string.Format("text/plain; charset=\"{0}\"", encoding.WebName);
     				break;
     			case FormattingStyle.Html :
     			case FormattingStyle.HtmlInlineImages :
-    				Message plainTextBody = new Message(false);
+    				var plainTextBody = new Message(false);
 						plainTextBody.Entities.Add(PrepareText(message.Message));
     				plainTextBody.TransferEncoding = ContentTransferEncoding.Base64;
     				plainTextBody.ContentType = string.Format("text/plain; charset=\"{0}\"", encoding.WebName);
 
-    				Message htmlTextBody = new Message(false);
-						IUserInfo userInfo = GetUserInfo(Format.ToInt(message.AuthorID));
+    				var htmlTextBody = new Message(false);
+						var userInfo = GetUserInfo(Format.ToInt(message.AuthorID));
 
 						if (imageProcessor != null)
 							imageProcessor.ClearProcessedImages();
 
-						StringTemplate htmlMessage = template.GetInstanceOf("HtmlEmailTemplate");
+						var htmlMessage = template.GetInstanceOf("HtmlEmailTemplate");
 						htmlMessage.SetAttribute("message", new TemplateArticle(message));
 						htmlMessage.SetAttribute("text",
 							formatter.Format(message.Message, message.Smile));
@@ -522,13 +521,13 @@ namespace Rsdn.RsdnNntp.Common
     				{
     					newsMessage.ContentType = "multipart/related; type=\"multipart/alternative\"";
 
-    					Message combineMessage = new Message(false);
-    					combineMessage.ContentType = "multipart/alternative";
+    					var combineMessage = new Message(false)
+								{ ContentType = "multipart/alternative" };
     					combineMessage.Entities.Add(plainTextBody);
     					combineMessage.Entities.Add(htmlTextBody);
     					newsMessage.Entities.Add(combineMessage);
 
-    					foreach (Message img in imageProcessor.GetProcessedImages())
+    					foreach (var img in imageProcessor.GetProcessedImages())
    							newsMessage.Entities.Add(img);
 
 							imageProcessor.ClearProcessedImages();
@@ -566,9 +565,9 @@ namespace Rsdn.RsdnNntp.Common
 		/// <returns>List of articles.</returns>
 		public override NewsArticle[] GetArticleList(int startNumber, int endNumber, string groupName, NewsArticle.Content content)
     {
-			IArticle[] articles = GetArticleList(groupName, startNumber, endNumber);
-    	NewsArticle[] newsArticles = new NewsArticle[articles.Length];
-   		for (int i = 0; i < articles.Length; i++)
+			var articles = GetArticleList(groupName, startNumber, endNumber);
+    	var newsArticles = new NewsArticle[articles.Length];
+   		for (var i = 0; i < articles.Length; i++)
    			newsArticles[i] =
    				ToNNTPArticle(UpdateReferences(articles[i]), groupName, content);
 
@@ -611,43 +610,38 @@ namespace Rsdn.RsdnNntp.Common
     {
 			try
 			{
-				StringBuilder postingText = GetPlainTextFromMessage(message);
+				var postingText = GetPlainTextFromMessage(message);
 				if (postingText.Length == 0)
 					throw new DataProviderException(DataProviderErrors.PostingFailed, "Empty message.");
 
 				// get message ID
-				int mid = 0;
+				var mid = 0;
 				if (message["References"] != null)
 					foreach (Match messageIDMatch in messageIdNumber.Matches(message["References"]))
 						mid = int.Parse(messageIDMatch.Groups["messageIdNumber"].Value);
 				// get posting news group
-				string group = message["Newsgroups"].Split(new char[]{','}, 2)[0].Trim();
+				var group = message["Newsgroups"].Split(new[]{','}, 2)[0].Trim();
     		
 				// process attachments
 				if (true &&
 						"multipart".Equals(message.ContentTypeType, StringComparison.OrdinalIgnoreCase))
 				{
-					StringBuilder processedFiles = new StringBuilder();
+					var processedFiles = new StringBuilder();
 					foreach (Message entity in message.Entities)
 					{
-						string disposition = entity.GetHeaderFieldValue("Content-Disposition");
+						var disposition = entity.GetHeaderFieldValue("Content-Disposition");
 						if (!string.IsNullOrEmpty(disposition) &&
 								("attachment".Equals(disposition, StringComparison.OrdinalIgnoreCase) ||
 									"inline".Equals(disposition, StringComparison.OrdinalIgnoreCase)))
 						{
-							string filename =
-								entity.GetHeaderFieldParameters("Content-Disposition")["filename"];
-
-							if (filename == null)
-							{
-								filename = entity.GetHeaderFieldParameters("Content-Type")["name"];
-								if (filename == null)
-									filename = Guid.NewGuid().ToString();
-							}
+							var filename =
+								entity.GetHeaderFieldParameters("Content-Disposition")["filename"]
+								?? entity.GetHeaderFieldParameters("Content-Type")["name"]
+								?? Guid.NewGuid().ToString();
 
 							// post file ....
-							byte[] binaryFile = new byte[0];
-							foreach (object body in entity.Entities)
+							var binaryFile = new byte[0];
+							foreach (var body in entity.Entities)
 							{
 								byte[] binaryBody;
 								if (body is byte[])
@@ -656,7 +650,7 @@ namespace Rsdn.RsdnNntp.Common
 								}
 								else
 									binaryBody = entity.Encoding.GetBytes(body.ToString());
-								byte[] newBinaryFile = new byte[binaryFile.Length + binaryBody.Length];
+								var newBinaryFile = new byte[binaryFile.Length + binaryBody.Length];
 								Buffer.BlockCopy(binaryFile, 0, newBinaryFile, 0, binaryFile.Length);
 								Buffer.BlockCopy(binaryBody, 0, newBinaryFile, binaryFile.Length, binaryBody.Length);
 								binaryFile = newBinaryFile;
@@ -680,7 +674,7 @@ namespace Rsdn.RsdnNntp.Common
 				// add tagline
 				postingText.Append(Util.CRLF).Append("[tagline]Posted via " + Manager.ServerID + "[/tagline]");
 
-				string postingTextString = postingText.ToString();
+				var postingTextString = postingText.ToString();
 
 				if (postingTextString.IndexOf(htmlReplyMarker) >= 0)
 					throw new DataProviderException(DataProviderErrors.PostingFailed,
@@ -692,7 +686,7 @@ namespace Rsdn.RsdnNntp.Common
 			{
 				throw;
 			}
-			catch (System.Exception exception)
+			catch (Exception exception)
 			{
 				throw new DataProviderException(DataProviderErrors.PostingFailed, exception);
 			}	
@@ -705,7 +699,7 @@ namespace Rsdn.RsdnNntp.Common
 		/// <summary>
 		/// Message encoding
 		/// </summary>
-    protected System.Text.Encoding encoding;
+    protected Encoding encoding;
 
     /// <summary>
     /// Initial session's state for this data provider
@@ -783,11 +777,11 @@ namespace Rsdn.RsdnNntp.Common
 	  /// <summary>
     /// remove unnecessary tags (tagline, moderator)
     /// </summary>
-    protected string PrepareText(string text)
+    protected static string PrepareText(string text)
     {
     	if (text == null)
     		return "";
-    	else
+    	
   		return platformDependedBreak.Replace(
 				TextFormatter.RemoveTaglineTag(text), Util.CRLF);
     }
@@ -796,7 +790,7 @@ namespace Rsdn.RsdnNntp.Common
 		/// Get necessary configuration object type
 		/// </summary>
 		/// <returns></returns>
-    public override System.Type GetConfigType()
+    public override Type GetConfigType()
     {
     	return typeof(DataProviderSettings);
     }
@@ -806,13 +800,13 @@ namespace Rsdn.RsdnNntp.Common
     /// </summary>
     /// <param name="message"></param>
     /// <returns></returns>
-    internal StringBuilder GetPlainTextFromMessage(Message message)
+    internal static StringBuilder GetPlainTextFromMessage(Message message)
     {
-    	StringBuilder text = new StringBuilder();
+    	var text = new StringBuilder();
     	if ("text".Equals(message.ContentTypeType, StringComparison.OrdinalIgnoreCase) &&
 					("plain".Equals(message.ContentTypeSubtype, StringComparison.OrdinalIgnoreCase)) ||
 						"multipart".Equals(message.ContentTypeSubtype, StringComparison.OrdinalIgnoreCase))
-    		foreach (object entity in message.Entities)
+    		foreach (var entity in message.Entities)
     			if (entity is Message)
     				text.Append(GetPlainTextFromMessage((Message)entity));
     			else
@@ -848,7 +842,7 @@ namespace Rsdn.RsdnNntp.Common
 		/// <param name="originalMessageID"></param>
 		/// <param name="content"></param>
 		/// <returns></returns>
-		public override NewsArticle GetArticle(string originalMessageID, Rsdn.Nntp.NewsArticle.Content content)
+		public override NewsArticle GetArticle(string originalMessageID, NewsArticle.Content content)
 		{
 			return base.GetArticle (originalMessageID, content, style.ToString());
 		}

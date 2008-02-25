@@ -1,4 +1,3 @@
-using System;
 using System.Text.RegularExpressions;
 
 namespace Rsdn.Nntp.Commands
@@ -31,8 +30,8 @@ namespace Rsdn.Nntp.Commands
 		/// <returns>Server's NNTP response</returns>
 		protected override Response ProcessCommand()
 		{
-			string groupName = lastMatch.Groups["groupName"].Value;
-			NewsGroup group = session.DataProvider.GetGroup(groupName);
+			var groupName = lastMatch.Groups["groupName"].Value;
+			var group = session.DataProvider.GetGroup(groupName);
 			
 			// set cuurent pointers for group and article
 			session.currentGroup = groupName;

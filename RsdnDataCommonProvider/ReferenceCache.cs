@@ -10,8 +10,8 @@ namespace Rsdn.RsdnNntp
 	[Serializable]
 	public class ReferenceCache : ISerializable
 	{
-		Dictionary<int, int> identityTree = new Dictionary<int, int>();
-		IDictionary<int, int[]> identityList = new Dictionary<int, int[]>();
+		readonly Dictionary<int, int> identityTree = new Dictionary<int, int>();
+		readonly IDictionary<int, int[]> identityList = new Dictionary<int, int[]>();
 
 		/// <summary>
 		/// Cache, to store message's references.
@@ -44,21 +44,21 @@ namespace Rsdn.RsdnNntp
 				return;
 
 			// get parent of removing element
-			int parentId = identityTree[id];
+			var parentId = identityTree[id];
 			// remove element
 			identityTree.Remove(id);
 			identityList.Remove(id);
 			// change parent of child elements of removed element
 			IList<int> changedElements = new List<int>();
 			if (identityTree.ContainsValue(id))
-				foreach (int key in identityTree.Keys)
+				foreach (var key in identityTree.Keys)
 					if (identityTree[key] == id)
 					{
 						identityTree[key] = parentId;
 						changedElements.Add(key);
 					}
 			// rebuild corresponding linear lists
-			foreach (int changedIdentity in changedElements)
+			foreach (var changedIdentity in changedElements)
 				BuildIdentityList(changedIdentity);
 		}
 
@@ -78,8 +78,8 @@ namespace Rsdn.RsdnNntp
 		/// <param name="id"></param>
 		protected void BuildIdentityList(int id)
 		{
-			List<int> identities = new List<int>();
-			int traverser = id;
+			var identities = new List<int>();
+			var traverser = id;
 			while (traverser != 0)
 			{
 				identities.Add(traverser);
@@ -93,15 +93,15 @@ namespace Rsdn.RsdnNntp
 		/// </summary>
 		/// <param name="info"></param>
 		/// <param name="context"></param>
-		public ReferenceCache(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
+		public ReferenceCache(SerializationInfo info, StreamingContext context)
 		{
-			int[] identityTreeKeys = (int[])info.GetValue("identityTreeKeys", typeof(int[]));
-			int[] identityTreeValues = (int[])info.GetValue("identityTreeValues", typeof(int[]));
+			var identityTreeKeys = (int[])info.GetValue("identityTreeKeys", typeof(int[]));
+			var identityTreeValues = (int[])info.GetValue("identityTreeValues", typeof(int[]));
 			// restore tree
-			for (int i = 0; i < identityTreeKeys.Length; i++)
+			for (var i = 0; i < identityTreeKeys.Length; i++)
 				identityTree.Add(identityTreeKeys[i], identityTreeValues[i]);
 			// rebuild linear lists
-			for (int i = 0; i < identityTreeKeys.Length; i++)
+			for (var i = 0; i < identityTreeKeys.Length; i++)
 				BuildIdentityList(i);
 		}
 
@@ -110,13 +110,13 @@ namespace Rsdn.RsdnNntp
 		/// </summary>
 		/// <param name="info"></param>
 		/// <param name="context"></param>
-		public void GetObjectData(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
+		public void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
-			int[] identityTreeKeys = new int[identityTree.Keys.Count];
+			var identityTreeKeys = new int[identityTree.Keys.Count];
 			identityTree.Keys.CopyTo(identityTreeKeys, 0);
 			info.AddValue("identityTreeKeys", identityTreeKeys, typeof(int[]));
 		
-			int[] identityTreeValues = new int[identityTree.Values.Count];
+			var identityTreeValues = new int[identityTree.Values.Count];
 			identityTree.Values.CopyTo(identityTreeValues, 0);
 			info.AddValue("identityTreeValues", identityTreeValues, typeof(int[]));
 		}

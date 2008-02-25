@@ -1,7 +1,7 @@
 using System;
+using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
-
 using Rsdn.Mime;
 
 namespace Rsdn.Nntp.Commands
@@ -36,22 +36,22 @@ namespace Rsdn.Nntp.Commands
 		{
 			try
 			{
-				StringBuilder resultPattern = new StringBuilder("^");
+				var resultPattern = new StringBuilder("^");
 
 				// get newsgroup names
-				StringBuilder positiveMatch = new StringBuilder();
-				StringBuilder negativeMatch = new StringBuilder();
-				foreach (string group in lastMatch.Groups["newsgroups"].Value.Split(new char[]{','}))
+				var positiveMatch = new StringBuilder();
+				var negativeMatch = new StringBuilder();
+				foreach (var group in lastMatch.Groups["newsgroups"].Value.Split(new[]{','}))
 					if (group.StartsWith("!"))
 						negativeMatch.AppendFormat("{0}|", TransformWildmat(group.Substring(1, group.Length - 1)));
 					else
 						positiveMatch.AppendFormat("{0}|", TransformWildmat(group));
 
 				// get distributions if exist
-				StringBuilder distributions = new StringBuilder();
+				var distributions = new StringBuilder();
 				if (lastMatch.Groups["distributions"].Success)
 				{
-					foreach (string pattern in lastMatch.Groups["distributions"].Value.Split(new char[]{','}))
+					foreach (var pattern in lastMatch.Groups["distributions"].Value.Split(new[]{','}))
 						distributions.AppendFormat(@"{0}\..*|", TransformWildmat(pattern));
 					// remove last '|' symbol
 					distributions.Length -= 1;
@@ -75,17 +75,17 @@ namespace Rsdn.Nntp.Commands
 				resultPattern.Append("$");
 
 				// get time
-				DateTime date = DateTime.ParseExact(
+				var date = DateTime.ParseExact(
 					lastMatch.Groups["date"].Value, "yyMMdd HHmmss",
-					null,	System.Globalization.DateTimeStyles.AllowWhiteSpaces);
+					null,	DateTimeStyles.AllowWhiteSpaces);
 				if (lastMatch.Groups["timezone"].Success)
 					// convert GMT to local time
 					date = date.ToLocalTime();
 
-				NewsArticle[] articleList = session.DataProvider.GetArticleList(date, resultPattern.ToString());
+				var articleList = session.DataProvider.GetArticleList(date, resultPattern.ToString());
 
-				StringBuilder textResponse = new StringBuilder();
-				foreach (NewsArticle article in articleList)
+				var textResponse = new StringBuilder();
+				foreach (var article in articleList)
 					textResponse.Append(article["Message-ID"]).Append(Util.CRLF);
 
 				return new Response(NntpResponse.ListOfArticlesByMessageID, textResponse.ToString());

@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.Globalization;
 using System.Text;
 
 namespace Rsdn.Nntp.Editor
@@ -10,13 +11,6 @@ namespace Rsdn.Nntp.Editor
 	public class BindingsConverter : ArrayConverter
 	{
 		/// <summary>
-		/// Create converter.
-		/// </summary>
-		public BindingsConverter()
-		{
-		}
-
-		/// <summary>
 		/// Convert object to specific type.
 		/// </summary>
 		/// <param name="context">Context.</param>
@@ -24,12 +18,12 @@ namespace Rsdn.Nntp.Editor
 		/// <param name="value">Source object.</param>
 		/// <param name="destinationType">Destination type.</param>
 		/// <returns>Converted object.</returns>
-		public override object ConvertTo(System.ComponentModel.ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, System.Type destinationType)
+		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
 		{
 			if (destinationType == typeof(string))
 			{
-				StringBuilder list = new StringBuilder();
-				for (int i = 0; i < ((ServerEndPoint[])value).Length; i++)
+				var list = new StringBuilder();
+				for (var i = 0; i < ((ServerEndPoint[])value).Length; i++)
 				{
 					if (i != 0)
 						list.Append(", ");
@@ -37,8 +31,7 @@ namespace Rsdn.Nntp.Editor
 				}
 				return list.ToString();
 			}
-			else
-				return base.ConvertTo(context, culture, value, destinationType);
+			return base.ConvertTo(context, culture, value, destinationType);
 		}
 
 		/// <summary>
@@ -47,12 +40,11 @@ namespace Rsdn.Nntp.Editor
 		/// <param name="context">Context.</param>
 		/// <param name="destinationType">Destination type.</param>
 		/// <returns>True if can convert.</returns>
-		public override bool CanConvertTo(System.ComponentModel.ITypeDescriptorContext context, System.Type destinationType)
+		public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
 		{
 			if (destinationType == typeof(string))
 				return true;
-			else
-				return base.CanConvertTo(context, destinationType);
+			return base.CanConvertTo(context, destinationType);
 		}
 	}
 }

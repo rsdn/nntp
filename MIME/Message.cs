@@ -1,9 +1,8 @@
 using System;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.IO;
+using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Rsdn.Mime
 {
@@ -88,12 +87,12 @@ namespace Rsdn.Mime
 
 			// initialize header and internal filters for it
 			header = new Header();
-			header.AddFilter("Content-Transfer-Encoding", new FilterHandler(ContentTransferFilter));
-			header.AddFilter("Content-Type", new FilterHandler(ContentTypeFilter));
-			header.AddFilter("X-Priority", new FilterHandler(PriorityFilter));
-			header.AddFilter("X-MSMail-Priority", new FilterHandler(PriorityFilter));
+			header.AddFilter("Content-Transfer-Encoding", ContentTransferFilter);
+			header.AddFilter("Content-Type", ContentTypeFilter);
+			header.AddFilter("X-Priority", PriorityFilter);
+			header.AddFilter("X-MSMail-Priority", PriorityFilter);
 
-			ContentTypeEvent += new ContentTypeHandler(MessageContentTypeHandler);
+			ContentTypeEvent += MessageContentTypeHandler;
 
 			this["Content-type"] = "text/plain; charset=us-ascii";
 
@@ -311,9 +310,9 @@ namespace Rsdn.Mime
 		/// <returns>Map of parameter names and their values.</returns>
 		public NameValueCollection GetFieldParameters(string fieldContent)
 		{
-			Match headerMatch = headerSplitter.Match(fieldContent);
-			NameValueCollection parameters = new NameValueCollection();
-			for (int i = 0; i < headerMatch.Groups["attribute"].Captures.Count; i++)
+			var headerMatch = headerSplitter.Match(fieldContent);
+			var parameters = new NameValueCollection();
+			for (var i = 0; i < headerMatch.Groups["attribute"].Captures.Count; i++)
 				parameters[headerMatch.Groups["attribute"].Captures[i].Value] =
 					headerMatch.Groups["value"].Captures[i].Value;
 			return parameters;
@@ -374,10 +373,10 @@ namespace Rsdn.Mime
 		/// <returns>Filtered value.</returns>
 		protected string ContentTypeFilter(string headerField, string value)
 		{
-			Match contentTypeMatch = contentTypeRegex.Match(GetFieldValue(value));
+			var contentTypeMatch = contentTypeRegex.Match(GetFieldValue(value));
 			if (!contentTypeMatch.Success)
 				throw new MimeFormattingException("Content-Type is bad formatted.");
-			NameValueCollection parameters = GetFieldParameters(value);
+			var parameters = GetFieldParameters(value);
 
 			type = contentTypeMatch.Groups["type"].Value.ToLower();
 			subtype = contentTypeMatch.Groups["subtype"].Value.ToLower();
@@ -385,9 +384,9 @@ namespace Rsdn.Mime
 			if (ContentTypeEvent != null)
 				ContentTypeEvent(type, subtype,	parameters);
 
-			StringBuilder filteredValue = new StringBuilder();
+			var filteredValue = new StringBuilder();
 			filteredValue.AppendFormat("{0}/{1}", type, subtype);
-			foreach (string parameterName in parameters.AllKeys)
+			foreach (var parameterName in parameters.AllKeys)
 				filteredValue.AppendFormat("; {0}=\"{1}\"", parameterName, parameters[parameterName]);
 
 			return filteredValue.ToString();
@@ -500,8 +499,8 @@ namespace Rsdn.Mime
 		static public Message Parse(string text, bool checkMime, bool checkAscii, Regex itemsToCheck)
 		{
 			// if need check Mime version - do not use default headers
-			Message message = new Message(false);
-			Match headerAndBodyMatch = headerAndBody.Match(text);
+			var message = new Message(false);
+			var headerAndBodyMatch = headerAndBody.Match(text);
 			if (!headerAndBodyMatch.Success)
 				throw new MimeFormattingException("MIME message is bad formatted.");
 
@@ -520,12 +519,12 @@ namespace Rsdn.Mime
 			switch (message.type)
 			{
 				case "multipart" :
-					Regex multipartExtractor =
+					var multipartExtractor =
 						new Regex(string.Format(@"(?s)--{0}{1}(?<entityBody>.*?)(?=--{0}({1}|--))",
 							Regex.Escape(message.multipartBoundary), Util.CRLF));
 					foreach (Match multipartMatch in multipartExtractor.Matches(
 						headerAndBodyMatch.Groups["body"].Value))
-							message.entities.Add(Message.Parse(multipartMatch.Groups["entityBody"].Value, false, checkAscii, itemsToCheck));
+							message.entities.Add(Parse(multipartMatch.Groups["entityBody"].Value, false, checkAscii, itemsToCheck));
 					break;
 				default:
 					byte[] body;
@@ -563,7 +562,7 @@ namespace Rsdn.Mime
 		/// <returns></returns>
 		public string GetBody()
 		{
-			StringBuilder builder = new StringBuilder();
+			var builder = new StringBuilder();
 
 			// headers
 			builder.Append(header.Encode(headerEncoding));
@@ -571,12 +570,12 @@ namespace Rsdn.Mime
 			// delimeter
 			builder.Append(Util.CRLF);
 
-			bool multipart = "multipart".Equals(type, StringComparison.OrdinalIgnoreCase);
+			var multipart = "multipart".Equals(type, StringComparison.OrdinalIgnoreCase);
 			if (multipart)
 				builder.Append("This is a multi-part message in MIME format.").Append(Util.CRLF);
 
 			// bodies
-			foreach (object body in entities)
+			foreach (var body in entities)
 			{
 				if (multipart)
 					builder.Append(Util.CRLF).AppendFormat("--{0}", multipartBoundary).Append(Util.CRLF);

@@ -8,7 +8,7 @@ namespace Rsdn.RsdnNntp.Public
 	/// </summary>
 	public class Group : IGroup
 	{
-		group group;
+		readonly group group;
 		public Group(group group)
 		{
 			this.group = group;

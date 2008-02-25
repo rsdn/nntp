@@ -1,8 +1,7 @@
 using System;
+using System.Collections.Specialized;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Collections.Specialized;
-
 using Rsdn.Mime;
 
 namespace Rsdn.Nntp.Commands
@@ -55,16 +54,16 @@ namespace Rsdn.Nntp.Commands
 		/// <returns>Server's NNTP response.</returns>
 		protected override Response ProcessCommand()
 		{
-			StringBuilder textResponse = new StringBuilder();
+			var textResponse = new StringBuilder();
 			if (lastMatch.Groups["overview"].Success)
 				// overview format
-				foreach (string headerItem in headerItems)
+				foreach (var headerItem in headerItems)
 					textResponse.Append(headerItem).Append(':').Append(Util.CRLF);
 			else if (lastMatch.Groups["active"].Success)
 				// active.times
-				foreach (NewsGroup group in session.DataProvider.GetGroupList(DateTime.MinValue, null))
+				foreach (var group in session.DataProvider.GetGroupList(DateTime.MinValue, null))
 				{
-					TimeSpan period = group.Created - unixStartDate;
+					var period = group.Created - unixStartDate;
 					textResponse.AppendFormat("{0} {1} admin@rsdn.ru", group.Name, (int)period.TotalSeconds).
 						Append(Util.CRLF);
 				}
@@ -74,15 +73,15 @@ namespace Rsdn.Nntp.Commands
 				if (lastMatch.Groups["wildmat"].Success)
 					pattern = TransformWildmat(lastMatch.Groups["wildmat"].Value);
 
-				NewsGroup[] groupList = session.DataProvider.GetGroupList(DateTime.MinValue, pattern);
+				var groupList = session.DataProvider.GetGroupList(DateTime.MinValue, pattern);
 
 				if (lastMatch.Groups["wideFormat"].Success)
 					// wide format
-					foreach (NewsGroup group in groupList)
+					foreach (var group in groupList)
 						textResponse.AppendFormat("{0} {1}", group.Name, group.Description).Append(Util.CRLF);
 				else
 					// standart format
-					foreach (NewsGroup group in groupList)
+					foreach (var group in groupList)
 						textResponse.AppendFormat("{0} {1} {2} {3}",
 							group.Name, group.LastArticleNumber, group.FirstArticleNumber, group.PostingAllowed ? 'y' : 'n').
 							Append(Util.CRLF);

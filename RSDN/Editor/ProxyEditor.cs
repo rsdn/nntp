@@ -1,8 +1,9 @@
 using System;
+using System.ComponentModel;
 using System.Drawing.Design;
+using System.Net;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
-using System.Net;
 
 namespace Rsdn.RsdnNntp.Public.Editor
 {
@@ -11,30 +12,25 @@ namespace Rsdn.RsdnNntp.Public.Editor
 	/// </summary>
 	public class ProxyEditor : UITypeEditor
 	{
-		public ProxyEditor()
-		{
-		}
-
-		public override UITypeEditorEditStyle GetEditStyle(System.ComponentModel.ITypeDescriptorContext context)
+		public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context)
 		{
 			return UITypeEditorEditStyle.Modal;
 		}
 
-		public override object EditValue(System.ComponentModel.ITypeDescriptorContext context, IServiceProvider provider, object value)
+		public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
 		{
-			IWindowsFormsEditorService service =
+			var service =
 				(IWindowsFormsEditorService)provider.GetService(typeof(IWindowsFormsEditorService));
 			
 			if (service == null)
 				return null;
 			
-			ProxyEditorForm proxyEditor = new ProxyEditorForm(value as WebProxy);
+			var proxyEditor = new ProxyEditorForm(value as WebProxy);
 			if (service.ShowDialog(proxyEditor) == DialogResult.OK)
 			{
 				return proxyEditor.Proxy;
 			}
-			else
-				return value;
+			return value;
 		}
 	}
 }

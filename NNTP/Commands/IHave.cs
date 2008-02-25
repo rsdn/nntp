@@ -1,4 +1,3 @@
-using System;
 using System.Text.RegularExpressions;
 
 namespace Rsdn.Nntp.Commands
@@ -37,8 +36,7 @@ namespace Rsdn.Nntp.Commands
 				session.sessionState = Session.States.TransferWaiting;
 				return new Response(NntpResponse.TransferArticle);
 			}
-			else
-				return new Response(NntpResponse.ArticleNotWanted);
+			return new Response(NntpResponse.ArticleNotWanted);
 		}
 	}
 }

@@ -1,12 +1,9 @@
 using System;
-using System.ComponentModel;
-using System.Globalization;
-using System.Text.RegularExpressions;
-using System.Net;
-using System.Xml.Serialization;
-using System.Text;
-using System.Security.Cryptography;
 using System.IO;
+using System.Net;
+using System.Security.Cryptography;
+using System.Text;
+using System.Xml.Serialization;
 
 namespace Rsdn.RsdnNntp.Public
 {
@@ -55,18 +52,17 @@ namespace Rsdn.RsdnNntp.Public
 				{
 					SymmetricAlgorithm cryptoAlgotithm = new RijndaelManaged();
 					SetKeys(cryptoAlgotithm);
-					MemoryStream result = new MemoryStream();
-					using (ICryptoTransform encryptor = cryptoAlgotithm.CreateEncryptor())
-						using (CryptoStream cryptoStream = new CryptoStream(result, encryptor, CryptoStreamMode.Write))
+					var result = new MemoryStream();
+					using (var encryptor = cryptoAlgotithm.CreateEncryptor())
+						using (var cryptoStream = new CryptoStream(result, encryptor, CryptoStreamMode.Write))
 						{
-							byte[] source = Encoding.UTF8.GetBytes(uriBuilder.Password);
+							var source = Encoding.UTF8.GetBytes(uriBuilder.Password);
 							cryptoStream.Write(source, 0, source.Length);
 							cryptoStream.FlushFinalBlock();
 						}
 					return result.ToArray();
 				}
-				else
-					return null;
+				return null;
 			}
 			set
 			{
@@ -74,12 +70,12 @@ namespace Rsdn.RsdnNntp.Public
 				{
 					SymmetricAlgorithm cryptoAlgotithm = new RijndaelManaged();
 					SetKeys(cryptoAlgotithm);
-					MemoryStream source = new MemoryStream(value);
-					byte[] result = new byte[value.Length];
-					using (ICryptoTransform decryptor = cryptoAlgotithm.CreateDecryptor())
-						using (CryptoStream cryptoStream = new CryptoStream(source, decryptor, CryptoStreamMode.Read))
+					var source = new MemoryStream(value);
+					var result = new byte[value.Length];
+					using (var decryptor = cryptoAlgotithm.CreateDecryptor())
+						using (var cryptoStream = new CryptoStream(source, decryptor, CryptoStreamMode.Read))
 						{
-							int count = cryptoStream.Read(result, 0, result.Length);
+							var count = cryptoStream.Read(result, 0, result.Length);
 							uriBuilder.Password = Encoding.UTF8.GetString(result, 0, count);
 						}
 				}
@@ -93,13 +89,13 @@ namespace Rsdn.RsdnNntp.Public
 		/// <param name="cryptoAlgotithm"></param>
 		private void SetKeys(SymmetricAlgorithm cryptoAlgotithm)
 		{
-			byte[] Key = new byte[cryptoAlgotithm.Key.Length];
-			byte[] addressBytes = Encoding.UTF8.GetBytes(Address);
+			var Key = new byte[cryptoAlgotithm.Key.Length];
+			var addressBytes = Encoding.UTF8.GetBytes(Address);
 			Array.Copy(addressBytes, 0, Key, 0, Math.Min(Key.Length, addressBytes.Length));
 			cryptoAlgotithm.Key = Key;
 
-			byte[] IV = new byte[cryptoAlgotithm.IV.Length];
-			byte[] usernameBytes = Encoding.UTF8.GetBytes(Username);
+			var IV = new byte[cryptoAlgotithm.IV.Length];
+			var usernameBytes = Encoding.UTF8.GetBytes(Username);
 			Array.Copy(usernameBytes, 0, IV, 0, Math.Min(IV.Length, usernameBytes.Length));
 			cryptoAlgotithm.IV = IV;
 		}

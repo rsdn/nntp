@@ -1,29 +1,28 @@
 using System;
-using System.Drawing;
 using System.ComponentModel;
-using System.Windows.Forms;
 using System.Net;
+using System.Windows.Forms;
 
 namespace Rsdn.RsdnNntp.Public.Editor
 {
 	/// <summary>
 	/// Summary description for ProxyEditor.
 	/// </summary>
-	public class ProxyEditorForm : System.Windows.Forms.Form
+	public class ProxyEditorForm : Form
 	{
-		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.GroupBox groupBox1;
-		private System.Windows.Forms.Label label2;
-		private System.Windows.Forms.Label label3;
-		private System.Windows.Forms.TextBox password;
-    private System.Windows.Forms.ErrorProvider errorProvider;
+		private Label label1;
+		private GroupBox groupBox1;
+		private Label label2;
+		private Label label3;
+		private TextBox password;
+    private ErrorProvider errorProvider;
     private IContainer components;
-    private System.Windows.Forms.TextBox proxyUrl;
-		private System.Windows.Forms.TextBox username;
-		private System.Windows.Forms.Button okButton;
-		private System.Windows.Forms.Button cancelButton;
-		private System.Windows.Forms.Label label4;
-		private System.Windows.Forms.TextBox password2;
+    private TextBox proxyUrl;
+		private TextBox username;
+		private Button okButton;
+		private Button cancelButton;
+		private Label label4;
+		private TextBox password2;
 
 		protected WebProxy proxy;
 		public WebProxy Proxy
@@ -31,10 +30,7 @@ namespace Rsdn.RsdnNntp.Public.Editor
 			get { return proxy; }
 			set 
 			{
-				if (value == null)
-					proxy = new WebProxy();
-				else
-					proxy = value;
+				proxy = value ?? new WebProxy();
 
 				proxyUrl.Text = (proxy.Address != null) ? proxy.Address.GetLeftPart(UriPartial.Authority) : "";
 				if ((proxy.Credentials as NetworkCredential) == null)
@@ -234,11 +230,11 @@ namespace Rsdn.RsdnNntp.Public.Editor
 		}
 		#endregion
 
-		private void proxyUrl_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+		private void proxyUrl_Validating(object sender, CancelEventArgs e)
 		{
 			try
 			{
-				proxy.Address = new UriBuilder((string)proxyUrl.Text).Uri;
+				proxy.Address = new UriBuilder(proxyUrl.Text).Uri;
 				proxyUrl.Text = proxy.Address.GetLeftPart(UriPartial.Authority);
 				errorProvider.SetError(proxyUrl, "");
 			}
@@ -249,7 +245,7 @@ namespace Rsdn.RsdnNntp.Public.Editor
 			}
 		}
 
-		private void okButton_Click(object sender, System.EventArgs e)
+		private void okButton_Click(object sender, EventArgs e)
 		{
 			((NetworkCredential)proxy.Credentials).UserName = username.Text;
 			if (password2.Text.Equals(password.Text, StringComparison.Ordinal))

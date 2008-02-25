@@ -1,25 +1,19 @@
 using System;
-using System.Drawing;
 using System.ComponentModel;
-using System.Windows.Forms;
-using Win32Util;
-using System.Threading;
 using System.Configuration;
+using System.Drawing;
 using System.Management;
-using System.Reflection;
-using System.Reflection.Emit;
-using System.IO;
-using System.Xml.Serialization;
-
+using System.Windows.Forms;
 using Rsdn.Nntp;
 using Rsdn.WMI.ROOT.CIMV2;
+using Win32Util;
 
 namespace Rsdn.RsdnNntp
 {
 	/// <summary>
 	/// Summary description for Notify.
 	/// </summary>
-	public class Notify : System.Windows.Forms.Form
+	public class Notify : Form
 	{
 		protected ControlPanel controlPanel;
 		protected Icon startedIcon;
@@ -29,19 +23,19 @@ namespace Rsdn.RsdnNntp
 		internal protected Service service = new Service();
 		protected ManagementPath serviceManagementPath;
 
-		private System.Windows.Forms.NotifyIcon notifyIcon;
-		private System.Windows.Forms.Timer timer;
-		private System.Windows.Forms.ContextMenu contextMenu;
-		private System.Windows.Forms.MenuItem menuOpen;
-		private System.Windows.Forms.MenuItem menuItem1;
-		private System.Windows.Forms.MenuItem menuStart;
-		private System.Windows.Forms.MenuItem menuItem5;
-		private System.Windows.Forms.MenuItem menuPause;
-		private System.Windows.Forms.MenuItem menuStop;
-		private System.Windows.Forms.MenuItem menuExit;
-		private System.Windows.Forms.MenuItem menuAbout;
-		private System.Windows.Forms.MenuItem menuItem3;
-		private System.ComponentModel.IContainer components;
+		private NotifyIcon notifyIcon;
+		private Timer timer;
+		private ContextMenu contextMenu;
+		private MenuItem menuOpen;
+		private MenuItem menuItem1;
+		private MenuItem menuStart;
+		private MenuItem menuItem5;
+		private MenuItem menuPause;
+		private MenuItem menuStop;
+		private MenuItem menuExit;
+		private MenuItem menuAbout;
+		private MenuItem menuItem3;
+		private IContainer components;
 
 		public Notify()
 		{
@@ -66,11 +60,11 @@ namespace Rsdn.RsdnNntp
 
 			controlPanel = new ControlPanel(new Settings(serverSettings));
 
-			startedIcon	= new System.Drawing.Icon(this.GetType(), "Started.ico");
-			pausedIcon	= new System.Drawing.Icon(this.GetType(), "Paused.ico");
-			stoppedIcon	= new System.Drawing.Icon(this.GetType(), "Stopped.ico");
+			startedIcon	= new Icon(GetType(), "Started.ico");
+			pausedIcon	= new Icon(GetType(), "Paused.ico");
+			stoppedIcon	= new Icon(GetType(), "Stopped.ico");
 
-			Win32Window win32Window = new Win32Window(this.Handle);
+			var win32Window = new Win32Window(Handle);
 			win32Window.MakeToolWindow();
 
 			RefreshStatus();
@@ -226,19 +220,19 @@ namespace Rsdn.RsdnNntp
 		/// </summary>
 		protected About about;
 
-		private void About(object sender, System.EventArgs e)
+		private void About(object sender, EventArgs e)
 		{
 			if (about == null)
 				about = new About();
 			about.ShowDialog();
 		}
 
-		private void Exit(object sender, System.EventArgs e)
+		private void Exit(object sender, EventArgs e)
 		{
 			Application.Exit();
 		}
 
-		private void Open(object sender, System.EventArgs e)
+		private void Open(object sender, EventArgs e)
 		{
 			if (!controlPanel.Visible)
 			{
@@ -260,7 +254,7 @@ namespace Rsdn.RsdnNntp
 			}
 		}
 
-		private void Start(object sender, System.EventArgs e)
+		private void Start(object sender, EventArgs e)
 		{
 			RefreshService();
 			switch (service.State)
@@ -277,13 +271,13 @@ namespace Rsdn.RsdnNntp
 			controlPanel.ShowAlert(false);
 		}
 
-		private void Pause(object sender, System.EventArgs e)
+		private void Pause(object sender, EventArgs e)
 		{
 			service.PauseService();
 			RefreshStatus();
 		}
 
-		private void Stop(object sender, System.EventArgs e)
+		private void Stop(object sender, EventArgs e)
 		{
 			service.StopService();
 			RefreshStatus();
@@ -294,7 +288,7 @@ namespace Rsdn.RsdnNntp
 			service.Path = serviceManagementPath;
 		}
 
-		private void RefreshStatus(object sender, System.EventArgs e)
+		private void RefreshStatus(object sender, EventArgs e)
 		{
 			try
 			{

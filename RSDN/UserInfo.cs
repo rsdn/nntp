@@ -1,5 +1,3 @@
-using System;
-
 namespace Rsdn.RsdnNntp.Public
 {
 	/// <summary>
@@ -7,9 +5,9 @@ namespace Rsdn.RsdnNntp.Public
 	/// </summary>
 	public class UserInfo : IUserInfo
 	{
-		protected Rsdn.RsdnNntp.Public.RsdnService.UserInfo serviceUserInfo;
+		protected RsdnService.UserInfo serviceUserInfo;
 
-		public UserInfo(Rsdn.RsdnNntp.Public.RsdnService.UserInfo serviceUserInfo)
+		public UserInfo(RsdnService.UserInfo serviceUserInfo)
 		{
 			this.serviceUserInfo = serviceUserInfo;
 		}
@@ -38,10 +36,10 @@ namespace Rsdn.RsdnNntp.Public
 			{
 				switch (serviceUserInfo.MessageFormat)
 				{
-					case Rsdn.RsdnNntp.Public.RsdnService.MessageFormat.Text :
+					case RsdnService.MessageFormat.Text :
 						return FormattingStyle.PlainText;
-                    case Rsdn.RsdnNntp.Public.RsdnService.MessageFormat.Html:
-                    case Rsdn.RsdnNntp.Public.RsdnService.MessageFormat.TextHtml:
+          case RsdnService.MessageFormat.Html:
+          case RsdnService.MessageFormat.TextHtml:
 					default :
 						return FormattingStyle.Html;
 				}

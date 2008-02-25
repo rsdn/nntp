@@ -1,10 +1,6 @@
-using System;
 using System.ComponentModel;
 using System.Configuration.Install;
-using System.IO;
-using System.Diagnostics;
-
-using Rsdn.Nntp;
+using System.ServiceProcess;
 
 namespace Rsdn.RsdnNntp
 {
@@ -12,15 +8,15 @@ namespace Rsdn.RsdnNntp
 	/// Summary description for ProjectInstaller.
 	/// </summary>
 	[RunInstaller(true)]
-	public class ProjectInstaller : System.Configuration.Install.Installer
+	public class ProjectInstaller : Installer
 	{
-		private System.ServiceProcess.ServiceInstaller serviceInstaller;
-		private System.ServiceProcess.ServiceProcessInstaller serviceProcessInstaller;
+		private ServiceInstaller serviceInstaller;
+		private ServiceProcessInstaller serviceProcessInstaller;
 		/// <summary>
 		/// 
 		/// Required designer variable.
 		/// </summary>
-		private System.ComponentModel.Container components = null;
+		private Container components;
 
 		public ProjectInstaller()
 		{
@@ -62,12 +58,7 @@ namespace Rsdn.RsdnNntp
 		}
 		#endregion
 
-		private void serviceProcessInstaller_AfterInstall(object sender, System.Configuration.Install.InstallEventArgs e)
-		{
-		
-		}
-
-		private void customInstaller_AfterInstall(object sender, System.Configuration.Install.InstallEventArgs e)
+		private void serviceProcessInstaller_AfterInstall(object sender, InstallEventArgs e)
 		{
 		
 		}

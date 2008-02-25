@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.Globalization;
 
 namespace Rsdn.Nntp.Editor
 {
@@ -8,37 +9,30 @@ namespace Rsdn.Nntp.Editor
 	/// </summary>
 	public class TypeClassConverter : TypeConverter
 	{
-		public TypeClassConverter()
-		{
-		}
-
-		public override object ConvertTo(System.ComponentModel.ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, System.Type destinationType)
+		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
 		{
 			if (destinationType == typeof(string))
 			{
         return (value == null) ? null : ((Type)value).AssemblyQualifiedName;
 			}
-			else
-				return base.ConvertTo(context, culture, value, destinationType);
+			return base.ConvertTo(context, culture, value, destinationType);
 		}
 
-		public override bool CanConvertTo(System.ComponentModel.ITypeDescriptorContext context, System.Type destinationType)
+		public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
 		{
 			if (destinationType == typeof(string))
 				return true;
-			else
-				return base.CanConvertTo(context, destinationType);
+			return base.CanConvertTo(context, destinationType);
 		}
 
-		public override bool CanConvertFrom(System.ComponentModel.ITypeDescriptorContext context, System.Type sourceType)
+		public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
 		{
 			if (sourceType == typeof(string))
 				return true;
-			else
-				return base.CanConvertFrom(context, sourceType);
+			return base.CanConvertFrom(context, sourceType);
 		}
 
-		public override object ConvertFrom(System.ComponentModel.ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
+		public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
 		{
 			if (value is string)
 				return Type.GetType((string)value, true);

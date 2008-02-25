@@ -1,37 +1,36 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.ComponentModel;
 using System.Drawing.Design;
-using System.Windows.Forms.Design;
 using System.Security.Cryptography.X509Certificates;
+using System.Windows.Forms.Design;
 
 namespace Rsdn.Nntp.Editor
 {
   class CertificateEditor : UITypeEditor
   {
-    public override UITypeEditorEditStyle GetEditStyle(System.ComponentModel.ITypeDescriptorContext context)
+    public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context)
     {
       return UITypeEditorEditStyle.Modal;
     }
 
-    public override object EditValue(System.ComponentModel.ITypeDescriptorContext context, IServiceProvider provider, object value)
+    public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
     {
-      IWindowsFormsEditorService service =
+      var service =
         (IWindowsFormsEditorService)provider.GetService(typeof(IWindowsFormsEditorService));
 
       if (service == null)
         return null;
 
-      X509Store localStore = new X509Store(StoreLocation.LocalMachine);
+      var localStore = new X509Store(StoreLocation.LocalMachine);
       try
       {
         localStore.Open(OpenFlags.ReadOnly);
 
         // find a certificate that is suited for server authentication
-        X509Certificate2Collection appropriateCertificates = localStore.Certificates
+        var appropriateCertificates = localStore.Certificates
           .Find(X509FindType.FindByApplicationPolicy, "1.3.6.1.5.5.7.3.1", false)
           .Find(X509FindType.FindByKeyUsage, X509KeyUsageFlags.DataEncipherment, false);
-        X509Certificate2Collection collection =
+        var collection =
           X509Certificate2UI.SelectFromCollection(appropriateCertificates,
             "Select certificate",
             "Select certificate which will be used for SSL connection authentification and encryption.",

@@ -1,10 +1,7 @@
 using System;
 using System.ComponentModel;
-using System.ComponentModel.Design;
+using System.Text;
 using System.Xml.Serialization;
-using System.Net;
-
-using Rsdn.Nntp;
 using Rsdn.Nntp.Cache;
 
 namespace Rsdn.RsdnNntp
@@ -49,7 +46,7 @@ namespace Rsdn.RsdnNntp
 		/// <summary>
 		/// Output encoding for messages.
 		/// </summary>
-		protected System.Text.Encoding encoding;
+		protected Encoding encoding;
 		
 		/// <summary>
 		/// Output encoding for messages.
@@ -65,7 +62,7 @@ namespace Rsdn.RsdnNntp
 			}
 			set
 			{
-				System.Text.Encoding enc = System.Text.Encoding.GetEncoding(value);
+				var enc = System.Text.Encoding.GetEncoding(value);
 				if (!enc.IsMailNewsDisplay)
 					throw new NotSupportedException(string.Format(
 						"{0} encoding is not suitable for news client.", enc.HeaderName));
@@ -78,7 +75,7 @@ namespace Rsdn.RsdnNntp
 		/// </summary>
 		[BrowsableAttribute(false)]
 		[XmlIgnore]
-		public System.Text.Encoding GetEncoding
+		public Encoding GetEncoding
 		{
 			get
 			{
@@ -103,17 +100,12 @@ namespace Rsdn.RsdnNntp
 			set { formatting = value; }
 		}
 
-		private long maxImagesSize;
 		/// <summary>
 		/// Maximum size of all attached images, o - no limit.
 		/// </summary>
 		[Category("Others")]
 		[DefaultValue(0)]
 		[Description("Maximum size of all attached images. 0 - no limit.")]
-		public long MaxImagesSize
-		{
-			get { return maxImagesSize; }
-			set { maxImagesSize = value; }
-		}
+		public long MaxImagesSize { get; set; }
 	}
 }

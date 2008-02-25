@@ -1,99 +1,96 @@
-﻿namespace Rsdn.WMI.ROOT.CIMV2 
+﻿using System;
+using System.Collections;
+using System.ComponentModel;
+using System.Globalization;
+using System.Management;
+
+namespace Rsdn.WMI.ROOT.CIMV2 
 {
-    using System;
-    using System.ComponentModel;
-    using System.Management;
-    using System.Collections;
-    using System.Globalization;
-    using System.ComponentModel.Design.Serialization;
-    using System.Reflection;
-    
-    
-    // Functions ShouldSerialize<PropertyName> are functions used by VS property browser to check if a particular property has to be serialized. These functions are added for all ValueType properties ( properties of type Int32, BOOL etc.. which cannot be set to null). These functions uses Is<PropertyName>Null function. These functions are also used in the TypeConverter implementation for the properties to check for NULL value of property so that a empty value can be shown in Property browser in case of Drag and Drop in Visual studio.
+	// Functions ShouldSerialize<PropertyName> are functions used by VS property browser to check if a particular property has to be serialized. These functions are added for all ValueType properties ( properties of type Int32, BOOL etc.. which cannot be set to null). These functions uses Is<PropertyName>Null function. These functions are also used in the TypeConverter implementation for the properties to check for NULL value of property so that a empty value can be shown in Property browser in case of Drag and Drop in Visual studio.
     // Functions Is<PropertyName>Null() are functions . These functions are to be used to check if a property is NULL.
     // Functions Reset<PropertyName> are added for Nullable Read/Write properties. These functions are used in VS designere in property browser to set a property to NULL.
     // 	Every property added to the class for WMI property has attributes set to define its behaviour in Visual Studio designer and as well as to define a TypeConverter to be used.
     // DateTime Conversions are added for the class to convert DMTF date to System.DateTime and Vise-versa. Conversion from DMTF to System.DateTime conversion ignores the microseconds as System.DateTime doesn't have the microseconds part in it.
     // An Early Bound class generated for the WMI class.Win32_NetworkAdapterConfiguration
-    public class NetworkAdapterConfiguration : System.ComponentModel.Component {
+    public class NetworkAdapterConfiguration : Component {
         
         // Private property to hold the name of WMI class which created this class.
         private static string CreatedClassName = "Win32_NetworkAdapterConfiguration";
         
         // Property pointing to a embeded object to get System properties of the WMI object.
-        private ManagementSystemProperties PrivateSystemProperties;
+        private readonly ManagementSystemProperties PrivateSystemProperties;
         
         // Underlying LateBound WMI object.
-        private System.Management.ManagementObject PrivateLateBoundObject;
+        private readonly ManagementObject PrivateLateBoundObject;
         
         // Member variable to store the autocommit behaviour for the class.
         private bool AutoCommitProp = true;
         
         // Private variable to hold the embedded property representing the instance.
-        private System.Management.ManagementBaseObject embeddedObj;
+        private readonly ManagementBaseObject embeddedObj;
         
         // The current WMI object used
-        private System.Management.ManagementBaseObject curObj;
+        private readonly ManagementBaseObject curObj;
         
         // Flag to indicate if t	he instance is a embedded object.
-        private bool isEmbedded = false;
+        private readonly bool isEmbedded;
         
         // Below are different flavours of constructors to initialize the instance with a WMI object.
         public NetworkAdapterConfiguration() : 
-                this(((System.Management.ManagementScope)(null)), ((System.Management.ManagementPath)(null)), ((System.Management.ObjectGetOptions)(null))) {
+                this(((null)), ((null)), ((null))) {
         }
         
-        public NetworkAdapterConfiguration(System.UInt32 keyIndex) : 
-                this(((System.Management.ManagementScope)(null)), ((System.Management.ManagementPath)(new System.Management.ManagementPath(NetworkAdapterConfiguration.ConstructPath(keyIndex)))), ((System.Management.ObjectGetOptions)(null))) {
+        public NetworkAdapterConfiguration(UInt32 keyIndex) : 
+                this(((null)), ((new ManagementPath(ConstructPath(keyIndex)))), ((null))) {
         }
         
-        public NetworkAdapterConfiguration(System.Management.ManagementScope mgmtScope, System.UInt32 keyIndex) : 
-                this(((System.Management.ManagementScope)(mgmtScope)), ((System.Management.ManagementPath)(new System.Management.ManagementPath(NetworkAdapterConfiguration.ConstructPath(keyIndex)))), ((System.Management.ObjectGetOptions)(null))) {
+        public NetworkAdapterConfiguration(ManagementScope mgmtScope, UInt32 keyIndex) : 
+                this(((mgmtScope)), ((new ManagementPath(ConstructPath(keyIndex)))), ((null))) {
         }
         
-        public NetworkAdapterConfiguration(System.Management.ManagementPath path, System.Management.ObjectGetOptions getOptions) : 
-                this(((System.Management.ManagementScope)(null)), ((System.Management.ManagementPath)(path)), ((System.Management.ObjectGetOptions)(getOptions))) {
+        public NetworkAdapterConfiguration(ManagementPath path, ObjectGetOptions getOptions) : 
+                this(((null)), ((path)), ((getOptions))) {
         }
         
-        public NetworkAdapterConfiguration(System.Management.ManagementScope mgmtScope, System.Management.ManagementPath path) : 
-                this(((System.Management.ManagementScope)(mgmtScope)), ((System.Management.ManagementPath)(path)), ((System.Management.ObjectGetOptions)(null))) {
+        public NetworkAdapterConfiguration(ManagementScope mgmtScope, ManagementPath path) : 
+                this(((mgmtScope)), ((path)), ((null))) {
         }
         
-        public NetworkAdapterConfiguration(System.Management.ManagementPath path) : 
-                this(((System.Management.ManagementScope)(null)), ((System.Management.ManagementPath)(path)), ((System.Management.ObjectGetOptions)(null))) {
+        public NetworkAdapterConfiguration(ManagementPath path) : 
+                this(((null)), ((path)), ((null))) {
         }
         
-        public NetworkAdapterConfiguration(System.Management.ManagementScope mgmtScope, System.Management.ManagementPath path, System.Management.ObjectGetOptions getOptions) {
+        public NetworkAdapterConfiguration(ManagementScope mgmtScope, ManagementPath path, ObjectGetOptions getOptions) {
             if ((path != null)) {
                 if ((CheckIfProperClass(mgmtScope, path, getOptions) != true)) {
-                    throw new System.ArgumentException("Class name does not match.");
+                    throw new ArgumentException("Class name does not match.");
                 }
             }
-            PrivateLateBoundObject = new System.Management.ManagementObject(mgmtScope, path, getOptions);
+            PrivateLateBoundObject = new ManagementObject(mgmtScope, path, getOptions);
             PrivateSystemProperties = new ManagementSystemProperties(PrivateLateBoundObject);
             curObj = PrivateLateBoundObject;
         }
         
-        public NetworkAdapterConfiguration(System.Management.ManagementObject theObject) {
-            if ((CheckIfProperClass(theObject.Scope, theObject.Path, theObject.Options) == true)) {
+        public NetworkAdapterConfiguration(ManagementObject theObject) {
+            if (CheckIfProperClass(theObject.Scope, theObject.Path, theObject.Options)) {
                 PrivateLateBoundObject = theObject;
                 PrivateSystemProperties = new ManagementSystemProperties(PrivateLateBoundObject);
                 curObj = PrivateLateBoundObject;
             }
             else {
-                throw new System.ArgumentException("Class name does not match.");
+                throw new ArgumentException("Class name does not match.");
             }
         }
         
-        public NetworkAdapterConfiguration(System.Management.ManagementBaseObject theObject) {
-            if ((CheckIfProperClass(theObject) == true)) {
+        public NetworkAdapterConfiguration(ManagementBaseObject theObject) {
+            if (CheckIfProperClass(theObject)) {
                 embeddedObj = theObject;
                 PrivateSystemProperties = new ManagementSystemProperties(theObject);
                 curObj = embeddedObj;
                 isEmbedded = true;
             }
             else {
-                throw new System.ArgumentException("Class name does not match.");
+                throw new ArgumentException("Class name does not match.");
             }
         }
         
@@ -110,12 +107,12 @@
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string ManagementClassName {
             get {
-                string strRet = CreatedClassName;
+                var strRet = CreatedClassName;
                 if ((curObj != null)) {
                     if ((curObj.ClassPath != null)) {
                         strRet = ((string)(curObj["__CLASS"]));
                         if (((strRet == null) 
-                                    || (strRet == System.String.Empty))) {
+                                    || (strRet == String.Empty))) {
                             strRet = CreatedClassName;
                         }
                     }
@@ -136,7 +133,7 @@
         // Property returning the underlying LateBound object.
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public System.Management.ManagementBaseObject LateBoundObject {
+        public ManagementBaseObject LateBoundObject {
             get {
                 return curObj;
             }
@@ -145,7 +142,7 @@
         // ManagementScope of the object.
         [Browsable(true)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public System.Management.ManagementScope Scope {
+        public ManagementScope Scope {
             get {
                 if ((isEmbedded == false)) {
                     return PrivateLateBoundObject.Scope;
@@ -175,7 +172,7 @@
         
         // The ManagementPath of the underlying WMI object.
         [Browsable(true)]
-        public System.Management.ManagementPath Path {
+        public ManagementPath Path {
             get {
                 if ((isEmbedded == false)) {
                     return PrivateLateBoundObject.Path;
@@ -187,7 +184,7 @@
             set {
                 if ((isEmbedded == false)) {
                     if ((CheckIfProperClass(null, value, null) != true)) {
-                        throw new System.ArgumentException("Class name does not match.");
+                        throw new ArgumentException("Class name does not match.");
                     }
                     PrivateLateBoundObject.Path = value;
                 }
@@ -214,7 +211,7 @@
         public bool ArpAlwaysSourceRoute {
             get {
                 if ((curObj["ArpAlwaysSourceRoute"] == null)) {
-                    return System.Convert.ToBoolean(0);
+                    return Convert.ToBoolean(0);
                 }
                 return ((bool)(curObj["ArpAlwaysSourceRoute"]));
             }
@@ -240,7 +237,7 @@
         public bool ArpUseEtherSNAP {
             get {
                 if ((curObj["ArpUseEtherSNAP"] == null)) {
-                    return System.Convert.ToBoolean(0);
+                    return Convert.ToBoolean(0);
                 }
                 return ((bool)(curObj["ArpUseEtherSNAP"]));
             }
@@ -284,7 +281,7 @@
         public bool DeadGWDetectEnabled {
             get {
                 if ((curObj["DeadGWDetectEnabled"] == null)) {
-                    return System.Convert.ToBoolean(0);
+                    return Convert.ToBoolean(0);
                 }
                 return ((bool)(curObj["DeadGWDetectEnabled"]));
             }
@@ -319,12 +316,12 @@
 "the header of outgoing IP packets. RFC 791 defines the values. Default: 0, Valid" +
 " Range: 0 - 255.")]
         [TypeConverter(typeof(WMIValueTypeConverter))]
-        public System.Byte DefaultTOS {
+        public Byte DefaultTOS {
             get {
                 if ((curObj["DefaultTOS"] == null)) {
-                    return System.Convert.ToByte(0);
+                    return Convert.ToByte(0);
                 }
-                return ((System.Byte)(curObj["DefaultTOS"]));
+                return ((Byte)(curObj["DefaultTOS"]));
             }
         }
         
@@ -345,12 +342,12 @@
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         [Description(@"The DefaultTTL property indicates the default Time To Live (TTL) value set in the header of outgoing IP packets. The TTL specifies the number of routers an IP packet may pass through to reach its destination before being discarded. Each router decrements the TTL count of a packet by one as it passes through and discards the packets if the TTL is 0. Default: 32, Valid Range: 1 - 255.")]
         [TypeConverter(typeof(WMIValueTypeConverter))]
-        public System.Byte DefaultTTL {
+        public Byte DefaultTTL {
             get {
                 if ((curObj["DefaultTTL"] == null)) {
-                    return System.Convert.ToByte(0);
+                    return Convert.ToByte(0);
                 }
-                return ((System.Byte)(curObj["DefaultTTL"]));
+                return ((Byte)(curObj["DefaultTTL"]));
             }
         }
         
@@ -386,7 +383,7 @@
         public bool DHCPEnabled {
             get {
                 if ((curObj["DHCPEnabled"] == null)) {
-                    return System.Convert.ToBoolean(0);
+                    return Convert.ToBoolean(0);
                 }
                 return ((bool)(curObj["DHCPEnabled"]));
             }
@@ -411,7 +408,7 @@
 " IP address that was assigned to the computer by the dynamic host configuration " +
 "protocol (DHCP) server.\nExample: 20521201000230.000000000")]
         [TypeConverter(typeof(WMIValueTypeConverter))]
-        public System.DateTime DHCPLeaseExpires {
+        public DateTime DHCPLeaseExpires {
             get {
                 if ((curObj["DHCPLeaseExpires"] != null)) {
                     return ToDateTime(((string)(curObj["DHCPLeaseExpires"])));
@@ -441,7 +438,7 @@
 " for the IP address assigned to the computer by the dynamic host configuration p" +
 "rotocol (DHCP) server. \nExample: 19521201000230.000000000")]
         [TypeConverter(typeof(WMIValueTypeConverter))]
-        public System.DateTime DHCPLeaseObtained {
+        public DateTime DHCPLeaseObtained {
             get {
                 if ((curObj["DHCPLeaseObtained"] != null)) {
                     return ToDateTime(((string)(curObj["DHCPLeaseObtained"])));
@@ -502,7 +499,7 @@ Example: samples.microsoft.com example.microsoft.com")]
         public bool DNSEnabledForWINSResolution {
             get {
                 if ((curObj["DNSEnabledForWINSResolution"] == null)) {
-                    return System.Convert.ToBoolean(0);
+                    return Convert.ToBoolean(0);
                 }
                 return ((bool)(curObj["DNSEnabledForWINSResolution"]));
             }
@@ -548,7 +545,7 @@ Example: corpdns")]
         public bool DomainDNSRegistrationEnabled {
             get {
                 if ((curObj["DomainDNSRegistrationEnabled"] == null)) {
-                    return System.Convert.ToBoolean(0);
+                    return Convert.ToBoolean(0);
                 }
                 return ((bool)(curObj["DomainDNSRegistrationEnabled"]));
             }
@@ -571,12 +568,12 @@ Example: corpdns")]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         [Description(@"The ForwardBufferMemory property indicates how much memory IP allocates to store packet data in the router packet queue. When this buffer space is filled, the router begins discarding packets at random from its queue. Packet queue data buffers are 256 bytes in length, so the value of this parameter should be a multiple of 256. Multiple buffers are chained together for larger packets. The IP header for a packet is stored separately. This parameter is ignored and no buffers are allocated if the IP router is not enabled. The buffer size can range from the network MTU to the a value smaller than 0xFFFFFFFF. Default: 74240 (fifty 1480-byte packets, rounded to a multiple of 256).")]
         [TypeConverter(typeof(WMIValueTypeConverter))]
-        public System.UInt32 ForwardBufferMemory {
+        public UInt32 ForwardBufferMemory {
             get {
                 if ((curObj["ForwardBufferMemory"] == null)) {
-                    return System.Convert.ToUInt32(0);
+                    return Convert.ToUInt32(0);
                 }
-                return ((System.UInt32)(curObj["ForwardBufferMemory"]));
+                return ((UInt32)(curObj["ForwardBufferMemory"]));
             }
         }
         
@@ -600,7 +597,7 @@ Example: corpdns")]
         public bool FullDNSRegistrationEnabled {
             get {
                 if ((curObj["FullDNSRegistrationEnabled"] == null)) {
-                    return System.Convert.ToBoolean(0);
+                    return Convert.ToBoolean(0);
                 }
                 return ((bool)(curObj["FullDNSRegistrationEnabled"]));
             }
@@ -612,9 +609,9 @@ Example: corpdns")]
 " be used in calculating the fastest, most reliable, and/or least expensive route" +
 "s. This argument has a one to one correspondence with the DefaultIPGateway. Wind" +
 "ows 2000 only.")]
-        public System.UInt16[] GatewayCostMetric {
+        public UInt16[] GatewayCostMetric {
             get {
-                return ((System.UInt16[])(curObj["GatewayCostMetric"]));
+                return ((UInt16[])(curObj["GatewayCostMetric"]));
             }
         }
         
@@ -638,7 +635,7 @@ Example: corpdns")]
         public IGMPLevelValues IGMPLevel {
             get {
                 if ((curObj["IGMPLevel"] == null)) {
-                    return ((IGMPLevelValues)(System.Convert.ToInt32(0)));
+                    return ((IGMPLevelValues)(Convert.ToInt32(0)));
                 }
                 return ((IGMPLevelValues)(Convert.ToInt32(curObj["IGMPLevel"])));
             }
@@ -663,12 +660,12 @@ Example: corpdns")]
 "uration. The index number is used when there is more than one configuration avai" +
 "lable.")]
         [TypeConverter(typeof(WMIValueTypeConverter))]
-        public System.UInt32 Index {
+        public UInt32 Index {
             get {
                 if ((curObj["Index"] == null)) {
-                    return System.Convert.ToUInt32(0);
+                    return Convert.ToUInt32(0);
                 }
-                return ((System.UInt32)(curObj["Index"]));
+                return ((UInt32)(curObj["Index"]));
             }
         }
         
@@ -699,12 +696,12 @@ Example: corpdns")]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         [Description(@"The IPConnectionMetric indicates the cost of using the configured routes for this IP bound adapter and is the weighted value for those routes in the IP routing table. If there are multiple routes to a destination in the IP routing table, the route with the lowest metric is used. The default value is 1.Windows 2000 only.")]
         [TypeConverter(typeof(WMIValueTypeConverter))]
-        public System.UInt32 IPConnectionMetric {
+        public UInt32 IPConnectionMetric {
             get {
                 if ((curObj["IPConnectionMetric"] == null)) {
-                    return System.Convert.ToUInt32(0);
+                    return Convert.ToUInt32(0);
                 }
-                return ((System.UInt32)(curObj["IPConnectionMetric"]));
+                return ((UInt32)(curObj["IPConnectionMetric"]));
             }
         }
         
@@ -729,7 +726,7 @@ Example: corpdns")]
         public bool IPEnabled {
             get {
                 if ((curObj["IPEnabled"] == null)) {
-                    return System.Convert.ToBoolean(0);
+                    return Convert.ToBoolean(0);
                 }
                 return ((bool)(curObj["IPEnabled"]));
             }
@@ -755,7 +752,7 @@ Example: corpdns")]
         public bool IPFilterSecurityEnabled {
             get {
                 if ((curObj["IPFilterSecurityEnabled"] == null)) {
-                    return System.Convert.ToBoolean(0);
+                    return Convert.ToBoolean(0);
                 }
                 return ((bool)(curObj["IPFilterSecurityEnabled"]));
             }
@@ -783,7 +780,7 @@ Example: corpdns")]
         public bool IPPortSecurityEnabled {
             get {
                 if ((curObj["IPPortSecurityEnabled"] == null)) {
-                    return System.Convert.ToBoolean(0);
+                    return Convert.ToBoolean(0);
                 }
                 return ((bool)(curObj["IPPortSecurityEnabled"]));
             }
@@ -846,7 +843,7 @@ Example: corpdns")]
         public bool IPUseZeroBroadcast {
             get {
                 if ((curObj["IPUseZeroBroadcast"] == null)) {
-                    return System.Convert.ToBoolean(0);
+                    return Convert.ToBoolean(0);
                 }
                 return ((bool)(curObj["IPUseZeroBroadcast"]));
             }
@@ -884,7 +881,7 @@ Example: corpdns")]
         public bool IPXEnabled {
             get {
                 if ((curObj["IPXEnabled"] == null)) {
-                    return System.Convert.ToBoolean(0);
+                    return Convert.ToBoolean(0);
                 }
                 return ((bool)(curObj["IPXEnabled"]));
             }
@@ -896,11 +893,11 @@ Example: corpdns")]
 "The values in this array correspond to the elements in the IPXNetworkNumber.")]
         public IPXFrameTypeValues[] IPXFrameType {
             get {
-                System.Array arrEnumVals = ((System.Array)(curObj["IPXFrameType"]));
-                IPXFrameTypeValues[] enumToRet = new IPXFrameTypeValues[arrEnumVals.Length];
-                Int32 counter = 0;
+                var arrEnumVals = ((Array)(curObj["IPXFrameType"]));
+                var enumToRet = new IPXFrameTypeValues[arrEnumVals.Length];
+                var counter = 0;
                 for (counter = 0; (counter < arrEnumVals.Length); counter = (counter + 1)) {
-                    enumToRet[counter] = ((IPXFrameTypeValues)(System.Convert.ToInt64(arrEnumVals.GetValue(counter))));
+                    enumToRet[counter] = ((IPXFrameTypeValues)(Convert.ToInt64(arrEnumVals.GetValue(counter))));
                 }
                 return enumToRet;
             }
@@ -927,7 +924,7 @@ Example: corpdns")]
         public IPXMediaTypeValues IPXMediaType {
             get {
                 if ((curObj["IPXMediaType"] == null)) {
-                    return ((IPXMediaTypeValues)(System.Convert.ToInt64(0)));
+                    return ((IPXMediaTypeValues)(Convert.ToInt64(0)));
                 }
                 return ((IPXMediaTypeValues)(Convert.ToInt64(curObj["IPXMediaType"])));
             }
@@ -968,12 +965,12 @@ Example: corpdns")]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         [Description(@"The KeepAliveInterval property indicates the interval separating Keep Alive Retransmissions until a response is received. Once a response is received, the delay until the next Keep Alive Transmission is again controlled by the value of KeepAliveTime. The connection will be aborted after the number of retransmissions specified by TcpMaxDataRetransmissions have gone unanswered. Default: 1000, Valid Range: 1 - 0xFFFFFFFF.")]
         [TypeConverter(typeof(WMIValueTypeConverter))]
-        public System.UInt32 KeepAliveInterval {
+        public UInt32 KeepAliveInterval {
             get {
                 if ((curObj["KeepAliveInterval"] == null)) {
-                    return System.Convert.ToUInt32(0);
+                    return Convert.ToUInt32(0);
                 }
-                return ((System.UInt32)(curObj["KeepAliveInterval"]));
+                return ((UInt32)(curObj["KeepAliveInterval"]));
             }
         }
         
@@ -994,12 +991,12 @@ Example: corpdns")]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         [Description(@"The KeepAliveTime property indicates how often the TCP attempts to verify that an idle connection is still intact by sending a Keep Alive Packet. A remote system that is reachable will acknowledge the keep alive transmission. Keep Alive packets are not sent by default. This feature may be enabled in a connection by an application. Default: 7,200,000 (two hours)")]
         [TypeConverter(typeof(WMIValueTypeConverter))]
-        public System.UInt32 KeepAliveTime {
+        public UInt32 KeepAliveTime {
             get {
                 if ((curObj["KeepAliveTime"] == null)) {
-                    return System.Convert.ToUInt32(0);
+                    return Convert.ToUInt32(0);
                 }
-                return ((System.UInt32)(curObj["KeepAliveTime"]));
+                return ((UInt32)(curObj["KeepAliveTime"]));
             }
         }
         
@@ -1031,12 +1028,12 @@ Example: corpdns")]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         [Description(@"The MTU property overrides the default Maximum Transmission Unit (MTU) for a network interface. The MTU is the maximum packet size (including the transport header) that the transport will transmit over the underlying network. The IP datagram can span multiple packets. The range of this value spans the minimum packet size (68) to the MTU supported by the underlying network.")]
         [TypeConverter(typeof(WMIValueTypeConverter))]
-        public System.UInt32 MTU {
+        public UInt32 MTU {
             get {
                 if ((curObj["MTU"] == null)) {
-                    return System.Convert.ToUInt32(0);
+                    return Convert.ToUInt32(0);
                 }
-                return ((System.UInt32)(curObj["MTU"]));
+                return ((UInt32)(curObj["MTU"]));
             }
         }
         
@@ -1057,12 +1054,12 @@ Example: corpdns")]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         [Description(@"The NumForwardPackets property indicates the number of IP packet headers allocated for the router packet queue. When all headers are in use, the router will begin to discard packets from the queue at random. This value should be at least as large as the ForwardBufferMemory value divided by the maximum IP data size of the networks connected to the router. It should be no larger than the ForwardBufferMemory value divided by 256, since at least 256 bytes of forward buffer memory are used for each packet. The optimal number of forward packets for a given ForwardBufferMemory size depends on the type of traffic carried on the network. It will lie somewhere between these two values. If the router is not enabled, this parameter is ignored and no headers are allocated. Default: 50, Valid Range: 1 - 0xFFFFFFFE.")]
         [TypeConverter(typeof(WMIValueTypeConverter))]
-        public System.UInt32 NumForwardPackets {
+        public UInt32 NumForwardPackets {
             get {
                 if ((curObj["NumForwardPackets"] == null)) {
-                    return System.Convert.ToUInt32(0);
+                    return Convert.ToUInt32(0);
                 }
-                return ((System.UInt32)(curObj["NumForwardPackets"]));
+                return ((UInt32)(curObj["NumForwardPackets"]));
             }
         }
         
@@ -1086,7 +1083,7 @@ Example: corpdns")]
         public bool PMTUBHDetectEnabled {
             get {
                 if ((curObj["PMTUBHDetectEnabled"] == null)) {
-                    return System.Convert.ToBoolean(0);
+                    return Convert.ToBoolean(0);
                 }
                 return ((bool)(curObj["PMTUBHDetectEnabled"]));
             }
@@ -1112,7 +1109,7 @@ Example: corpdns")]
         public bool PMTUDiscoveryEnabled {
             get {
                 if ((curObj["PMTUDiscoveryEnabled"] == null)) {
-                    return System.Convert.ToBoolean(0);
+                    return Convert.ToBoolean(0);
                 }
                 return ((bool)(curObj["PMTUDiscoveryEnabled"]));
             }
@@ -1158,7 +1155,7 @@ Example: corpdns")]
         public TcpipNetbiosOptionsValues TcpipNetbiosOptions {
             get {
                 if ((curObj["TcpipNetbiosOptions"] == null)) {
-                    return ((TcpipNetbiosOptionsValues)(System.Convert.ToInt32(0)));
+                    return ((TcpipNetbiosOptionsValues)(Convert.ToInt32(0)));
                 }
                 return ((TcpipNetbiosOptionsValues)(Convert.ToInt32(curObj["TcpipNetbiosOptions"])));
             }
@@ -1181,12 +1178,12 @@ Example: corpdns")]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         [Description(@"The TcpMaxConnectRetransmissions property indicates the number of times TCP will attempt to retransmit a Connect Request before terminating the connection. The initial retransmission timeout is 3 seconds. The retransmission timeout doubles for each attempt. Default: 3, Valid Range: 0 - 0xFFFFFFFF.")]
         [TypeConverter(typeof(WMIValueTypeConverter))]
-        public System.UInt32 TcpMaxConnectRetransmissions {
+        public UInt32 TcpMaxConnectRetransmissions {
             get {
                 if ((curObj["TcpMaxConnectRetransmissions"] == null)) {
-                    return System.Convert.ToUInt32(0);
+                    return Convert.ToUInt32(0);
                 }
-                return ((System.UInt32)(curObj["TcpMaxConnectRetransmissions"]));
+                return ((UInt32)(curObj["TcpMaxConnectRetransmissions"]));
             }
         }
         
@@ -1207,12 +1204,12 @@ Example: corpdns")]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         [Description(@"The TcpMaxDataRetransmissions property indicates the number of times TCP will retransmit an individual data segment (non-connect segment) before terminating the connection. The retransmission timeout doubles with each successive retransmission on a connection. Default: 5, Valid Range: 0 - 0xFFFFFFFF.")]
         [TypeConverter(typeof(WMIValueTypeConverter))]
-        public System.UInt32 TcpMaxDataRetransmissions {
+        public UInt32 TcpMaxDataRetransmissions {
             get {
                 if ((curObj["TcpMaxDataRetransmissions"] == null)) {
-                    return System.Convert.ToUInt32(0);
+                    return Convert.ToUInt32(0);
                 }
-                return ((System.UInt32)(curObj["TcpMaxDataRetransmissions"]));
+                return ((UInt32)(curObj["TcpMaxDataRetransmissions"]));
             }
         }
         
@@ -1234,12 +1231,12 @@ Example: corpdns")]
         [Description("The TcpNumConnections property indicates the maximum number of connections that T" +
 "CP can have open simultaneously. Default: 0xFFFFFE, Valid Range: 0 - 0xFFFFFE.")]
         [TypeConverter(typeof(WMIValueTypeConverter))]
-        public System.UInt32 TcpNumConnections {
+        public UInt32 TcpNumConnections {
             get {
                 if ((curObj["TcpNumConnections"] == null)) {
-                    return System.Convert.ToUInt32(0);
+                    return Convert.ToUInt32(0);
                 }
-                return ((System.UInt32)(curObj["TcpNumConnections"]));
+                return ((UInt32)(curObj["TcpNumConnections"]));
             }
         }
         
@@ -1263,7 +1260,7 @@ Example: corpdns")]
         public bool TcpUseRFC1122UrgentPointer {
             get {
                 if ((curObj["TcpUseRFC1122UrgentPointer"] == null)) {
-                    return System.Convert.ToBoolean(0);
+                    return Convert.ToBoolean(0);
                 }
                 return ((bool)(curObj["TcpUseRFC1122UrgentPointer"]));
             }
@@ -1286,12 +1283,12 @@ Example: corpdns")]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         [Description(@"The TcpWindowSize property contains the maximum TCP Receive  Window size offered by the system. The Receive Window specifies the number of bytes a sender may transmit without receiving an acknowledgment. In general, larger receiving windows will improve performance over high delay and high bandwidth networks. For efficiency, the receiving window should be an even multiple of the TCP Maximum Segment Size (MSS). Default: Four times the maximum TCP data size or an even multiple of TCP data size rounded up to the nearest multiple of 8192. Ethernet networks default to 8760. Valid Range: 0 - 65535.")]
         [TypeConverter(typeof(WMIValueTypeConverter))]
-        public System.UInt16 TcpWindowSize {
+        public UInt16 TcpWindowSize {
             get {
                 if ((curObj["TcpWindowSize"] == null)) {
-                    return System.Convert.ToUInt16(0);
+                    return Convert.ToUInt16(0);
                 }
-                return ((System.UInt16)(curObj["TcpWindowSize"]));
+                return ((UInt16)(curObj["TcpWindowSize"]));
             }
         }
         
@@ -1317,7 +1314,7 @@ Example: corpdns")]
         public bool WINSEnableLMHostsLookup {
             get {
                 if ((curObj["WINSEnableLMHostsLookup"] == null)) {
-                    return System.Convert.ToBoolean(0);
+                    return Convert.ToBoolean(0);
                 }
                 return ((bool)(curObj["WINSEnableLMHostsLookup"]));
             }
@@ -1361,27 +1358,27 @@ Example: corpdns")]
             }
         }
         
-        private bool CheckIfProperClass(System.Management.ManagementScope mgmtScope, System.Management.ManagementPath path, System.Management.ObjectGetOptions OptionsParam) {
+        private bool CheckIfProperClass(ManagementScope mgmtScope, ManagementPath path, ObjectGetOptions OptionsParam) {
             if (((path != null) 
-                        && (System.String.Compare(path.ClassName, ManagementClassName, true) == 0))) {
+                        && (String.Compare(path.ClassName, ManagementClassName, true) == 0))) {
                 return true;
             }
             else {
-                return CheckIfProperClass(new System.Management.ManagementObject(mgmtScope, path, OptionsParam));
+                return CheckIfProperClass(new ManagementObject(mgmtScope, path, OptionsParam));
             }
         }
         
-        private bool CheckIfProperClass(System.Management.ManagementBaseObject theObj) {
+        private bool CheckIfProperClass(ManagementBaseObject theObj) {
             if (((theObj != null) 
-                        && (System.String.Compare(((string)(theObj["__CLASS"])), ManagementClassName, true) == 0))) {
+                        && (String.Compare(((string)(theObj["__CLASS"])), ManagementClassName, true) == 0))) {
                 return true;
             }
             else {
-                System.Array parentClasses = ((System.Array)(theObj["__DERIVATION"]));
+                var parentClasses = ((Array)(theObj["__DERIVATION"]));
                 if ((parentClasses != null)) {
-                    Int32 count = 0;
+                    var count = 0;
                     for (count = 0; (count < parentClasses.Length); count = (count + 1)) {
-                        if ((System.String.Compare(((string)(parentClasses.GetValue(count))), ManagementClassName, true) == 0)) {
+                        if ((String.Compare(((string)(parentClasses.GetValue(count))), ManagementClassName, true) == 0)) {
                             return true;
                         }
                     }
@@ -1432,57 +1429,57 @@ Example: corpdns")]
             return false;
         }
         
-        static System.DateTime ToDateTime(string dmtfDate) {
-            int year = System.DateTime.Now.Year;
-            int month = 1;
-            int day = 1;
-            int hour = 0;
-            int minute = 0;
-            int second = 0;
-            int millisec = 0;
-            string dmtf = dmtfDate;
-            string tempString = System.String.Empty;
-            if (((System.String.Empty == dmtf) 
+        static DateTime ToDateTime(string dmtfDate) {
+            var year = DateTime.Now.Year;
+            var month = 1;
+            var day = 1;
+            var hour = 0;
+            var minute = 0;
+            var second = 0;
+            var millisec = 0;
+            var dmtf = dmtfDate;
+            var tempString = String.Empty;
+            if (((String.Empty == dmtf) 
                         || (dmtf == null))) {
-                return System.DateTime.MinValue;
+                return DateTime.MinValue;
             }
             if ((dmtf.Length != 25)) {
-                return System.DateTime.MinValue;
+                return DateTime.MinValue;
             }
             tempString = dmtf.Substring(0, 4);
             if (("****" != tempString)) {
-                year = System.Int32.Parse(tempString);
+                year = Int32.Parse(tempString);
             }
             tempString = dmtf.Substring(4, 2);
             if (("**" != tempString)) {
-                month = System.Int32.Parse(tempString);
+                month = Int32.Parse(tempString);
             }
             tempString = dmtf.Substring(6, 2);
             if (("**" != tempString)) {
-                day = System.Int32.Parse(tempString);
+                day = Int32.Parse(tempString);
             }
             tempString = dmtf.Substring(8, 2);
             if (("**" != tempString)) {
-                hour = System.Int32.Parse(tempString);
+                hour = Int32.Parse(tempString);
             }
             tempString = dmtf.Substring(10, 2);
             if (("**" != tempString)) {
-                minute = System.Int32.Parse(tempString);
+                minute = Int32.Parse(tempString);
             }
             tempString = dmtf.Substring(12, 2);
             if (("**" != tempString)) {
-                second = System.Int32.Parse(tempString);
+                second = Int32.Parse(tempString);
             }
             tempString = dmtf.Substring(15, 3);
             if (("***" != tempString)) {
-                millisec = System.Int32.Parse(tempString);
+                millisec = Int32.Parse(tempString);
             }
-            System.DateTime dateRet = new System.DateTime(year, month, day, hour, minute, second, millisec);
+            var dateRet = new DateTime(year, month, day, hour, minute, second, millisec);
             return dateRet;
         }
         
-        static string ToDMTFTime(System.DateTime dateParam) {
-            string tempString = dateParam.Year.ToString();
+        static string ToDMTFTime(DateTime dateParam) {
+            var tempString = dateParam.Year.ToString();
             tempString = (tempString + dateParam.Month.ToString().PadLeft(2, '0'));
             tempString = (tempString + dateParam.Day.ToString().PadLeft(2, '0'));
             tempString = (tempString + dateParam.Hour.ToString().PadLeft(2, '0'));
@@ -1491,15 +1488,15 @@ Example: corpdns")]
             tempString = (tempString + ".");
             tempString = (tempString + dateParam.Millisecond.ToString().PadLeft(3, '0'));
             tempString = (tempString + "000");
-            System.TimeZone curZone = System.TimeZone.CurrentTimeZone;
-            System.TimeSpan tickOffset = curZone.GetUtcOffset(dateParam);
+            var curZone = TimeZone.CurrentTimeZone;
+            var tickOffset = curZone.GetUtcOffset(dateParam);
             if ((tickOffset.Ticks >= 0)) {
                 tempString = (tempString + "+");
-                tempString = (tempString + ((tickOffset.Ticks / System.TimeSpan.TicksPerMinute)).ToString());
+                tempString = (tempString + ((tickOffset.Ticks / TimeSpan.TicksPerMinute)));
             }
             else {
                 tempString = (tempString + "-");
-                tempString = (tempString + ((tickOffset.Ticks / System.TimeSpan.TicksPerMinute)).ToString().Substring(1, 3));
+                tempString = (tempString + ((tickOffset.Ticks / TimeSpan.TicksPerMinute)).ToString().Substring(1, 3));
             }
             return tempString;
         }
@@ -1707,655 +1704,656 @@ Example: corpdns")]
             }
         }
         
-        private static string ConstructPath(System.UInt32 keyIndex) {
-            string strPath = "ROOT\\CIMV2:Win32_NetworkAdapterConfiguration";
+        private static string ConstructPath(UInt32 keyIndex) {
+            var strPath = "ROOT\\CIMV2:Win32_NetworkAdapterConfiguration";
             strPath = (strPath 
-                        + (".Index=" + keyIndex.ToString()));
+                        + (".Index=" + keyIndex));
             return strPath;
         }
         
         // Different flavours of GetInstances() help in enumerating instances of the WMI class.
         public static NetworkAdapterConfigurationCollection GetInstances() {
-            return GetInstances(((System.Management.ManagementScope)(null)), ((System.Management.EnumerationOptions)(null)));
+            return GetInstances(((null)), ((EnumerationOptions)(null)));
         }
         
         public static NetworkAdapterConfigurationCollection GetInstances(string condition) {
             return GetInstances(null, condition, null);
         }
         
-        public static NetworkAdapterConfigurationCollection GetInstances(System.String [] selectedProperties) {
+        public static NetworkAdapterConfigurationCollection GetInstances(String [] selectedProperties) {
             return GetInstances(null, null, selectedProperties);
         }
         
-        public static NetworkAdapterConfigurationCollection GetInstances(string condition, System.String [] selectedProperties) {
+        public static NetworkAdapterConfigurationCollection GetInstances(string condition, String [] selectedProperties) {
             return GetInstances(null, condition, selectedProperties);
         }
         
-        public static NetworkAdapterConfigurationCollection GetInstances(System.Management.ManagementScope mgmtScope, System.Management.EnumerationOptions enumOptions) {
+        public static NetworkAdapterConfigurationCollection GetInstances(ManagementScope mgmtScope, EnumerationOptions enumOptions) {
             if ((mgmtScope == null)) {
-                mgmtScope = new System.Management.ManagementScope();
+                mgmtScope = new ManagementScope();
                 mgmtScope.Path.NamespacePath = "root\\CIMV2";
             }
-            System.Management.ManagementPath pathObj = new System.Management.ManagementPath();
+            var pathObj = new ManagementPath();
             pathObj.ClassName = "Win32_NetworkAdapterConfiguration";
             pathObj.NamespacePath = "root\\CIMV2";
-            System.Management.ManagementClass clsObject = new System.Management.ManagementClass(mgmtScope, pathObj, null);
+            var clsObject = new ManagementClass(mgmtScope, pathObj, null);
             if ((enumOptions == null)) {
-                enumOptions = new System.Management.EnumerationOptions();
+                enumOptions = new EnumerationOptions();
                 enumOptions.EnsureLocatable = true;
             }
             return new NetworkAdapterConfigurationCollection(clsObject.GetInstances(enumOptions));
         }
         
-        public static NetworkAdapterConfigurationCollection GetInstances(System.Management.ManagementScope mgmtScope, string condition) {
+        public static NetworkAdapterConfigurationCollection GetInstances(ManagementScope mgmtScope, string condition) {
             return GetInstances(mgmtScope, condition, null);
         }
         
-        public static NetworkAdapterConfigurationCollection GetInstances(System.Management.ManagementScope mgmtScope, System.String [] selectedProperties) {
+        public static NetworkAdapterConfigurationCollection GetInstances(ManagementScope mgmtScope, String [] selectedProperties) {
             return GetInstances(mgmtScope, null, selectedProperties);
         }
         
-        public static NetworkAdapterConfigurationCollection GetInstances(System.Management.ManagementScope mgmtScope, string condition, System.String [] selectedProperties) {
+        public static NetworkAdapterConfigurationCollection GetInstances(ManagementScope mgmtScope, string condition, String [] selectedProperties) {
             if ((mgmtScope == null)) {
-                mgmtScope = new System.Management.ManagementScope();
+                mgmtScope = new ManagementScope();
                 mgmtScope.Path.NamespacePath = "root\\CIMV2";
             }
-            System.Management.ManagementObjectSearcher ObjectSearcher = new System.Management.ManagementObjectSearcher(mgmtScope, new SelectQuery("Win32_NetworkAdapterConfiguration", condition, selectedProperties));
-            System.Management.EnumerationOptions enumOptions = new System.Management.EnumerationOptions();
+            var ObjectSearcher = new ManagementObjectSearcher(mgmtScope, new SelectQuery("Win32_NetworkAdapterConfiguration", condition, selectedProperties));
+            var enumOptions = new EnumerationOptions();
             enumOptions.EnsureLocatable = true;
             ObjectSearcher.Options = enumOptions;
             return new NetworkAdapterConfigurationCollection(ObjectSearcher.Get());
         }
         
-        public System.UInt32 DisableIPSec() {
+        public UInt32 DisableIPSec() {
             if ((isEmbedded == false)) {
-                System.Management.ManagementBaseObject inParams = null;
-                System.Management.ManagementBaseObject outParams = PrivateLateBoundObject.InvokeMethod("DisableIPSec", inParams, null);
-                return System.Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
+                ManagementBaseObject inParams = null;
+                var outParams = PrivateLateBoundObject.InvokeMethod("DisableIPSec", inParams, null);
+                return Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
             }
             else {
-                return System.Convert.ToUInt32(0);
+                return Convert.ToUInt32(0);
             }
         }
         
-        public System.UInt32 EnableDHCP() {
+        public UInt32 EnableDHCP() {
             if ((isEmbedded == false)) {
-                System.Management.ManagementBaseObject inParams = null;
-                System.Management.ManagementBaseObject outParams = PrivateLateBoundObject.InvokeMethod("EnableDHCP", inParams, null);
-                return System.Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
+                ManagementBaseObject inParams = null;
+                var outParams = PrivateLateBoundObject.InvokeMethod("EnableDHCP", inParams, null);
+                return Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
             }
             else {
-                return System.Convert.ToUInt32(0);
+                return Convert.ToUInt32(0);
             }
         }
         
-        public static System.UInt32 EnableDNS(string DNSDomain, string[] DNSDomainSuffixSearchOrder, string DNSHostName, string[] DNSServerSearchOrder) {
-            bool IsMethodStatic = true;
-            if ((IsMethodStatic == true)) {
-                System.Management.ManagementBaseObject inParams = null;
-                System.Management.ManagementClass classObj = new System.Management.ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
+        public static UInt32 EnableDNS(string DNSDomain, string[] DNSDomainSuffixSearchOrder, string DNSHostName, string[] DNSServerSearchOrder) {
+            var IsMethodStatic = true;
+            if (IsMethodStatic) {
+                ManagementBaseObject inParams = null;
+                var classObj = new ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
                 inParams = classObj.GetMethodParameters("EnableDNS");
                 inParams["DNSDomain"] = DNSDomain;
                 inParams["DNSDomainSuffixSearchOrder"] = DNSDomainSuffixSearchOrder;
                 inParams["DNSHostName"] = DNSHostName;
                 inParams["DNSServerSearchOrder"] = DNSServerSearchOrder;
-                System.Management.ManagementBaseObject outParams = classObj.InvokeMethod("EnableDNS", inParams, null);
-                return System.Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
+                var outParams = classObj.InvokeMethod("EnableDNS", inParams, null);
+                return Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
             }
             else {
-                return System.Convert.ToUInt32(0);
+                return Convert.ToUInt32(0);
             }
         }
         
-        public static System.UInt32 EnableIPFilterSec(bool IPFilterSecurityEnabled) {
-            bool IsMethodStatic = true;
-            if ((IsMethodStatic == true)) {
-                System.Management.ManagementBaseObject inParams = null;
-                System.Management.ManagementClass classObj = new System.Management.ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
+        public static UInt32 EnableIPFilterSec(bool IPFilterSecurityEnabled) {
+            var IsMethodStatic = true;
+            if (IsMethodStatic) {
+                ManagementBaseObject inParams = null;
+                var classObj = new ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
                 inParams = classObj.GetMethodParameters("EnableIPFilterSec");
                 inParams["IPFilterSecurityEnabled"] = IPFilterSecurityEnabled;
-                System.Management.ManagementBaseObject outParams = classObj.InvokeMethod("EnableIPFilterSec", inParams, null);
-                return System.Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
+                var outParams = classObj.InvokeMethod("EnableIPFilterSec", inParams, null);
+                return Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
             }
             else {
-                return System.Convert.ToUInt32(0);
+                return Convert.ToUInt32(0);
             }
         }
         
-        public System.UInt32 EnableIPSec(string[] IPSecPermitIPProtocols, string[] IPSecPermitTCPPorts, string[] IPSecPermitUDPPorts) {
+        public UInt32 EnableIPSec(string[] IPSecPermitIPProtocols, string[] IPSecPermitTCPPorts, string[] IPSecPermitUDPPorts) {
             if ((isEmbedded == false)) {
-                System.Management.ManagementBaseObject inParams = null;
+                ManagementBaseObject inParams = null;
                 inParams = PrivateLateBoundObject.GetMethodParameters("EnableIPSec");
                 inParams["IPSecPermitIPProtocols"] = IPSecPermitIPProtocols;
                 inParams["IPSecPermitTCPPorts"] = IPSecPermitTCPPorts;
                 inParams["IPSecPermitUDPPorts"] = IPSecPermitUDPPorts;
-                System.Management.ManagementBaseObject outParams = PrivateLateBoundObject.InvokeMethod("EnableIPSec", inParams, null);
-                return System.Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
+                var outParams = PrivateLateBoundObject.InvokeMethod("EnableIPSec", inParams, null);
+                return Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
             }
             else {
-                return System.Convert.ToUInt32(0);
+                return Convert.ToUInt32(0);
             }
         }
         
-        public System.UInt32 EnableStatic(string[] IPAddress, string[] SubnetMask) {
+        public UInt32 EnableStatic(string[] IPAddress, string[] SubnetMask) {
             if ((isEmbedded == false)) {
-                System.Management.ManagementBaseObject inParams = null;
+                ManagementBaseObject inParams = null;
                 inParams = PrivateLateBoundObject.GetMethodParameters("EnableStatic");
                 inParams["IPAddress"] = IPAddress;
                 inParams["SubnetMask"] = SubnetMask;
-                System.Management.ManagementBaseObject outParams = PrivateLateBoundObject.InvokeMethod("EnableStatic", inParams, null);
-                return System.Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
+                var outParams = PrivateLateBoundObject.InvokeMethod("EnableStatic", inParams, null);
+                return Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
             }
             else {
-                return System.Convert.ToUInt32(0);
+                return Convert.ToUInt32(0);
             }
         }
         
-        public static System.UInt32 EnableWINS(bool DNSEnabledForWINSResolution, bool WINSEnableLMHostsLookup, string WINSHostLookupFile, string WINSScopeID) {
-            bool IsMethodStatic = true;
-            if ((IsMethodStatic == true)) {
-                System.Management.ManagementBaseObject inParams = null;
-                System.Management.ManagementClass classObj = new System.Management.ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
+        public static UInt32 EnableWINS(bool DNSEnabledForWINSResolution, bool WINSEnableLMHostsLookup, string WINSHostLookupFile, string WINSScopeID) {
+            var IsMethodStatic = true;
+            if (IsMethodStatic) {
+                ManagementBaseObject inParams = null;
+                var classObj = new ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
                 inParams = classObj.GetMethodParameters("EnableWINS");
                 inParams["DNSEnabledForWINSResolution"] = DNSEnabledForWINSResolution;
                 inParams["WINSEnableLMHostsLookup"] = WINSEnableLMHostsLookup;
                 inParams["WINSHostLookupFile"] = WINSHostLookupFile;
                 inParams["WINSScopeID"] = WINSScopeID;
-                System.Management.ManagementBaseObject outParams = classObj.InvokeMethod("EnableWINS", inParams, null);
-                return System.Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
+                var outParams = classObj.InvokeMethod("EnableWINS", inParams, null);
+                return Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
             }
             else {
-                return System.Convert.ToUInt32(0);
+                return Convert.ToUInt32(0);
             }
         }
         
-        public System.UInt32 ReleaseDHCPLease() {
+        public UInt32 ReleaseDHCPLease() {
             if ((isEmbedded == false)) {
-                System.Management.ManagementBaseObject inParams = null;
-                System.Management.ManagementBaseObject outParams = PrivateLateBoundObject.InvokeMethod("ReleaseDHCPLease", inParams, null);
-                return System.Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
+                ManagementBaseObject inParams = null;
+                var outParams = PrivateLateBoundObject.InvokeMethod("ReleaseDHCPLease", inParams, null);
+                return Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
             }
             else {
-                return System.Convert.ToUInt32(0);
+                return Convert.ToUInt32(0);
             }
         }
         
-        public static System.UInt32 ReleaseDHCPLeaseAll() {
-            bool IsMethodStatic = true;
-            if ((IsMethodStatic == true)) {
-                System.Management.ManagementBaseObject inParams = null;
-                System.Management.ManagementClass classObj = new System.Management.ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
-                System.Management.ManagementBaseObject outParams = classObj.InvokeMethod("ReleaseDHCPLeaseAll", inParams, null);
-                return System.Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
+        public static UInt32 ReleaseDHCPLeaseAll() {
+            var IsMethodStatic = true;
+            if (IsMethodStatic) {
+                ManagementBaseObject inParams = null;
+                var classObj = new ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
+                var outParams = classObj.InvokeMethod("ReleaseDHCPLeaseAll", inParams, null);
+                return Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
             }
             else {
-                return System.Convert.ToUInt32(0);
+                return Convert.ToUInt32(0);
             }
         }
         
-        public System.UInt32 RenewDHCPLease() {
+        public UInt32 RenewDHCPLease() {
             if ((isEmbedded == false)) {
-                System.Management.ManagementBaseObject inParams = null;
-                System.Management.ManagementBaseObject outParams = PrivateLateBoundObject.InvokeMethod("RenewDHCPLease", inParams, null);
-                return System.Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
+                ManagementBaseObject inParams = null;
+                var outParams = PrivateLateBoundObject.InvokeMethod("RenewDHCPLease", inParams, null);
+                return Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
             }
             else {
-                return System.Convert.ToUInt32(0);
+                return Convert.ToUInt32(0);
             }
         }
         
-        public static System.UInt32 RenewDHCPLeaseAll() {
-            bool IsMethodStatic = true;
-            if ((IsMethodStatic == true)) {
-                System.Management.ManagementBaseObject inParams = null;
-                System.Management.ManagementClass classObj = new System.Management.ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
-                System.Management.ManagementBaseObject outParams = classObj.InvokeMethod("RenewDHCPLeaseAll", inParams, null);
-                return System.Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
+        public static UInt32 RenewDHCPLeaseAll() {
+            var IsMethodStatic = true;
+            if (IsMethodStatic) {
+                ManagementBaseObject inParams = null;
+                var classObj = new ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
+                var outParams = classObj.InvokeMethod("RenewDHCPLeaseAll", inParams, null);
+                return Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
             }
             else {
-                return System.Convert.ToUInt32(0);
+                return Convert.ToUInt32(0);
             }
         }
         
-        public static System.UInt32 SetArpAlwaysSourceRoute(bool ArpAlwaysSourceRoute) {
-            bool IsMethodStatic = true;
-            if ((IsMethodStatic == true)) {
-                System.Management.ManagementBaseObject inParams = null;
-                System.Management.ManagementClass classObj = new System.Management.ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
+        public static UInt32 SetArpAlwaysSourceRoute(bool ArpAlwaysSourceRoute) {
+            var IsMethodStatic = true;
+            if (IsMethodStatic) {
+                ManagementBaseObject inParams = null;
+                var classObj = new ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
                 inParams = classObj.GetMethodParameters("SetArpAlwaysSourceRoute");
                 inParams["ArpAlwaysSourceRoute"] = ArpAlwaysSourceRoute;
-                System.Management.ManagementBaseObject outParams = classObj.InvokeMethod("SetArpAlwaysSourceRoute", inParams, null);
-                return System.Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
+                var outParams = classObj.InvokeMethod("SetArpAlwaysSourceRoute", inParams, null);
+                return Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
             }
             else {
-                return System.Convert.ToUInt32(0);
+                return Convert.ToUInt32(0);
             }
         }
         
-        public static System.UInt32 SetArpUseEtherSNAP(bool ArpUseEtherSNAP) {
-            bool IsMethodStatic = true;
-            if ((IsMethodStatic == true)) {
-                System.Management.ManagementBaseObject inParams = null;
-                System.Management.ManagementClass classObj = new System.Management.ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
+        public static UInt32 SetArpUseEtherSNAP(bool ArpUseEtherSNAP) {
+            var IsMethodStatic = true;
+            if (IsMethodStatic) {
+                ManagementBaseObject inParams = null;
+                var classObj = new ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
                 inParams = classObj.GetMethodParameters("SetArpUseEtherSNAP");
                 inParams["ArpUseEtherSNAP"] = ArpUseEtherSNAP;
-                System.Management.ManagementBaseObject outParams = classObj.InvokeMethod("SetArpUseEtherSNAP", inParams, null);
-                return System.Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
+                var outParams = classObj.InvokeMethod("SetArpUseEtherSNAP", inParams, null);
+                return Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
             }
             else {
-                return System.Convert.ToUInt32(0);
+                return Convert.ToUInt32(0);
             }
         }
         
-        public static System.UInt32 SetDatabasePath(string DatabasePath) {
-            bool IsMethodStatic = true;
-            if ((IsMethodStatic == true)) {
-                System.Management.ManagementBaseObject inParams = null;
-                System.Management.ManagementClass classObj = new System.Management.ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
+        public static UInt32 SetDatabasePath(string DatabasePath) {
+            var IsMethodStatic = true;
+            if (IsMethodStatic) {
+                ManagementBaseObject inParams = null;
+                var classObj = new ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
                 inParams = classObj.GetMethodParameters("SetDatabasePath");
                 inParams["DatabasePath"] = DatabasePath;
-                System.Management.ManagementBaseObject outParams = classObj.InvokeMethod("SetDatabasePath", inParams, null);
-                return System.Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
+                var outParams = classObj.InvokeMethod("SetDatabasePath", inParams, null);
+                return Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
             }
             else {
-                return System.Convert.ToUInt32(0);
+                return Convert.ToUInt32(0);
             }
         }
         
-        public static System.UInt32 SetDeadGWDetect(bool DeadGWDetectEnabled) {
-            bool IsMethodStatic = true;
-            if ((IsMethodStatic == true)) {
-                System.Management.ManagementBaseObject inParams = null;
-                System.Management.ManagementClass classObj = new System.Management.ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
+        public static UInt32 SetDeadGWDetect(bool DeadGWDetectEnabled) {
+            var IsMethodStatic = true;
+            if (IsMethodStatic) {
+                ManagementBaseObject inParams = null;
+                var classObj = new ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
                 inParams = classObj.GetMethodParameters("SetDeadGWDetect");
                 inParams["DeadGWDetectEnabled"] = DeadGWDetectEnabled;
-                System.Management.ManagementBaseObject outParams = classObj.InvokeMethod("SetDeadGWDetect", inParams, null);
-                return System.Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
+                var outParams = classObj.InvokeMethod("SetDeadGWDetect", inParams, null);
+                return Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
             }
             else {
-                return System.Convert.ToUInt32(0);
+                return Convert.ToUInt32(0);
             }
         }
         
-        public static System.UInt32 SetDefaultTOS(System.Byte DefaultTOS) {
-            bool IsMethodStatic = true;
-            if ((IsMethodStatic == true)) {
-                System.Management.ManagementBaseObject inParams = null;
-                System.Management.ManagementClass classObj = new System.Management.ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
+        public static UInt32 SetDefaultTOS(Byte DefaultTOS) {
+            var IsMethodStatic = true;
+            if (IsMethodStatic) {
+                ManagementBaseObject inParams = null;
+                var classObj = new ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
                 inParams = classObj.GetMethodParameters("SetDefaultTOS");
                 inParams["DefaultTOS"] = DefaultTOS;
-                System.Management.ManagementBaseObject outParams = classObj.InvokeMethod("SetDefaultTOS", inParams, null);
-                return System.Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
+                var outParams = classObj.InvokeMethod("SetDefaultTOS", inParams, null);
+                return Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
             }
             else {
-                return System.Convert.ToUInt32(0);
+                return Convert.ToUInt32(0);
             }
         }
         
-        public static System.UInt32 SetDefaultTTL(System.Byte DefaultTTL) {
-            bool IsMethodStatic = true;
-            if ((IsMethodStatic == true)) {
-                System.Management.ManagementBaseObject inParams = null;
-                System.Management.ManagementClass classObj = new System.Management.ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
+        public static UInt32 SetDefaultTTL(Byte DefaultTTL) {
+            var IsMethodStatic = true;
+            if (IsMethodStatic) {
+                ManagementBaseObject inParams = null;
+                var classObj = new ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
                 inParams = classObj.GetMethodParameters("SetDefaultTTL");
                 inParams["DefaultTTL"] = DefaultTTL;
-                System.Management.ManagementBaseObject outParams = classObj.InvokeMethod("SetDefaultTTL", inParams, null);
-                return System.Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
+                var outParams = classObj.InvokeMethod("SetDefaultTTL", inParams, null);
+                return Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
             }
             else {
-                return System.Convert.ToUInt32(0);
+                return Convert.ToUInt32(0);
             }
         }
         
-        public System.UInt32 SetDNSDomain(string DNSDomain) {
+        public UInt32 SetDNSDomain(string DNSDomain) {
             if ((isEmbedded == false)) {
-                System.Management.ManagementBaseObject inParams = null;
+                ManagementBaseObject inParams = null;
                 inParams = PrivateLateBoundObject.GetMethodParameters("SetDNSDomain");
                 inParams["DNSDomain"] = DNSDomain;
-                System.Management.ManagementBaseObject outParams = PrivateLateBoundObject.InvokeMethod("SetDNSDomain", inParams, null);
-                return System.Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
+                var outParams = PrivateLateBoundObject.InvokeMethod("SetDNSDomain", inParams, null);
+                return Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
             }
             else {
-                return System.Convert.ToUInt32(0);
+                return Convert.ToUInt32(0);
             }
         }
         
-        public System.UInt32 SetDNSServerSearchOrder(string[] DNSServerSearchOrder) {
+        public UInt32 SetDNSServerSearchOrder(string[] DNSServerSearchOrder) {
             if ((isEmbedded == false)) {
-                System.Management.ManagementBaseObject inParams = null;
+                ManagementBaseObject inParams = null;
                 inParams = PrivateLateBoundObject.GetMethodParameters("SetDNSServerSearchOrder");
                 inParams["DNSServerSearchOrder"] = DNSServerSearchOrder;
-                System.Management.ManagementBaseObject outParams = PrivateLateBoundObject.InvokeMethod("SetDNSServerSearchOrder", inParams, null);
-                return System.Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
+                var outParams = PrivateLateBoundObject.InvokeMethod("SetDNSServerSearchOrder", inParams, null);
+                return Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
             }
             else {
-                return System.Convert.ToUInt32(0);
+                return Convert.ToUInt32(0);
             }
         }
         
-        public static System.UInt32 SetDNSSuffixSearchOrder(string[] DNSDomainSuffixSearchOrder) {
-            bool IsMethodStatic = true;
-            if ((IsMethodStatic == true)) {
-                System.Management.ManagementBaseObject inParams = null;
-                System.Management.ManagementClass classObj = new System.Management.ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
+        public static UInt32 SetDNSSuffixSearchOrder(string[] DNSDomainSuffixSearchOrder) {
+            var IsMethodStatic = true;
+            if (IsMethodStatic) {
+                ManagementBaseObject inParams = null;
+                var classObj = new ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
                 inParams = classObj.GetMethodParameters("SetDNSSuffixSearchOrder");
                 inParams["DNSDomainSuffixSearchOrder"] = DNSDomainSuffixSearchOrder;
-                System.Management.ManagementBaseObject outParams = classObj.InvokeMethod("SetDNSSuffixSearchOrder", inParams, null);
-                return System.Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
+                var outParams = classObj.InvokeMethod("SetDNSSuffixSearchOrder", inParams, null);
+                return Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
             }
             else {
-                return System.Convert.ToUInt32(0);
+                return Convert.ToUInt32(0);
             }
         }
         
-        public System.UInt32 SetDynamicDNSRegistration(bool DomainDNSRegistrationEnabled, bool FullDNSRegistrationEnabled) {
+        public UInt32 SetDynamicDNSRegistration(bool DomainDNSRegistrationEnabled, bool FullDNSRegistrationEnabled) {
             if ((isEmbedded == false)) {
-                System.Management.ManagementBaseObject inParams = null;
+                ManagementBaseObject inParams = null;
                 inParams = PrivateLateBoundObject.GetMethodParameters("SetDynamicDNSRegistration");
                 inParams["DomainDNSRegistrationEnabled"] = DomainDNSRegistrationEnabled;
                 inParams["FullDNSRegistrationEnabled"] = FullDNSRegistrationEnabled;
-                System.Management.ManagementBaseObject outParams = PrivateLateBoundObject.InvokeMethod("SetDynamicDNSRegistration", inParams, null);
-                return System.Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
+                var outParams = PrivateLateBoundObject.InvokeMethod("SetDynamicDNSRegistration", inParams, null);
+                return Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
             }
             else {
-                return System.Convert.ToUInt32(0);
+                return Convert.ToUInt32(0);
             }
         }
         
-        public static System.UInt32 SetForwardBufferMemory(System.UInt32 ForwardBufferMemory) {
-            bool IsMethodStatic = true;
-            if ((IsMethodStatic == true)) {
-                System.Management.ManagementBaseObject inParams = null;
-                System.Management.ManagementClass classObj = new System.Management.ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
+        public static UInt32 SetForwardBufferMemory(UInt32 ForwardBufferMemory) {
+            var IsMethodStatic = true;
+            if (IsMethodStatic) {
+                ManagementBaseObject inParams = null;
+                var classObj = new ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
                 inParams = classObj.GetMethodParameters("SetForwardBufferMemory");
                 inParams["ForwardBufferMemory"] = ForwardBufferMemory;
-                System.Management.ManagementBaseObject outParams = classObj.InvokeMethod("SetForwardBufferMemory", inParams, null);
-                return System.Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
+                var outParams = classObj.InvokeMethod("SetForwardBufferMemory", inParams, null);
+                return Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
             }
             else {
-                return System.Convert.ToUInt32(0);
+                return Convert.ToUInt32(0);
             }
         }
         
-        public System.UInt32 SetGateways(string[] DefaultIPGateway, System.UInt16[] GatewayCostMetric) {
+        public UInt32 SetGateways(string[] DefaultIPGateway, UInt16[] GatewayCostMetric) {
             if ((isEmbedded == false)) {
-                System.Management.ManagementBaseObject inParams = null;
+                ManagementBaseObject inParams = null;
                 inParams = PrivateLateBoundObject.GetMethodParameters("SetGateways");
                 inParams["DefaultIPGateway"] = DefaultIPGateway;
                 inParams["GatewayCostMetric"] = GatewayCostMetric;
-                System.Management.ManagementBaseObject outParams = PrivateLateBoundObject.InvokeMethod("SetGateways", inParams, null);
-                return System.Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
+                var outParams = PrivateLateBoundObject.InvokeMethod("SetGateways", inParams, null);
+                return Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
             }
             else {
-                return System.Convert.ToUInt32(0);
+                return Convert.ToUInt32(0);
             }
         }
         
-        public static System.UInt32 SetIGMPLevel(System.Byte IGMPLevel) {
-            bool IsMethodStatic = true;
-            if ((IsMethodStatic == true)) {
-                System.Management.ManagementBaseObject inParams = null;
-                System.Management.ManagementClass classObj = new System.Management.ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
+        public static UInt32 SetIGMPLevel(Byte IGMPLevel) {
+            var IsMethodStatic = true;
+            if (IsMethodStatic) {
+                ManagementBaseObject inParams = null;
+                var classObj = new ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
                 inParams = classObj.GetMethodParameters("SetIGMPLevel");
                 inParams["IGMPLevel"] = IGMPLevel;
-                System.Management.ManagementBaseObject outParams = classObj.InvokeMethod("SetIGMPLevel", inParams, null);
-                return System.Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
+                var outParams = classObj.InvokeMethod("SetIGMPLevel", inParams, null);
+                return Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
             }
             else {
-                return System.Convert.ToUInt32(0);
+                return Convert.ToUInt32(0);
             }
         }
         
-        public System.UInt32 SetIPConnectionMetric(System.UInt32 IPConnectionMetric) {
+        public UInt32 SetIPConnectionMetric(UInt32 IPConnectionMetric) {
             if ((isEmbedded == false)) {
-                System.Management.ManagementBaseObject inParams = null;
+                ManagementBaseObject inParams = null;
                 inParams = PrivateLateBoundObject.GetMethodParameters("SetIPConnectionMetric");
                 inParams["IPConnectionMetric"] = IPConnectionMetric;
-                System.Management.ManagementBaseObject outParams = PrivateLateBoundObject.InvokeMethod("SetIPConnectionMetric", inParams, null);
-                return System.Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
+                var outParams = PrivateLateBoundObject.InvokeMethod("SetIPConnectionMetric", inParams, null);
+                return Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
             }
             else {
-                return System.Convert.ToUInt32(0);
+                return Convert.ToUInt32(0);
             }
         }
         
-        public static System.UInt32 SetIPUseZeroBroadcast(bool IPUseZeroBroadcast) {
-            bool IsMethodStatic = true;
-            if ((IsMethodStatic == true)) {
-                System.Management.ManagementBaseObject inParams = null;
-                System.Management.ManagementClass classObj = new System.Management.ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
+        public static UInt32 SetIPUseZeroBroadcast(bool IPUseZeroBroadcast) {
+            var IsMethodStatic = true;
+            if (IsMethodStatic) {
+                ManagementBaseObject inParams = null;
+                var classObj = new ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
                 inParams = classObj.GetMethodParameters("SetIPUseZeroBroadcast");
                 inParams["IPUseZeroBroadcast"] = IPUseZeroBroadcast;
-                System.Management.ManagementBaseObject outParams = classObj.InvokeMethod("SetIPUseZeroBroadcast", inParams, null);
-                return System.Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
+                var outParams = classObj.InvokeMethod("SetIPUseZeroBroadcast", inParams, null);
+                return Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
             }
             else {
-                return System.Convert.ToUInt32(0);
+                return Convert.ToUInt32(0);
             }
         }
         
-        public System.UInt32 SetIPXFrameTypeNetworkPairs(System.UInt32[] IPXFrameType, string[] IPXNetworkNumber) {
+        public UInt32 SetIPXFrameTypeNetworkPairs(UInt32[] IPXFrameType, string[] IPXNetworkNumber) {
             if ((isEmbedded == false)) {
-                System.Management.ManagementBaseObject inParams = null;
+                ManagementBaseObject inParams = null;
                 inParams = PrivateLateBoundObject.GetMethodParameters("SetIPXFrameTypeNetworkPairs");
                 inParams["IPXFrameType"] = IPXFrameType;
                 inParams["IPXNetworkNumber"] = IPXNetworkNumber;
-                System.Management.ManagementBaseObject outParams = PrivateLateBoundObject.InvokeMethod("SetIPXFrameTypeNetworkPairs", inParams, null);
-                return System.Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
+                var outParams = PrivateLateBoundObject.InvokeMethod("SetIPXFrameTypeNetworkPairs", inParams, null);
+                return Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
             }
             else {
-                return System.Convert.ToUInt32(0);
+                return Convert.ToUInt32(0);
             }
         }
         
-        public static System.UInt32 SetIPXVirtualNetworkNumber(string IPXVirtualNetNumber) {
-            bool IsMethodStatic = true;
-            if ((IsMethodStatic == true)) {
-                System.Management.ManagementBaseObject inParams = null;
-                System.Management.ManagementClass classObj = new System.Management.ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
+        public static UInt32 SetIPXVirtualNetworkNumber(string IPXVirtualNetNumber) {
+            var IsMethodStatic = true;
+            if (IsMethodStatic) {
+                ManagementBaseObject inParams = null;
+                var classObj = new ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
                 inParams = classObj.GetMethodParameters("SetIPXVirtualNetworkNumber");
                 inParams["IPXVirtualNetNumber"] = IPXVirtualNetNumber;
-                System.Management.ManagementBaseObject outParams = classObj.InvokeMethod("SetIPXVirtualNetworkNumber", inParams, null);
-                return System.Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
+                var outParams = classObj.InvokeMethod("SetIPXVirtualNetworkNumber", inParams, null);
+                return Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
             }
             else {
-                return System.Convert.ToUInt32(0);
+                return Convert.ToUInt32(0);
             }
         }
         
-        public static System.UInt32 SetKeepAliveInterval(System.UInt32 KeepAliveInterval) {
-            bool IsMethodStatic = true;
-            if ((IsMethodStatic == true)) {
-                System.Management.ManagementBaseObject inParams = null;
-                System.Management.ManagementClass classObj = new System.Management.ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
+        public static UInt32 SetKeepAliveInterval(UInt32 KeepAliveInterval) {
+            var IsMethodStatic = true;
+            if (IsMethodStatic) {
+                ManagementBaseObject inParams = null;
+                var classObj = new ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
                 inParams = classObj.GetMethodParameters("SetKeepAliveInterval");
                 inParams["KeepAliveInterval"] = KeepAliveInterval;
-                System.Management.ManagementBaseObject outParams = classObj.InvokeMethod("SetKeepAliveInterval", inParams, null);
-                return System.Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
+                var outParams = classObj.InvokeMethod("SetKeepAliveInterval", inParams, null);
+                return Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
             }
             else {
-                return System.Convert.ToUInt32(0);
+                return Convert.ToUInt32(0);
             }
         }
         
-        public static System.UInt32 SetKeepAliveTime(System.UInt32 KeepAliveTime) {
-            bool IsMethodStatic = true;
-            if ((IsMethodStatic == true)) {
-                System.Management.ManagementBaseObject inParams = null;
-                System.Management.ManagementClass classObj = new System.Management.ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
+        public static UInt32 SetKeepAliveTime(UInt32 KeepAliveTime) {
+            var IsMethodStatic = true;
+            if (IsMethodStatic) {
+                ManagementBaseObject inParams = null;
+                var classObj = new ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
                 inParams = classObj.GetMethodParameters("SetKeepAliveTime");
                 inParams["KeepAliveTime"] = KeepAliveTime;
-                System.Management.ManagementBaseObject outParams = classObj.InvokeMethod("SetKeepAliveTime", inParams, null);
-                return System.Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
+                var outParams = classObj.InvokeMethod("SetKeepAliveTime", inParams, null);
+                return Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
             }
             else {
-                return System.Convert.ToUInt32(0);
+                return Convert.ToUInt32(0);
             }
         }
         
-        public static System.UInt32 SetMTU(System.UInt32 MTU) {
-            bool IsMethodStatic = true;
-            if ((IsMethodStatic == true)) {
-                System.Management.ManagementBaseObject inParams = null;
-                System.Management.ManagementClass classObj = new System.Management.ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
+        public static UInt32 SetMTU(UInt32 MTU) {
+            var IsMethodStatic = true;
+            if (IsMethodStatic) {
+                ManagementBaseObject inParams = null;
+                var classObj = new ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
                 inParams = classObj.GetMethodParameters("SetMTU");
                 inParams["MTU"] = MTU;
-                System.Management.ManagementBaseObject outParams = classObj.InvokeMethod("SetMTU", inParams, null);
-                return System.Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
+                var outParams = classObj.InvokeMethod("SetMTU", inParams, null);
+                return Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
             }
             else {
-                return System.Convert.ToUInt32(0);
+                return Convert.ToUInt32(0);
             }
         }
         
-        public static System.UInt32 SetNumForwardPackets(System.UInt32 NumForwardPackets) {
-            bool IsMethodStatic = true;
-            if ((IsMethodStatic == true)) {
-                System.Management.ManagementBaseObject inParams = null;
-                System.Management.ManagementClass classObj = new System.Management.ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
+        public static UInt32 SetNumForwardPackets(UInt32 NumForwardPackets) {
+            var IsMethodStatic = true;
+            if (IsMethodStatic) {
+                ManagementBaseObject inParams = null;
+                var classObj = new ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
                 inParams = classObj.GetMethodParameters("SetNumForwardPackets");
                 inParams["NumForwardPackets"] = NumForwardPackets;
-                System.Management.ManagementBaseObject outParams = classObj.InvokeMethod("SetNumForwardPackets", inParams, null);
-                return System.Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
+                var outParams = classObj.InvokeMethod("SetNumForwardPackets", inParams, null);
+                return Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
             }
             else {
-                return System.Convert.ToUInt32(0);
+                return Convert.ToUInt32(0);
             }
         }
         
-        public static System.UInt32 SetPMTUBHDetect(bool PMTUBHDetectEnabled) {
-            bool IsMethodStatic = true;
-            if ((IsMethodStatic == true)) {
-                System.Management.ManagementBaseObject inParams = null;
-                System.Management.ManagementClass classObj = new System.Management.ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
+        public static UInt32 SetPMTUBHDetect(bool PMTUBHDetectEnabled) {
+            var IsMethodStatic = true;
+            if (IsMethodStatic) {
+                ManagementBaseObject inParams = null;
+                var classObj = new ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
                 inParams = classObj.GetMethodParameters("SetPMTUBHDetect");
                 inParams["PMTUBHDetectEnabled"] = PMTUBHDetectEnabled;
-                System.Management.ManagementBaseObject outParams = classObj.InvokeMethod("SetPMTUBHDetect", inParams, null);
-                return System.Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
+                var outParams = classObj.InvokeMethod("SetPMTUBHDetect", inParams, null);
+                return Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
             }
             else {
-                return System.Convert.ToUInt32(0);
+                return Convert.ToUInt32(0);
             }
         }
         
-        public static System.UInt32 SetPMTUDiscovery(bool PMTUDiscoveryEnabled) {
-            bool IsMethodStatic = true;
-            if ((IsMethodStatic == true)) {
-                System.Management.ManagementBaseObject inParams = null;
-                System.Management.ManagementClass classObj = new System.Management.ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
+        public static UInt32 SetPMTUDiscovery(bool PMTUDiscoveryEnabled) {
+            var IsMethodStatic = true;
+            if (IsMethodStatic) {
+                ManagementBaseObject inParams = null;
+                var classObj = new ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
                 inParams = classObj.GetMethodParameters("SetPMTUDiscovery");
                 inParams["PMTUDiscoveryEnabled"] = PMTUDiscoveryEnabled;
-                System.Management.ManagementBaseObject outParams = classObj.InvokeMethod("SetPMTUDiscovery", inParams, null);
-                return System.Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
+                var outParams = classObj.InvokeMethod("SetPMTUDiscovery", inParams, null);
+                return Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
             }
             else {
-                return System.Convert.ToUInt32(0);
+                return Convert.ToUInt32(0);
             }
         }
         
-        public System.UInt32 SetTcpipNetbios(System.UInt32 TcpipNetbiosOptions) {
+        public UInt32 SetTcpipNetbios(UInt32 TcpipNetbiosOptions) {
             if ((isEmbedded == false)) {
-                System.Management.ManagementBaseObject inParams = null;
+                ManagementBaseObject inParams = null;
                 inParams = PrivateLateBoundObject.GetMethodParameters("SetTcpipNetbios");
                 inParams["TcpipNetbiosOptions"] = TcpipNetbiosOptions;
-                System.Management.ManagementBaseObject outParams = PrivateLateBoundObject.InvokeMethod("SetTcpipNetbios", inParams, null);
-                return System.Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
+                var outParams = PrivateLateBoundObject.InvokeMethod("SetTcpipNetbios", inParams, null);
+                return Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
             }
             else {
-                return System.Convert.ToUInt32(0);
+                return Convert.ToUInt32(0);
             }
         }
         
-        public static System.UInt32 SetTcpMaxConnectRetransmissions(System.UInt32 TcpMaxConnectRetransmissions) {
-            bool IsMethodStatic = true;
-            if ((IsMethodStatic == true)) {
-                System.Management.ManagementBaseObject inParams = null;
-                System.Management.ManagementClass classObj = new System.Management.ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
+        public static UInt32 SetTcpMaxConnectRetransmissions(UInt32 TcpMaxConnectRetransmissions) {
+            var IsMethodStatic = true;
+            if (IsMethodStatic) {
+                ManagementBaseObject inParams = null;
+                var classObj = new ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
                 inParams = classObj.GetMethodParameters("SetTcpMaxConnectRetransmissions");
                 inParams["TcpMaxConnectRetransmissions"] = TcpMaxConnectRetransmissions;
-                System.Management.ManagementBaseObject outParams = classObj.InvokeMethod("SetTcpMaxConnectRetransmissions", inParams, null);
-                return System.Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
+                var outParams = classObj.InvokeMethod("SetTcpMaxConnectRetransmissions", inParams, null);
+                return Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
             }
             else {
-                return System.Convert.ToUInt32(0);
+                return Convert.ToUInt32(0);
             }
         }
         
-        public static System.UInt32 SetTcpMaxDataRetransmissions(System.UInt32 TcpMaxDataRetransmissions) {
-            bool IsMethodStatic = true;
-            if ((IsMethodStatic == true)) {
-                System.Management.ManagementBaseObject inParams = null;
-                System.Management.ManagementClass classObj = new System.Management.ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
+        public static UInt32 SetTcpMaxDataRetransmissions(UInt32 TcpMaxDataRetransmissions) {
+            var IsMethodStatic = true;
+            if (IsMethodStatic) {
+                ManagementBaseObject inParams = null;
+                var classObj = new ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
                 inParams = classObj.GetMethodParameters("SetTcpMaxDataRetransmissions");
                 inParams["TcpMaxDataRetransmissions"] = TcpMaxDataRetransmissions;
-                System.Management.ManagementBaseObject outParams = classObj.InvokeMethod("SetTcpMaxDataRetransmissions", inParams, null);
-                return System.Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
+                var outParams = classObj.InvokeMethod("SetTcpMaxDataRetransmissions", inParams, null);
+                return Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
             }
             else {
-                return System.Convert.ToUInt32(0);
+                return Convert.ToUInt32(0);
             }
         }
         
-        public static System.UInt32 SetTcpNumConnections(System.UInt32 TcpNumConnections) {
-            bool IsMethodStatic = true;
-            if ((IsMethodStatic == true)) {
-                System.Management.ManagementBaseObject inParams = null;
-                System.Management.ManagementClass classObj = new System.Management.ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
+        public static UInt32 SetTcpNumConnections(UInt32 TcpNumConnections) {
+            var IsMethodStatic = true;
+            if (IsMethodStatic) {
+                ManagementBaseObject inParams = null;
+                var classObj = new ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
                 inParams = classObj.GetMethodParameters("SetTcpNumConnections");
                 inParams["TcpNumConnections"] = TcpNumConnections;
-                System.Management.ManagementBaseObject outParams = classObj.InvokeMethod("SetTcpNumConnections", inParams, null);
-                return System.Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
+                var outParams = classObj.InvokeMethod("SetTcpNumConnections", inParams, null);
+                return Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
             }
             else {
-                return System.Convert.ToUInt32(0);
+                return Convert.ToUInt32(0);
             }
         }
         
-        public static System.UInt32 SetTcpUseRFC1122UrgentPointer(bool TcpUseRFC1122UrgentPointer) {
-            bool IsMethodStatic = true;
-            if ((IsMethodStatic == true)) {
-                System.Management.ManagementBaseObject inParams = null;
-                System.Management.ManagementClass classObj = new System.Management.ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
+        public static UInt32 SetTcpUseRFC1122UrgentPointer(bool TcpUseRFC1122UrgentPointer) {
+            var IsMethodStatic = true;
+            if (IsMethodStatic) {
+                ManagementBaseObject inParams = null;
+                var classObj = new ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
                 inParams = classObj.GetMethodParameters("SetTcpUseRFC1122UrgentPointer");
                 inParams["TcpUseRFC1122UrgentPointer"] = TcpUseRFC1122UrgentPointer;
-                System.Management.ManagementBaseObject outParams = classObj.InvokeMethod("SetTcpUseRFC1122UrgentPointer", inParams, null);
-                return System.Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
+                var outParams = classObj.InvokeMethod("SetTcpUseRFC1122UrgentPointer", inParams, null);
+                return Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
             }
             else {
-                return System.Convert.ToUInt32(0);
+                return Convert.ToUInt32(0);
             }
         }
         
-        public static System.UInt32 SetTcpWindowSize(System.UInt16 TcpWindowSize) {
-            bool IsMethodStatic = true;
-            if ((IsMethodStatic == true)) {
-                System.Management.ManagementBaseObject inParams = null;
-                System.Management.ManagementClass classObj = new System.Management.ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
+        public static UInt32 SetTcpWindowSize(UInt16 TcpWindowSize) {
+            var IsMethodStatic = true;
+            if (IsMethodStatic) {
+                ManagementBaseObject inParams = null;
+                var classObj = new ManagementClass(null, "Win32_NetworkAdapterConfiguration", null);
                 inParams = classObj.GetMethodParameters("SetTcpWindowSize");
                 inParams["TcpWindowSize"] = TcpWindowSize;
-                System.Management.ManagementBaseObject outParams = classObj.InvokeMethod("SetTcpWindowSize", inParams, null);
-                return System.Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
+                var outParams = classObj.InvokeMethod("SetTcpWindowSize", inParams, null);
+                return Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
             }
             else {
-                return System.Convert.ToUInt32(0);
+                return Convert.ToUInt32(0);
             }
         }
         
-        public System.UInt32 SetWINSServer(string WINSPrimaryServer, string WINSSecondaryServer) {
+        public UInt32 SetWINSServer(string WINSPrimaryServer, string WINSSecondaryServer) {
             if ((isEmbedded == false)) {
-                System.Management.ManagementBaseObject inParams = null;
+                ManagementBaseObject inParams = null;
                 inParams = PrivateLateBoundObject.GetMethodParameters("SetWINSServer");
                 inParams["WINSPrimaryServer"] = WINSPrimaryServer;
                 inParams["WINSSecondaryServer"] = WINSSecondaryServer;
-                System.Management.ManagementBaseObject outParams = PrivateLateBoundObject.InvokeMethod("SetWINSServer", inParams, null);
-                return System.Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
+                var outParams = PrivateLateBoundObject.InvokeMethod("SetWINSServer", inParams, null);
+                return Convert.ToUInt32(outParams.Properties["ReturnValue"].Value);
             }
             else {
-                return System.Convert.ToUInt32(0);
+                return Convert.ToUInt32(0);
             }
         }
         
-        public enum IGMPLevelValues : int {
+        public enum IGMPLevelValues
+        {
             
             No_Multicast = 0,
             
@@ -2390,7 +2388,8 @@ Example: corpdns")]
             INVALID_ENUM_VALUE = 0,
         }
         
-        public enum TcpipNetbiosOptionsValues : int {
+        public enum TcpipNetbiosOptionsValues
+        {
             
             EnableNetbiosViaDhcp = 1,
             
@@ -2402,7 +2401,7 @@ Example: corpdns")]
         // Enumerator implementation for enumerating instances of the class.
         public class NetworkAdapterConfigurationCollection : object, ICollection {
             
-            private ManagementObjectCollection ObjectCollection;
+            private readonly ManagementObjectCollection ObjectCollection;
             
             public NetworkAdapterConfigurationCollection(ManagementObjectCollection objCollection) {
                 ObjectCollection = objCollection;
@@ -2426,21 +2425,21 @@ Example: corpdns")]
                 }
             }
             
-            public void CopyTo(System.Array array, int index) {
+            public void CopyTo(Array array, int index) {
                 ObjectCollection.CopyTo(array, index);
                 int nCtr;
                 for (nCtr = 0; (nCtr < array.Length); nCtr = (nCtr + 1)) {
-                    array.SetValue(new NetworkAdapterConfiguration(((System.Management.ManagementObject)(array.GetValue(nCtr)))), nCtr);
+                    array.SetValue(new NetworkAdapterConfiguration(((ManagementObject)(array.GetValue(nCtr)))), nCtr);
                 }
             }
             
-            public System.Collections.IEnumerator GetEnumerator() {
+            public IEnumerator GetEnumerator() {
                 return new NetworkAdapterConfigurationEnumerator(ObjectCollection.GetEnumerator());
             }
             
-            public class NetworkAdapterConfigurationEnumerator : object, System.Collections.IEnumerator {
+            public class NetworkAdapterConfigurationEnumerator : object, IEnumerator {
                 
-                private ManagementObjectCollection.ManagementObjectEnumerator ObjectEnumerator;
+                private readonly ManagementObjectCollection.ManagementObjectEnumerator ObjectEnumerator;
                 
                 public NetworkAdapterConfigurationEnumerator(ManagementObjectCollection.ManagementObjectEnumerator objEnum) {
                     ObjectEnumerator = objEnum;
@@ -2448,7 +2447,7 @@ Example: corpdns")]
                 
                 public object Current {
                     get {
-                        return new NetworkAdapterConfiguration(((System.Management.ManagementObject)(ObjectEnumerator.Current)));
+                        return new NetworkAdapterConfiguration(((ManagementObject)(ObjectEnumerator.Current)));
                     }
                 }
                 
@@ -2465,53 +2464,53 @@ Example: corpdns")]
         // TypeConverter to handle null values for ValueType properties
         public class WMIValueTypeConverter : TypeConverter {
             
-            private TypeConverter baseConverter;
+            private readonly TypeConverter baseConverter;
             
-            public WMIValueTypeConverter(System.Type baseType) {
+            public WMIValueTypeConverter(Type baseType) {
                 baseConverter = TypeDescriptor.GetConverter(baseType);
             }
             
-            public override bool CanConvertFrom(System.ComponentModel.ITypeDescriptorContext context, System.Type srcType) {
+            public override bool CanConvertFrom(ITypeDescriptorContext context, Type srcType) {
                 return baseConverter.CanConvertFrom(context, srcType);
             }
             
-            public override bool CanConvertTo(System.ComponentModel.ITypeDescriptorContext context, System.Type destinationType) {
+            public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType) {
                 return baseConverter.CanConvertTo(context, destinationType);
             }
             
-            public override object ConvertFrom(System.ComponentModel.ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value) {
+            public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value) {
                 return baseConverter.ConvertFrom(context, culture, value);
             }
             
-            public override object CreateInstance(System.ComponentModel.ITypeDescriptorContext context, System.Collections.IDictionary dictionary) {
+            public override object CreateInstance(ITypeDescriptorContext context, IDictionary dictionary) {
                 return baseConverter.CreateInstance(context, dictionary);
             }
             
-            public override bool GetCreateInstanceSupported(System.ComponentModel.ITypeDescriptorContext context) {
+            public override bool GetCreateInstanceSupported(ITypeDescriptorContext context) {
                 return baseConverter.GetCreateInstanceSupported(context);
             }
             
-            public override PropertyDescriptorCollection GetProperties(System.ComponentModel.ITypeDescriptorContext context, object value, System.Attribute[] attributeVar) {
+            public override PropertyDescriptorCollection GetProperties(ITypeDescriptorContext context, object value, Attribute[] attributeVar) {
                 return baseConverter.GetProperties(context, value, attributeVar);
             }
             
-            public override bool GetPropertiesSupported(System.ComponentModel.ITypeDescriptorContext context) {
+            public override bool GetPropertiesSupported(ITypeDescriptorContext context) {
                 return baseConverter.GetPropertiesSupported(context);
             }
             
-            public override System.ComponentModel.TypeConverter.StandardValuesCollection GetStandardValues(System.ComponentModel.ITypeDescriptorContext context) {
+            public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context) {
                 return baseConverter.GetStandardValues(context);
             }
             
-            public override bool GetStandardValuesExclusive(System.ComponentModel.ITypeDescriptorContext context) {
+            public override bool GetStandardValuesExclusive(ITypeDescriptorContext context) {
                 return baseConverter.GetStandardValuesExclusive(context);
             }
             
-            public override bool GetStandardValuesSupported(System.ComponentModel.ITypeDescriptorContext context) {
+            public override bool GetStandardValuesSupported(ITypeDescriptorContext context) {
                 return baseConverter.GetStandardValuesSupported(context);
             }
             
-            public override object ConvertTo(System.ComponentModel.ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, System.Type destinationType) {
+            public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType) {
                 if ((context != null)) {
                     if ((context.PropertyDescriptor.ShouldSerializeValue(context.Instance) == false)) {
                         return "";
@@ -2522,12 +2521,12 @@ Example: corpdns")]
         }
         
         // Embedded class to represent WMI system Properties.
-        [TypeConverter(typeof(System.ComponentModel.ExpandableObjectConverter))]
+        [TypeConverter(typeof(ExpandableObjectConverter))]
         public class ManagementSystemProperties {
             
-            private System.Management.ManagementBaseObject PrivateLateBoundObject;
+            private readonly ManagementBaseObject PrivateLateBoundObject;
             
-            public ManagementSystemProperties(System.Management.ManagementBaseObject ManagedObject) {
+            public ManagementSystemProperties(ManagementBaseObject ManagedObject) {
                 PrivateLateBoundObject = ManagedObject;
             }
             

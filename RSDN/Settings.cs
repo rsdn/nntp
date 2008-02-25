@@ -1,12 +1,8 @@
 using System;
 using System.ComponentModel;
-using System.ComponentModel.Design;
-using System.Xml.Serialization;
+using System.Drawing.Design;
 using System.Net;
-
-using Rsdn.Nntp;
-using Rsdn.Nntp.Cache;
-using Rsdn.RsdnNntp.Public;
+using System.Xml.Serialization;
 using Rsdn.RsdnNntp.Public.Editor;
 
 namespace Rsdn.RsdnNntp.Public
@@ -16,12 +12,12 @@ namespace Rsdn.RsdnNntp.Public
 	/// </summary>
 	[Serializable]
 	[XmlType("RsdnDataPublicProviderSettings")]
-	public class DataProviderSettings : Rsdn.RsdnNntp.DataProviderSettings, ICustomTypeDescriptor
+	public class DataProviderSettings : RsdnNntp.DataProviderSettings, ICustomTypeDescriptor
 	{
 		/// <summary>
 		/// Initialize settings.
 		/// </summary>
-		public DataProviderSettings() : base()
+		public DataProviderSettings()
 		{
 			serviceAddress = new Uri(defaultServiceAddress);
 		}
@@ -90,7 +86,7 @@ namespace Rsdn.RsdnNntp.Public
 			"Username, password, and port may be skipped.")]
 		[XmlIgnore]
 		[TypeConverter(typeof(ProxyConverter))]
-		[EditorAttribute(typeof(ProxyEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[EditorAttribute(typeof(ProxyEditor), typeof(UITypeEditor))]
 		public WebProxy Proxy
 		{
 			get	{	return proxy;	}
@@ -144,7 +140,7 @@ namespace Rsdn.RsdnNntp.Public
 		/// <returns>Property descriptor collection.</returns>
 		public PropertyDescriptorCollection GetProperties(Attribute[] attributes)
 		{
-			PropertyDescriptorCollection properties =
+			var properties =
 				new PropertyDescriptorCollection(null);
 
 			foreach (PropertyDescriptor desc in TypeDescriptor.GetProperties(this, attributes, true))

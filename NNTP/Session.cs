@@ -1,20 +1,18 @@
 using System;
-using System.Net.Sockets;
-using System.IO;
-using System.Text;
 using System.Collections.Generic;
-using System.Threading;
-using System.Reflection;
-using System.Text.RegularExpressions;
-using System.Diagnostics;
+using System.IO;
 using System.Net;
-using log4net;
-
-using Rsdn.Mime;
-using Rsdn.Nntp.Commands;
 using System.Net.Security;
+using System.Net.Sockets;
+using System.Reflection;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
+using log4net;
+using Rsdn.Mime;
+using Rsdn.Nntp.Commands;
 
 namespace Rsdn.Nntp
 {
@@ -48,10 +46,10 @@ namespace Rsdn.Nntp
 
       commandsTypes = new Dictionary<string, Type>();
 			// initialize types for NNTP commands classes
-			foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+			foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
 				if (assembly.IsDefined(typeof(NntpCommandsAssemblyAttribute), false))
 					// if assembly contains NNTP commands
-					foreach (Type type in	assembly.GetTypes())
+					foreach (var type in	assembly.GetTypes())
 						if (type.IsDefined(typeof(NntpCommandAttribute), false) &&
 								type.IsSubclassOf(typeof(Generic)) &&
 								!type.IsAbstract)
@@ -107,7 +105,7 @@ namespace Rsdn.Nntp
 		/// Текущая пауза при ошибке
 		/// </summary>
 		private int _errorPauseDuration;
-		private Timer _errorPauseTimer;
+		private readonly Timer _errorPauseTimer;
 
     /// <summary>
     /// Create user session
@@ -117,7 +115,7 @@ namespace Rsdn.Nntp
     /// <param name="dataProvider">Data Provider</param>
     /// <param name="manager">Sessions' manager.</param>
     /// <remarks>By default - starting error pause 100msec</remarks>
-		public Session(Socket client, X509Certificate2 certificate, IDataProvider dataProvider, Manager manager)
+		public Session(Socket client, X509Certificate certificate, IDataProvider dataProvider, Manager manager)
 			: this(client, certificate, dataProvider, manager, 100)
 		{
 		}
@@ -131,7 +129,7 @@ namespace Rsdn.Nntp
     /// <param name="manager">Sessions' manager.</param>
 		/// <param name="pauseOnError">Начальная пауза после ошибки, если ноль - нет паузы
 		/// <remarks>Пауза нарастающая, после каждой ошибки увелеичение на 20%</remarks></param>
-		public Session(Socket client, X509Certificate2 certificate, IDataProvider dataProvider, Manager manager, int pauseOnError)
+		public Session(Socket client, X509Certificate certificate, IDataProvider dataProvider, Manager manager, int pauseOnError)
 		{
       logger = LogManager.GetLogger(manager.Name);
 
@@ -153,7 +151,7 @@ namespace Rsdn.Nntp
 
 			// Init client's command array
       commands = new Dictionary<string, Generic>();
-			foreach (KeyValuePair<string, Type> entry in commandsTypes)
+			foreach (var entry in commandsTypes)
 				commands[entry.Key] = (Generic)
 					Activator.CreateInstance(entry.Value, new Object[]{this});
 
@@ -192,7 +190,7 @@ namespace Rsdn.Nntp
 		/// <summary>
 		/// Currently selected group
 		/// </summary>
-		protected internal string currentGroup = null;
+		protected internal string currentGroup;
 		/// <summary>
 		/// Currently selected article
 		/// </summary>
@@ -224,7 +222,7 @@ namespace Rsdn.Nntp
 
 		protected void Answer(Response response)
 		{
-			byte[] bytes = Util.StringToBytes(response.GetResponse());
+			var bytes = Util.StringToBytes(response.GetResponse());
 			netStream.Write(bytes, 0, bytes.Length);
 #if PERFORMANCE_COUNTERS
 			_manager.GetPerformanceCounter(Manager.bytesSentPerSecCounterName).IncrementBy(bytes.Length);
@@ -241,15 +239,15 @@ namespace Rsdn.Nntp
 		public void Process(Object origObj)
 		{
 			ExceptionHandler(
-				(WaitCallback)delegate(Object obj)
-				{
+				(WaitCallback)delegate
+				              	{
 					logger.InfoFormat("Session started. Local end point {0}.",
 						_client.LocalEndPoint);
 
 					// if SSL - start authentification
 					if (netStream is SslStream)
 					{
-						SslStream sslStream = (SslStream)netStream;
+						var sslStream = (SslStream)netStream;
 						sslStream.BeginAuthenticateAsServer(_certificate, false,
 							SslProtocols.Ssl2 | SslProtocols.Ssl3 | SslProtocols.Tls, false, SslAuthDone, sslStream);
 					}
@@ -282,8 +280,7 @@ namespace Rsdn.Nntp
 			}
 			catch (TargetInvocationException targetEx)
 			{
-				ExceptionHandlerInfo(
-					(targetEx.InnerException != null) ? targetEx.InnerException : targetEx);
+				ExceptionHandlerInfo(targetEx.InnerException ?? targetEx);
 				SessionEnd();
 			}
 			catch (Exception ex)
@@ -320,13 +317,13 @@ namespace Rsdn.Nntp
 		protected void AfterErrorPause(object origState)
 		{
 			ExceptionHandler((WaitCallback)
-				delegate(object state)
-     		{
+				delegate
+					{
 					// if we still have unprocessed comannds after error - 
 					// do not read new data - process those first
-     			int dataToRead = bufferString.Length > 0 ? 0 : bufferSize;
+     			var dataToRead = bufferString.Length > 0 ? 0 : bufferSize;
 					// read more data
-					IAsyncResult readAsync =
+					var readAsync =
 						netStream.BeginRead(commandBuffer, 0, dataToRead, null, null);
 					ThreadPool.RegisterWaitForSingleObject(readAsync.AsyncWaitHandle,
 						ProcessData, readAsync, connectionTimeout, true);
@@ -351,7 +348,7 @@ namespace Rsdn.Nntp
 					string.Format("{0} ({1}; {2})",
 					_manager.Name, Manager.ServerID, _dataProvider.Identity)));
 
-			IAsyncResult readAsync =
+			var readAsync =
 				netStream.BeginRead(commandBuffer, 0, bufferSize, null, null);
 			ThreadPool.RegisterWaitForSingleObject(readAsync.AsyncWaitHandle,
 				ProcessData, readAsync, connectionTimeout, true);
@@ -365,7 +362,7 @@ namespace Rsdn.Nntp
 			Dispose();
 		}
 
-		private StringBuilder bufferString = new StringBuilder();
+		private readonly StringBuilder bufferString = new StringBuilder();
 
 		/// <summary>
 		/// Process client
@@ -424,7 +421,7 @@ namespace Rsdn.Nntp
 						Manager.GetGlobalPerformanceCounter(Manager.bytesTotalCounterName).IncrementBy(receivedBytes);
 #endif
 						string delimeter;
-						Response result = null;
+						Response result;
 
 						switch (sessionState)
 						{
@@ -461,8 +458,8 @@ namespace Rsdn.Nntp
 									case States.TransferWaiting:
 										try
 										{
-											string message = Response.DemodifyTextResponse(commandString);
-											Message postingMessage = Message.Parse(message, true, true,
+											var message = Response.DemodifyTextResponse(commandString);
+											var postingMessage = Message.Parse(message, true, true,
 												new Regex("(?i)Subject"));
 
 											// add addtitional server headers
@@ -484,7 +481,7 @@ namespace Rsdn.Nntp
 										break;
 									default:
 										// get first word in upper case delimeted by space or tab characters 
-										command = commandString.Split(new char[] { ' ', '\t', '\r' }, 2)[0].ToUpper();
+										command = commandString.Split(new[] { ' ', '\t', '\r' }, 2)[0].ToUpper();
 
 #if PERFORMANCE_COUNTERS_OLD
 									requestsCounter.Increment();
@@ -493,14 +490,13 @@ namespace Rsdn.Nntp
 										// check suppoting command
 										if (commands.ContainsKey(command))
 										{
-											Commands.Generic nntpCommand = commands[command];
+											var nntpCommand = commands[command];
 											if (nntpCommand.IsAllowed(sessionState))
 												result = nntpCommand.Process();
 											else
 											{
-												result = notAllowedStateAnswer[sessionState] as Response;
-												if (result == null)
-													result = new Response(NntpResponse.NotAllowed); // command not allowed
+												result = notAllowedStateAnswer[sessionState]
+													?? new Response(NntpResponse.NotAllowed);
 											}
 										}
 										else
@@ -634,7 +630,7 @@ namespace Rsdn.Nntp
 						}
 
 						// read more data
-						IAsyncResult readAsync =
+						var readAsync =
 							netStream.BeginRead(commandBuffer, 0, bufferSize, null, null);
 						ThreadPool.RegisterWaitForSingleObject(readAsync.AsyncWaitHandle,
 							ProcessData, readAsync, connectionTimeout, true);
@@ -654,7 +650,7 @@ namespace Rsdn.Nntp
       get { return _client.RemoteEndPoint;  }
     }
 
-		private string _clientID;
+		private readonly string _clientID;
 
     /// <summary>
     /// Server vertificate using for SSL authentification

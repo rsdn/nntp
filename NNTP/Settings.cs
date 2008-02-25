@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing.Design;
 using System.IO;
+using System.Text;
+using System.Threading;
 using System.Xml;
 using System.Xml.Serialization;
-using System.Threading;
 using Rsdn.Nntp.Editor;
 
 namespace Rsdn.Nntp
@@ -62,7 +64,7 @@ namespace Rsdn.Nntp
 		/// </summary>
 		[XmlIgnore]
 		[TypeConverter(typeof(TypeClassConverter))]
-		[EditorAttribute(typeof(TypeEditor), typeof(System.Drawing.Design.UITypeEditor))]
+		[EditorAttribute(typeof(TypeEditor), typeof(UITypeEditor))]
 		public Type DataProviderType
 		{
 			get { return dataProviderType; }
@@ -99,7 +101,7 @@ namespace Rsdn.Nntp
 			set
 			{
 				if (!dataProviderSettingsType.IsInstanceOfType(value))
-					throw new ArgumentException("DataProviderSettings is not instance of " + dataProviderType.ToString() +
+					throw new ArgumentException("DataProviderSettings is not instance of " + dataProviderType +
 						" class.");
 				dataProviderSettings = value;
 			}
@@ -134,10 +136,10 @@ namespace Rsdn.Nntp
 		/// <param name="stream">Stream to serialize.</param>
 		public void Serialize(Stream stream)
 		{
-			XmlTextWriter fileWriter = new XmlTextWriter(stream, System.Text.Encoding.UTF8);
-			fileWriter.Formatting = Formatting.Indented;
-			XmlSerializer serializer = new XmlSerializer(this.GetType(), null,
-				new Type[]{(DataProviderSettings != null) ? DataProviderSettings.GetType() : typeof(object)},
+			var fileWriter = new XmlTextWriter(stream, Encoding.UTF8)
+				{ Formatting = Formatting.Indented };
+			var serializer = new XmlSerializer(GetType(), null,
+				new[]{(DataProviderSettings != null) ? DataProviderSettings.GetType() : typeof(object)},
 				new XmlRootAttribute("Settings"), null);
 			serializer.Serialize(fileWriter, this);
 			fileWriter.Close();
@@ -150,9 +152,9 @@ namespace Rsdn.Nntp
 		/// <returns></returns>
 		public static NntpSettings Deseriazlize(string filename)
 		{
-			List<Type> dataProviderTypes = new List<Type>();
+			var dataProviderTypes = new List<Type>();
 			
-			XmlDocument doc = new XmlDocument();
+			var doc = new XmlDocument();
 			doc.Load(filename);
 
 			// Collect all data provider's types
@@ -162,12 +164,12 @@ namespace Rsdn.Nntp
 					Type.GetType(dataProviderTypeNode.InnerText, true))).GetConfigType());
 			
 			// Deserialize settings with known types of data provider's config objects
-			XmlSerializer serializer = new XmlSerializer(typeof(NntpSettings), null,
+			var serializer = new XmlSerializer(typeof(NntpSettings), null,
 				dataProviderTypes.ToArray(), new XmlRootAttribute("Settings"), null);
 			
 			XmlReader fileReader = new XmlNodeReader(doc);
 
-			NntpSettings serverSettings = (NntpSettings)serializer.Deserialize(fileReader);
+			var serverSettings = (NntpSettings)serializer.Deserialize(fileReader);
 
 			fileReader.Close();
 

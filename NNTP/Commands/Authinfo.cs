@@ -1,7 +1,7 @@
 using System;
-using System.Text.RegularExpressions;
 using System.Net;
 using System.Net.Sockets;
+using System.Text.RegularExpressions;
 
 namespace Rsdn.Nntp.Commands
 {
@@ -65,7 +65,7 @@ namespace Rsdn.Nntp.Commands
 						{
 							session.sessionState = Session.States.Normal;
 							result = new Response(NntpResponse.AuthentificationAccepted);
-							string remoteHost = ((IPEndPoint)session.RemoteEndPoint).Address.ToString();
+							var remoteHost = ((IPEndPoint)session.RemoteEndPoint).Address.ToString();
 							try
 							{
 								remoteHost = Dns.GetHostEntry(remoteHost).HostName;

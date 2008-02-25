@@ -1,6 +1,5 @@
 using System;
 using System.Net;
-
 using Rsdn.Mime;
 
 namespace Rsdn.Nntp

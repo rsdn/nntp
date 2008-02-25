@@ -33,14 +33,14 @@ namespace Rsdn.Mime
 		public static string Encode(byte[] bytes, ContentTransferEncoding contentEncoding,
 			bool breakLines)
 		{
-			StringBuilder result = new StringBuilder();
+			var result = new StringBuilder();
 			switch (contentEncoding)
 			{
 				case ContentTransferEncoding.Base64 :
 					result.Append(Convert.ToBase64String(bytes));
 					if (breakLines)
 						// break in lines
-						for (int i = LineLength; i < result.Length; i += LineLength + CRLF.Length)
+						for (var i = LineLength; i < result.Length; i += LineLength + CRLF.Length)
 							result.Insert(i, CRLF);
 					break;
 				case ContentTransferEncoding.QoutedPrintable :
@@ -72,8 +72,8 @@ namespace Rsdn.Mime
 		public static string Encode(string text, Encoding textEncoding,
 			ContentTransferEncoding contentEncoding, bool header, bool breakLines)
 		{
-			StringBuilder builder = new StringBuilder();
-			bool reallyHeader = false;
+			var builder = new StringBuilder();
+			var reallyHeader = false;
 
 			if (header)
 				switch (contentEncoding)
@@ -114,8 +114,8 @@ namespace Rsdn.Mime
 		/// <returns>True if containf only ASCII symbols, false otherwise.</returns>
 		public static bool OnlyASCIISymbols(string text)
 		{
-			bool result = true;
-			foreach (char symbol in text)
+			var result = true;
+			foreach (var symbol in text)
 				if (symbol > 0x7f)
 				{
 					result = false;
@@ -131,8 +131,8 @@ namespace Rsdn.Mime
 		/// <returns>True if containf only ASCII symbols, false otherwise.</returns>
 		public static bool OnlyASCIISymbols(byte[] bytes)
 		{
-			bool result = true;
-			foreach (byte symbol in bytes)
+			var result = true;
+			foreach (var symbol in bytes)
 				if (symbol > 0x7f)
 				{
 					result = false;
@@ -160,7 +160,7 @@ namespace Rsdn.Mime
 		/// <returns>Decoded text.</returns>
 		public static byte[] FromQuotedPrintableString(string encodedText)
 		{
-			string decodedSymbols = quotedPrintableEncodedSymbol.Replace(encodedText,
+			var decodedSymbols = quotedPrintableEncodedSymbol.Replace(encodedText,
 				new MatchEvaluator(quotedPrintableEncodedSymbolMatchEvaluator));
 			decodedSymbols = quotedPrintableSoftBreaks.Replace(decodedSymbols, "");
 		
@@ -199,10 +199,10 @@ namespace Rsdn.Mime
 		/// <returns>'quoted-printable' encoded string</returns>
 		public static string ToQuotedPrintableString(byte[] bytes, bool breakLines)
 		{
-			string quotedString = quotedPrintableDecodedSymbol.Replace(BytesToString(bytes),
+			var quotedString = quotedPrintableDecodedSymbol.Replace(BytesToString(bytes),
 					new MatchEvaluator(quotedPrintableDecodedSymbolMatchEvaluator));
 
-			return breakLines ? insertQuotedPrintableSoftBreaks.Replace(quotedString,	"$&=" + Util.CRLF) : quotedString;
+			return breakLines ? insertQuotedPrintableSoftBreaks.Replace(quotedString,	"$&=" + CRLF) : quotedString;
 		}
 		/// <summary>
 		/// Encode with 'quoted-printable' encoding without line-breaking

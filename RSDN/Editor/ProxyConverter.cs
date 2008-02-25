@@ -1,7 +1,7 @@
 using System;
-using System.Net;
 using System.ComponentModel;
-using System.Text;
+using System.Globalization;
+using System.Net;
 
 namespace Rsdn.RsdnNntp.Public.Editor
 {
@@ -10,21 +10,16 @@ namespace Rsdn.RsdnNntp.Public.Editor
 	/// </summary>
 	public class ProxyConverter : TypeConverter
 	{
-		public ProxyConverter()
-		{
-		}
-
-		public override object ConvertTo(System.ComponentModel.ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, System.Type destinationType)
+		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
 		{
 			if ((value is WebProxy) && (destinationType == typeof(string)))
 			{
 				return Convert.ToString(((WebProxy)value).Address);
 			}
-			else
-				return base.ConvertTo(context, culture, value, destinationType);
+			return base.ConvertTo(context, culture, value, destinationType);
 		}
 
-		public override bool CanConvertTo(System.ComponentModel.ITypeDescriptorContext context, System.Type destinationType)
+		public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
 		{
 			if (destinationType == typeof(string))
 				return true;
@@ -32,7 +27,7 @@ namespace Rsdn.RsdnNntp.Public.Editor
 				return base.CanConvertTo(context, destinationType);
 		}
 
-		public override bool CanConvertFrom(System.ComponentModel.ITypeDescriptorContext context, System.Type sourceType)
+		public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
 		{
 			if (sourceType == typeof(string))
 				return true;
@@ -40,13 +35,13 @@ namespace Rsdn.RsdnNntp.Public.Editor
 				return base.CanConvertFrom(context, sourceType);
 		}
 
-		public override object ConvertFrom(System.ComponentModel.ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
+		public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
 		{
 			if (value is string)
 				if ((string)value != "")
 				{
-					UriBuilder uriBuilder = new UriBuilder((string)value);
-					NetworkCredential credential = new NetworkCredential();
+					var uriBuilder = new UriBuilder((string)value);
+					var credential = new NetworkCredential();
 					credential.UserName = uriBuilder.UserName;
 					credential.Password = uriBuilder.Password;
 					// don't show password

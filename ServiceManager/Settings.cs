@@ -1,6 +1,4 @@
-using System;
 using System.Xml.Serialization;
-
 using Rsdn.Nntp;
 
 namespace Rsdn.RsdnNntp
@@ -12,7 +10,8 @@ namespace Rsdn.RsdnNntp
 
 	public class Settings : NntpSettings
 	{
-		public Settings() : base()	{	}
+		public Settings()
+		{	}
 
 		public Settings(NntpSettings serverSettings) : base(serverSettings)	{	}
 

@@ -1,7 +1,7 @@
 using System;
+using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
-
 using Rsdn.Mime;
 
 namespace Rsdn.Nntp.Commands
@@ -39,8 +39,8 @@ namespace Rsdn.Nntp.Commands
 			try
 			{
 				// get time
-				DateTime date = DateTime.ParseExact(lastMatch.Groups["date"].Value, "yyMMdd HHmmss",
-					null,	System.Globalization.DateTimeStyles.AllowWhiteSpaces);
+				var date = DateTime.ParseExact(lastMatch.Groups["date"].Value, "yyMMdd HHmmss",
+					null,	DateTimeStyles.AllowWhiteSpaces);
 				if (lastMatch.Groups["timezone"].Success)
 					// convert GMT to local time
 					date = date.ToLocalTime();
@@ -49,15 +49,15 @@ namespace Rsdn.Nntp.Commands
 				string distributions = null;
 				if (lastMatch.Groups["distributions"].Success)
 				{
-					foreach (string pattern in lastMatch.Groups["distributions"].Value.Split(new char[]{','}))
+					foreach (var pattern in lastMatch.Groups["distributions"].Value.Split(new[]{','}))
 						distributions += string.Format("{0}.*|", TransformWildmat(pattern));
 					// remove last |
 					distributions = distributions.Substring(0, distributions.Length - 1);
 				}
 
-				NewsGroup[] groupList = session.DataProvider.GetGroupList(date, distributions);
-				StringBuilder textResponse = new StringBuilder();
-				foreach (NewsGroup group in groupList)
+				var groupList = session.DataProvider.GetGroupList(date, distributions);
+				var textResponse = new StringBuilder();
+				foreach (var group in groupList)
 					textResponse.AppendFormat("{0} {1} {2} {3}",
 						group.Name, group.LastArticleNumber, group.FirstArticleNumber, group.PostingAllowed ? 'y' : 'n').
 						Append(Util.CRLF);

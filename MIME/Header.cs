@@ -1,8 +1,8 @@
 using System;
-using System.Runtime.Serialization;
-using System.Collections.Specialized;
-using System.Text;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Runtime.Serialization;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Rsdn.Mime
@@ -57,9 +57,9 @@ namespace Rsdn.Mime
 		/// <returns></returns>
 		public string FilterHeaderIdentity(string name, string value)
 		{
-			string result = value;
+			var result = value;
 			if (filters.ContainsKey(name))
-				foreach (FilterHandler handler in filters[name].Values)
+				foreach (var handler in filters[name].Values)
 					result = handler(name, result);
 
 			return result;
@@ -95,10 +95,10 @@ namespace Rsdn.Mime
 		/// <param name="handler">Filter handler.</param>
 		public void RemoveFilter(string name, FilterHandler handler)
 		{
-			SortedList<int, FilterHandler> filterList = filters[name];
+			var filterList = filters[name];
 			if (filterList != null)
 			{
-				int position = filterList.IndexOfValue(handler);
+				var position = filterList.IndexOfValue(handler);
 				if (position != -1)
 					filterList.RemoveAt(position);
 			}
@@ -128,11 +128,9 @@ namespace Rsdn.Mime
 				if (this[name] == null)
 					return null;
 
-				MatchEvaluator nonAsciiReplacer = delegate(Match match)
-				{
-					return mimeEncoding == ContentTransferEncoding.Unknown? match.Value:
-							Util.Encode(match.Value, encoding, mimeEncoding, true, false);
-				};
+				MatchEvaluator nonAsciiReplacer = match => 
+					mimeEncoding == ContentTransferEncoding.Unknown ? match.Value :
+						Util.Encode(match.Value, encoding, mimeEncoding, true, false);
 
 				return headerFolding.Replace(nonAsciiReplace.Replace(this[name], nonAsciiReplacer),
 					string.Format("$1{0}$2", Util.CRLF));
@@ -152,8 +150,8 @@ namespace Rsdn.Mime
 		/// </summary>
 		public string Encode(Encoding encoding, ContentTransferEncoding mimeEncoding)
 		{
-			StringBuilder builder = new StringBuilder(512);
-			foreach (string key in AllKeys)
+			var builder = new StringBuilder(512);
+			foreach (var key in AllKeys)
 			{
 				builder
 					.Append(key)
@@ -203,7 +201,7 @@ namespace Rsdn.Mime
 		/// <returns></returns>
 		protected static string DecodeEncodedMatch(Match encodedMatch)
 		{
-			string result = encodedMatch.Groups["value"].Value;
+			var result = encodedMatch.Groups["value"].Value;
 			switch (encodedMatch.Groups["encoding"].Value.ToUpper())
 			{
 				//quoted-printable

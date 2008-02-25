@@ -1,26 +1,25 @@
-using System;
-using System.Drawing;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Windows.Forms;
+using System.Diagnostics;
 using System.Reflection;
-using System.Configuration;
+using System.Windows.Forms;
+using Rsdn.Nntp;
 
 namespace Rsdn.RsdnNntp
 {
 	/// <summary>
 	/// Summary description for About.
 	/// </summary>
-	public class About : System.Windows.Forms.Form
+	public class About : Form
 	{
-		private System.Windows.Forms.PictureBox pictureBox1;
-		private System.Windows.Forms.RichTextBox richTextAbout;
-		private System.Windows.Forms.TreeView treeView;
-		private System.Windows.Forms.Label titleLabel;
+		private PictureBox pictureBox1;
+		private RichTextBox richTextAbout;
+		private TreeView treeView;
+		private Label titleLabel;
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
-		private System.ComponentModel.Container components = null;
+		private Container components;
 
 		public About()
 		{
@@ -33,7 +32,7 @@ namespace Rsdn.RsdnNntp
 				Assembly.GetExecutingAssembly().GetManifestResourceStream("Rsdn.RsdnNntp.About.rtf"),
 				RichTextBoxStreamType.RichText);
 
-			titleLabel.Text = Rsdn.Nntp.Manager.ServerID;
+			titleLabel.Text = Manager.ServerID;
 
 			AddAssembly(Assembly.Load("RsdnNntpServer"));
 			AddAssembly(Assembly.GetExecutingAssembly());
@@ -61,7 +60,7 @@ namespace Rsdn.RsdnNntp
 		/// </summary>
 		private void InitializeComponent()
 		{
-			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(About));
+			var resources = new System.Resources.ResourceManager(typeof(About));
 			this.richTextAbout = new System.Windows.Forms.RichTextBox();
 			this.pictureBox1 = new System.Windows.Forms.PictureBox();
 			this.treeView = new System.Windows.Forms.TreeView();
@@ -137,9 +136,9 @@ namespace Rsdn.RsdnNntp
 		}
 		#endregion
 
-		private void richTextAbout_LinkClicked(object sender, System.Windows.Forms.LinkClickedEventArgs e)
+		private void richTextAbout_LinkClicked(object sender, LinkClickedEventArgs e)
 		{
-			System.Diagnostics.Process.Start(e.LinkText);
+			Process.Start(e.LinkText);
 		}
 
 		protected void AddAssembly(Assembly assembly)
@@ -147,17 +146,17 @@ namespace Rsdn.RsdnNntp
 			AddAssembly(assembly, treeView.Nodes);
 		}
 
-		protected void AddAssembly(Assembly assembly, TreeNodeCollection nodes)
+		protected static void AddAssembly(Assembly assembly, TreeNodeCollection nodes)
 		{
-			TreeNode node = nodes.Add(assembly.FullName);
-      StringCollection insertedAssemblies = null;
+			var node = nodes.Add(assembly.FullName);
+      StringCollection insertedAssemblies;
       if ((node.Parent == null) || ((node.Parent.Tag as StringCollection) == null))
         node.Tag = insertedAssemblies = new StringCollection();
 			else
         node.Tag = insertedAssemblies = (StringCollection)node.Parent.Tag;
 
 			insertedAssemblies.Add(assembly.FullName);
-			foreach (AssemblyName referencedAssemblyName in assembly.GetReferencedAssemblies())
+			foreach (var referencedAssemblyName in assembly.GetReferencedAssemblies())
 				if (!insertedAssemblies.Contains(referencedAssemblyName.FullName))
 					AddAssembly(Assembly.Load(referencedAssemblyName), node.Nodes);
 		}

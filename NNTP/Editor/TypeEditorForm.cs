@@ -1,32 +1,30 @@
 using System;
-using System.Drawing;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Windows.Forms;
 using System.Reflection;
-using System.Diagnostics;
+using System.Windows.Forms;
 
 namespace Rsdn.Nntp.Editor
 {
 	/// <summary>
 	/// Summary description for TypeEditorForm.
 	/// </summary>
-	public class TypeEditorForm : System.Windows.Forms.Form
+	public class TypeEditorForm : Form
 	{
 		//
 		protected IDictionary<string, IList<Type>> types = new Dictionary<string, IList<Type>>();
-		private System.Windows.Forms.OpenFileDialog openAssemblyDialog;
-		private System.Windows.Forms.Button selectFile;
-		private System.Windows.Forms.TextBox assemblyPath;
-		private System.Windows.Forms.ComboBox namespacesCombo;
-		private System.Windows.Forms.Button okButton;
-		private System.Windows.Forms.Button cancelButton;
-		private System.Windows.Forms.ErrorProvider errorProvider;
-		private System.Windows.Forms.ComboBox typesCombo;
+		private OpenFileDialog openAssemblyDialog;
+		private Button selectFile;
+		private TextBox assemblyPath;
+		private ComboBox namespacesCombo;
+		private Button okButton;
+		private Button cancelButton;
+		private ErrorProvider errorProvider;
+		private ComboBox typesCombo;
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
-		private System.ComponentModel.Container components = null;
+		private Container components;
 
 		public TypeEditorForm() : this(null, null) {	}
 
@@ -176,7 +174,7 @@ namespace Rsdn.Nntp.Editor
 		}
 		#endregion
 
-		private void selectFile_Click(object sender, System.EventArgs e)
+		private void selectFile_Click(object sender, EventArgs e)
 		{
 			if (openAssemblyDialog.ShowDialog(this) == DialogResult.OK)
 			{
@@ -193,7 +191,7 @@ namespace Rsdn.Nntp.Editor
 			}
 		}
 
-		private void assemblyPath_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+		private void assemblyPath_Validating(object sender, CancelEventArgs e)
 		{
 			try
 			{
@@ -206,10 +204,10 @@ namespace Rsdn.Nntp.Editor
 			}
 		}
 
-		private void assemblyPath_Validated(object sender, System.EventArgs e)
+		private void assemblyPath_Validated(object sender, EventArgs e)
 		{
 			errorProvider.SetError(assemblyPath, "");
-			Assembly selectedAssembly = Assembly.Load(assemblyPath.Text);
+			var selectedAssembly = Assembly.Load(assemblyPath.Text);
 			if ((selectedType == null) || (selectedType.Assembly != selectedAssembly))
 			{
 				selectedType = null;
@@ -226,7 +224,7 @@ namespace Rsdn.Nntp.Editor
 			typesCombo.Items.Clear();
 
 			types.Clear();
-			foreach (Type type in assembly.GetTypes())
+			foreach (var type in assembly.GetTypes())
 				if (type.IsPublic && ((filter == null) || (filter.IsAssignableFrom(type))))
 				{
 					if (!types.ContainsKey(type.Namespace))
@@ -245,11 +243,11 @@ namespace Rsdn.Nntp.Editor
 
 		protected Type selectedType;
 
-		private void namespacesCombo_SelectedIndexChanged(object sender, System.EventArgs e)
+		private void namespacesCombo_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			typesCombo.BeginUpdate();
 			typesCombo.Items.Clear();
-			foreach (Type type in types[namespacesCombo.Text])
+			foreach (var type in types[namespacesCombo.Text])
 			{
 				typesCombo.Items.Add(type);
 			}
@@ -259,7 +257,7 @@ namespace Rsdn.Nntp.Editor
 			typesCombo.EndUpdate();
 		}
 
-		private void typesCombo_SelectedIndexChanged(object sender, System.EventArgs e)
+		private void typesCombo_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			selectedType = (Type)typesCombo.SelectedItem;
 			okButton.Enabled = true;

@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Drawing;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace Win32Util
@@ -13,9 +14,9 @@ namespace Win32Util
 	/// </summary>
 	public class Win32Window
 	{
-		IntPtr window;
-		IList<Win32Window> windowList = null;
-    static IList<Win32Window> topLevelWindows = null;
+		readonly IntPtr window;
+		IList<Win32Window> windowList;
+    static IList<Win32Window> topLevelWindows;
 
 		/// <summary>
 		/// Create a Win32Window
@@ -56,8 +57,8 @@ namespace Win32Util
 			get
 			{
         windowList = new List<Win32Window>();
-				EnumChildWindows(window, new EnumWindowsProc(EnumerateChildProc), 0);
-        IList<Win32Window> children = windowList;
+				EnumChildWindows(window, EnumerateChildProc, 0);
+        var children = windowList;
 				windowList = null;
 				return children;
 			}
@@ -77,8 +78,8 @@ namespace Win32Util
 			get
 			{
         topLevelWindows = new List<Win32Window>();
-				EnumWindows(new EnumWindowsProc(EnumerateTopLevelProc), 0);
-        IList<Win32Window> top = topLevelWindows;
+				EnumWindows(EnumerateTopLevelProc, 0);
+        var top = topLevelWindows;
 				topLevelWindows = null;
 				return top;
 			}
@@ -98,8 +99,8 @@ namespace Win32Util
     public static IList<Win32Window> GetThreadWindows(int threadId)
 		{
       topLevelWindows = new List<Win32Window>();
-			EnumThreadWindows(threadId, new EnumWindowsProc(EnumerateThreadProc), 0);
-      IList<Win32Window> windows = topLevelWindows;
+			EnumThreadWindows(threadId, EnumerateThreadProc, 0);
+      var windows = topLevelWindows;
 			topLevelWindows = null;
 			return windows;
 		}
@@ -216,7 +217,7 @@ namespace Win32Util
 		{
 			get
 			{
-				IntPtr popup = GetLastActivePopup(window);
+				var popup = GetLastActivePopup(window);
 				if (popup == window)
 					return new Win32Window(IntPtr.Zero);
 				else
@@ -231,8 +232,8 @@ namespace Win32Util
 		{
 			get
 			{
-				int length = GetWindowTextLength(window);
-				StringBuilder sb = new StringBuilder(length + 1);
+				var length = GetWindowTextLength(window);
+				var sb = new StringBuilder(length + 1);
 				GetWindowText(window, sb, sb.Capacity);
 				return sb.ToString();				
 			}
@@ -281,7 +282,7 @@ namespace Win32Util
 		{
 			get
 			{
-				int processId = 0;
+				var processId = 0;
 				GetWindowThreadProcessId(window, ref processId);
 				return processId;
 			}
@@ -294,7 +295,7 @@ namespace Win32Util
 		{
 			get
 			{
-				WindowPlacement placement = new WindowPlacement();
+				var placement = new WindowPlacement();
 				GetWindowPlacement(window, ref placement);
 				return placement;
 			}
@@ -332,7 +333,7 @@ namespace Win32Util
 
 		public void MakeToolWindow()
 		{
-			int windowStyle = GetWindowLong(GWL_EXSTYLE);
+			var windowStyle = GetWindowLong(GWL_EXSTYLE);
 			SetWindowLong(GWL_EXSTYLE, windowStyle | WS_EX_TOOLWINDOW);
 		}
 
@@ -442,7 +443,7 @@ namespace Win32Util
 		[DllImport("gdi32.dll")]
 		private static extern UInt64 BitBlt
 			   (IntPtr hDestDC, int x, int y, int nWidth, int nHeight,
-	            IntPtr hSrcDC, int xSrc, int ySrc, System.Int32 dwRop);
+	            IntPtr hSrcDC, int xSrc, int ySrc, Int32 dwRop);
 		
 		public static Image DesktopAsBitmap
 		{
@@ -450,16 +451,16 @@ namespace Win32Util
 			{
 				Image myImage = new Bitmap(Screen.PrimaryScreen.Bounds.Width,
 					Screen.PrimaryScreen.Bounds.Height);
-				Graphics gr1 = Graphics.FromImage(myImage);
-				IntPtr dc1 = gr1.GetHdc();
-				IntPtr dc2 = GetWindowDC(GetDesktopWindow());
+				var gr1 = Graphics.FromImage(myImage);
+				var dc1 = gr1.GetHdc();
+				var dc2 = GetWindowDC(GetDesktopWindow());
 				BitBlt(dc1, 0, 0, Screen.PrimaryScreen.Bounds.Width,
 					Screen.PrimaryScreen.Bounds.Height, dc2, 0, 0, SRCCOPY); 
 				gr1.ReleaseHdc(dc1);
 				return myImage;
 			}
 		}
-		static int SRCCOPY = 0x00CC0020;  // dest = source 
+		private const int SRCCOPY = 0x00CC0020;
 
 		public Image WindowAsBitmap
 		{
@@ -468,17 +469,17 @@ namespace Win32Util
 				if (IsNull)
 					return null;
 
-				this.BringWindowToTop();
-				System.Threading.Thread.Sleep(500);
+				BringWindowToTop();
+				Thread.Sleep(500);
 
-				Rectangle rect = new Rectangle();
+				var rect = new Rectangle();
 				if (!GetWindowRect(window, ref rect))
 					return null;
 				
 				Image myImage = new Bitmap(rect.Width, rect.Height);
-				Graphics gr1 = Graphics.FromImage(myImage);
-				IntPtr dc1 = gr1.GetHdc();
-				IntPtr dc2 = GetWindowDC(window);
+				var gr1 = Graphics.FromImage(myImage);
+				var dc1 = gr1.GetHdc();
+				var dc2 = GetWindowDC(window);
 				BitBlt(dc1, 0, 0, rect.Width, rect.Height, dc2, 0, 0, SRCCOPY); 
 				gr1.ReleaseHdc(dc1);
 				return myImage;

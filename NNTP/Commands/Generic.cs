@@ -2,7 +2,6 @@ using System;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Collections.Generic;
 
 namespace Rsdn.Nntp.Commands
 {
@@ -24,7 +23,7 @@ namespace Rsdn.Nntp.Commands
 		/// Create command handler for specific session.
 		/// </summary>
 		/// <param name="session">Parent NNTP session.</param>
-		public Generic(Session session)
+		protected Generic(Session session)
 		{
 			syntaxisChecker = null;
 			this.session = session;
@@ -38,8 +37,7 @@ namespace Rsdn.Nntp.Commands
 			lastMatch = syntaxisChecker.Match(session.commandString);
 			if (lastMatch.Success)
 				return ProcessCommand();
-			else
-				return new Response(NntpResponse.SyntaxisError); // syntaxis error
+			return new Response(NntpResponse.SyntaxisError); // syntaxis error
 		}
 
 		/// <summary>
@@ -105,11 +103,11 @@ namespace Rsdn.Nntp.Commands
 		/// <returns>modified news article</returns>
 		protected virtual NewsArticle ModifyArticle(NewsArticle article)
 		{
-			StringBuilder xref = new StringBuilder(Session.Hostname);
-			foreach (KeyValuePair<string, int> newsGroupNumber in article.MessageNumbers)
+			var xref = new StringBuilder(Session.Hostname);
+			foreach (var newsGroupNumber in article.MessageNumbers)
 				xref.Append(" ").Append(newsGroupNumber.Key).Append(":").Append(newsGroupNumber.Value);
 			article["Xref"] = xref.ToString();
-			article["X-Server"] = string.Join("; ", new string[]{Manager.ServerID, nntpID, session.DataProvider.Identity});
+			article["X-Server"] = string.Join("; ", new[]{Manager.ServerID, nntpID, session.DataProvider.Identity});
 			return article;
 		}
 
@@ -119,12 +117,12 @@ namespace Rsdn.Nntp.Commands
 		/// </summary>
 		/// <param name="pattern"></param>
 		/// <returns></returns>
-		protected string TransformWildmat(string pattern)
+		protected static string TransformWildmat(string pattern)
 		{
 			if (pattern == null)
 				throw new ArgumentNullException("pattern");
 
-			string regexPattern = pattern;
+			var regexPattern = pattern;
 			
 			// Temporary remove '?' characters
 			regexPattern = Regex.Replace(regexPattern, @"(?<!\\)\?", "<<quest>>");

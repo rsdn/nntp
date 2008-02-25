@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Net;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using log4net;
 using Rsdn.Framework.Formatting;
@@ -18,8 +19,8 @@ namespace Rsdn.RsdnNntp
 		/// <summary>
 		/// Logger 
 		/// </summary>
-		private static ILog logger =
-			log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		private static readonly ILog logger =
+			LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		/// <summary>
 		/// Web Proxy used to retrieve external resources.
@@ -42,13 +43,13 @@ namespace Rsdn.RsdnNntp
 			this.contentIdPostfix = contentIdPostfix;
 			this.maxSize = maxSize;
 			this.proxy = proxy;
-			ProcessImagesDelegate = new TextFormatter.ProcessImagesDelegate(ProcessImages);
+			ProcessImagesDelegate = ProcessImages;
   	}
 
-  	NameValueCollection processedImagesIDs = new NameValueCollection();
-		List<Message> processedImages = new List<Message>();
-		private long processedImagesSize = 0;
-		private long maxSize = 0;
+  	readonly NameValueCollection processedImagesIDs = new NameValueCollection();
+  	readonly List<Message> processedImages = new List<Message>();
+		private long processedImagesSize;
+		private readonly long maxSize;
 
 		/// <summary>
 		/// Array of processed during message formatting inline images.
@@ -87,24 +88,23 @@ namespace Rsdn.RsdnNntp
 			WebResponse response = null;
 			try
 			{
-				string imgContentID = processedImagesIDs[image.Groups["url"].Value];
+				var imgContentID = processedImagesIDs[image.Groups["url"].Value];
 				if (imgContentID == null)
 				{
-					WebRequest req = WebRequest.Create(image.Groups["url"].Value);
+					var req = WebRequest.Create(image.Groups["url"].Value);
 					req.Proxy = proxy;
 					response = req.GetResponse();
 					if ((maxSize == 0) ||
 							(response.ContentLength + processedImagesSize <= maxSize))
 					{
-						Message imgPart = new Message(false);
-						imgPart.ContentType = response.ContentType;
-						Guid idGuid = Guid.NewGuid();
+						var imgPart = new Message(false) {ContentType = response.ContentType};
+						var idGuid = Guid.NewGuid();
 						imgPart["Content-ID"] = string.Format("<{0}{1}>", idGuid, contentIdPostfix);
 						imgPart["Content-Location"] = imgContentID =
 							Format.EncodeAgainstXSS(image.Groups["url"].Value);
 						imgPart["Content-Disposition"] = "inline";
 						imgPart.TransferEncoding = ContentTransferEncoding.Base64;
-						using (BinaryReader reader = new BinaryReader(response.GetResponseStream()))
+						using (var reader = new BinaryReader(response.GetResponseStream()))
 						{
 							imgPart.Entities.Add(reader.ReadBytes((int)response.ContentLength));
 						}

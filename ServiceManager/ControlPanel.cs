@@ -1,12 +1,8 @@
 using System;
-using System.Drawing;
 using System.ComponentModel;
-using System.Windows.Forms;
 using System.Configuration;
-using System.Xml;
-using System.Security;
 using System.Management;
-
+using System.Windows.Forms;
 using Rsdn.Nntp;
 
 namespace Rsdn.RsdnNntp
@@ -14,12 +10,12 @@ namespace Rsdn.RsdnNntp
 	/// <summary>
 	/// Summary description for ControlPanel.
 	/// </summary>
-	public class ControlPanel : System.Windows.Forms.Form
+	public class ControlPanel : Form
 	{
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
-		private System.ComponentModel.Container components = null;
+		private Container components;
 
 		public ControlPanel(Settings settings)
 		{
@@ -53,7 +49,7 @@ namespace Rsdn.RsdnNntp
 		/// </summary>
 		private void InitializeComponent()
 		{
-      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ControlPanel));
+      var resources = new System.ComponentModel.ComponentResourceManager(typeof(ControlPanel));
       this.okButton = new System.Windows.Forms.Button();
       this.cancelButton = new System.Windows.Forms.Button();
       this.applyButton = new System.Windows.Forms.Button();
@@ -221,19 +217,19 @@ namespace Rsdn.RsdnNntp
 		#endregion
 
 
-		private System.Windows.Forms.Button okButton;
-		private System.Windows.Forms.Button cancelButton;
-		private System.Windows.Forms.PictureBox alertImage;
-		private System.Windows.Forms.Label alertText;
-		private System.Windows.Forms.TabPage tabPage1;
-		private System.Windows.Forms.TabPage serverSettingsTabPage;
-		private System.Windows.Forms.TabPage dataProviderSettingsTabPage;
-		private System.Windows.Forms.TabControl tabControl;
-		private System.Windows.Forms.PropertyGrid dataProviderPropertyGrid;
-		private System.Windows.Forms.PropertyGrid serverPropertyGrid;
-		private System.Windows.Forms.Button applyButton;
+		private Button okButton;
+		private Button cancelButton;
+		private PictureBox alertImage;
+		private Label alertText;
+		private TabPage tabPage1;
+		private TabPage serverSettingsTabPage;
+		private TabPage dataProviderSettingsTabPage;
+		private TabControl tabControl;
+		private PropertyGrid dataProviderPropertyGrid;
+		private PropertyGrid serverPropertyGrid;
+		private Button applyButton;
 
-		private void ApplySettings(object sender, System.EventArgs e)
+		private void ApplySettings(object sender, EventArgs e)
 		{
 			try 
 			{
@@ -257,7 +253,7 @@ namespace Rsdn.RsdnNntp
 		}
 
 		private void propertyGrid_PropertyValueChanged(object s,
-			System.Windows.Forms.PropertyValueChangedEventArgs e)
+			PropertyValueChangedEventArgs e)
 		{
 			// if data provider changed
 			if (e.ChangedItem.PropertyDescriptor.Name == "DataProviderType")

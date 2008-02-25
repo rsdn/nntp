@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.Globalization;
 using System.Security.Cryptography.X509Certificates;
 
 namespace Rsdn.Nntp.Editor
@@ -9,48 +10,38 @@ namespace Rsdn.Nntp.Editor
 	/// </summary>
 	public class CertificateConverter : TypeConverter
 	{
-    public CertificateConverter()
-		{
-		}
-
-		public override object ConvertTo(System.ComponentModel.ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, System.Type destinationType)
+		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
 		{
 			if (destinationType == typeof(string))
 			{
         return (value == null) ? null : ((X509Certificate2)value).Subject;
 			}
-			else
-				return base.ConvertTo(context, culture, value, destinationType);
+			return base.ConvertTo(context, culture, value, destinationType);
 		}
 
-		public override bool CanConvertTo(System.ComponentModel.ITypeDescriptorContext context, System.Type destinationType)
+		public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
 		{
 			if (destinationType == typeof(string))
 				return true;
-			else
-				return base.CanConvertTo(context, destinationType);
+			return base.CanConvertTo(context, destinationType);
 		}
 
-    public override bool CanConvertFrom(System.ComponentModel.ITypeDescriptorContext context, System.Type sourceType)
-    {
-      if (sourceType == typeof(string))
+		public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+		{
+			if (sourceType == typeof(string))
         return true;
-      else
-        return base.CanConvertFrom(context, sourceType);
-    }
+			return base.CanConvertFrom(context, sourceType);
+		}
 
-    public override object ConvertFrom(System.ComponentModel.ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
-    {
-      if (value is string)
+		public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+		{
+			if (value is string)
       {
-        if (string.IsNullOrEmpty((string)value))
+      	if (string.IsNullOrEmpty((string)value))
           return null;
-        else
-          throw new ArgumentException("Wrong certificate!", "value");
+      	throw new ArgumentException("Wrong certificate!", "value");
       }
-      else
-        return base.ConvertFrom(context, culture, value);
-    }
-
+			return base.ConvertFrom(context, culture, value);
+		}
 	}
 }

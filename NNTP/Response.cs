@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
-
 using Rsdn.Mime;
 
 namespace Rsdn.Nntp
@@ -62,7 +61,7 @@ namespace Rsdn.Nntp
 	/// </summary>
 	public class Response
 	{
-		public class ParamsException : System.ArgumentException
+		public class ParamsException : ArgumentException
 		{
 			public ParamsException(string error, Exception innerException)	:
 				base(error, innerException) {}				
@@ -154,7 +153,7 @@ namespace Rsdn.Nntp
 		/// Error description.
 		/// If null - get default description.
 		/// </summary>
-		string description;
+		readonly string description;
 
 		/// <summary>
 		/// Get NNTP response as text
@@ -180,10 +179,10 @@ namespace Rsdn.Nntp
 		{
 			try
 			{
-				StringBuilder result = new StringBuilder(Util.LineLength);
+				var result = new StringBuilder(Util.LineLength);
 				result.Append(code).Append(" ")
-					.AppendFormat(description != null ? description :
-          answers.ContainsKey(code) ? answers[code] : string.Empty, parameters)
+					.AppendFormat(description ?? (answers.ContainsKey(code) ?
+						answers[code] : string.Empty), parameters)
           .Append(Util.CRLF);
 				if (reponsesBody != null)
 					result.Append(ModifyTextResponse(reponsesBody.ToString()));
@@ -230,7 +229,7 @@ namespace Rsdn.Nntp
 			if (response == null)
 				return null;
 	
-			StringBuilder textRepresentation = new StringBuilder(
+			var textRepresentation = new StringBuilder(
 				// double start points
 				EncodeNntpMessage.Replace(response, ".."));
 			if (textRepresentation.Length > 0)
@@ -250,8 +249,7 @@ namespace Rsdn.Nntp
 		{
 			if (response != null)
 				return DecodeNNTPMessage.Replace(response, ".");
-			else
-				return null;
+			return null;
 		}
 
 		public int Code

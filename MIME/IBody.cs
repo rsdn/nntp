@@ -1,5 +1,3 @@
-using System;
-
 namespace Rsdn.Mime
 {
 	/// <summary>

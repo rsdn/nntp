@@ -1,8 +1,9 @@
 using System;
-using System.IO;
+using System.Collections.Generic;
 using System.Net;
 using System.Reflection;
-
+using System.Web.Services.Protocols;
+using System.Xml;
 using Microsoft.Web.Services2.Security;
 using Microsoft.Web.Services2.Security.Tokens;
 using Plumbwork.Orange.Compression;
@@ -10,9 +11,6 @@ using Rsdn.Framework.Common;
 using Rsdn.Nntp;
 using Rsdn.RsdnNntp.Common;
 using Rsdn.RsdnNntp.Public.RsdnService;
-using System.Web.Services.Protocols;
-using System.Collections.Generic;
-using System.Xml;
 
 namespace Rsdn.RsdnNntp.Public
 {
@@ -24,8 +22,8 @@ namespace Rsdn.RsdnNntp.Public
 		/// <summary>
 		/// Construct RSDN Data Provider
 		/// </summary>
-    public RsdnDataPublicProvider() : base()
-    {
+    public RsdnDataPublicProvider()
+		{
     	webService = new Service2();
 			// set compression filters
 			webService.Pipeline.InputFilters.Add(new CompressionInputFilter());
@@ -41,7 +39,7 @@ namespace Rsdn.RsdnNntp.Public
 			if (!webService.RequestSoapContext.Security.Tokens.Contains(userToken))
 			{
 				webService.RequestSoapContext.Security.Tokens.Add(userToken);
-				MessageSignature sig = new MessageSignature(userToken);
+				var sig = new MessageSignature(userToken);
 				webService.RequestSoapContext.Security.Elements.Add(sig);
 				webService.RequestSoapContext.Security.Timestamp.TtlInSeconds = 60;
 			}
@@ -77,8 +75,7 @@ namespace Rsdn.RsdnNntp.Public
 					{
 						throw new DataProviderException(DataProviderErrors.NoSuchGroup, groupName, providerEx);
 					}
-					else
-						throw;
+					throw;
 				}
 			}
   	}
@@ -87,9 +84,9 @@ namespace Rsdn.RsdnNntp.Public
   	{
 			try
 			{
-				group_list groupList = webService.GetGroupList(startTime);
-				Group[] groups = new Group[groupList.groups.Length];
-				for (int i = 0; i < groups.Length; i++)
+				var groupList = webService.GetGroupList(startTime);
+				var groups = new Group[groupList.groups.Length];
+				for (var i = 0; i < groups.Length; i++)
 					groups[i] = new Group(groupList.groups[i]);
 				return groups;
 			}				
@@ -168,18 +165,17 @@ namespace Rsdn.RsdnNntp.Public
   	{
 			try
 			{
-		    article_list articleList = webService.ArticleList(groupName, startNumber, endNumber);
+		    var articleList = webService.ArticleList(groupName, startNumber, endNumber);
 				// sometimes web-service return null....
 				if (articleList != null)
 				{
-					IArticle[] iArticles = new IArticle[articleList.articles.Length];
-					for (int i = 0; i < iArticles.Length; i++)
+					var iArticles = new IArticle[articleList.articles.Length];
+					for (var i = 0; i < iArticles.Length; i++)
 						iArticles[i] = new Article(articleList.articles[i]);
 					return iArticles;
 				}
-				else
-					return new Article[0];
-    	}
+				return new Article[0];
+			}
 			catch (Exception exception)
 			{
 			  ProcessException(exception);
@@ -191,9 +187,9 @@ namespace Rsdn.RsdnNntp.Public
   	{
 			try
 			{
-				article_list articleList = webService.ArticleListFromDate(groups, startTime);
-				Article[] iArticles = new Article[articleList.articles.Length];
-				for (int i = 0; i < iArticles.Length; i++)
+				var articleList = webService.ArticleListFromDate(groups, startTime);
+				var iArticles = new Article[articleList.articles.Length];
+				for (var i = 0; i < iArticles.Length; i++)
 					iArticles[i] = new Article(articleList.articles[i]);
 				return iArticles;
 			}
@@ -257,7 +253,7 @@ namespace Rsdn.RsdnNntp.Public
     /// Process exception raised during request to data provider
     /// </summary>
     /// <param name="exception"></param>
-    protected void ProcessException(Exception exception)
+    protected static void ProcessException(Exception exception)
     {
     	if (typeof(InvalidOperationException).IsAssignableFrom(exception.GetType()))
     		// check for System.InvalidOperationException (html instead xml in answer),
@@ -266,16 +262,14 @@ namespace Rsdn.RsdnNntp.Public
 
 			if (exception is SoapException)
 			{
-				SoapException soapEx = (SoapException) exception;
+				var soapEx = (SoapException) exception;
 				if (soapErrors.ContainsKey(soapEx.Code))
 				{
 					throw new DataProviderException(soapErrors[soapEx.Code], exception);
 				}
-				else
-					throw exception;
-			}
-			else
 				throw exception;
+			}
+    	throw exception;
     }
 
 		/// <summary>
@@ -315,7 +309,7 @@ namespace Rsdn.RsdnNntp.Public
     /// <param name="settings"></param>
     public override void Config(object settings)
     {
-    	DataProviderSettings rsdnSettings = settings as DataProviderSettings;
+    	var rsdnSettings = settings as DataProviderSettings;
     	if (rsdnSettings != null)
     	{
     		serverSchemeAndName = rsdnSettings.ServiceUri.GetLeftPart(UriPartial.Authority);

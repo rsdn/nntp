@@ -1,7 +1,6 @@
 using System;
 using System.Text;
 using System.Text.RegularExpressions;
-
 using Rsdn.Mime;
 
 namespace Rsdn.Nntp.Commands
@@ -47,8 +46,8 @@ namespace Rsdn.Nntp.Commands
 				if (session.currentGroup == null)
 					throw new DataProviderException(DataProviderErrors.NoSelectedGroup);
 
-				int startNumber = Convert.ToInt32(lastMatch.Groups["startNumber"].Value);
-				int endNumber = startNumber;
+				var startNumber = Convert.ToInt32(lastMatch.Groups["startNumber"].Value);
+				var endNumber = startNumber;
 				if (lastMatch.Groups["dash"].Success)
 					if (lastMatch.Groups["endNumber"].Success)
 						endNumber = Convert.ToInt32(lastMatch.Groups["endNumber"].Value);
@@ -69,9 +68,9 @@ namespace Rsdn.Nntp.Commands
 
 			if (articleList.Length > 0)
 			{
-				string header = lastMatch.Groups["header"].Value;
-				StringBuilder output = new StringBuilder();
-				foreach (NewsArticle article in articleList)
+				var header = lastMatch.Groups["header"].Value;
+				var output = new StringBuilder();
+				foreach (var article in articleList)
 					if (article[header] != null)
 					{
 						output.Append(lastMatch.Groups["messageID"].Success ?
@@ -80,8 +79,7 @@ namespace Rsdn.Nntp.Commands
 					}
 				return new Response(NntpResponse.ArticleHeadRetrivied, output.ToString(), null, null);
 			}
-			else
-				return new Response(NntpResponse.NoSelectedArticle);
+			return new Response(NntpResponse.NoSelectedArticle);
 		}
 	}
 }

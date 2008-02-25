@@ -1,6 +1,5 @@
-using System;
-using System.Text.RegularExpressions;
 using System.Text;
+using System.Text.RegularExpressions;
 using Rsdn.Mime;
 
 namespace Rsdn.Nntp.Commands
@@ -40,16 +39,15 @@ namespace Rsdn.Nntp.Commands
 			{
 				if (session.currentGroup == null)
 					throw new DataProviderException(DataProviderErrors.NoSelectedGroup);
-				else
-					groupName = session.currentGroup;
+				groupName = session.currentGroup;
 			}
 			else
 				groupName = lastMatch.Groups["groupName"].Value;
 
-			NewsGroup group = session.DataProvider.GetGroup(groupName);
+			var group = session.DataProvider.GetGroup(groupName);
 
-			StringBuilder listOfNumbers = new StringBuilder();
-			foreach (NewsArticle article in
+			var listOfNumbers = new StringBuilder();
+			foreach (var article in
 				session.DataProvider.GetArticleList(group.FirstArticleNumber, group.LastArticleNumber, groupName,NewsArticle.Content.Header))
 					listOfNumbers.Append(article.MessageNumbers[groupName]).Append(Util.CRLF);
 

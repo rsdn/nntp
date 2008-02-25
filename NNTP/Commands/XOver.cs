@@ -1,7 +1,6 @@
 using System;
 using System.Text;
 using System.Text.RegularExpressions;
-
 using Rsdn.Mime;
 
 namespace Rsdn.Nntp.Commands
@@ -41,13 +40,11 @@ namespace Rsdn.Nntp.Commands
 			NewsArticle[] articleList;
 			if (lastMatch.Groups["startNumber"].Success)
 			{
-				int startNumber = Convert.ToInt32(lastMatch.Groups["startNumber"].Value);
-				int endNumber = startNumber;
+				var startNumber = Convert.ToInt32(lastMatch.Groups["startNumber"].Value);
+				var endNumber = startNumber;
 				if (lastMatch.Groups["dash"].Success)
-					if (lastMatch.Groups["endNumber"].Success)
-						endNumber = Convert.ToInt32(lastMatch.Groups["endNumber"].Value);
-					else
-						endNumber = int.MaxValue;
+					endNumber = lastMatch.Groups["endNumber"].Success ?
+						Convert.ToInt32(lastMatch.Groups["endNumber"].Value) : int.MaxValue;
 				articleList = session.DataProvider.
 					GetArticleList(startNumber, endNumber, session.currentGroup, NewsArticle.Content.Header);
 			}
@@ -62,11 +59,11 @@ namespace Rsdn.Nntp.Commands
 
 			if (articleList.Length > 0)
 			{
-				StringBuilder output = new StringBuilder();
-				foreach (NewsArticle article in articleList)
+				var output = new StringBuilder();
+				foreach (var article in articleList)
 				{
 					output.Append(ModifyArticle(article).MessageNumbers[session.currentGroup]);
-					foreach (string headerItem in List.headerItems)
+					foreach (var headerItem in List.headerItems)
 					{
 						// replace in *unfolded* header all non-good symbols to space
 						output.Append('\t').
@@ -77,8 +74,7 @@ namespace Rsdn.Nntp.Commands
 				}
 				return new Response(NntpResponse.Overview, output.ToString());
 			}
-			else
-				return new Response(NntpResponse.NoSelectedArticle);
+			return new Response(NntpResponse.NoSelectedArticle);
 		}
 	}
 }

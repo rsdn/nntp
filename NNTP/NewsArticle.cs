@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Text.RegularExpressions;
-
 using Rsdn.Mime;
 
 namespace Rsdn.Nntp
@@ -18,11 +16,11 @@ namespace Rsdn.Nntp
 			if (newsGroups.Length != messageNumbers.Length)
 				throw new ArgumentException("Size of newsGroups and messageNumbers parameters must be the same.");
 
-			StringBuilder newsGroupsHeader = new StringBuilder();
+			var newsGroupsHeader = new StringBuilder();
 			MessageID = messageID;
 
 			_messageNumbers = new Dictionary<string, int>(newsGroups.Length);
-			for (int i = 0; i < newsGroups.Length; i++)
+			for (var i = 0; i < newsGroups.Length; i++)
 			{
 				newsGroupsHeader.Append(newsGroups[i]).Append(" ");
 				_messageNumbers[newsGroups[i]] = messageNumbers[i];

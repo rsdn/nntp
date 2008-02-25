@@ -1,49 +1,49 @@
 using System;
 using System.ComponentModel;
-using System.ServiceProcess;
-using System.IO;
 using System.Configuration;
+using System.IO;
 using System.Reflection;
+using System.ServiceProcess;
 using System.Threading;
 using log4net;
-
+using log4net.Config;
 using Rsdn.Nntp;
 
-[assembly: log4net.Config.XmlConfigurator(Watch=true)]
+[assembly: XmlConfigurator(Watch=true)]
 
 namespace Rsdn.RsdnNntp
 {
-	public class RsdnNntpServer : System.ServiceProcess.ServiceBase
+	public class RsdnNntpServer : ServiceBase
 	{
 		/// <summary> 
 		/// Required designer variable.
 		/// </summary>
-		private System.ComponentModel.Container components = null;
+		private Container components;
 
 		/// <summary>
 		/// Logger 
 		/// </summary>
-		private static ILog logger = log4net.LogManager.GetLogger("RSDN NNTP Server");
+		private static readonly ILog logger = LogManager.GetLogger("RSDN NNTP Server");
 
 		public RsdnNntpServer()
 		{
 			// This call is required by the Windows.Forms Component Designer.
 			InitializeComponent();
 
-			this.EventLog.Source = "RSDN NNTP Server";
+			EventLog.Source = "RSDN NNTP Server";
 		}
 
 		// The main entry point for the process
 		static void Main()
 		{
 			// started as service
-			if (Console.In == System.IO.StreamReader.Null)
+			if (Console.In == StreamReader.Null)
 			{
-				System.ServiceProcess.ServiceBase.Run(new RsdnNntpServer());
+				Run(new RsdnNntpServer());
 			}
 			else
 			{
-				RsdnNntpServer server = new RsdnNntpServer();
+				var server = new RsdnNntpServer();
 				server.OnStart(null);
 				Console.ReadLine();
 				server.OnStop();
@@ -59,10 +59,10 @@ namespace Rsdn.RsdnNntp
 			// 
 			// RsdnNntpServer
 			// 
-			this.AutoLog = false;
-			this.CanPauseAndContinue = true;
-			this.CanShutdown = true;
-			this.ServiceName = "rsdnnntp";
+			AutoLog = false;
+			CanPauseAndContinue = true;
+			CanShutdown = true;
+			ServiceName = "rsdnnntp";
 
 		}
 
@@ -86,7 +86,7 @@ namespace Rsdn.RsdnNntp
 		/// </summary>
 		protected override void OnStart(string[] args)
 		{
-			ThreadPool.QueueUserWorkItem(new WaitCallback(StartServer));
+			ThreadPool.QueueUserWorkItem(StartServer);
 		}
  
 		protected void StartServer(object obj)
@@ -105,7 +105,7 @@ namespace Rsdn.RsdnNntp
 				logger.Fatal("RSDN NNTP Server can't start.", e);
 				nntpManager = null;
 				// start timer, which will stop service in 1 sec
-				Timer timer = new Timer(new TimerCallback(Stop), null, 1000, Timeout.Infinite);
+				new Timer(Stop, null, 1000, Timeout.Infinite);
 			}
 		}
 
@@ -131,11 +131,11 @@ namespace Rsdn.RsdnNntp
 		/// <summary>
 		/// NNTP Manager
 		/// </summary>
-		protected Manager nntpManager = null;
+		protected Manager nntpManager;
 
 		protected void Stop(Object state)
 		{
-			ServiceController service = new ServiceController(ServiceName);
+			var service = new ServiceController(ServiceName);
 			service.Stop();
 		}
 

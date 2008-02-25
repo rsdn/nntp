@@ -1,7 +1,5 @@
-using System;
 using System.Text;
 using System.Text.RegularExpressions;
-
 using Rsdn.Mime;
 
 namespace Rsdn.Nntp.Commands
@@ -33,10 +31,10 @@ namespace Rsdn.Nntp.Commands
 		/// <returns>Server's NNTP response</returns>
 		protected override Response ProcessCommand()
 		{
-			StringBuilder supportCommands = new StringBuilder();
+			var supportCommands = new StringBuilder();
 			supportCommands.Append(Manager.ServerID).Append(" ").
 				Append("supports follow commands:").Append(Util.CRLF);
-			foreach (string command in session.commands.Keys)
+			foreach (var command in session.commands.Keys)
 				supportCommands.AppendFormat("\t{0}{1}", command,Util.CRLF);
 			return new Response(NntpResponse.Help, supportCommands.ToString());
 		}

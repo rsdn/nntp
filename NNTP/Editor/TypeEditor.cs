@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Drawing.Design;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
@@ -10,33 +11,25 @@ namespace Rsdn.Nntp.Editor
 	/// </summary>
 	public class TypeEditor : UITypeEditor
 	{
-		public TypeEditor()
-		{
-			// 
-			// TODO: Add constructor logic here
-			//
-		}
-
-		public override UITypeEditorEditStyle GetEditStyle(System.ComponentModel.ITypeDescriptorContext context)
+		public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context)
 		{
 			return UITypeEditorEditStyle.Modal;
 		}
 
-		public override object EditValue(System.ComponentModel.ITypeDescriptorContext context, IServiceProvider provider, object value)
+		public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
 		{
-			IWindowsFormsEditorService service =
+			var service =
 				(IWindowsFormsEditorService)provider.GetService(typeof(IWindowsFormsEditorService));
 			
 			if (service == null)
 				return null;
 			
-			TypeEditorForm editorForm = new TypeEditorForm(value as Type, typeof(IDataProvider));
+			var editorForm = new TypeEditorForm(value as Type, typeof(IDataProvider));
 			if (service.ShowDialog(editorForm) == DialogResult.OK)
 			{
 				return editorForm.SelectedType;
 			}
-			else
-				return value;
+			return value;
 		}
 	}
 }

@@ -1,12 +1,10 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Rsdn.RsdnNntp
 {
 	internal class TemplateArticle : IArticle
 	{
-		IArticle _article;
+		readonly IArticle _article;
 		public TemplateArticle(IArticle article)
 		{
 			_article = article;

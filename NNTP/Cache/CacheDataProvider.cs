@@ -1,10 +1,8 @@
 using System;
+using System.Net;
 using System.Web;
 using System.Web.Caching;
-using System.Collections.Generic;
-using System.Net;
-
-using Rsdn.Nntp;
+using Rsdn.Mime;
 
 namespace Rsdn.Nntp.Cache
 {
@@ -31,7 +29,7 @@ namespace Rsdn.Nntp.Cache
 		/// <returns></returns>
 		protected static bool CheckContentSuitable(NewsArticle.Content need, NewsArticle.Content current)
 		{
-			bool suit = false;
+			var suit = false;
 
 			switch (need)
 			{
@@ -92,11 +90,11 @@ namespace Rsdn.Nntp.Cache
 				settings.AbsoluteExpiration == TimeSpan.Zero ?
           System.Web.Caching.Cache.NoAbsoluteExpiration : DateTime.Now.Add(settings.AbsoluteExpiration),
 				settings.SlidingExpiration, CacheItemPriority.AboveNormal, null);
-			CacheDependency dependecy =
-				new CacheDependency(null, new string[]{article.MessageID + cacheSalt});
-			foreach (KeyValuePair<string, int> entry in article.MessageNumbers)
+			var dependecy =
+				new CacheDependency(null, new[]{article.MessageID + cacheSalt});
+			foreach (var entry in article.MessageNumbers)
 			{
-				cache.Insert(entry.Key + entry.Value.ToString() + cacheSalt,
+				cache.Insert(entry.Key + entry.Value + cacheSalt,
 					article, dependecy);
 			}
 		}
@@ -124,7 +122,7 @@ namespace Rsdn.Nntp.Cache
 		public virtual NewsArticle GetArticle(string originalMessageID, NewsArticle.Content content,
 			string cacheSalt)
 		{
-			NewsArticle article = null;
+			NewsArticle article;
 
 			if (settings.Cache != CacheType.None)
 			{
@@ -170,12 +168,12 @@ namespace Rsdn.Nntp.Cache
 		public virtual NewsArticle GetArticle(int articleNumber, string groupName,
 			NewsArticle.Content content, string cacheSalt)
 		{
-			NewsArticle article = null;
+			NewsArticle article;
 
 			if (settings.Cache != CacheType.None)
 			{
 				// check message in cache
-				article = cache[groupName + articleNumber.ToString() + cacheSalt] as NewsArticle;
+				article = cache[groupName + articleNumber + cacheSalt] as NewsArticle;
 				if ((article == null) || !CheckContentSuitable(content, article.Contents))
 					// There is no suitable message in cache.
 				{
@@ -222,7 +220,7 @@ namespace Rsdn.Nntp.Cache
 
 		public abstract bool Authentificate(string user, string pass, IPAddress ip);
 
-		public abstract void PostMessage(Rsdn.Mime.Message article);
+		public abstract void PostMessage(Message article);
 
 		public abstract string Identity
 		{

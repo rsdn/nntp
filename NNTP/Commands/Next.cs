@@ -1,4 +1,3 @@
-using System;
 using System.Text.RegularExpressions;
 
 namespace Rsdn.Nntp.Commands
@@ -37,7 +36,7 @@ namespace Rsdn.Nntp.Commands
 			if (session.currentArticle == -1)
 				throw new DataProviderException(DataProviderErrors.NoSelectedArticle);
 
-			NewsArticle article = session.DataProvider.GetNextArticle(session.currentArticle, session.currentGroup);
+			var article = session.DataProvider.GetNextArticle(session.currentArticle, session.currentGroup);
 
 			session.currentArticle = article.MessageNumbers[session.currentGroup];
 
