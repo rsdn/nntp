@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 //
 [assembly: AssemblyCompany("Russian Software Developer Network")]
 [assembly: AssemblyProduct("RSDN NNTP Server")]
-[assembly: AssemblyCopyright("© 2002-2006 der Igel, The RSDN Group")]
+[assembly: AssemblyCopyright("© 2002-2008 der Igel, The RSDN Group")]
 
 //
 // Version information for an assembly consists of the following four values:
