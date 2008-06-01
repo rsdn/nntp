@@ -4,7 +4,7 @@
   <DataProviderTypeName>Rsdn.RsdnNntp.Public.RsdnDataPublicProvider, RsdnDataPublicProvider</DataProviderTypeName>
   <DataProviderSettings xsi:type="RsdnDataPublicProviderSettings">
     <proxySettings />
-    <Encoding>windows-1251</Encoding>
+    <Encoding>urf-8</Encoding>
   </DataProviderSettings>
   <Bindings>
     <ServerEndPoint>
