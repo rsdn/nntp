@@ -455,7 +455,7 @@ namespace Rsdn.RsdnNntp.Common
     		
 				if (!string.IsNullOrEmpty(message.Tags))
 				{
-					newsMessage["X-Tags"] = message.Tags;	
+					newsMessage["Keywords"] = message.Tags;	
 				}
 
     		// build refences
@@ -687,7 +687,7 @@ namespace Rsdn.RsdnNntp.Common
 					throw new DataProviderException(DataProviderErrors.PostingFailed,
 						"Reply only in plain text not html. For details see http://www.rsdn.ru/projects/rsdnnntp/rsdnnntp.xml.");
 
-				PostMessage(mid, group, Format.Forum.GetEditSubject(message.Subject), postingTextString, message["X-Tags"]);
+				PostMessage(mid, group, Format.Forum.GetEditSubject(message.Subject), postingTextString, message["Keywords"]);
 			}
 			catch (DataProviderException)
 			{

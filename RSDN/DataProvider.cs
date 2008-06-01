@@ -36,14 +36,13 @@ namespace Rsdn.RsdnNntp.Public
 
 		protected void SetUsernameToken(UsernameToken userToken)
 		{
-			if (!webService.RequestSoapContext.Security.Tokens.Contains(userToken))
-			{
-				webService.RequestSoapContext.Security.Tokens.Add(userToken);
-				var sig = new MessageSignature(userToken);
-				webService.RequestSoapContext.Security.Elements.Add(sig);
-				webService.RequestSoapContext.Security.Timestamp.TtlInSeconds = 60;
-			}
- 		}
+			if (webService.RequestSoapContext.Security.Tokens.Contains(userToken)) return;
+
+			webService.RequestSoapContext.Security.Tokens.Add(userToken);
+			var sig = new MessageSignature(userToken);
+			webService.RequestSoapContext.Security.Elements.Add(sig);
+			webService.RequestSoapContext.Security.Timestamp.TtlInSeconds = 60;
+		}
 
   	/// <summary>
   	/// Set data provider's parameters from IUserInfo object.
