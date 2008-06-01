@@ -21,6 +21,6 @@ using System.Runtime.CompilerServices;
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
 
-[assembly: AssemblyInformationalVersion("2.1 beta")]
+[assembly: AssemblyInformationalVersion("2.1 gamma")]
 
 [assembly: AssemblyVersion("2.1.$WCREV$.*")]

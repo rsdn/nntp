@@ -76,5 +76,10 @@ namespace Rsdn.RsdnNntp.Public
 		{
 			get { return Format.ToInt(message.gid); }
 		}
+		public string Tags
+		{
+			get { return message.tags; }
+		}
+
 	}
 }

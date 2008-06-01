@@ -453,6 +453,11 @@ namespace Rsdn.RsdnNntp.Common
     			newsMessage["X-UserID"] = message.AuthorID.ToString();
 				newsMessage["X-MessageID"] = message.ID.ToString();
     		
+				if (!string.IsNullOrEmpty(message.Tags))
+				{
+					newsMessage["X-Tags"] = message.Tags;	
+				}
+
     		// build refences
     		var referencesString = new StringBuilder();
     		int[] references;
@@ -595,7 +600,8 @@ namespace Rsdn.RsdnNntp.Common
 		/// <param name="group">Group name to which post message.</param>
 		/// <param name="subject">Message's subject.</param>
 		/// <param name="message">Message's content.</param>
-		protected abstract void PostMessage(int mid, string group, string subject, string message);
+		/// <param name="message">Message's tags.</param>
+		protected abstract void PostMessage(int mid, string group, string subject, string message, string tags);
 
 		/// <summary>
 		/// Marker to determine reply in html format.
@@ -656,11 +662,12 @@ namespace Rsdn.RsdnNntp.Common
 								binaryFile = newBinaryFile;
 							}
 
-							processedFiles.Append(Util.CRLF).AppendFormat("[url={0}]{1} ({2})[/url]",
-								PostFile(filename, string.Format("{0}/{1}",
-									entity.ContentTypeType, entity.ContentTypeSubtype), binaryFile),
-									filename, Utils.BytesToString(binaryFile.Length));
-
+							processedFiles.Append(Util.CRLF)
+								.AppendFormat(new FileSizeFormatProvider(),
+									"[url={0}]{1} ({2:fs})[/url]",
+									PostFile(filename, string.Format("{0}/{1}",
+										entity.ContentTypeType, entity.ContentTypeSubtype), binaryFile),
+										filename, binaryFile.Length);
 						}
 					}
 
@@ -680,7 +687,7 @@ namespace Rsdn.RsdnNntp.Common
 					throw new DataProviderException(DataProviderErrors.PostingFailed,
 						"Reply only in plain text not html. For details see http://www.rsdn.ru/projects/rsdnnntp/rsdnnntp.xml.");
 
-				PostMessage(mid, group, Format.Forum.GetEditSubject(message.Subject), postingTextString);
+				PostMessage(mid, group, Format.Forum.GetEditSubject(message.Subject), postingTextString, message["X-Tags"]);
 			}
 			catch (DataProviderException)
 			{
@@ -758,11 +765,8 @@ namespace Rsdn.RsdnNntp.Common
     		if (rsdnSettings.Formatting != FormattingStyle.UserSettings)
 					style = rsdnSettings.Formatting;
 
-				if (style == FormattingStyle.HtmlInlineImages)
-					imageProcessor = new ImageProcessor(messageIdPostfix,
-						rsdnSettings.MaxImagesSize, Proxy);
-				else
-					imageProcessor = null;
+				imageProcessor = (style == FormattingStyle.HtmlInlineImages) ?
+					new ImageProcessor(messageIdPostfix, rsdnSettings.MaxImagesSize, Proxy) : null;
     	}
 
 			if (imageProcessor != null)

@@ -197,6 +197,7 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
+    <None Include="app.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -225,10 +226,10 @@
     <None Include="Web References\RsdnService\UserInfo.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
-    <WebReferenceUrl Include="http://rsdn.ru/ws/service2.asmx">
+    <WebReferenceUrl Include="http://www.rsdn.ru/WS/Service2.asmx">
       <RelPath>Web References\RsdnService\</RelPath>
       <UrlBehavior>Dynamic</UrlBehavior>
-      <UpdateFromURL>http://rsdn.ru/ws/service2.asmx</UpdateFromURL>
+      <UpdateFromURL>http://www.rsdn.ru/WS/Service2.asmx</UpdateFromURL>
       <ServiceLocationURL>
       </ServiceLocationURL>
       <CachedDynamicPropName>

@@ -213,13 +213,14 @@ namespace Rsdn.RsdnNntp.Public
 			}	
   	}
 
-  	protected override void PostMessage(int mid, string group, string subject, string message)
+  	protected override void PostMessage(int mid, string group, string subject, string message, string tags)
   	{
 			try
 			{
 				webService.PostMessage(mid, group,
 					Utils.ProcessInvalidXmlCharacters(subject),
-					Utils.ProcessInvalidXmlCharacters(message));
+					Utils.ProcessInvalidXmlCharacters(message),
+					Utils.ProcessInvalidXmlCharacters(tags));
 			}
 			catch (Exception exception)
 			{
@@ -233,20 +234,21 @@ namespace Rsdn.RsdnNntp.Public
 
 		static RsdnDataPublicProvider()
 		{
-			soapErrors = new Dictionary<XmlQualifiedName, DataProviderErrors>();
-			soapErrors.Add(
-				new XmlQualifiedName("FailedAuthentication",
-					"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"),
-				DataProviderErrors.NoPermission);
-			soapErrors.Add(new XmlQualifiedName(
-				RsdnException.ErrorCodes.NoSuchMessage.ToString(), ErrorsNamespace),
-				DataProviderErrors.NoSuchArticle);
-			soapErrors.Add(new XmlQualifiedName(
-				RsdnException.ErrorCodes.NoSuchGroup.ToString(), ErrorsNamespace),
-				DataProviderErrors.NoSuchGroup);
-			soapErrors.Add(new XmlQualifiedName(
-				RsdnException.ErrorCodes.BadLogin.ToString(), ErrorsNamespace),
-				DataProviderErrors.NoPermission);
+			soapErrors = new Dictionary<XmlQualifiedName, DataProviderErrors>
+     	{
+     		{ new XmlQualifiedName(
+						"FailedAuthentication", "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"),
+					DataProviderErrors.NoPermission },
+     		{ new XmlQualifiedName(
+     				RsdnException.ErrorCodes.NoSuchMessage.ToString(), ErrorsNamespace),
+					DataProviderErrors.NoSuchArticle },
+     		{ new XmlQualifiedName(
+     				RsdnException.ErrorCodes.NoSuchGroup.ToString(), ErrorsNamespace),
+					DataProviderErrors.NoSuchGroup },
+     		{ new XmlQualifiedName(
+     				RsdnException.ErrorCodes.BadLogin.ToString(), ErrorsNamespace),
+					DataProviderErrors.NoPermission }
+     	};
 		}
 
     /// <summary>

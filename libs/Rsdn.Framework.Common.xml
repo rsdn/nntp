@@ -263,7 +263,7 @@
         </member>
         <member name="M:Rsdn.Framework.Common.Utils.ProcessInvalidXmlCharacters(System.String)">
             <summary>
-            Remove invalid xml characters (replace to "?").
+            Remove invalid xml characters (replace to "□").
             </summary>
             <param name="text">Input text.</param>
             <returns>Processed text.</returns>

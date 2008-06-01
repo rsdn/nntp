@@ -130,6 +130,26 @@
             <param name="o">Преобразуемый объект.</param>
             <returns>Результат.</returns>
         </member>
+        <member name="F:Rsdn.Framework.Formatting.Format._tagsExtractor">
+            <summary>
+            Message tag extractor
+            </summary>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Format.ExtractTags(System.String)">
+            <summary>
+            Extract tags from string
+            </summary>
+            <param name="tags"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.Format.ExtractTags(System.String,System.Text.RegularExpressions.MatchEvaluator)">
+            <summary>
+            Format tags
+            </summary>
+            <param name="tags"></param>
+            <param name="eval">Tag transformer</param>
+            <returns></returns>
+        </member>
         <member name="F:Rsdn.Framework.Formatting.Format.RsdnDomainName">
             <summary>
             Top level RSDN domain name
@@ -717,10 +737,25 @@
             <param name="text">Original text.</param>
             <returns>Modified text.</returns>
         </member>
+        <member name="M:Rsdn.Framework.Formatting.TextFormatter.IsThereModeratorTag(System.String)">
+            <summary>
+            Проверяет на наличие модераторского текста в сообщении
+            </summary>
+            <param name="text"></param>
+            <returns></returns>
+        </member>
         <member name="M:Rsdn.Framework.Formatting.TextFormatter.ParseUrl(System.String)">
             <summary>
             Отпарсить URL.
             </summary>
+        </member>
+        <member name="M:Rsdn.Framework.Formatting.TextFormatter.ProcessISBN(System.Text.RegularExpressions.Match,System.String)">
+            <summary>
+            Обработка ISBN
+            </summary>
+            <param name="match"></param>
+            <param name="isbn"></param>
+            <returns></returns>
         </member>
         <member name="P:Rsdn.Framework.Formatting.TextFormatter.OpenRsdnLinksInNewWindow">
             <summary>

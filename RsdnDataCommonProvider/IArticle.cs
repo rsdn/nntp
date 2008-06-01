@@ -10,122 +10,81 @@ namespace Rsdn.RsdnNntp
 		/// <summary>
 		/// Message ID.
 		/// </summary>
-		int ID
-		{
-			get;
-		}
+		int ID { get; }
 
 		/// <summary>
 		/// Message's parent ID.
 		/// </summary>
-		int ParentID
-		{
-			get;
-		}
+		int ParentID { get; }
 		
 		/// <summary>
 		/// Server postfix for generate message's IDs.
 		/// </summary>
-		string Postfix
-		{
-			get;
-		}
+		string Postfix { get; }
 
 		/// <summary>
 		/// Message number in group.
 		/// </summary>
-		int Number
-		{
-			get;
-		}
+		int Number { get; }
 
 		/// <summary>
 		/// Author.
 		/// </summary>
-		string Author
-		{
-			get;
-		}
+		string Author { get; }
 
 		/// <summary>
 		/// Author ID.
 		/// </summary>
-		int AuthorID
-		{
-			get;
-		}
+		int AuthorID { get; }
 
 		/// <summary>
 		/// Message's subject.
 		/// </summary>
-		string Subject
-		{
-			get;
-		}
+		string Subject { get; }
 
 		/// <summary>
 		/// Message's date.
 		/// </summary>
-		DateTime Date
-		{
-			get;
-		}
+		DateTime Date { get; }
 		
 		/// <summary>
 		/// Message's text.
 		/// </summary>
-		string Message
-		{
-			get;
-		}
+		string Message { get; }
 
 		/// <summary>
 		/// Author's home page.
 		/// </summary>
-		string HomePage
-		{
-			get;
-		}
+		string HomePage { get; }
 
 		/// <summary>
 		/// Format or not smiles in message.
 		/// </summary>
-		bool Smile
-		{
-			get;
-		}
+		bool Smile { get; }
 
 		/// <summary>
 		/// Author's user type.
 		/// </summary>
-		string UserType
-		{
-			get;
-		}
+		string UserType { get; }
 
 		/// <summary>
 		/// Author's user color.
 		/// </summary>
-		int UserColor
-		{
-			get;
-		}
+		int UserColor { get; }
 
 		/// <summary>
 		/// Message's group name.
 		/// </summary>
-		string Group
-		{
-			get;
-		}
+		string Group { get; }
 
 		/// <summary>
 		/// Message's group id.
 		/// </summary>
-		int GroupID
-		{
-			get;
-		}
-		
+		int GroupID { get; }
+
+		/// <summary>
+		/// Message's tags
+		/// </summary>
+		string Tags { get; }
 	}
 }

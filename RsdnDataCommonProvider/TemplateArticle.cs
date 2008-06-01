@@ -107,5 +107,10 @@ namespace Rsdn.RsdnNntp
 		{
 			get { return _article.GroupID; }
 		}
+
+		public string Tags
+		{
+			get { return _article.Tags; }
+		}
 	}
 }

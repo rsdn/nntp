@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://rsdn.ru/ws2/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" targetNamespace="http://rsdn.ru/ws2/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://rsdn.ru/ws2/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" targetNamespace="http://rsdn.ru/ws2/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">The service provides access to the RSDN forums. </wsdl:documentation>
   <wsdl:types>
     <s:schema elementFormDefault="qualified" targetNamespace="http://rsdn.ru/ws2/">
       <s:element name="PostMessage">
@@ -9,6 +10,7 @@
             <s:element minOccurs="0" maxOccurs="1" name="group" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="subject" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="message" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="tags" type="s:string" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -66,6 +68,7 @@
           <s:enumeration value="User" />
           <s:enumeration value="Expert" />
           <s:enumeration value="Anonym" />
+          <s:enumeration value="Group" />
         </s:restriction>
       </s:simpleType>
       <s:simpleType name="MessageFormat">
@@ -85,6 +88,8 @@
           <s:enumeration value="None" />
           <s:enumeration value="Private" />
           <s:enumeration value="Public" />
+          <s:enumeration value="Forum" />
+          <s:enumeration value="Moderator" />
         </s:restriction>
       </s:simpleType>
       <s:element name="GetUserInfoByID">
@@ -185,6 +190,7 @@
           <s:element minOccurs="0" maxOccurs="1" name="homePage" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="group" type="s:string" />
           <s:element minOccurs="1" maxOccurs="1" name="smile" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="tags" type="s:string" />
         </s:sequence>
       </s:complexType>
       <s:element name="GetFormattedArticle">
@@ -416,72 +422,72 @@
   </wsdl:message>
   <wsdl:portType name="Service2Soap">
     <wsdl:operation name="PostMessage">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Accepts Unicode formatted message postings.</documentation>
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Accepts Unicode formatted message postings.</wsdl:documentation>
       <wsdl:input message="tns:PostMessageSoapIn" />
       <wsdl:output message="tns:PostMessageSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetUserInfo">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Get inforamtion about user.</documentation>
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Get inforamtion about user.</wsdl:documentation>
       <wsdl:input message="tns:GetUserInfoSoapIn" />
       <wsdl:output message="tns:GetUserInfoSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetUserInfoByID">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Get inforamtion about user by id.</documentation>
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Get inforamtion about user by id.</wsdl:documentation>
       <wsdl:input message="tns:GetUserInfoByIDSoapIn" />
       <wsdl:output message="tns:GetUserInfoByIDSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetGroupList">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns a list of groups.</documentation>
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Returns a list of groups.</wsdl:documentation>
       <wsdl:input message="tns:GetGroupListSoapIn" />
       <wsdl:output message="tns:GetGroupListSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GroupInfo">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns information about the group.</documentation>
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Returns information about the group.</wsdl:documentation>
       <wsdl:input message="tns:GroupInfoSoapIn" />
       <wsdl:output message="tns:GroupInfoSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetArticle">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns information about the article.</documentation>
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Returns information about the article.</wsdl:documentation>
       <wsdl:input message="tns:GetArticleSoapIn" />
       <wsdl:output message="tns:GetArticleSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetFormattedArticle">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns formated article.</documentation>
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Returns formated article.</wsdl:documentation>
       <wsdl:input message="tns:GetFormattedArticleSoapIn" />
       <wsdl:output message="tns:GetFormattedArticleSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetArticleByID">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns information about the article by message ID.</documentation>
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Returns information about the article by message ID.</wsdl:documentation>
       <wsdl:input message="tns:GetArticleByIDSoapIn" />
       <wsdl:output message="tns:GetArticleByIDSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetFormattedArticleByID">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns formated article by message ID.</documentation>
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Returns formated article by message ID.</wsdl:documentation>
       <wsdl:input message="tns:GetFormattedArticleByIDSoapIn" />
       <wsdl:output message="tns:GetFormattedArticleByIDSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="ArticleList">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns a list of articles.</documentation>
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Returns a list of articles.</wsdl:documentation>
       <wsdl:input message="tns:ArticleListSoapIn" />
       <wsdl:output message="tns:ArticleListSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="ArticleListFromDate">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns a list of articles from specified date.</documentation>
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Returns a list of articles from specified date.</wsdl:documentation>
       <wsdl:input message="tns:ArticleListFromDateSoapIn" />
       <wsdl:output message="tns:ArticleListFromDateSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="Authentication">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Performs user authentication.</documentation>
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Performs user authentication.</wsdl:documentation>
       <wsdl:input message="tns:AuthenticationSoapIn" />
       <wsdl:output message="tns:AuthenticationSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GetLink">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Returns link information.</documentation>
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Returns link information.</wsdl:documentation>
       <wsdl:input message="tns:GetLinkSoapIn" />
       <wsdl:output message="tns:GetLinkSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="PostFile">
-      <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">Post a file to user storage.</documentation>
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Post a file to user storage.</wsdl:documentation>
       <wsdl:input message="tns:PostFileSoapIn" />
       <wsdl:output message="tns:PostFileSoapOut" />
     </wsdl:operation>
@@ -615,10 +621,142 @@
       </wsdl:output>
     </wsdl:operation>
   </wsdl:binding>
+  <wsdl:binding name="Service2Soap12" type="tns:Service2Soap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="PostMessage">
+      <soap12:operation soapAction="http://rsdn.ru/ws2/PostMessage" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetUserInfo">
+      <soap12:operation soapAction="http://rsdn.ru/ws2/GetUserInfo" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetUserInfoByID">
+      <soap12:operation soapAction="http://rsdn.ru/ws2/GetUserInfoByID" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetGroupList">
+      <soap12:operation soapAction="http://rsdn.ru/ws2/GetGroupList" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GroupInfo">
+      <soap12:operation soapAction="http://rsdn.ru/ws2/GroupInfo" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetArticle">
+      <soap12:operation soapAction="http://rsdn.ru/ws2/GetArticle" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetFormattedArticle">
+      <soap12:operation soapAction="http://rsdn.ru/ws2/GetFormattedArticle" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetArticleByID">
+      <soap12:operation soapAction="http://rsdn.ru/ws2/GetArticleByID" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetFormattedArticleByID">
+      <soap12:operation soapAction="http://rsdn.ru/ws2/GetFormattedArticleByID" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ArticleList">
+      <soap12:operation soapAction="http://rsdn.ru/ws2/ArticleList" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ArticleListFromDate">
+      <soap12:operation soapAction="http://rsdn.ru/ws2/ArticleListFromDate" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Authentication">
+      <soap12:operation soapAction="http://rsdn.ru/ws2/Authentication" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetLink">
+      <soap12:operation soapAction="http://rsdn.ru/ws2/GetLink" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="PostFile">
+      <soap12:operation soapAction="http://rsdn.ru/ws2/PostFile" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
   <wsdl:service name="Service2">
-    <documentation xmlns="http://schemas.xmlsoap.org/wsdl/">The service provides access to the RSDN forums. </documentation>
+    <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">The service provides access to the RSDN forums. </wsdl:documentation>
     <wsdl:port name="Service2Soap" binding="tns:Service2Soap">
-      <soap:address location="http://rsdn.ru/ws/service2.asmx" />
+      <soap:address location="http://www.rsdn.ru/WS/Service2.asmx" />
+    </wsdl:port>
+    <wsdl:port name="Service2Soap12" binding="tns:Service2Soap12">
+      <soap12:address location="http://www.rsdn.ru/WS/Service2.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>
