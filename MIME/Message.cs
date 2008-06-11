@@ -102,6 +102,21 @@ namespace Rsdn.Mime
 		}
 
 		/// <summary>
+		/// Create message with initial headers and content
+		/// </summary>
+		/// <param name="headers"></param>
+		/// <param name="contents"></param>
+		public Message(NameValueCollection headers, params object[] contents) : this(false)
+		{
+			foreach (string headerName in headers)
+			{
+				this[headerName] = headers[headerName];
+			}
+
+			Array.ForEach(contents, Entities.Add);
+		}
+
+		/// <summary>
 		/// Message's entities
 		/// </summary>
 		protected IList<object> entities;
@@ -433,10 +448,8 @@ namespace Rsdn.Mime
 			switch (type.ToLower())
 			{
 				case "text" :
-					if (parameters["charset"] != null)
-						encoding = Encoding.GetEncoding(parameters["charset"]);
-					else
-						encoding = Encoding.ASCII;
+					encoding = (parameters["charset"] == null) ? Encoding.ASCII :
+						Encoding.GetEncoding(parameters["charset"]);
 					break;
 				case "multipart" :
 					multipartBoundary = parameters["boundary"];
