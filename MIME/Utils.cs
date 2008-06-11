@@ -50,10 +50,11 @@ namespace Rsdn.Mime
 		/// <param name="contentEncoding">MIME Encoding.</param>
 		/// <param name="breakLines">Split in lines if true.</param>
 		/// <returns>MIME encoded byte stream.</returns>
-		public static IEnumerable<byte> Encode(byte[] bytes, ContentTransferEncoding contentEncoding,
+		public static IEnumerable<byte> Encode(IEnumerable<byte> bytes, ContentTransferEncoding contentEncoding,
 			bool breakLines)
 		{
-			return Encode(bytes, 0, bytes.Length, contentEncoding, breakLines);
+			var array = bytes is byte[] ? (byte[])bytes : new List<byte>(bytes).ToArray();
+			return Encode(array, 0, array.Length, contentEncoding, breakLines);
 		}
 
 		/// <summary>

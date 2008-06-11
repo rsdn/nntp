@@ -623,8 +623,8 @@ namespace Rsdn.Mime
 					if (IsMultipart)
 						builder.AddRange(Encoding.GetBytes(Util.CRLF));
 				}
-				else if (body is byte[])
-						builder.AddRange(Util.Encode((byte[])body, transferEncoding, true));
+				else if (body is IEnumerable<byte>)
+					builder.AddRange(Util.Encode((IEnumerable<byte>)body, transferEncoding, true));
 				else if (body is ArraySegment<byte>)
 					builder.AddRange(Util.Encode((ArraySegment<byte>)body, transferEncoding, true));
 				else
