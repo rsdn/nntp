@@ -141,14 +141,17 @@ namespace Rsdn.Nntp
 		/// Associative arrays of NNTP server answers
 		/// </summary>
 		static protected IDictionary<int, string> answers;
+
 		/// <summary>
 		/// response code
 		/// </summary>
 		protected int code;
+
 		/// <summary>
 		/// response parameters
 		/// </summary>
 		protected object[] parameters;
+
 		/// <summary>
 		/// Error description.
 		/// If null - get default description.
@@ -162,31 +165,38 @@ namespace Rsdn.Nntp
 		/// <param name="reponsesBody"></param>
 		/// <param name="parameters"></param>
 		/// <returns></returns>
-		public static string GetResponse(int code, object reponsesBody, params object[] parameters)
+		public static List<byte> GetResponse(int code, object reponsesBody, params object[] parameters)
 		{
 			return GetResponse(null, code, reponsesBody, parameters);
 		}
 
 		/// <summary>
-		/// Get NNTP response as text
+		/// Get NNTP response
 		/// </summary>
 		/// <param name="code"></param>
 		/// <param name="description"></param>
 		/// <param name="reponsesBody"></param>
 		/// <param name="parameters"></param>
 		/// <returns></returns>
-		public static string GetResponse(string description, int code, object reponsesBody, params object[] parameters)
+		public static List<byte> GetResponse(string description, int code, object reponsesBody, params object[] parameters)
 		{
 			try
 			{
-				var result = new StringBuilder(Util.LineLength);
-				result.Append(code).Append(" ")
+				var result = new List<byte>(Util.LineLength);
+				var buff = new StringBuilder(Util.LineLength);
+				buff.Append(code).Append(" ")
 					.AppendFormat(description ?? (answers.ContainsKey(code) ?
 						answers[code] : string.Empty), parameters)
           .Append(Util.CRLF);
+				result.AddRange(Encoding.ASCII.GetBytes(buff.ToString()));
 				if (reponsesBody != null)
-					result.Append(ModifyTextResponse(reponsesBody.ToString()));
-				return result.ToString();
+				{
+					var body = (reponsesBody is IBody) ?
+						((IBody)reponsesBody).GetBody() :
+						new List<byte>(Encoding.ASCII.GetBytes(reponsesBody.ToString()));
+					result.AddRange(ModifyForNntpResponse(body));
+				}
+				return result;
 			}
 			catch(FormatException e)
 			{
@@ -200,7 +210,7 @@ namespace Rsdn.Nntp
 
 		public static void Answer(int code, Socket socket)
 		{
-			socket.Send(Util.StringToBytes(GetResponse(code, null)));
+			socket.Send(GetResponse(code, null).ToArray());
 		}
 
 		public static void Answer(NntpResponse code, Socket socket)
@@ -208,7 +218,7 @@ namespace Rsdn.Nntp
 			Answer((int)code, socket);
 		}
 
-		public string GetResponse()
+		public List<byte> GetResponse()
 		{
 			return GetResponse(description, code, reponsesBody, parameters);
 		}
@@ -218,25 +228,47 @@ namespace Rsdn.Nntp
 		/// </summary>
 		protected object reponsesBody;
 
-		protected static readonly Regex EncodeNntpMessage =
-			new Regex(@"(?m)^\.", RegexOptions.Compiled);
+		protected static readonly byte DotEncoded = 0x2E;
 
 		/// <summary>
-		/// Modiffy textual response as double first dot
+		/// Modify response as double first dot
 		/// </summary>
-		public static string ModifyTextResponse(string response)
+		public static List<byte> ModifyForNntpResponse(List<byte> response)
 		{
 			if (response == null)
 				return null;
 	
-			var textRepresentation = new StringBuilder(
-				// double start points
-				EncodeNntpMessage.Replace(response, ".."));
-			if (textRepresentation.Length > 0)
-				if (!textRepresentation.ToString().EndsWith(Util.CRLF))
-					textRepresentation.Append(Util.CRLF);
-			textRepresentation.Append(".").Append(Util.CRLF);
-			return textRepresentation.ToString();
+			for (int i = 0; i < response.Count; i++)
+			{
+				bool found = (response[i] == DotEncoded) &&
+				             (i >= Util.asciiCRLF.Length);
+				
+				if (!found) continue;
+
+				// check that before CRLF
+				for (int j = 1; found && j <= Util.asciiCRLF.Length; j++)
+				{
+					found = (response[i - j] == Util.asciiCRLF[Util.asciiCRLF.Length - j]);
+				}
+				
+				if (!found) continue;
+
+				// add double point
+				response.Insert(i++, DotEncoded);
+			}
+
+			var endWithCRLF = response.Count >= Util.asciiCRLF.Length;
+			for (int j = 1; endWithCRLF && j <= Util.asciiCRLF.Length; j++)
+			{
+				endWithCRLF = (response[response.Count - j] == Util.asciiCRLF[Util.asciiCRLF.Length - j]);
+			}
+
+			if (!endWithCRLF)
+				response.AddRange(Util.asciiCRLF);
+
+			response.Add(DotEncoded);
+			response.AddRange(Util.asciiCRLF);
+			return response;
 		}
 
 		protected static readonly Regex DecodeNNTPMessage =
@@ -262,7 +294,7 @@ namespace Rsdn.Nntp
 
 		public override string ToString()
 		{
-			return GetResponse();
+			return Encoding.ASCII.GetString(GetResponse().ToArray());
 		}
 	}
 }

@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Rsdn.Mime
 {
 	/// <summary>
@@ -9,6 +11,6 @@ namespace Rsdn.Mime
 		/// Get body of MIME message.
 		/// </summary>
 		/// <returns></returns>
-		string GetBody();
+		List<byte> GetBody();
 	}
 }

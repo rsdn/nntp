@@ -130,7 +130,8 @@ namespace Rsdn.Mime
 
 				MatchEvaluator nonAsciiReplacer = match => 
 					mimeEncoding == ContentTransferEncoding.Unknown ? match.Value :
-						Util.Encode(match.Value, encoding, mimeEncoding, true, false);
+						encoding.GetString(
+							Util.Encode(match.Value, encoding, mimeEncoding, true, false));
 
 				return headerFolding.Replace(nonAsciiReplace.Replace(this[name], nonAsciiReplacer),
 					string.Format("$1{0}$2", Util.CRLF));
@@ -148,7 +149,7 @@ namespace Rsdn.Mime
 		/// <summary>
 		/// Get whole encoded header 
 		/// </summary>
-		public string Encode(Encoding encoding, ContentTransferEncoding mimeEncoding)
+		public byte[] Encode(Encoding encoding, ContentTransferEncoding mimeEncoding)
 		{
 			var builder = new StringBuilder(512);
 			foreach (var key in AllKeys)
@@ -159,13 +160,13 @@ namespace Rsdn.Mime
 					.Append(this[key, encoding, mimeEncoding])
 					.Append(Util.CRLF);
 			}
-			return builder.ToString();
+			return encoding.GetBytes(builder.ToString());
 		}
 
 		/// <summary>
 		/// Get encoded header with Quoted-Printable mime encoding
 		/// </summary>
-		public string Encode(Encoding encoding)
+		public IList<byte> Encode(Encoding encoding)
 		{
 			return Encode(encoding, ContentTransferEncoding.QoutedPrintable);
 		}
@@ -225,7 +226,8 @@ namespace Rsdn.Mime
 		public override string ToString()
 		{
 			// encode header without MIME encoding
-			return Encode(Encoding.Unicode, ContentTransferEncoding.Unknown);
+			return Encoding.Unicode.GetString(
+				Encode(Encoding.Unicode, ContentTransferEncoding.Unknown));
 		}
 
 		/// <summary>

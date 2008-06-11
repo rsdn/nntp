@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -13,6 +14,12 @@ namespace Rsdn.Mime
 		/// line delimeter
 		/// </summary>
 		public const string CRLF = "\r\n";
+
+		/// <summary>
+		/// binary line delimeter is ASCII encoding
+		/// </summary>
+		public static readonly byte[] asciiCRLF = Encoding.ASCII.GetBytes(CRLF);
+
 		/// <summary>
 		/// maximum length of line
 		/// </summary>
@@ -30,7 +37,7 @@ namespace Rsdn.Mime
 		/// <param name="contentEncoding">MIME Encoding.</param>
 		/// <param name="breakLines">Split in lines if true.</param>
 		/// <returns>MIME encoded byte stream.</returns>
-		public static string Encode(ArraySegment<byte> bytes, ContentTransferEncoding contentEncoding,
+		public static IEnumerable<byte> Encode(ArraySegment<byte> bytes, ContentTransferEncoding contentEncoding,
 			bool breakLines)
 		{
 			return Encode(bytes.Array, bytes.Offset, bytes.Count, contentEncoding, breakLines);
@@ -43,7 +50,7 @@ namespace Rsdn.Mime
 		/// <param name="contentEncoding">MIME Encoding.</param>
 		/// <param name="breakLines">Split in lines if true.</param>
 		/// <returns>MIME encoded byte stream.</returns>
-		public static string Encode(byte[] bytes, ContentTransferEncoding contentEncoding,
+		public static IEnumerable<byte> Encode(byte[] bytes, ContentTransferEncoding contentEncoding,
 			bool breakLines)
 		{
 			return Encode(bytes, 0, bytes.Length, contentEncoding, breakLines);
@@ -58,21 +65,22 @@ namespace Rsdn.Mime
 		/// <param name="contentEncoding">MIME Encoding.</param>
 		/// <param name="breakLines">Split in lines if true.</param>
 		/// <returns>MIME encoded byte stream.</returns>
-		public static string Encode(byte[] bytes, int offset, int length,
+		public static IEnumerable<byte> Encode(byte[] bytes, int offset, int length,
 			ContentTransferEncoding contentEncoding, bool breakLines)
 		{
-			var result = new StringBuilder();
+			var result = new List<byte>(1024);
 			switch (contentEncoding)
 			{
+				// TODO: is ASCII okay?
 				case ContentTransferEncoding.Base64 :
-					result.Append(Convert.ToBase64String(bytes, offset, length));
-					if (breakLines)
-						// break in lines
-						for (var i = LineLength; i < result.Length; i += LineLength + CRLF.Length)
-							result.Insert(i, CRLF);
+					result.AddRange(Encoding.ASCII.GetBytes(
+						Convert.ToBase64String(bytes, offset, length, breakLines ?
+							Base64FormattingOptions.InsertLineBreaks : Base64FormattingOptions.None)));
 					break;
-				case ContentTransferEncoding.QoutedPrintable :
-					result.Append(ToQuotedPrintableString(bytes, offset, length, breakLines));
+				// TODO: is ASCII okay?
+				case ContentTransferEncoding.QoutedPrintable:
+					result.AddRange(Encoding.ASCII.GetBytes(
+						ToQuotedPrintableString(bytes, offset, length, breakLines)));
 					break;
 				case ContentTransferEncoding.SevenBit :
 					// TODO: cut 8th bit or not?
@@ -81,10 +89,13 @@ namespace Rsdn.Mime
 				default :
 					// split per 1000 symbols (including trailing CRLF)
 					//writer.Write(encoding.GetBytes(split998.Replace(body.ToString(), "$&" + Util.CRLF)));
-					result.Append(BytesToString(bytes, offset, length));
+					for (int i = offset; i < offset + length; i++ )
+					{
+						result.Add(bytes[i]);
+					}
 					break;
 			}
-			return result.ToString();
+			return result;
 		}
 
 		/// <summary>
@@ -97,42 +108,48 @@ namespace Rsdn.Mime
 		///		In header only base64 and quoted-printable encodings have meaning</param>
 		/// <param name="breakLines">Split in lines if true.</param>
 		/// <returns>MIME encoded text</returns>
-		public static string Encode(string text, Encoding textEncoding,
+		public static byte[] Encode(string text, Encoding textEncoding,
 			ContentTransferEncoding contentEncoding, bool header, bool breakLines)
 		{
-			var builder = new StringBuilder();
+			var builder = new List<byte>(1024);
 			var reallyHeader = false;
 
 			if (header)
+			{
 				switch (contentEncoding)
 				{
 					case ContentTransferEncoding.Base64 :
 					case ContentTransferEncoding.QoutedPrintable :
 						reallyHeader = true;
-						builder.Append("=?").Append(textEncoding.HeaderName).Append('?').
-							Append((contentEncoding == ContentTransferEncoding.Base64) ? 'b' : 'q').Append('?');
+						builder.AddRange(textEncoding.GetBytes("=?"));
+						builder.AddRange(textEncoding.GetBytes(textEncoding.HeaderName));
+						builder.AddRange(textEncoding.GetBytes("?"));
+						builder.AddRange(textEncoding.GetBytes(
+							(contentEncoding == ContentTransferEncoding.Base64) ? "b" : "q"));
+						builder.AddRange(textEncoding.GetBytes("?"));
 						break;
 				}
-			
+			}
+
 			switch (contentEncoding)
 			{
 				case ContentTransferEncoding.Base64 :
 				case ContentTransferEncoding.QoutedPrintable :
-					builder.Append(Encode(textEncoding.GetBytes(text), contentEncoding, breakLines));
+					builder.AddRange(Encode(textEncoding.GetBytes(text), contentEncoding, breakLines));
 					break;
 				case ContentTransferEncoding.SevenBit :
 					// cut 8th bit
-					builder.Append(Encoding.ASCII.GetString(Encoding.ASCII.GetBytes(text)));
+					builder.AddRange(Encoding.ASCII.GetBytes(text));
 					break;
 				default :
-					builder.Append(text);
+					builder.AddRange(textEncoding.GetBytes(text));
 					break;
 			}
 
 			if (reallyHeader)
-				builder.Append("?=");
+				builder.AddRange(textEncoding.GetBytes("?="));
 			
-			return builder.ToString();
+			return builder.ToArray();
 		}
 
 		/// <summary>
@@ -290,7 +307,8 @@ namespace Rsdn.Mime
 		/// <param name="length">size of bytes</param>
 		public static string BytesToString(byte[] input, int offset, int length)
 		{
-			return Encoding.GetEncoding("iso8859-1").GetString(input, offset, length);
+			// TODO: is ASCII okay?
+			return Encoding.ASCII.GetString(input, offset, length);
 		}
 
 		/// <summary>

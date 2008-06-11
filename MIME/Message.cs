@@ -82,6 +82,8 @@ namespace Rsdn.Mime
 		/// <param name="useDefaultHeaders">Add default headers if true.</param>
 		public Message(bool useDefaultHeaders)
 		{
+			Encoding = Encoding.ASCII;
+
 			// initialize entities array
 			entities = new List<object>();
 
@@ -298,14 +300,8 @@ namespace Rsdn.Mime
 		/// <summary>
 		/// Encoding for body.
 		/// </summary>
-		protected Encoding encoding = Encoding.ASCII;
-		/// <summary>
-		/// Encoding for body.
-		/// </summary>
-		public Encoding Encoding
-		{
-			get {return encoding;}
-		}
+		public Encoding Encoding { get; protected set; }
+
 		/// <summary>
 		/// Encoding for non-ascii header fields.
 		/// </summary>
@@ -456,7 +452,7 @@ namespace Rsdn.Mime
 			switch (type.ToLower())
 			{
 				case "text" :
-					encoding = (parameters["charset"] == null) ? Encoding.ASCII :
+					Encoding = (parameters["charset"] == null) ? Encoding.ASCII :
 						Encoding.GetEncoding(parameters["charset"]);
 					break;
 				case "multipart" :
@@ -568,7 +564,7 @@ namespace Rsdn.Mime
 
 					// if content type is 'text' - interpet body as text
 					if ("text".Equals(message.type, StringComparison.OrdinalIgnoreCase))
-						message.entities.Add(message.encoding.GetString(body));
+						message.entities.Add(message.Encoding.GetString(body));
 					// otherwise (content type is not 'text') - interpet body as byte array
 					else
 						message.entities.Add(body);
@@ -589,59 +585,54 @@ namespace Rsdn.Mime
 		/// Get message body
 		/// </summary>
 		/// <returns></returns>
-		public string GetBody()
+		public List<byte> GetBody()
 		{
-			var builder = new StringBuilder();
+			var builder = new List<byte>(1024);
 
 			// headers
-			builder.Append(header.Encode(headerEncoding));
+			builder.AddRange(header.Encode(headerEncoding));
 
 			// delimeter
-			builder.Append(Util.CRLF);
+			builder.AddRange(HeaderEncoding.GetBytes(Util.CRLF));
 
 			if (IsMultipart)
-				builder.Append("This is a multi-part message in MIME format.")
-					.Append(Util.CRLF).Append(Util.CRLF);
+				builder.AddRange(
+					Encoding.GetBytes("This is a multi-part message in MIME format." + Util.CRLF + Util.CRLF));
 
-			return GetBodyContent(builder).ToString();
-		}
-
-				/// <summary>
-		/// Get body content without headers
-		/// </summary>
-		/// <returns></returns>
-		public string GetBodyContent()
-		{
-			return GetBodyContent(new StringBuilder()).ToString();
+			builder.AddRange(GetBodyContent());
+			return builder;
 		}
 
 		/// <summary>
 		/// Get body content without headers
 		/// </summary>
 		/// <returns></returns>
-		public StringBuilder GetBodyContent(StringBuilder builder)
+		public IEnumerable<byte> GetBodyContent()
 		{
+			var builder = new List<byte>(1024);
 			// bodies
 			foreach (var body in entities)
 			{
 				if (IsMultipart)
-					builder.AppendFormat("--{0}", multipartBoundary).Append(Util.CRLF);
+					builder.AddRange(Encoding.GetBytes(
+						string.Format("--{0}{1}", multipartBoundary, Util.CRLF)));
 
 				if (body is IBody)
 				{
-					builder.Append(((IBody) body).GetBody());
+					builder.AddRange(((IBody) body).GetBody());
 					if (IsMultipart)
-						builder.Append(Util.CRLF);
+						builder.AddRange(Encoding.GetBytes(Util.CRLF));
 				}
 				else if (body is byte[])
-						builder.Append(Util.Encode((byte[])body, transferEncoding, true));
+						builder.AddRange(Util.Encode((byte[])body, transferEncoding, true));
 				else if (body is ArraySegment<byte>)
-					builder.Append(Util.Encode((ArraySegment<byte>)body, transferEncoding, true));
+					builder.AddRange(Util.Encode((ArraySegment<byte>)body, transferEncoding, true));
 				else
-					builder.Append(Util.Encode(body.ToString(), encoding, transferEncoding, false, true));
+					builder.AddRange(Util.Encode(body.ToString(), Encoding, transferEncoding, false, true));
 			}
 			if (IsMultipart)
-				builder.Append(Util.CRLF).AppendFormat("--{0}--", multipartBoundary);
+				builder.AddRange(Encoding.GetBytes(
+					string.Format("{1}--{0}--", multipartBoundary, Util.CRLF)));
 
 			return builder;
 		}
@@ -652,7 +643,7 @@ namespace Rsdn.Mime
 		/// <returns></returns>
 		public override string ToString()
 		{
-			return GetBody();
+			return Encoding.GetString(GetBody().ToArray());
 		}
 
 		/// <summary>

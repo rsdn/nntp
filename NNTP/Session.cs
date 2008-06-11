@@ -222,7 +222,7 @@ namespace Rsdn.Nntp
 
 		protected void Answer(Response response)
 		{
-			var bytes = Util.StringToBytes(response.GetResponse());
+			var bytes = response.GetResponse().ToArray();
 			netStream.Write(bytes, 0, bytes.Length);
 #if PERFORMANCE_COUNTERS
 			_manager.GetPerformanceCounter(Manager.bytesSentPerSecCounterName).IncrementBy(bytes.Length);
