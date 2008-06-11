@@ -557,6 +557,14 @@ namespace Rsdn.Mime
 		}
 
 		/// <summary>
+		/// Is message multipart?
+		/// </summary>
+		public bool IsMultipart
+		{
+			get { return "multipart".Equals(type, StringComparison.OrdinalIgnoreCase); }
+		}
+
+		/// <summary>
 		/// Get message body
 		/// </summary>
 		/// <returns></returns>
@@ -570,18 +578,40 @@ namespace Rsdn.Mime
 			// delimeter
 			builder.Append(Util.CRLF);
 
-			var multipart = "multipart".Equals(type, StringComparison.OrdinalIgnoreCase);
-			if (multipart)
-				builder.Append("This is a multi-part message in MIME format.").Append(Util.CRLF);
+			if (IsMultipart)
+				builder.Append("This is a multi-part message in MIME format.")
+					.Append(Util.CRLF).Append(Util.CRLF);
 
+			return GetBodyContent(builder).ToString();
+		}
+
+				/// <summary>
+		/// Get body content without headers
+		/// </summary>
+		/// <returns></returns>
+		public string GetBodyContent()
+		{
+			return GetBodyContent(new StringBuilder()).ToString();
+		}
+
+		/// <summary>
+		/// Get body content without headers
+		/// </summary>
+		/// <returns></returns>
+		public StringBuilder GetBodyContent(StringBuilder builder)
+		{
 			// bodies
 			foreach (var body in entities)
 			{
-				if (multipart)
-					builder.Append(Util.CRLF).AppendFormat("--{0}", multipartBoundary).Append(Util.CRLF);
+				if (IsMultipart)
+					builder.AppendFormat("--{0}", multipartBoundary).Append(Util.CRLF);
 
 				if (body is IBody)
-					builder.Append(((IBody)body).GetBody());
+				{
+					builder.Append(((IBody) body).GetBody());
+					if (IsMultipart)
+						builder.Append(Util.CRLF);
+				}
 				else
 				{
 					if (body is byte[])
@@ -590,12 +620,12 @@ namespace Rsdn.Mime
 						builder.Append(Util.Encode(body.ToString(), encoding, transferEncoding, false, true));
 				}
 			}
-			if (multipart)
+			if (IsMultipart)
 				builder.Append(Util.CRLF).AppendFormat("--{0}--", multipartBoundary);
 
-			return builder.ToString();
+			return builder;
 		}
-	
+
 		/// <summary>
 		/// Get text presentation of MIME message object.
 		/// </summary>
