@@ -102,6 +102,14 @@ namespace Rsdn.Mime
 		}
 
 		/// <summary>
+		/// Create message with initial content
+		/// </summary>
+		/// <param name="contents"></param>
+		public Message(params object[] contents): this(new NameValueCollection(0), contents)
+		{
+		}
+
+		/// <summary>
 		/// Create message with initial headers and content
 		/// </summary>
 		/// <param name="headers"></param>
@@ -625,13 +633,12 @@ namespace Rsdn.Mime
 					if (IsMultipart)
 						builder.Append(Util.CRLF);
 				}
-				else
-				{
-					if (body is byte[])
+				else if (body is byte[])
 						builder.Append(Util.Encode((byte[])body, transferEncoding, true));
-					else
-						builder.Append(Util.Encode(body.ToString(), encoding, transferEncoding, false, true));
-				}
+				else if (body is ArraySegment<byte>)
+					builder.Append(Util.Encode((ArraySegment<byte>)body, transferEncoding, true));
+				else
+					builder.Append(Util.Encode(body.ToString(), encoding, transferEncoding, false, true));
 			}
 			if (IsMultipart)
 				builder.Append(Util.CRLF).AppendFormat("--{0}--", multipartBoundary);

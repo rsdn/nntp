@@ -22,8 +22,21 @@ namespace Rsdn.Mime
 		/// Regular expression to split text in 998 characters chunks.
 		/// </summary>
 		static protected readonly Regex split998 = new Regex(@".{1,998}", RegexOptions.Compiled);
-		
+
 		/// <summary>
+		/// Encode bytes to specified MIME encoding string.
+		/// </summary>
+		/// <param name="bytes">Bytes to encode.</param>
+		/// <param name="contentEncoding">MIME Encoding.</param>
+		/// <param name="breakLines">Split in lines if true.</param>
+		/// <returns>MIME encoded byte stream.</returns>
+		public static string Encode(ArraySegment<byte> bytes, ContentTransferEncoding contentEncoding,
+			bool breakLines)
+		{
+			return Encode(bytes.Array, bytes.Offset, bytes.Count, contentEncoding, breakLines);
+		}
+
+				/// <summary>
 		/// Encode bytes to specified MIME encoding string.
 		/// </summary>
 		/// <param name="bytes">Bytes to encode.</param>
@@ -33,18 +46,33 @@ namespace Rsdn.Mime
 		public static string Encode(byte[] bytes, ContentTransferEncoding contentEncoding,
 			bool breakLines)
 		{
+			return Encode(bytes, 0, bytes.Length, contentEncoding, breakLines);
+		}
+
+		/// <summary>
+		/// Encode bytes to specified MIME encoding string.
+		/// </summary>
+		/// <param name="bytes">Bytes to encode.</param>
+		/// <param name="offset">Offset in bytes</param>
+		/// <param name="length">Length of bytes</param>
+		/// <param name="contentEncoding">MIME Encoding.</param>
+		/// <param name="breakLines">Split in lines if true.</param>
+		/// <returns>MIME encoded byte stream.</returns>
+		public static string Encode(byte[] bytes, int offset, int length,
+			ContentTransferEncoding contentEncoding, bool breakLines)
+		{
 			var result = new StringBuilder();
 			switch (contentEncoding)
 			{
 				case ContentTransferEncoding.Base64 :
-					result.Append(Convert.ToBase64String(bytes));
+					result.Append(Convert.ToBase64String(bytes, offset, length));
 					if (breakLines)
 						// break in lines
 						for (var i = LineLength; i < result.Length; i += LineLength + CRLF.Length)
 							result.Insert(i, CRLF);
 					break;
 				case ContentTransferEncoding.QoutedPrintable :
-					result.Append(ToQuotedPrintableString(bytes, breakLines));
+					result.Append(ToQuotedPrintableString(bytes, offset, length, breakLines));
 					break;
 				case ContentTransferEncoding.SevenBit :
 					// TODO: cut 8th bit or not?
@@ -53,7 +81,7 @@ namespace Rsdn.Mime
 				default :
 					// split per 1000 symbols (including trailing CRLF)
 					//writer.Write(encoding.GetBytes(split998.Replace(body.ToString(), "$&" + Util.CRLF)));
-					result.Append(BytesToString(bytes));
+					result.Append(BytesToString(bytes, offset, length));
 					break;
 			}
 			return result.ToString();
@@ -191,7 +219,7 @@ namespace Rsdn.Mime
 		static protected readonly Regex insertQuotedPrintableSoftBreaks =
 			new Regex(".{1," + LineLength + "}(?<!=.?)", RegexOptions.Compiled);
 
-		/// <summary>
+				/// <summary>
 		/// Encode with 'quoted-printable' encoding
 		/// </summary>
 		/// <param name="bytes">source bytes</param>
@@ -199,10 +227,24 @@ namespace Rsdn.Mime
 		/// <returns>'quoted-printable' encoded string</returns>
 		public static string ToQuotedPrintableString(byte[] bytes, bool breakLines)
 		{
-			var quotedString = quotedPrintableDecodedSymbol.Replace(BytesToString(bytes),
+			return ToQuotedPrintableString(bytes, 0, bytes.Length, breakLines);
+		}
+
+		/// <summary>
+		/// Encode with 'quoted-printable' encoding
+		/// </summary>
+		/// <param name="bytes">source bytes</param>
+		/// <param name="offset">offset in bytes</param>
+		/// <param name="length">length of bytes</param>
+		/// <param name="breakLines">break in lines, if true</param>
+		/// <returns>'quoted-printable' encoded string</returns>
+		public static string ToQuotedPrintableString(byte[] bytes, int offset, int length, bool breakLines)
+		{
+			var quotedString = quotedPrintableDecodedSymbol.Replace(BytesToString(bytes, offset, length),
 					new MatchEvaluator(quotedPrintableDecodedSymbolMatchEvaluator));
 
-			return breakLines ? insertQuotedPrintableSoftBreaks.Replace(quotedString,	"$&=" + CRLF) : quotedString;
+			return breakLines ?
+				insertQuotedPrintableSoftBreaks.Replace(quotedString,	"$&=" + CRLF) : quotedString;
 		}
 		/// <summary>
 		/// Encode with 'quoted-printable' encoding without line-breaking
@@ -233,9 +275,22 @@ namespace Rsdn.Mime
 		/// <summary>
 		/// Direct convert raw bytes to string
 		/// </summary>
+		/// <param name="input">bytes to convert</paparam>
+		/// <param name="length">size of bytes</param>
 		public static string BytesToString(byte[] input, int length)
 		{
-			return Encoding.GetEncoding("iso8859-1").GetString(input, 0, length);
+			return BytesToString(input, 0, length);
+		}
+
+		/// <summary>
+		/// Direct convert raw bytes to string
+		/// </summary>
+		/// <param name="input">bytes to convert</param>
+		/// <param name="offset">offset in bytes</param>
+		/// <param name="length">size of bytes</param>
+		public static string BytesToString(byte[] input, int offset, int length)
+		{
+			return Encoding.GetEncoding("iso8859-1").GetString(input, offset, length);
 		}
 
 		/// <summary>
