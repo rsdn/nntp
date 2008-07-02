@@ -68,6 +68,8 @@ namespace Rsdn.Nntp.Commands
 
 			if (articleList.Length > 0)
 			{
+				// add service headers
+				Array.ForEach(articleList, article => ModifyArticle(article));
 				var header = lastMatch.Groups["header"].Value;
 				var output = new StringBuilder();
 				foreach (var article in articleList)
